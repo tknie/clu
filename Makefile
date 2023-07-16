@@ -44,6 +44,7 @@ SWAGGER_SPEC       = $(CURDIR)/swagger/openapi-restserver.yaml
 ENABLE_DEBUG      ?= 0
 ARTIFACTORY       ?= http://lion.fritz.box:8081
 ARTIFACTORY_PASS  ?= admin:12345
+CERTIFICATE        = $(CURDIR)/keys/certificate.pem
 
 CGO_CFLAGS         =
 CGO_LDFLAGS        = 
@@ -71,7 +72,7 @@ cleanAPI: ; $(info $(M) cleaning models…)    @ ## Cleanup models
 
 $(BIN)/cluapi: prepare generatemodels fmt lint lib $(EXECS)
 
-startServer: $(BIN)/cmd/cluapi ; $(info $(M) starting server…)
+startServer: $(CERTIFICATE) $(BIN)/cmd/cluapi ; $(info $(M) starting server…)
 	@echo "Start $(VERSION) build at $(DATE)"; \
 	echo "Using config file $(CURDIR)/configuration/config.yaml"
 	@rm -f $(CURDIR)/logs/*; \
@@ -90,6 +91,9 @@ stopServer: $(BIN)/cmd/cluapi-client ; $(info $(M) stopping server…)
 .PHONY: generate
 $(CURDIR)/api: $(SWAGGER_SPEC) ; $(info $(M) generating code...) @ ## Generate rest go code
 	$Q go generate .
+
+$(CERTIFICATE):
+	cd keys; sh generate_tls.sh
 
 promote: exec ; $(info $(M) package for promotion…) @ ## package for promotion
 	if [ ! -d $(CURDIR)/promote ]; then mkdir $(CURDIR)/promote; fi; \
