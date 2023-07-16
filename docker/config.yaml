@@ -1,0 +1,76 @@
+# Configureation file
+rest-server:
+  version: v2
+  configWatcher: true
+  statisticTimer: true
+server:
+  location:
+    tracelocation: ${DATADIR}/logs/trace.log
+    serverlocation: ${DATADIR}/logs/server.log
+    loglevel: info
+    maxsize: 0
+    maxbackups: 0
+    maxage: 0
+    compress: true
+  service:
+    - port: 8030
+      type: http
+    - port: 8033
+      type: https
+      certificate: ${DATADIR}/keys/certificate.pem
+      key: ${DATADIR}/keys/key.pem
+  JWT:
+    issuer: clutron.de
+    expire: 14400
+    encrypt: true
+    publicKey: ${DATADIR}/keys/certificate.pem
+    privateKey: ${DATADIR}/keys/key.pem
+  login:
+    authenticationServer:
+      - type: file
+        passwordFile: ${DATADIR}/configuration/realm.properties
+      - module: SELECT 1
+        type: SQL
+        driver: pgx
+        target: postgres://<user>:<password>@${POSTGRES_HOST}:${POSTGRES_PORT}/bitgarten
+  content: ${INSTALLDIR}/static
+  plugins: ${INSTALLDIR}/plugins
+  shutdown:
+    passcode: {}
+    # Password to shutdown, will be send encrypted
+database:
+  modelling:
+    Modeling:
+      - Database: DBname
+        SourceTable: xxx
+        SourceField: ""
+        DestinationTable: ""
+        DestinationField: ""
+  access:
+    Database:
+      - driver: postgres
+        url: postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
+        host: ${POSTGRES_HOST}
+        port: ${POSTGRES_PORT}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASS}
+        database: ${POSTGRES_DATABASE}
+      - driver: mysql
+        url: ${MYSQL_USER}:${MYSQL_PASS}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}
+        host: ${MYSQL_HOST}
+        port: ${POSTGRES_PORT}
+        user: ${MYSQL_PORT}
+        password: ${MYSQL_PASS}
+        database: ${MYSQL_DATABASE}
+tasks:
+  use_role: true
+  directory: ${DATADIR}/log
+  database:
+    table: Jobs
+fileTransfer:
+  Admin:
+    role: xxx
+  directories:
+    directory:
+      - name: abc
+        location: ${DATADIR}

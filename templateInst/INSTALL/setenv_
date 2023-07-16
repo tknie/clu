@@ -1,0 +1,67 @@
+#!/bin/sh
+#=============================================================================
+# Copyright 2022-2023 Thorsten A. Knieling
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#=============================================================================
+
+# OS specific support.  $var _must_ be set to either true or false.
+unameS=`uname -s`
+
+SERVER_HOME=${INSTALL_DIR}/Metaverse
+LOGPATH=${SERVER_HOME}/logs
+
+ACTION="help"
+ENCODING=UTF-8
+OPTIND=1
+CMD_OPTIONS=
+WAIT_TIMEOUT=0
+SERVER_CONFIG="${SERVER_CONFIG:-${SERVER_HOME}/configuration/config.xml}"
+ACL_NOTIFY_DISABLE=YES
+export ACL_NOTIFY_DISABLE LOGPATH
+
+while getopts "hs:n:dc:w:m" opt; do
+    case $opt in
+       h) ACTION="help"; return ;; 
+       w) WAIT="true"; WAIT_TIMEOUT="$OPTARG" ;;
+       \?) exit 1
+    esac
+done
+shift `expr $OPTIND - 1`
+
+if [ ! -d "${LOGPATH}" ]; then
+   mkdir ${LOGPATH}
+fi
+
+if [ ! -r "${SERVER_CONFIG}" ]; then
+  echo "No configuration file found, use default server configuration file to current active"
+  cp ${SERVER_HOME}/configuration/config.default.xml $SERVER_CONFIG
+fi
+
+if [ "$1" != "" ] ; then
+   ACTION="$1"
+   shift 1
+   # all parameters after action command
+   ACTION_PARAMS="$*"
+fi
+
+TEMP="${SERVER_HOME}/tmp"
+TMP="${TEMP}"
+if [ ! -r ${TEMP} ]; then
+   mkdir ${TEMP}
+fi
+ADA_REST_PID_FILE=${ADA_REST_PID_FILE:-$TEMP/server.pid}
+PATH=${SERVER_HOME}/bin:${PATH}
+export PATH TEMP TMP 
+
+if [ -f "${SERVER_HOME}/bin/server.properties.sh" ]; then
+    . "${SERVER_HOME}/bin/server.properties.sh"
+fi
+

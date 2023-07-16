@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Users>
+  <Default read="*" write="" />
+  <User name="sag" read="*,#*" write="*" />
+  <User name="tkn" read="*,#*" write="Album,Picture" />
+  <User name="admin" read="*,#*" write="Album,Picture,EMPLOYEES-NAT-DDM" />
+  <User name="Administrator" read="*" write="*,#*" />
+  <User name="test" read="EMPLOYEES-NAT-DDM" />
+</Users>

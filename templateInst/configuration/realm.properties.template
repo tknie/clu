@@ -1,0 +1,4 @@
+# Create MD5 hash with
+# echo -n "<password>" | md5sum
+# on Unix
+# admin: MD5:70682896e24287b0476eff2a14c148f0, sagadmin,aif

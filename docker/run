@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -xv
+env
+
+REST_SERVER=${INSTALLDIR}
+
+exec ${REST_SERVER}/bin/metaverse

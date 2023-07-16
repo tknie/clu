@@ -1,0 +1,69 @@
+# Configureation file
+rest-server:
+  version: v2
+  configWatcher: true
+  statisticTimer: true
+server:
+  location:
+    tracelocation: ${REST_SERVER}/logs/trace.log
+    serverlocation: ${REST_SERVER}/logs/server.log
+    loglevel: info
+    maxsize: 0
+    maxbackups: 0
+    maxage: 0
+    compress: true
+  service:
+    - port: 8030
+      type: http
+    - port: 8033
+      type: https
+      certificate: ${REST_SERVER}/keys/certificate.pem
+      key: ${REST_SERVER}/keys/key.pem
+  JWT:
+    issuer: example.com
+    expire: 14400
+    encrypt: true
+    publicKey: ${REST_SERVER}/keys/apiKey.pem
+    privateKey: ${REST_SERVER}/keys/apiKey.prv
+  login:
+    authenticationServer:
+      - type: file
+        passwordFile: ${REST_SERVER}/configuration/realm.properties
+      - type: system
+  content: /aaa
+  plugins: plugins
+  shutdown:
+    passcode: {}
+    # Password to shutdown, will be send encrypted
+database:
+  modelling:
+    Modeling:
+      - Database: DBname
+        SourceTable: xxx
+        SourceField: ""
+        DestinationTable: ""
+        DestinationField: ""
+  access:
+    Database:
+      - driver: postgres
+        url: postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
+        host: ${POSTGRES_HOST}
+        port: ${POSTGRES_PORT}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASS}
+        database: ${POSTGRES_DATABASE}
+#     - driver: mysql
+#       url: admin:Testtkn1+@tcp(lion.fritz.box:3306)/Bitgarten
+#       table: xxx
+tasks:
+  use_role: true
+  directory: ${REST_SERVER}/log
+  database:
+    table: Jobs
+fileTransfer:
+  Admin:
+    role: xxx
+  directories:
+    directory:
+      - name: abc
+        location: ${DATADIR}

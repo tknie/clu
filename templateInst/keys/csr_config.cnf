@@ -1,0 +1,22 @@
+[ req ]
+default_bits = 2048
+default_keyfile = test_privatekey.pem
+distinguished_name = req_distinguished_name
+encrypt_key = no
+prompt = no
+string_mask = nombstr
+req_extensions = v3_req
+
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = DNS:test.example.com, DNS:*.test.example.com
+
+[ req_distinguished_name ]
+countryName = DE
+stateOrProvinceName = Hessen
+localityName = Locale Test
+0.organizationName = Test license
+organizationalUnitName = Evaluation
+commonName = test.example.com

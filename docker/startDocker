@@ -1,0 +1,122 @@
+#!/bin/bash
+#=============================================================================
+# Copyright 2022-2023 Thorsten A. Knieling
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#=============================================================================
+#set -xv
+
+# Environment setup
+
+# Enable trace if request
+if [ ! "$TRACE_ENABLED" = "" ]; then
+   ENABLE_DEBUG=1
+   export ENABLE_DEBUG
+fi
+
+# Default initialize status
+STOP_MODE=none
+HOSTNAME=${HOSTNAME:-$(hostname)}
+REST_SERVER=${INSTALLDIR}
+DATADIR=${DATADIR:-/data}
+export DATADIR REST_SERVER
+
+# Timeout between checking remote state or generating local state
+# Remote checks timeout is 3 times the timeout the file is generated
+REALM_CONFIG=${DATADIR}/configuration/realm.properties
+SERVER_CONFIG=${SERVER_CONFIG:${DATADIR}/configuration/config.yaml}
+
+EXITCODE=0
+
+# Functions used in the script
+. ${INSTALLDIR}/docker/functions.sh
+
+#
+# Clean up function to start shutdown of databases
+#
+function clean_up {
+   echo $(date +"%Y-%m-%d %H:%m")" Clean up environment"
+   exit ${EXITCODE}
+}
+
+# Init ${DATADIR} environment for databases locations
+#
+function init_environment {
+   echo $(date +"%Y-%m-%d %H:%m")"D: Prepare container directories"
+   if [ ! -d ${DATADIR}/configuration ]; then
+      if [ ! -d ${DATADIR}/logs ]; then
+         mkdir ${DATADIR}/logs
+      fi
+      if [ ! -d ${DATADIR}/tasks ]; then
+         mkdir ${DATADIR}/tasks
+      fi
+      mkdir ${DATADIR}/configuration
+      cp ${REST_SERVER}/configuration/config.yaml.template ${DATADIR}/configuration/config.yaml
+   fi
+   if [ ! -d ${DATADIR}/keys ]; then
+      cp -r ${REST_SERVER}/keys ${DATADIR}
+      cd ${DATADIR}/keys
+      sh ./generate_tls.sh
+      
+      cd ${REST_SERVER}
+   fi
+   rm -f ${REST_SERVER}/tmp/server.pid
+}
+
+#
+# Stop the administration tasks
+#
+function stop_administration {
+   echo $(date +"%Y-%m-%d %H:%m")"D: Stop REST administration"
+   cd ${REST_SERVER}/tmp
+   sh ${REST_SERVER}/bin/service.sh stop
+   kill ${RUNPID}
+}
+
+# Real main part of the script
+
+# Check permissions
+if [ ! -w ${DATADIR} ]; then
+   echo "Docker user sag has no permission to write into mount point at location ${DATADIR}"
+   echo "Docker user is: "$(id)
+   exit 20
+fi
+
+init_environment
+
+# Trap various signals to clean up the environment
+trap clean_up EXIT HUP INT TERM SIGHUP SIGINT SIGTERM QUIT
+
+prepare_parameter
+
+# Start offline scripts if available
+offline_scripts
+
+# Background start of server
+echo $(date +"%Y-%m-%d %H:%m")"D: Start API server"
+sh ${REST_SERVER}/bin/service.sh run &
+RUNPID=$!
+echo $(date +"%Y-%m-%d %H:%m")"D: server started with pid ${RUNPID}"
+
+if [ ! "$RUNPID" == "" ]; then
+  echo $(date +"%Y-%m-%d %H:%m")"D: waiting on pid ${RUNPID}"
+  wait ${RUNPID}
+  ret=$?
+  RUNPID=
+fi
+
+
+# Database is starting, mode need to be changed and timeout for minimum startup sequence
+STOP_MODE=stop
+
+echo $(date +"%Y-%m-%d %H:%m")"Stop tasks ..."
+kill ${RUNPID}
+
+exit ${ret}

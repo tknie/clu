@@ -1,0 +1,4026 @@
+openapi: 3.0.1
+info:
+  title: SQL API server
+  description: SQL API REST server
+  contact:
+    name: Thorsten A. Knieling
+    url: https://github.com/tknie/api
+    email: thorsten.knieling@googlemail.com
+  version: 1.0.0.0.15072023
+servers:
+  - url: http://localhost:8030/
+  - url: https://localhost:8033/
+tags:
+  - name: Environment
+    description: Administration information
+  - name: Query
+    description: Read only queries
+  - name: Administrator
+    description: Administration tasks
+  - name: Modifier
+    description: Changer
+  - name: Scheduler
+    description: Scheduler managing jobs running in the RESTful server
+  - name: Browser
+    description: Browse File for logs or data at services
+  - name: Upload
+    description: Upload File transfer for logs or data
+paths:
+  /login:
+    get:
+      tags:
+        - Environment
+      description: Login receiving JWT
+      operationId: getLoginSession
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationToken'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+    put:
+      tags:
+        - Environment
+      description: Login receiving JWT
+      operationId: loginSession
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationToken'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+    post:
+      tags:
+        - Environment
+      description: Login receiving JWT
+      operationId: pushLoginSession
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationToken'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+  /logoff:
+    get:
+      tags:
+        - Environment
+      description: Remove the session
+      operationId: removeSessionCompat
+      responses:
+        '200':
+          description: Successful response, session is invalidated
+          content: {}
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error logoff
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+  /rest/shutdown/{hash}:
+    put:
+      tags:
+        - Environment
+      description: Init shutdown procedure
+      operationId: shutdownServer
+      parameters:
+        - name: hash
+          in: path
+          description: Shutdown validation hash
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, if shutdown procedure valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error shutdown hash invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/env:
+    get:
+      tags:
+        - Environment
+      description: Retrieves the list of environments
+      operationId: getEnvironments
+      responses:
+        '200':
+          description: Successful response, with a list of environment and versions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Environments'
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /version:
+    get:
+      tags:
+        - Environment
+      description: Retrieves the current version
+      operationId: getVersion
+      responses:
+        '200':
+          description: Successful response, with a list of internal versions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Versions'
+        '400':
+          description: Error application not running correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /config:
+    get:
+      tags:
+        - Administrator
+      description: Get configuration
+      operationId: getConfig
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Config'
+        '400':
+          description: Database error evaluating list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    put:
+      tags:
+        - Administrator
+      description: Store configuration
+      operationId: setConfig
+      requestBody:
+        description: Configuration content
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Config'
+          text/plain:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: OK
+          content: {}
+        '400':
+          description: Database error evaluating list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+      x-codegen-request-body-name: data
+    post:
+      tags:
+        - Administrator
+      description: Store configuration
+      operationId: storeConfig
+      responses:
+        '200':
+          description: OK
+          content: {}
+        '400':
+          description: Database error evaluating list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /config/views:
+    get:
+      tags:
+        - Administrator
+      description: Defines the current views
+      operationId: getViews
+      responses:
+        '200':
+          description: OK
+          content: {}
+        '400':
+          description: Database error evaluating list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    post:
+      tags:
+        - Administrator
+      description: add configuration in View repositories
+      operationId: addView
+      parameters:
+        - name: url
+          in: query
+          description: Database URL
+          required: true
+          schema:
+            type: string
+        - name: file
+          in: query
+          description: Database file number
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content: {}
+        '400':
+          description: Database error evaluating list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    delete:
+      tags:
+        - Administrator
+      description: delete entry in configuration
+      operationId: deleteView
+      parameters:
+        - name: url
+          in: query
+          description: Database URL
+          required: true
+          schema:
+            type: string
+        - name: file
+          in: query
+          description: Database file number
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content: {}
+        '400':
+          description: Database error evaluating list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /config/jobs:
+    get:
+      tags:
+        - Administrator
+      description: Read job configuration section
+      operationId: getJobsConfig
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStore'
+        '400':
+          description: Database error evaluating list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    put:
+      tags:
+        - Administrator
+      description: Set the ADADATADIR
+      operationId: setJobsConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobStore'
+        required: false
+      responses:
+        '200':
+          description: OK
+          content: {}
+        '400':
+          description: Database configuration setting fail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+      x-codegen-request-body-name: jobConfig
+  /rest/database:
+    get:
+      tags:
+        - Administrator
+      description: Retrieves a list of databases known by Interface.
+      operationId: getDatabases
+      responses:
+        '200':
+          description: Successful response, with list of known databases.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Databases'
+        '400':
+          description: Database error evaluating list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    post:
+      tags:
+        - Administrator
+      description: >-
+        Create a new database, the input need to be JSON. A structure level
+        parameter indicate version to be used.
+      operationId: postDatabase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Database'
+        required: false
+      responses:
+        '200':
+          description: 'Successful response, with new databases created schema:'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Error creating database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+      x-codegen-request-body-name: database
+  /rest/database/{table_operation}:
+    get:
+      tags:
+        - Administrator
+      description: Retrieve the current status of database with the given dbid
+      operationId: databaseOperation
+      parameters:
+        - name: table_operation
+          in: path
+          description: >-
+            Database ID optional with operation append with : like 123:shutdown
+            Possible operations are - cancel - shutdown - abort - start
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with database status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseStatus'
+        '202':
+          description: Successful response, with database status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Database evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    put:
+      tags:
+        - Administrator
+      description: Change resource of the database
+      operationId: putDatabaseResource
+      parameters:
+        - name: table_operation
+          in: path
+          description: Database ID
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: Database name
+          schema:
+            type: string
+        - name: lock
+          in: query
+          description: Lock database
+          schema:
+            type: boolean
+        - name: externalbackup
+          in: query
+          description: External database backup (true=prepare false=continue)
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful response, with database status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseStatus'
+        '202':
+          description: Successful response, with database message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Database evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    post:
+      tags:
+        - Administrator
+      description: Initiate operations on the given dbid
+      operationId: databasePostOperations
+      parameters:
+        - name: table_operation
+          in: path
+          description: >-
+            Database ID optional with operation append with : like 123:shutdown
+            Possible operations are - cancel - shutdown - abort - start
+          required: true
+          schema:
+            type: string
+        - name: etsync
+          in: query
+          description: Only used together journal
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful response, with database status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseStatus'
+        '202':
+          description: Successful response, with database status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Database evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    delete:
+      tags:
+        - Administrator
+      description: Delete the database
+      operationId: deleteDatabase
+      parameters:
+        - name: table_operation
+          in: path
+          description: Database ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response, a database is deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Error deleting the database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/database/{table}/stats:
+    get:
+      tags:
+        - Administrator
+      description: Retrieve SQL statistics
+      operationId: getDatabaseStats
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with Activity statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityStats'
+        '400':
+          description: Database not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/database/{table}/permission:
+    get:
+      tags:
+        - Administrator
+      description: List RBAC assignments permission
+      operationId: getPermission
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: list
+          in: query
+          description: List type
+          schema:
+            type: string
+            enum:
+              - assignments
+              - userrole
+      responses:
+        '200':
+          description: Successful response, with status of permission.
+          content: {}
+        '400':
+          description: Database error evaluating RBAC list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    put:
+      tags:
+        - Administrator
+      description: Add RBAC role
+      operationId: adaptPermission
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with status of permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Database error evaluating RBAC list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    delete:
+      tags:
+        - Administrator
+      description: Add RBAC role
+      operationId: removePermission
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with status of permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Database error evaluating RBAC list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/database/{table}/permission/{resource}:
+    get:
+      tags:
+        - Administrator
+      description: Add permission role
+      operationId: listRBACResource
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: resource
+          in: path
+          description: permission type
+          required: true
+          schema:
+            type: string
+            enum:
+              - Role
+              - role
+              - ROLE
+              - Object
+              - object
+              - OBJECT
+              - User
+              - user
+              - USER
+              - Operation
+              - operation
+              - OPERATION
+      responses:
+        '200':
+          description: Successful response, with status of permissions.
+          content: {}
+        '400':
+          description: Database error evaluating RBAC list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/database/{table}/permission/{resource}/{name}:
+    put:
+      tags:
+        - Administrator
+      description: Add permission role
+      operationId: addRBACResource
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: resource
+          in: path
+          description: RBAC type
+          required: true
+          schema:
+            type: string
+            enum:
+              - Role
+              - role
+              - ROLE
+              - Object
+              - object
+              - OBJECT
+              - User
+              - user
+              - USER
+              - Operation
+              - operation
+              - OPERATION
+        - name: name
+          in: path
+          description: resource name
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with status of permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Database error evaluating RBAC list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    delete:
+      tags:
+        - Administrator
+      description: Delete RBAC role
+      operationId: deleteRBACResource
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: resource
+          in: path
+          description: RBAC type
+          required: true
+          schema:
+            type: string
+            enum:
+              - Role
+              - role
+              - ROLE
+              - Object
+              - object
+              - OBJECT
+              - User
+              - user
+              - USER
+              - Operation
+              - operation
+              - OPERATION
+        - name: name
+          in: path
+          description: resource name
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with status of permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Database error evaluating RBAC list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/database/{table}/connection:
+    get:
+      tags:
+        - Administrator
+      description: Retrieve the current TCP connection
+      operationId: getConnections
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with status of TCP.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TCP'
+        '400':
+          description: Database error evaluating TCP list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    delete:
+      tags:
+        - Administrator
+      description: Disconnect ADATCP connection in the database with the given dbid
+      operationId: disconnectTCP
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: start_id
+          in: query
+          description: First entry of ADATCP connection ID
+          schema:
+            type: integer
+        - name: end_id
+          in: query
+          description: Last entry of ADATCP connection ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response, when database ADATCP connections init is send
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Database not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/database/{table}/sessions:
+    get:
+      tags:
+        - Administrator
+      description: Retrieve a list of user queue entries
+      operationId: getDatabaseSessions
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with database user queue entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sessions'
+        '400':
+          description: Database not available or offline
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /binary/{table}/{field}/{search}:
+    get:
+      tags:
+        - Queries
+      description: Retrieves a lob of a specific ISN of an field in a Map
+      operationId: getLobByMap
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: search
+          in: path
+          description: Specific ISN number
+          required: true
+          schema:
+            type: string
+        - name: field
+          in: path
+          description: Specific the field to be
+          required: true
+          schema:
+            type: string
+        - name: mimetype
+          in: query
+          description: Specific the data MIME type
+          schema:
+            type: string
+        - name: sqlsearch
+          in: query
+          description: search criterium
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, retrieve the field information.
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Could not read the specified field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+    put:
+      tags:
+        - Modifier
+      description: Set a lob at a specific ISN of an field in a Map
+      operationId: updateLobByMap
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: search
+          in: path
+          description: Specific ISN number
+          required: true
+          schema:
+            type: string
+        - name: field
+          in: path
+          description: Specific the field to be
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              required:
+                - uploadLob
+              properties:
+                uploadLob:
+                  type: string
+                  description: Upload raw binary content of field
+                  format: binary
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - uploadLob
+              properties:
+                uploadLob:
+                  type: string
+                  description: Upload raw binary content of field
+                  format: binary
+        required: true
+      responses:
+        '200':
+          description: Successful response, database record is updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Could not read the specified field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+  /rest/file/{location}:
+    get:
+      tags:
+        - Browser
+      description: Download a file out of file location
+      operationId: downloadFile
+      parameters:
+        - name: location
+          in: path
+          description: Identifier of the file location
+          required: true
+          schema:
+            type: string
+        - name: file
+          in: query
+          description: Identifier of the file location
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with download binary file.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Location not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    put:
+      tags:
+        - Upload
+      description: Create a new directory
+      operationId: createDirectory
+      parameters:
+        - name: location
+          in: path
+          description: Identifier of the file location
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, if the directory is created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Location not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    post:
+      tags:
+        - Upload
+      description: Upload a new file to the given location
+      operationId: uploadFile
+      parameters:
+        - name: location
+          in: path
+          description: Identifier of the file location
+          required: true
+          schema:
+            type: string
+        - name: file
+          in: query
+          description: Identifier of the file location
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - uploadFile
+              properties:
+                uploadFile:
+                  type: string
+                  description: Upload file
+                  format: binary
+        required: true
+      responses:
+        '200':
+          description: Successful response, with download binary file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Location not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    delete:
+      tags:
+        - Upload
+      description: Delete the file on the given location
+      operationId: deleteFileLocation
+      parameters:
+        - name: location
+          in: path
+          description: Identifier of the file location
+          required: true
+          schema:
+            type: string
+        - name: file
+          in: query
+          description: Identifier of the file location
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, if delete of file done.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Location not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/file/browse:
+    get:
+      tags:
+        - Browser
+      description: Retrieves a list of Browseable locations
+      operationId: browseList
+      responses:
+        '200':
+          description: Successful response, with list of known databases.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Directories'
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Database not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/file/browse/{location}:
+    get:
+      tags:
+        - Browser
+      description: Retrieves a list of files in the defined location.
+      operationId: browse
+      parameters:
+        - name: location
+          in: path
+          description: Identifier of the file location
+          required: true
+          schema:
+            type: string
+        - name: file
+          in: query
+          description: Identifier of the file location
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with list of known databases.
+          content: {}
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Database not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /image/{table}/{field}/{search}:
+    get:
+      tags:
+        - Queries
+      description: Retrieves a field of a specific ISN of a Map definition
+      operationId: getImage
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: reference
+          in: query
+          description: Remote node reference
+          schema:
+            type: string
+        - name: search
+          in: path
+          description: Specific search
+          required: true
+          schema:
+            type: string
+        - name: field
+          in: path
+          description: Specific the field to be
+          required: true
+          schema:
+            type: string
+        - name: sqlsearch
+          in: query
+          description: search criterium
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, retrieve the field information.
+          content:
+            image/jpeg:
+              schema:
+                format: binary
+            image/gif:
+              schema:
+                format: binary
+            image/png:
+              schema:
+                format: binary
+        '401':
+          description: Unauthorized access
+          headers:
+            www_authenticate:
+              schema:
+                type: string
+          content: {}
+        '403':
+          description: The requested data was forbidden.
+          content: {}
+        '404':
+          description: Could not read the specified field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+  /video/{table}/{field}/{search}:
+    get:
+      tags:
+        - Queries
+      description: Retrieves a video stream of a specific ISN of a Map definition
+      operationId: getVideo
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: search
+          in: path
+          description: Specific ISN number
+          required: true
+          schema:
+            type: string
+        - name: reference
+          in: query
+          description: Remote node reference
+          schema:
+            type: string
+        - name: field
+          in: path
+          description: Specific the field to be streamed
+          required: true
+          schema:
+            type: string
+        - name: mimetypeField
+          in: query
+          description: Specific the field containing the mimetype
+          required: true
+          schema:
+            type: string
+        - name: sqlsearch
+          in: query
+          description: search criterium
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, retrieve the field information.
+          content:
+            video/mp4:
+              schema:
+                format: binary
+            video/mov:
+              schema:
+                format: binary
+        '401':
+          description: Unauthorized access
+          headers:
+            www_authenticate:
+              schema:
+                type: string
+          content: {}
+        '403':
+          description: The requested data was forbidden.
+          content: {}
+        '404':
+          description: Error login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+  /rest/view:
+    get:
+      tags:
+        - Queries
+      description: Retrieves a list of available maps
+      operationId: getMaps
+      responses:
+        '200':
+          description: Successful response, with the list of available maps.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Maps'
+              example:
+                Maps:
+                  - EMPLOYEE-FDT
+                  - EMPLOYEES-NAT
+                  - EMPLOYEES-NAT-DDM
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error requesting the list of maps.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+    post:
+      tags:
+        - Modifier
+      description: Store send records into Map definition
+      operationId: insertMapFileRecords
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: The file to upload.
+                  format: binary
+      responses:
+        '200':
+          description: Successful response, send record is stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        '400':
+          description: Parameter error or wrong data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error storing the record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+  /rest/view/{table}:
+    post:
+      tags:
+        - Modifier
+      description: Store send records into Map definition
+      operationId: insertMapRecords
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Data content
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Records'
+          text/plain:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Successful response, send record is stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        '400':
+          description: Database modify problem
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error storing the record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+      x-codegen-request-body-name: data
+  /rest/view/{table}/{fields}/{search}:
+    get:
+      tags:
+        - Queries
+      description: Retrieves a field of a specific ISN of a Map definition
+      operationId: getMapRecordsFields
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: search
+          in: path
+          description: search
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: path
+          description: >-
+            Specific a comma separated list of fields to be part of the result
+            record
+          required: true
+          schema:
+            type: string
+        - name: start
+          in: query
+          description: Start offset where the read will start from
+          schema:
+            type: number
+            default: 0
+        - name: limit
+          in: query
+          description: Maximal number of records retrieved
+          schema:
+            type: number
+            default: 15
+        - name: sorted_by
+          in: query
+          description: sort criterium
+          schema:
+            type: string
+        - name: sqlsearch
+          in: query
+          description: search criterium
+          schema:
+            type: string
+        - name: compact
+          in: query
+          description: return result in compact structure
+          schema:
+            type: boolean
+            default: false
+        - name: flatten
+          in: query
+          description: remove database group tree entries in result records
+          schema:
+            type: boolean
+            default: false
+        - name: descriptor
+          in: query
+          description: Read a descriptor read with the given field entry
+          schema:
+            type: boolean
+        - name: orderby
+          in: query
+          description: order by criterias
+          schema:
+            type: string
+        - name: xmlnotation
+          in: query
+          description: Use XML notation namespace
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful response, retrieve the field information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Could not read the specified field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+  /rest/view/{table}/{fields}:
+    get:
+      tags:
+        - Queries
+      description: Retrieves a field of a specific ISN of a Map definition
+      operationId: searchRecordsFields
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: path
+          description: A comma separated list of fields which should be in the result
+          required: true
+          schema:
+            type: string
+            default: '*'
+        - name: start
+          in: query
+          description: Start offset where the read will start from
+          schema:
+            type: number
+            default: 0
+        - name: limit
+          in: query
+          description: Maximal number of records retrieved
+          schema:
+            type: number
+            default: 15
+        - name: sorted_by
+          in: query
+          description: sort criterium
+          schema:
+            type: string
+        - name: sqlsearch
+          in: query
+          description: search criterium
+          schema:
+            type: string
+        - name: compact
+          in: query
+          description: return result in compact structure
+          schema:
+            type: boolean
+            default: false
+        - name: flatten
+          in: query
+          description: remove database group tree entries in result records
+          schema:
+            type: boolean
+            default: false
+        - name: descriptor
+          in: query
+          description: Read a descriptor read with the given field entry
+          schema:
+            type: boolean
+        - name: orderby
+          in: query
+          description: order by criterias
+          schema:
+            type: string
+        - name: xmlnotation
+          in: query
+          description: Use XML notation namespace
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful response, retrieve the field information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Could not read the specified field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+    put:
+      tags:
+        - Modifier
+      description: Update send records into a Map definition
+      operationId: updateMapRecords
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: path
+          description: A comma separated list of fields which should be in the result
+          required: true
+          schema:
+            type: string
+            default: '*'
+      requestBody:
+        description: Data content
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Records'
+          text/plain:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Successful response, send record is stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        '400':
+          description: Database modify problem
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error storing the record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+      x-codegen-request-body-name: data
+    delete:
+      tags:
+        - Modifier
+      description: Delete a record defined by search or context Map definition
+      operationId: deleteMapRecords
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: path
+          description: A comma separated list of fields which should be in the result
+          required: true
+          schema:
+            type: string
+            default: '*'
+      responses:
+        '200':
+          description: Successful response, send record is stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreResponse'
+        '400':
+          description: Database modify problem
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error storing the record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+      x-codegen-request-body-name: data
+  /rest/metadata/view/{table}:
+    get:
+      tags:
+        - Queries
+      description: Retrieves metadata of a Map definition
+      operationId: getMapMetadata
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, retrieve the view metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mapping'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Could not read or don't found the specified map metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+  /rest/tables/{table}/fields:
+    get:
+      tags:
+        - Queries
+      description: Retrieves all fields of an file
+      operationId: getFields
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with the list of fields in tables.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fields'
+        '400':
+          description: Wrong paramters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error requesting the list of maps.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+  /rest/tables/{table}/{search}:
+    get:
+      tags:
+        - Queries
+      description: Retrieves all fields of an file
+      operationId: searchTable
+      parameters:
+        - name: table
+          in: path
+          description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: search
+          in: path
+          description: search criterium
+          required: true
+          schema:
+            type: string
+        - name: orderby
+          in: query
+          description: order by criterias
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with the list of fields in tables.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          description: Wrong paramters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error requesting the list of maps.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+  /rest/tasks:
+    get:
+      tags:
+        - Scheduler
+      description: Retrieves a list of jobs known by the Interface.
+      operationId: getJobs
+      parameters:
+        - name: start_time
+          in: query
+          description: Timestamp of first job entry
+          schema:
+            type: string
+        - name: end_time
+          in: query
+          description: Timestamp of last job entry
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with list of known databases.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobsList'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Database not available/unknown
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    post:
+      tags:
+        - Scheduler
+      description: Create a new Job database
+      operationId: postJob
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobParameter'
+          text/plain:
+            schema:
+              type: string
+        required: false
+      responses:
+        '200':
+          description: Successful response, with new databases created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error creating database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+      x-codegen-request-body-name: job
+  /rest/tasks/{jobName}/full:
+    get:
+      tags:
+        - Scheduler
+      description: Retrieves a full job definition
+      operationId: getJobFullInfo
+      parameters:
+        - name: jobName
+          in: path
+          description: Job Name to be requested
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with list of known databases.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobFull'
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Database not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/tasks/{jobName}/result/{jobId}:
+    delete:
+      tags:
+        - Scheduler
+      description: Delete a specific job result
+      operationId: deleteJobResult
+      parameters:
+        - name: jobName
+          in: path
+          description: Job name to be requested
+          required: true
+          schema:
+            type: string
+        - name: jobId
+          in: path
+          description: Job id of execution result to be requested
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, job result is deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatusResponse'
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Database not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /rest/tasks/results:
+    get:
+      tags:
+        - Scheduler
+      description: Retrieves a specific job result
+      operationId: getJobExecutionResult
+      parameters:
+        - name: from
+          in: query
+          description: Start time from
+          schema:
+            type: string
+        - name: to
+          in: query
+          description: End time to
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with a specific job id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResult'
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Database not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+  /admin/access/{role}:
+    get:
+      tags:
+        - Administrator
+      summary: Retrieve current user list
+      description: Retrieve the list of users who are allowed to access data
+      operationId: access
+      parameters:
+        - name: role
+          in: path
+          description: access role information for users or administrators
+          required: true
+          schema:
+            type: string
+            enum:
+              - User
+              - user
+              - USER
+              - Administrator
+              - administrator
+              - ADMINISTRATOR
+      responses:
+        '200':
+          description: Successful response, with a specific job id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Database not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    post:
+      tags:
+        - Administrator
+      summary: Add new user in current user list
+      description: Insert user in the list of users who are allowed to access data
+      operationId: addAccess
+      parameters:
+        - name: role
+          in: path
+          description: access role information for users or administrators
+          required: true
+          schema:
+            type: string
+            enum:
+              - User
+              - user
+              - USER
+              - Administrator
+              - administrator
+              - ADMINISTRATOR
+        - name: user
+          in: query
+          description: New user to be added
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with a added user.
+          content: {}
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Database not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+    delete:
+      tags:
+        - Administrator
+      summary: Delete user of current user list
+      description: Delete user in the list of users who are allowed to access data
+      operationId: delAccess
+      parameters:
+        - name: role
+          in: path
+          description: access role information for users or administrators
+          required: true
+          schema:
+            type: string
+            enum:
+              - User
+              - user
+              - USER
+              - Administrator
+              - administrator
+              - ADMINISTRATOR
+        - name: user
+          in: query
+          description: User to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with a user deleted.
+          content: {}
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Database not available/unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+components:
+  schemas:
+    Database:
+      type: object
+    Server:
+      type: object
+      properties:
+        LogLocation:
+          type: object
+          properties:
+            directory:
+              type: string
+            level:
+              type: string
+        Content:
+          type: object
+          properties:
+            directory:
+              type: string
+        Service:
+          type: array
+          items:
+            type: object
+            properties:
+              port:
+                type: integer
+              type:
+                type: string
+    ClassicAccess:
+      type: object
+      properties:
+        Mapping:
+          type: object
+          properties:
+            Directory:
+              type: object
+              properties:
+                url:
+                  type: string
+            ClassicGlobal:
+              type: boolean
+              x-omitempty: false
+            ClassicAccess:
+              type: array
+              items:
+                type: object
+                properties:
+                  Database:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+    Users:
+      type: object
+      properties:
+        Users:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              readPermission:
+                type: string
+                x-omitempty: false
+              writePermission:
+                type: string
+                x-omitempty: false
+              administrator:
+                type: boolean
+                x-omitempty: false
+        readPermission:
+          type: string
+          x-omitempty: false
+        writePermission:
+          type: string
+          x-omitempty: false
+    AuthorizationToken:
+      type: object
+      properties:
+        token:
+          type: string
+        AdminRole:
+          type: boolean
+          x-omitempty: false
+    principal:
+      type: object
+      properties:
+        UUID:
+          type: string
+        name:
+          type: string
+        remote:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        session:
+          type: object
+          properties: {}
+    ActivityStats:
+      type: object
+      properties:
+        Statistics:
+          type: object
+          properties:
+            BPHitRate:
+              type: number
+              x-omitempty: false
+    Environment:
+      type: object
+      properties:
+        Environment:
+          type: object
+          properties:
+            EnvironmentList:
+              type: array
+              items:
+                $ref: '#/components/schemas/Installation'
+    Installation:
+      type: object
+      properties:
+        Directory:
+          type: string
+        StructureLevel:
+          type: number
+        Version:
+          type: string
+    Checkpoint:
+      type: object
+      properties:
+        Date:
+          type: string
+        Details:
+          type: string
+        Name:
+          type: string
+        Session:
+          type: integer
+    DatabaseCheckpoints:
+      type: object
+      properties:
+        Checkpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/Checkpoint'
+    DatabaseInformation:
+      type: object
+      properties:
+        Active:
+          type: boolean
+          x-omitempty: false
+        Dbid:
+          type: integer
+        Name:
+          type: string
+        ServiceVersion:
+          type: string
+        StructureLevel:
+          type: integer
+        Version:
+          type: string
+        Location:
+          type: string
+    DatabaseStatus:
+      type: object
+      properties:
+        Database:
+          type: object
+          properties:
+            Dbid:
+              type: string
+            Status:
+              type: string
+    Databases:
+      type: object
+      properties:
+        Database:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInformation'
+      description: Database entry in database list
+    Directories:
+      type: object
+      properties:
+        Directories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Directory'
+        system:
+          type: string
+    Directory:
+      type: object
+      properties:
+        Location:
+          type: string
+        Name:
+          type: string
+    Environments:
+      type: object
+      properties:
+        Environment:
+          type: object
+          properties: {}
+    Error:
+      type: object
+      properties:
+        Error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            target:
+              type: string
+    Executions:
+      type: object
+      properties:
+        Database:
+          type: integer
+        Ended:
+          type: string
+          format: date-time
+        ExitCode:
+          type: number
+          x-omitempty: false
+        Id:
+          type: integer
+        Log:
+          type: string
+        StartedBy:
+          type: string
+        Scheduled:
+          type: string
+          format: date-time
+    APIHandler:
+      type: object
+      properties:
+        Name:
+          type: string
+        Version:
+          type: string
+    Job:
+      type: object
+      properties:
+        Description:
+          type: string
+        Environments:
+          type: array
+          items:
+            type: object
+            properties:
+              Parameter:
+                type: string
+        Name:
+          type: string
+        Parameters:
+          type: array
+          items:
+            type: object
+            properties:
+              Parameter:
+                type: string
+        Script:
+          type: string
+        User:
+          type: string
+        Utility:
+          type: string
+        CronSchedule:
+          type: string
+    JobInformation:
+      type: object
+      properties:
+        Job:
+          $ref: '#/components/schemas/JobShortDescription'
+        Status:
+          type: string
+    JobDefinition:
+      type: object
+      properties:
+        Executions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Executions'
+        Job:
+          $ref: '#/components/schemas/Job'
+        Status:
+          type: string
+    JobFull:
+      type: object
+      properties:
+        Job:
+          $ref: '#/components/schemas/JobDefinition'
+    JobDescription:
+      type: object
+      properties:
+        CronSchedule:
+          type: string
+        Description:
+          type: string
+        Environments:
+          type: array
+          items:
+            type: object
+            properties:
+              Parameter:
+                type: string
+        Name:
+          type: string
+        Parameters:
+          type: array
+          items:
+            type: object
+            properties:
+              Parameter:
+                type: string
+        Script:
+          type: string
+        User:
+          type: string
+        Utility:
+          type: string
+    JobShortParameter:
+      type: object
+      properties:
+        Job:
+          $ref: '#/components/schemas/JobShortDescription'
+    JobShortDescription:
+      type: object
+      properties:
+        CronSchedule:
+          type: string
+        Description:
+          type: string
+        Name:
+          type: string
+        User:
+          type: string
+        Utility:
+          type: string
+    JobParameter:
+      type: object
+      properties:
+        Job:
+          $ref: '#/components/schemas/JobDescription'
+    JobResults:
+      type: object
+      properties:
+        JobResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobResult'
+    JobResult:
+      type: object
+      properties:
+        JobResult:
+          type: object
+          properties:
+            Description:
+              type: string
+            Ended:
+              type: string
+              format: date-time
+            ExitCode:
+              type: number
+              x-omitempty: false
+            Id:
+              type: number
+            Log:
+              type: string
+            Name:
+              type: string
+            Scheduled:
+              type: string
+              format: date-time
+            StartedBy:
+              type: string
+            Status:
+              type: string
+    JobStatusResponse:
+      type: object
+      properties:
+        Status:
+          type: object
+          properties:
+            Action:
+              type: string
+            ExecutionId:
+              type: integer
+            Message:
+              type: string
+            Name:
+              type: string
+    JobsArray:
+      type: object
+      properties:
+        JobDefinition:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobInformation'
+    JobsList:
+      type: object
+      properties:
+        JobDefinition:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobDefinition'
+    Map:
+      type: string
+    Maps:
+      type: object
+      properties:
+        Maps:
+          type: array
+          items:
+            $ref: '#/components/schemas/Map'
+      description: Maps definition
+    MapField:
+      type: object
+      properties:
+        name:
+          type: object
+          properties:
+            format:
+              type: string
+              xml:
+                attribute: true
+        shortName:
+          type: object
+          properties:
+            format:
+              type: string
+              xml:
+                attribute: true
+        contentType:
+          type: object
+          properties:
+            format:
+              type: string
+              xml:
+                attribute: true
+        charset:
+          type: object
+          properties:
+            format:
+              type: string
+              xml:
+                attribute: true
+        file:
+          type: object
+          properties:
+            format:
+              type: integer
+              xml:
+                attribute: true
+        formatType:
+          type: object
+          properties:
+            format:
+              type: string
+              xml:
+                attribute: true
+        length:
+          type: object
+          properties:
+            format:
+              type: integer
+              xml:
+                attribute: true
+        fieldType:
+          type: object
+          properties:
+            format:
+              type: string
+              xml:
+                attribute: true
+    mappingLocation:
+      type: object
+      properties:
+        target:
+          type: string
+        file:
+          type: integer
+    mapping:
+      type: object
+      properties:
+        Map:
+          type: object
+          properties:
+            name:
+              type: string
+            lastModified:
+              type: string
+              format: date-time
+            isn:
+              type: integer
+            definition:
+              $ref: '#/components/schemas/mappingLocation'
+            data:
+              $ref: '#/components/schemas/mappingLocation'
+            fields:
+              type: array
+              items:
+                $ref: '#/components/schemas/MapField'
+        format:
+          type: object
+          xml:
+            namespace: http://www.github.com/tknie/api/admin/map
+            prefix: map
+    OnlineDatabase:
+      type: object
+      properties:
+        url:
+          type: string
+    OnlineDatabases:
+      type: object
+      properties:
+        Databases:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnlineDatabase'
+      description: Databases definition
+    Records:
+      type: object
+      properties:
+        FieldNames:
+          type: array
+          items:
+            type: string
+        FileRecords:
+          type: integer
+        NrRecords:
+          type: integer
+        UpdateCheck:
+          type: array
+          items:
+            type: string
+        Store:
+          type: array
+          items:
+            type: object
+            properties: {}
+        Records:
+          type: array
+          items:
+            type: object
+            properties: {}
+    Response:
+      type: object
+      properties:
+        MapName:
+          type: string
+        FileRecords:
+          type: integer
+          x-omitempty: false
+        NrRecords:
+          type: integer
+          x-omitempty: false
+        FieldNames:
+          type: array
+          items:
+            type: string
+        Records:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+    StoreResponse:
+      type: object
+      properties:
+        NrStored:
+          type: integer
+        NrDeleted:
+          type: integer
+        Stored:
+          type: array
+          items:
+            type: integer
+    Journal:
+      type: object
+    TCP:
+      type: object
+      properties:
+        Entry:
+          type: array
+          items:
+            $ref: '#/components/schemas/TCPentry'
+    TCPentry:
+      type: object
+      properties:
+        ID:
+          type: integer
+          x-omitempty: false
+        RecvID:
+          type: integer
+          x-omitempty: false
+        RemoteUser:
+          type: string
+        RemoteHost:
+          type: string
+        RemoteIP:
+          type: string
+        RemotePort:
+          type: integer
+          x-omitempty: false
+    Info:
+      type: object
+      properties:
+        Info:
+          type: string
+    Status:
+      type: object
+      properties:
+        Message:
+          type: string
+    StatusResponse:
+      type: object
+      properties:
+        Status:
+          type: object
+          properties:
+            Action:
+              type: string
+            Code:
+              type: string
+            Dbid:
+              type: number
+            Target:
+              type: string
+            Message:
+              type: string
+    UserInformation:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Node:
+          type: string
+        Terminal:
+          type: string
+        Timestamp:
+          type: string
+          format: date-time
+    Sessions:
+      type: object
+      properties:
+        Session:
+          type: object
+          properties:
+            UserQueueEntry:
+              type: array
+              items:
+                type: object
+                properties: {}
+    Versions:
+      type: object
+      properties:
+        Handler:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIHandler'
+        Product:
+          type: string
+        Version:
+          type: string
+    Fields:
+      type: array
+      items:
+        $ref: '#/components/schemas/FieldItem'
+    FieldItem:
+      type: object
+      properties:
+        level:
+          type: integer
+        value:
+          type: string
+        format:
+          type: string
+        length:
+          type: integer
+        options:
+          type: string
+        identifier:
+          type: string
+        label:
+          type: string
+    Config:
+      type: object
+      properties:
+        StructureLevel:
+          type: integer
+        Version:
+          type: string
+        Server:
+          type: object
+          properties:
+            Service:
+              type: array
+              items:
+                type: object
+                properties:
+                  port:
+                    type: number
+                  type:
+                    type: string
+            LogLocation:
+              type: object
+              properties:
+                directory:
+                  type: string
+                level:
+                  type: string
+            Content:
+              type: string
+        JobStore:
+          $ref: '#/components/schemas/JobStore'
+        Cluster:
+          $ref: '#/components/schemas/ClusterConfig'
+        Mapping:
+          type: object
+          properties:
+            Directory:
+              type: string
+            Database:
+              type: array
+              items:
+                $ref: '#/components/schemas/DatabaseConfig'
+        DatabaseAccess:
+          type: object
+          properties:
+            Global:
+              type: boolean
+              x-omitempty: false
+            Database:
+              type: array
+              items:
+                $ref: '#/components/schemas/DatabaseConfig'
+        Module:
+          type: object
+          properties:
+            Data:
+              type: string
+            Installation:
+              type: array
+              items:
+                type: object
+                properties:
+                  Location:
+                    type: string
+                  Version:
+                    type: string
+                  StructureLevel:
+                    type: integer
+                  Active:
+                    type: boolean
+                    x-omitempty: false
+            Directories:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  location:
+                    type: string
+        Metrics:
+          type: object
+          properties:
+            Database:
+              type: array
+              items:
+                $ref: '#/components/schemas/DatabaseConfig'
+    JobStore:
+      type: object
+      properties:
+        config:
+          type: string
+        Database:
+          $ref: '#/components/schemas/DatabaseConfig'
+    DatabaseConfig:
+      type: object
+      properties:
+        url:
+          type: string
+        file:
+          type: number
+        changed:
+          type: boolean
+          default: false
+        deleted:
+          type: boolean
+          default: false
+    ClusterConfig:
+      type: object
+      properties:
+        Nodes:
+          type: array
+          items:
+            type: object
+            properties:
+              Name:
+                type: string
+              Web:
+                type: string
+              Group:
+                type: string
+    Cluster:
+      type: object
+      properties:
+        View:
+          type: object
+          properties:
+            StateID:
+              $ref: '#/components/schemas/ClusterGtid'
+            LastCommitted:
+              $ref: '#/components/schemas/ClusterGtid'
+            Status:
+              type: string
+            Updated:
+              type: number
+              x-omitempty: false
+            NumberOfMembers:
+              type: number
+              x-omitempty: false
+            IndexOfNode:
+              type: number
+              x-omitempty: false
+            IndexOfPrimaryNode:
+              type: number
+              x-omitempty: false
+            LocalSendQueue:
+              type: number
+              x-omitempty: false
+            LocalSendQueueMax:
+              type: number
+            LocalRecvQueue:
+              type: number
+              x-omitempty: false
+            LocalRecvQueueMax:
+              type: number
+        Members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClusterMember'
+    ClusterGtid:
+      type: object
+      properties:
+        StateID:
+          type: string
+        SeqNo:
+          type: number
+          x-omitempty: false
+    ClusterMember:
+      type: object
+      properties:
+        BaseId:
+          type: string
+        BaseName:
+          type: string
+        BaseIncoming:
+          type: string
+        LastCommitted:
+          type: number
+          x-omitempty: false
+        Status:
+          type: string
+  parameters:
+    databaseSQLParam:
+      name: database
+      in: path
+      description: SQL database
+      required: true
+      schema:
+        type: string
+    tableParam:
+      name: table
+      in: path
+      description: SQL table
+      required: true
+      schema:
+        type: string
+    searchQueryParam:
+      name: search
+      in: path
+      description: search criterium
+      required: true
+      schema:
+        type: string
+    orderbyParam:
+      name: orderby
+      in: query
+      description: order by criterias
+      schema:
+        type: string
+    fileReferenceParam:
+      name: file
+      in: query
+      description: Identifier of the file location
+      required: true
+      schema:
+        type: string
+    fieldsParam:
+      name: fields
+      in: path
+      description: A comma separated list of fields which should be in the result
+      required: true
+      schema:
+        type: string
+        default: '*'
+    searchParam:
+      name: sqlsearch
+      in: query
+      description: search criterium
+      schema:
+        type: string
+    startParam:
+      name: start
+      in: query
+      description: Start offset where the read will start from
+      schema:
+        type: number
+        default: 0
+    limitParam:
+      name: limit
+      in: query
+      description: Maximal number of records retrieved
+      schema:
+        type: number
+        default: 15
+    sortParam:
+      name: sorted_by
+      in: query
+      description: sort criterium
+      schema:
+        type: string
+    compactParam:
+      name: compact
+      in: query
+      description: return result in compact structure
+      schema:
+        type: boolean
+        default: false
+    flattenParam:
+      name: flatten
+      in: query
+      description: remove database group tree entries in result records
+      schema:
+        type: boolean
+        default: false
+    descriptorParam:
+      name: descriptor
+      in: query
+      description: Read a descriptor read with the given field entry
+      schema:
+        type: boolean
+    exchangeParam:
+      name: exchange
+      in: query
+      description: Exchange current imput data with record
+      schema:
+        type: boolean
+    locationParam:
+      name: location
+      in: path
+      description: Identifier of the file location
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    BasicAuth:
+      type: http
+      description: HTTP Basic Authentication. Works over `HTTP` and `HTTPS`
+      scheme: basic
+    BearerAuth:
+      type: http
+      description: HTTP Bearer Authentication. Works over `HTTP` and `HTTPS`
+      scheme: bearer
+    tokenCheck:
+      type: apiKey
+      name: X-Tokencheck
+      description: HTTP Basic Authentication. Works over `HTTP` and `HTTPS`
+      in: header

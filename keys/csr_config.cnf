@@ -1,0 +1,24 @@
+[ req ]
+default_bits = 4096
+default_keyfile = privatekey.pem
+distinguished_name = req_distinguished_name
+encrypt_key = no
+prompt = no
+string_mask = nombstr
+req_extensions = v3_req
+default_days	= 365
+default_crl_days= 30
+
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = DNS:lion.fritz.box, DNS:*.fritz.box
+
+[ req_distinguished_name ]
+countryName = DE
+stateOrProvinceName = Hessen
+localityName = Seeheim-Jugenheim
+0.organizationName = TKN
+organizationalUnitName = Private
+commonName = lion.fritz.box
