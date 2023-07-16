@@ -15,8 +15,8 @@ server:
     issuer: IIII
     expire: 2880
     encrypt: true
-    publicKey: ${CURDIR}/keys/apiKey.pem
-    privateKey: ${CURDIR}/keys/apiKey.prv
+    publicKey: ${CURDIR}/keys/key.pub
+    privateKey: ${CURDIR}/keys/key.pem
   login:
     administrators: ${CURDIR}/configuration/administrator.xml
     users: ${CURDIR}/configuration/users.xml

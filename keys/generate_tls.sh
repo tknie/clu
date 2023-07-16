@@ -16,4 +16,4 @@ openssl req -new -x509 -nodes -days 365 -sha512 -newkey rsa:4096 -keyout key.pem
 openssl x509 -text -noout -in certificate.pem
 openssl pkcs12 -password pass: -inkey key.pem -in certificate.pem -export -out certificate.p12
 openssl pkcs12 -password pass: -in certificate.p12 -noout -info
-
+openssl rsa -in key.pem -pubout > key.pub

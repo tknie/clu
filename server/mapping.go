@@ -102,6 +102,7 @@ func loadTableOfDatabases() {
 			continue
 		}
 
+		newDatabases := make([]string, 0)
 		for _, table := range flynn.Maps() {
 			s := strings.ToLower(table)
 			if sid, ok := dbDictionary[s]; ok {
@@ -109,9 +110,12 @@ func loadTableOfDatabases() {
 					services.ServerMessage("Found table on different databases: [%s]", s)
 				}
 			} else {
-				services.ServerMessage("Add table to dictionary: [%s]", s)
+				newDatabases = append(newDatabases, s)
 				dbDictionary[s] = id
 			}
+		}
+		if len(newDatabases) > 0 {
+			services.ServerMessage("Add table(s) to dictionary: %v", newDatabases)
 		}
 	}
 

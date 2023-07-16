@@ -3,19 +3,25 @@ module github.com/tknie/clu
 go 1.20
 
 require (
+	github.com/go-faster/errors v0.6.1
+	github.com/go-faster/jx v1.0.0
 	github.com/go-openapi/runtime v0.26.0
 	github.com/go-openapi/swag v0.22.4
 	github.com/ogen-go/ogen v0.71.1
 	github.com/rs/cors v1.9.0
 	github.com/tknie/log v0.0.0-20230429175804-66867a7f7c54
 	github.com/tknie/services v0.0.0-20230619190937-7a0d8b966dde
+	go.opentelemetry.io/otel v1.16.0
+	go.opentelemetry.io/otel/metric v1.16.0
+	go.opentelemetry.io/otel/trace v1.16.0
+	go.uber.org/multierr v1.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/go-faster/errors v0.6.1 // indirect
-	github.com/go-faster/jx v1.0.0 // indirect
+	github.com/go-logr/logr v1.2.4 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
@@ -23,7 +29,6 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/tknie/adabas-go-api v1.7.9 // indirect
-	go.uber.org/multierr v1.11.0 // indirect
 )
 
 require (
