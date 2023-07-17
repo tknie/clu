@@ -9,7 +9,7 @@ require (
 	github.com/go-openapi/swag v0.22.4
 	github.com/ogen-go/ogen v0.71.1
 	github.com/rs/cors v1.9.0
-	github.com/tknie/log v0.0.0-20230429175804-66867a7f7c54
+	github.com/tknie/log v0.0.0-20230709123301-620bb99e7bd6
 	github.com/tknie/services v0.0.0-20230619190937-7a0d8b966dde
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/metric v1.16.0
@@ -25,7 +25,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgx/v5 v5.4.1 // indirect
+	github.com/jackc/pgx/v5 v5.4.2 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/tknie/adabas-go-api v1.7.9 // indirect
@@ -47,12 +47,12 @@ require (
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5
-	github.com/tknie/flynn v0.0.0-20230628202445-96fe866ca0ca
+	github.com/tknie/flynn v0.0.0-20230717083719-6cb68690e237
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.11.0 // indirect
-	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df // indirect
+	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 // indirect
 	golang.org/x/net v0.12.0
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
