@@ -135,7 +135,6 @@ func InitPlugins() {
 					if !found && plugList != nil {
 						n := loader.Name()
 						for _, v := range plugList {
-							fmt.Println("Check", n, "==", v)
 							if n == v {
 								found = true
 								break
@@ -287,8 +286,8 @@ func SendAuditError(started time.Time, r *http.Request, err error) {
 	}
 	username, _, ok := r.BasicAuth()
 	if !ok {
-		b := r.Header.Get("authorization")
-		fmt.Println("Bearer:", b)
+		services.ServerMessage("Basic authorization error expanding from %s", r.Host)
+		username = "Unknown"
 	}
 	elapsed := time.Since(started)
 	for _, x := range auditPlugins {

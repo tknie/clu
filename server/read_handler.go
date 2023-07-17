@@ -35,7 +35,7 @@ func (ServerHandler) SearchRecordsFields(ctx context.Context, params api.SearchR
 	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
 		return &api.SearchRecordsFieldsForbidden{}, nil
 	}
-	log.Log.Debugf("SQL search fields %s - %v", params.Table, params.Fields)
+	log.Log.Debugf("SQL search fields %s - %v", params.Table, params.Search)
 	d, err := ConnectTable(session, params.Table)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
@@ -52,7 +52,7 @@ func (ServerHandler) SearchRecordsFields(ctx context.Context, params api.SearchR
 		limit = uint32(params.Limit.Value)
 	}
 	q := &common.Query{TableName: params.Table,
-		Fields:     extractFieldList(params.Fields),
+		Fields:     extractFieldList(params.Search),
 		Search:     "",
 		Limit:      limit,
 		Descriptor: descriptor,

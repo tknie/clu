@@ -2075,9 +2075,9 @@ paths:
   /rest/view/{table}:
     post:
       tags:
-        - Modifier
-      description: Store send records into Map definition
-      operationId: insertMapRecords
+        - Queries
+      description: Insert given record
+      operationId: insertRecord
       parameters:
         - name: table
           in: path
@@ -2085,29 +2085,13 @@ paths:
           required: true
           schema:
             type: string
-      requestBody:
-        description: Data content
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Records'
-          text/plain:
-            schema:
-              type: string
-        required: true
       responses:
         '200':
-          description: Successful response, send record is stored.
+          description: Successful response, insert the field information.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StoreResponse'
-        '400':
-          description: Database modify problem
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Response'
         '401':
           description: Authorization error
           content: {}
@@ -2115,7 +2099,7 @@ paths:
           description: Role access denied
           content: {}
         '404':
-          description: Error storing the record.
+          description: Could not read the specified field.
           content:
             application/json:
               schema:
@@ -2131,7 +2115,6 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
-      x-codegen-request-body-name: data
   /rest/view/{table}/{fields}/{search}:
     get:
       tags:
@@ -2238,11 +2221,11 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
-  /rest/view/{table}/{fields}:
+  /rest/view/{table}/{search}:
     get:
       tags:
         - Queries
-      description: Retrieves a field of a specific ISN of a Map definition
+      description: Query a record with a given fields
       operationId: searchRecordsFields
       parameters:
         - name: table
@@ -2251,13 +2234,14 @@ paths:
           required: true
           schema:
             type: string
-        - name: fields
+        - name: search
           in: path
-          description: A comma separated list of fields which should be in the result
+          description: >-
+            Specific a comma separated list of fields to be part of the result
+            record
           required: true
           schema:
             type: string
-            default: '*'
         - name: start
           in: query
           description: Start offset where the read will start from
@@ -2337,77 +2321,11 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
-    put:
-      tags:
-        - Modifier
-      description: Update send records into a Map definition
-      operationId: updateMapRecords
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-        - name: fields
-          in: path
-          description: A comma separated list of fields which should be in the result
-          required: true
-          schema:
-            type: string
-            default: '*'
-      requestBody:
-        description: Data content
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Records'
-          text/plain:
-            schema:
-              type: string
-        required: true
-      responses:
-        '200':
-          description: Successful response, send record is stored.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StoreResponse'
-        '400':
-          description: Database modify problem
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        '404':
-          description: Error storing the record.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - user
-      x-codegen-request-body-name: data
     delete:
       tags:
-        - Modifier
-      description: Delete a record defined by search or context Map definition
-      operationId: deleteMapRecords
+        - Queries
+      description: Delete a record with a given search
+      operationId: deleteRecordsSearched
       parameters:
         - name: table
           in: path
@@ -2415,26 +2333,76 @@ paths:
           required: true
           schema:
             type: string
-        - name: fields
+        - name: search
           in: path
-          description: A comma separated list of fields which should be in the result
+          description: search
           required: true
           schema:
             type: string
-            default: '*'
+        - name: fields
+          in: path
+          description: >-
+            Specific a comma separated list of fields to be part of the result
+            record
+          required: true
+          schema:
+            type: string
+        - name: start
+          in: query
+          description: Start offset where the read will start from
+          schema:
+            type: number
+            default: 0
+        - name: limit
+          in: query
+          description: Maximal number of records retrieved
+          schema:
+            type: number
+            default: 15
+        - name: sorted_by
+          in: query
+          description: sort criterium
+          schema:
+            type: string
+        - name: sqlsearch
+          in: query
+          description: search criterium
+          schema:
+            type: string
+        - name: compact
+          in: query
+          description: return result in compact structure
+          schema:
+            type: boolean
+            default: false
+        - name: flatten
+          in: query
+          description: remove database group tree entries in result records
+          schema:
+            type: boolean
+            default: false
+        - name: descriptor
+          in: query
+          description: Read a descriptor read with the given field entry
+          schema:
+            type: boolean
+        - name: orderby
+          in: query
+          description: order by criterias
+          schema:
+            type: string
+        - name: xmlnotation
+          in: query
+          description: Use XML notation namespace
+          schema:
+            type: boolean
       responses:
         '200':
-          description: Successful response, send record is stored.
+          description: Successful response, retrieve the field information.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StoreResponse'
-        '400':
-          description: Database modify problem
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Response'
         '401':
           description: Authorization error
           content: {}
@@ -2442,7 +2410,7 @@ paths:
           description: Role access denied
           content: {}
         '404':
-          description: Error storing the record.
+          description: Could not read the specified field.
           content:
             application/json:
               schema:
@@ -2458,7 +2426,6 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
-      x-codegen-request-body-name: data
   /rest/metadata/view/{table}:
     get:
       tags:

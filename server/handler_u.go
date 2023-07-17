@@ -143,15 +143,6 @@ func (ServerHandler) DeleteJobResult(ctx context.Context, params api.DeleteJobRe
 	return r, ht.ErrNotImplemented
 }
 
-// DeleteMapRecords implements deleteMapRecords operation.
-//
-// Delete a record defined by search or context Map definition.
-//
-// DELETE /rest/view/{table}/{fields}
-func (ServerHandler) DeleteMapRecords(ctx context.Context, params api.DeleteMapRecordsParams) (r api.DeleteMapRecordsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // DeleteRBACResource implements deleteRBACResource operation.
 //
 // Delete RBAC role.
@@ -323,15 +314,6 @@ func (ServerHandler) InsertMapFileRecords(ctx context.Context, req api.OptInsert
 	return r, ht.ErrNotImplemented
 }
 
-// InsertMapRecords implements insertMapRecords operation.
-//
-// Store send records into Map definition.
-//
-// POST /rest/view/{table}
-func (ServerHandler) InsertMapRecords(ctx context.Context, req api.InsertMapRecordsReq, params api.InsertMapRecordsParams) (r api.InsertMapRecordsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // ListRBACResource implements listRBACResource operation.
 //
 // Add RBAC role.
@@ -438,15 +420,6 @@ func (ServerHandler) StoreConfig(ctx context.Context) (r api.StoreConfigRes, _ e
 //
 // PUT /binary/{table}/{field}/{search}
 func (ServerHandler) UpdateLobByMap(ctx context.Context, req api.UpdateLobByMapReq, params api.UpdateLobByMapParams) (r api.UpdateLobByMapRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// UpdateMapRecords implements updateMapRecords operation.
-//
-// Update send records into a Map definition.
-//
-// PUT /rest/view/{table}/{fields}
-func (ServerHandler) UpdateMapRecords(ctx context.Context, req api.UpdateMapRecordsReq, params api.UpdateMapRecordsParams) (r api.UpdateMapRecordsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
