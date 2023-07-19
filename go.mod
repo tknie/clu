@@ -47,7 +47,7 @@ require (
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5
-	github.com/tknie/flynn v0.0.0-20230717083719-6cb68690e237
+	github.com/tknie/flynn v0.0.0-20230719103305-ef1186f0ace7
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/zap v1.24.0

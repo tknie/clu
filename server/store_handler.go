@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/go-faster/jx"
-	ht "github.com/ogen-go/ogen/http"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/flynn/common"
@@ -50,29 +49,32 @@ func (ServerHandler) InsertRecord(ctx context.Context, req api.OptInsertRecordRe
 		}
 		records = append(records, m)
 	}
-	list := make([][]any, 0)
-	for _, r := range records {
-		subList := make([]any, 0)
-		m := r.(map[string]any)
-		for n := range nameMap {
-			subList = append(subList, m[n])
-		}
-		list = append(list, subList)
-	}
 	fields := make([]string, 0)
 	for n := range nameMap {
 		fields = append(fields, n)
 	}
+	list := make([][]any, 0)
+	for _, r := range records {
+		subList := make([]any, 0)
+		m := r.(map[string]any)
+		for _, n := range fields {
+			subList = append(subList, m[n])
+		}
+		list = append(list, subList)
+	}
 	// list := [][]any{{vId1, "xxxxxx", 1}, {vId2, "yyywqwqwqw", 2}}
 	input := &common.Entries{Fields: fields,
 		Values: list}
+	fmt.Printf("%#v ->>>\n", input)
 	err = d.Insert(params.Table, input)
 	if err != nil {
 		log.Log.Debugf("Error: %v", err)
 		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 	}
 	fmt.Println("INSERT:", records)
-	return r, ht.ErrNotImplemented
+	resp := api.Response{NrRecords: api.NewOptInt(1)}
+	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	return respH, nil
 }
 
 func parseJx(v jx.Raw) (any, error) {
@@ -140,6 +142,7 @@ func (ServerHandler) DeleteRecordsSearched(ctx context.Context, params api.Delet
 		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 	}
 	fmt.Println("DR", dr)
-	resp := &api.Response{NrRecords: api.NewOptInt(int(dr))}
-	return resp, nil
+	resp := api.Response{NrRecords: api.NewOptInt(int(dr))}
+	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	return respH, nil
 }

@@ -23,6 +23,7 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 	}
 	log.Log.Infof("Basic auth... done: %s", p.Name())
 	pm := p.(*clu.Context)
+	server.GenerateJWToken(pm)
 	return pm, nil
 }
 

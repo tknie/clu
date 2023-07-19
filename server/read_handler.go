@@ -63,8 +63,9 @@ func (ServerHandler) SearchRecordsFields(ctx context.Context, params api.SearchR
 		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 	}
 
-	resp := &api.Response{Records: data}
-	return resp, nil
+	resp := api.Response{Records: data}
+	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	return respH, nil
 }
 
 // GetMapRecordsFields implements getMapRecordsFields operation.
@@ -106,8 +107,9 @@ func (ServerHandler) GetMapRecordsFields(ctx context.Context, params api.GetMapR
 	}
 
 	log.Log.Debugf("Return payload")
-	resp := &api.Response{Records: data}
-	return resp, nil
+	resp := api.Response{Records: data}
+	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	return respH, nil
 }
 
 func extractFieldList(fields string) []string {

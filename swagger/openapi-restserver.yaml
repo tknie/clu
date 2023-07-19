@@ -35,6 +35,10 @@ paths:
       responses:
         '200':
           description: Successful login
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -68,6 +72,10 @@ paths:
       responses:
         '200':
           description: Successful login
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -101,6 +109,10 @@ paths:
       responses:
         '200':
           description: Successful login
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -211,6 +223,10 @@ paths:
       responses:
         '200':
           description: Successful response, with a list of environment and versions
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -312,6 +328,10 @@ paths:
       responses:
         '200':
           description: OK
+          headers:
+            X-Token:
+              schema:
+                type: string
           content: {}
         '400':
           description: Database error evaluating list
@@ -345,6 +365,10 @@ paths:
       responses:
         '200':
           description: OK
+          headers:
+            X-Token:
+              schema:
+                type: string
           content: {}
         '400':
           description: Database error evaluating list
@@ -378,6 +402,10 @@ paths:
       responses:
         '200':
           description: OK
+          headers:
+            X-Token:
+              schema:
+                type: string
           content: {}
         '400':
           description: Database error evaluating list
@@ -2039,6 +2067,10 @@ paths:
       responses:
         '200':
           description: Successful response, send record is stored.
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -2099,6 +2131,10 @@ paths:
       responses:
         '200':
           description: Successful response, insert the field information.
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -2206,6 +2242,10 @@ paths:
       responses:
         '200':
           description: Successful response, retrieve the field information.
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -2306,6 +2346,10 @@ paths:
       responses:
         '200':
           description: Successful response, retrieve the field information.
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -2411,6 +2455,10 @@ paths:
       responses:
         '200':
           description: Successful response, retrieve the field information.
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -2454,6 +2502,10 @@ paths:
       responses:
         '200':
           description: Successful response, retrieve the view metadata.
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -2497,6 +2549,10 @@ paths:
       responses:
         '200':
           description: Successful response, with the list of fields in tables.
+          headers:
+            X-Token:
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -3586,8 +3642,7 @@ components:
           type: array
           items:
             type: object
-            additionalProperties:
-              type: string
+            additionalProperties: true
     StoreResponse:
       type: object
       properties:

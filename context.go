@@ -23,6 +23,7 @@ type Context struct {
 		Remote  string
 		Session interface{}
 	}
+	Token string
 }
 
 // Deadline dead line

@@ -25,19 +25,22 @@ import (
 //
 // GET /login
 func (ServerHandler) GetLoginSession(ctx context.Context) (r api.GetLoginSessionRes, _ error) {
-	x, err := commonLogin(ctx)
+	x, err := GenerateJWToken(ctx)
 	return x.(api.GetLoginSessionRes), err
 }
 
-func commonLogin(ctx context.Context) (interface{}, error) {
+func GenerateJWToken(ctx context.Context) (interface{}, error) {
 	session := ctx.(*clu.Context)
-	token, err := Viewer.Server.WebToken.GenerateJWToken("*", session)
-	if err != nil {
-		log.Log.Errorf("Error token generation:%v", err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+	log.Log.Debugf("Generate JWT token")
+	if session.Token == "" {
+		token, err := Viewer.Server.WebToken.GenerateJWToken("*", session)
+		if err != nil {
+			log.Log.Errorf("Error token generation:%v", err)
+			return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		}
+		session.Token = token
 	}
-
-	return &api.AuthorizationToken{Token: api.NewOptString(token)}, nil
+	return &api.AuthorizationToken{Token: api.NewOptString(session.Token)}, nil
 }
 
 // LoginSession implements loginSession operation.
@@ -46,7 +49,7 @@ func commonLogin(ctx context.Context) (interface{}, error) {
 //
 // PUT /login
 func (ServerHandler) LoginSession(ctx context.Context) (r api.LoginSessionRes, _ error) {
-	x, err := commonLogin(ctx)
+	x, err := GenerateJWToken(ctx)
 	return x.(api.LoginSessionRes), err
 }
 
@@ -56,6 +59,6 @@ func (ServerHandler) LoginSession(ctx context.Context) (r api.LoginSessionRes, _
 //
 // POST /login
 func (ServerHandler) PushLoginSession(ctx context.Context) (r api.PushLoginSessionRes, _ error) {
-	x, err := commonLogin(ctx)
+	x, err := GenerateJWToken(ctx)
 	return x.(api.PushLoginSessionRes), err
 }

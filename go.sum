@@ -113,6 +113,8 @@ github.com/tknie/flynn v0.0.0-20230628202445-96fe866ca0ca h1:fU+pHVjoUC1i+l6f1bt
 github.com/tknie/flynn v0.0.0-20230628202445-96fe866ca0ca/go.mod h1:DVkcqi7dhBHl+KrMfNkavNX5J3BNjpBOL3P0llxGHp0=
 github.com/tknie/flynn v0.0.0-20230717083719-6cb68690e237 h1:9IyIKWJsBtZp+EwsE0gm4vU8Oprj2UVPbfOHqnSy7Z0=
 github.com/tknie/flynn v0.0.0-20230717083719-6cb68690e237/go.mod h1:DVkcqi7dhBHl+KrMfNkavNX5J3BNjpBOL3P0llxGHp0=
+github.com/tknie/flynn v0.0.0-20230719103305-ef1186f0ace7 h1:dQQuGKElsN3A7AQ/Kl3irTSBBKY1HCa/cFItnGmaM6w=
+github.com/tknie/flynn v0.0.0-20230719103305-ef1186f0ace7/go.mod h1:DVkcqi7dhBHl+KrMfNkavNX5J3BNjpBOL3P0llxGHp0=
 github.com/tknie/log v0.0.0-20230429175804-66867a7f7c54 h1:kpo9mbYUsygdb+wOojm5jmtmxdZAKwYgACs045oEC00=
 github.com/tknie/log v0.0.0-20230429175804-66867a7f7c54/go.mod h1:W67unT0xxqTLc9tyxpdV1lED/JuD0veFgxT/astdxt4=
 github.com/tknie/log v0.0.0-20230709123301-620bb99e7bd6 h1:dnEHO+xSu0R+PZUIrLfhQofsQaxEmRyDOgzbyC5+7iM=

@@ -248,12 +248,6 @@ func SendAudit(started time.Time, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Log.Debugf("Send auditing plugins request: %v %v %v", r.Method, r.URL, server.RemoteHost(r))
-	if log.IsDebugLevel() {
-		log.Log.Debugf("HTTP HEADERS")
-		for n, v := range r.Header {
-			log.Log.Debugf("HTTP HEADER: %s=%s", n, v)
-		}
-	}
 	user := "Unknown"
 	uuid := ""
 	reqToken := r.Header.Get("Authorization")

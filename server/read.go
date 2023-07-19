@@ -16,6 +16,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-faster/jx"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
@@ -38,11 +39,19 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, er
 			switch t := r.(type) {
 			case *string:
 				log.Log.Debugf("String %s", *t)
-				d[s] = *t
+				raw := jx.Raw([]byte("\"" + *t + "\""))
+				d[s] = raw
+			case string:
+				log.Log.Debugf("String %s", t)
+				raw := jx.Raw([]byte("\"" + t + "\""))
+				d[s] = raw
 			case *time.Time:
-				d[s] = (*t).String()
+				d[s] = jx.Raw([]byte("\"" + (*t).String() + "\""))
 			default:
-				d[s] = fmt.Sprintf("%v", r)
+				if r != nil {
+					// fmt.Printf("---> %v %T\n", r, t)
+					d[s] = jx.Raw(fmt.Sprintf("%v", r))
+				}
 			}
 		}
 		data = append(data, d)
