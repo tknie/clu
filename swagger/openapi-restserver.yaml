@@ -2085,6 +2085,17 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Records:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
       responses:
         '200':
           description: Successful response, insert the field information.
@@ -2115,6 +2126,7 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
+      x-codegen-request-body-name: data
   /rest/view/{table}/{fields}/{search}:
     get:
       tags:
