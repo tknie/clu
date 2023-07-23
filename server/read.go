@@ -38,7 +38,7 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, er
 			log.Log.Debugf("%d. row is of type %T", i, r)
 			switch t := r.(type) {
 			case *string:
-				log.Log.Debugf("String %s", *t)
+				log.Log.Debugf("String Pointer %s", *t)
 				raw := jx.Raw([]byte("\"" + *t + "\""))
 				d[s] = raw
 			case string:
@@ -49,7 +49,7 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, er
 				d[s] = jx.Raw([]byte("\"" + (*t).String() + "\""))
 			default:
 				if r != nil {
-					// fmt.Printf("---> %v %T\n", r, t)
+					log.Log.Debugf("using default ---> %v %T\n", r, t)
 					d[s] = jx.Raw(fmt.Sprintf("%v", r))
 				}
 			}

@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/go-faster/jx"
 	"github.com/tknie/clu"
@@ -18,10 +19,8 @@ import (
 //
 // POST /rest/view/{table}
 func (ServerHandler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, params api.InsertRecordParams) (r api.InsertRecordRes, _ error) {
-	fmt.Println("POSSSSTT", params.Table)
-
 	session := ctx.(*clu.Context)
-	log.Log.Debugf("Search records for fields %s -> %s", session.User, params.Table)
+	log.Log.Debugf("Insert records for fields %s -> %s", session.User, params.Table)
 	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
 		return &api.InsertRecordForbidden{}, nil
 	}
@@ -143,6 +142,71 @@ func (ServerHandler) DeleteRecordsSearched(ctx context.Context, params api.Delet
 	}
 	fmt.Println("DR", dr)
 	resp := api.Response{NrRecords: api.NewOptInt(int(dr))}
+	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	return respH, nil
+}
+
+// UpdateRecordsByFields implements updateRecordsByFields operation.
+//
+// Update a record dependent on field(s) of a specific table.
+//
+// PUT /rest/view/{table}/{search}
+func (ServerHandler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecordsByFieldsReq,
+	params api.UpdateRecordsByFieldsParams) (r api.UpdateRecordsByFieldsRes, _ error) {
+	session := ctx.(*clu.Context)
+	log.Log.Debugf("Update records for fields %s -> %s", session.User, params.Table)
+	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
+		return &api.UpdateRecordsByFieldsForbidden{}, nil
+	}
+	log.Log.Debugf("SQL update %s", params.Table)
+	d, err := ConnectTable(session, params.Table)
+	if err != nil {
+		log.Log.Errorf("Error update table %s:%v", params.Table, err)
+		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+	}
+	defer CloseTable(d)
+
+	records := make([]any, 0)
+	nameMap := make(map[string]bool)
+	for _, r := range req.Value.Records {
+		m := make(map[string]any)
+		for n, v := range r {
+			v, err := parseJx(v)
+			if err != nil {
+				log.Log.Debugf("Error %s: %v", n, err)
+				return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+			}
+			log.Log.Debugf("[%s]=%v", n, v)
+			m[n] = v
+			nameMap[n] = true
+		}
+		records = append(records, m)
+	}
+	fields := make([]string, 0)
+	for n := range nameMap {
+		fields = append(fields, n)
+	}
+	list := make([][]any, 0)
+	for _, r := range records {
+		subList := make([]any, 0)
+		m := r.(map[string]any)
+		for _, n := range fields {
+			subList = append(subList, m[n])
+		}
+		list = append(list, subList)
+	}
+	updateFields := strings.Split(params.Search, ",")
+	input := &common.Entries{Fields: fields,
+		Update: updateFields,
+		Values: list}
+	fmt.Printf("%#v ->>>\n", input)
+	uNr, err := d.Update(params.Table, input)
+	if err != nil {
+		log.Log.Debugf("Error: %v", err)
+		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+	}
+	fmt.Println("Update:", records)
+	resp := api.Response{NrRecords: api.NewOptInt(int(uNr))}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	return respH, nil
 }

@@ -74,14 +74,14 @@ func LoadConfig(watch bool, loaderInterface services.ConfigInterface) error {
 }
 
 func adaptLogInstances() {
-	if log.Log != log.Log {
-		// log.Log = log.Log
-		log.SetDebugLevel(log.IsDebugLevel())
-		log.Log.Debugf("DEBUG: Testing log ....")
-		log.Log.Infof("INFO:  Testing log ....")
-		log.Log.Errorf("ERROR: Testing log ....")
-		log.Log.Debugf("DEBUG: Testing adatype log ....")
-	}
+	// if log.Log != log.Log {
+	// 	// log.Log = log.Log
+	// 	log.SetDebugLevel(log.IsDebugLevel())
+	// 	log.Log.Debugf("DEBUG: Testing log ....")
+	// 	log.Log.Infof("INFO:  Testing log ....")
+	// 	log.Log.Errorf("ERROR: Testing log ....")
+	// 	log.Log.Debugf("DEBUG: Testing adatype log ....")
+	// }
 }
 
 // InitConfig load xml configuration file

@@ -104,16 +104,13 @@ func InitPlugins() {
 	if !ok {
 		pluginDir = server.Viewer.Server.Plugins
 	}
+	pluginDir = os.ExpandEnv(pluginDir)
 	if pluginDir == "" {
 		return
 	}
-	pluginDir = os.ExpandEnv(pluginDir)
 	pluginEnabled, filterPlugins := os.LookupEnv("METAVERS_PLUGENABLED")
 	var plugList []string
 	if filterPlugins {
-		if pluginEnabled == "" {
-			return
-		}
 		plugList = strings.Split(pluginEnabled, ",")
 	}
 	services.ServerMessage("Searching plugins in %s", pluginDir)
@@ -129,49 +126,24 @@ func InitPlugins() {
 			symLanguage, err := plug.Lookup("Loader")
 			if err != nil {
 				services.ServerMessage("Error opening plugin: %v", err)
-			} else {
-				if loader, ok := symLanguage.(Loader); ok {
-					found := !filterPlugins
-					if !found && plugList != nil {
-						n := loader.Name()
-						for _, v := range plugList {
-							if n == v {
-								found = true
-								break
-							}
+				return nil
+			}
+			if loader, ok := symLanguage.(Loader); ok {
+				found := !filterPlugins
+				if !found && plugList != nil {
+					n := loader.Name()
+					for _, v := range plugList {
+						if n == v {
+							found = true
+							break
 						}
 					}
-					if found {
-						pt := loader.Types()
-						for _, t := range pt {
-							switch t {
-							case int(NoPlugin):
-							case int(AuditPlugin):
-								symAudit, err := plug.Lookup("Audit")
-								if err != nil {
-									services.ServerMessage("Error openeing Audit plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
-								} else {
-									services.ServerMessage("Add Audit plugin %s Version: %s", loader.Name(), loader.Version())
-									audit := symAudit.(Audit)
-									auditPlugins[info.Name()] = &AuditLoader{loader, audit}
-								}
-							case int(AdabasPlugin):
-								symAdabas, err := plug.Lookup("Adabas")
-								if err != nil {
-									services.ServerMessage("Error openeing Adabas plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
-								} else {
-									services.ServerMessage("Add Adabas plugin %s Version: %s", loader.Name(), loader.Version())
-									adaSym := symAdabas.(Adabas)
-									adabasPlugins[info.Name()] = &AdabasLoader{loader, adaSym}
-								}
-							default:
-								services.ServerMessage("Error opening plugin, unknown type: %v", t)
-							}
-						}
-					}
-				} else {
-					services.ServerMessage("Error opening plugin, error loading methods")
 				}
+				if found {
+					load(loader, info, plug)
+				}
+			} else {
+				services.ServerMessage("Error opening plugin, error loading methods")
 			}
 		}
 		return nil
@@ -188,6 +160,35 @@ func InitPlugins() {
 	signalNotify(interrupt)
 	go handleInterrupt(interrupt)
 
+}
+
+func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
+	pt := loader.Types()
+	for _, t := range pt {
+		switch t {
+		case int(NoPlugin):
+		case int(AuditPlugin):
+			symAudit, err := plug.Lookup("Audit")
+			if err != nil {
+				services.ServerMessage("Error openeing Audit plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
+			} else {
+				services.ServerMessage("Add Audit plugin %s Version: %s", loader.Name(), loader.Version())
+				audit := symAudit.(Audit)
+				auditPlugins[info.Name()] = &AuditLoader{loader, audit}
+			}
+		case int(AdabasPlugin):
+			symAdabas, err := plug.Lookup("Adabas")
+			if err != nil {
+				services.ServerMessage("Error openeing Adabas plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
+			} else {
+				services.ServerMessage("Add Adabas plugin %s Version: %s", loader.Name(), loader.Version())
+				adaSym := symAdabas.(Adabas)
+				adabasPlugins[info.Name()] = &AdabasLoader{loader, adaSym}
+			}
+		default:
+			services.ServerMessage("Error opening plugin, unknown type: %v", t)
+		}
+	}
 }
 
 // ShutdownPlugins shutdown receiving message in plugins
