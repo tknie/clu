@@ -162,6 +162,7 @@ func InitPlugins() {
 
 }
 
+// load loading the plugin
 func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 	pt := loader.Types()
 	for _, t := range pt {
@@ -295,7 +296,6 @@ func SendAdabasPlugins(used time.Duration, ada interface{}) {
 	if disablePlugin {
 		return
 	}
-	//	log.Log.Debugf("Send Adabas plugins request: %s", string(ada.ID.AdaID.User[:]))
 	for _, x := range adabasPlugins {
 		x.Adabas.SendAdabas(used, ada)
 	}

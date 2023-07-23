@@ -12,11 +12,18 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"flag"
+	"io"
+	"net/http"
 	"os"
+
+	ht "github.com/ogen-go/ogen/http"
 
 	"github.com/google/uuid"
 	"github.com/ogen-go/ogen/middleware"
+	"github.com/ogen-go/ogen/ogenerrors"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/clu/plugins"
@@ -78,7 +85,23 @@ func main() {
 	server.AdaptConfig(os.Getenv(server.DefaultConfigFileEnv))
 
 	services.ServerMessage("Starting server ...")
-	s, err := api.NewServer(server.ServerHandler{}, webserver.SecurityHandler{})
+	s, err := api.NewServer(server.ServerHandler{}, webserver.SecurityHandler{},
+		api.WithNotFound(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = io.WriteString(w, `{"error": "not found"}`)
+		}),
+		api.WithErrorHandler(func(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) {
+			var (
+				code    = http.StatusInternalServerError
+				ogenErr ogenerrors.Error
+			)
+			switch {
+			case errors.Is(err, ht.ErrNotImplemented):
+				code = http.StatusNotImplemented
+			case errors.As(err, &ogenErr):
+				code = ogenErr.Code()
+			}
+			_, _ = io.WriteString(w, http.StatusText(code))
+		}))
 	if err != nil {
 		panic(err)
 	}
