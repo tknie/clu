@@ -8,6 +8,7 @@
 *    http://www.apache.org/licenses/LICENSE-2.0
 *
  */
+
 package server
 
 import (
@@ -21,6 +22,7 @@ import (
 	"github.com/tknie/services/auth"
 )
 
+// ServerHandler server handler to ogen API
 type ServerHandler struct {
 }
 

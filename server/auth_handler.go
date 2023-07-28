@@ -29,6 +29,7 @@ func (ServerHandler) GetLoginSession(ctx context.Context) (r api.GetLoginSession
 	return x.(api.GetLoginSessionRes), err
 }
 
+// GenerateJWToken generate JWT token on context
 func GenerateJWToken(ctx context.Context) (interface{}, error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Generate JWT token")
@@ -40,7 +41,9 @@ func GenerateJWToken(ctx context.Context) (interface{}, error) {
 		}
 		session.Token = token
 	}
-	return &api.AuthorizationToken{Token: api.NewOptString(session.Token)}, nil
+	t := api.AuthorizationToken{Token: api.NewOptString(session.Token)}
+	return &api.AuthorizationTokenHeaders{XToken: api.NewOptString(session.Token),
+		Response: t}, nil
 }
 
 // LoginSession implements loginSession operation.

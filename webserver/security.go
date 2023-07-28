@@ -22,14 +22,16 @@ import (
 	"github.com/tknie/services/auth"
 )
 
+// SecurityHandler security handler
 type SecurityHandler struct {
 }
 
+// HandleBasicAuth handle basic authorisation
 func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName string, t api.BasicAuth) (context.Context, error) {
 	username := strings.ToLower(strings.Trim(t.Username, " "))
 	p, err := auth.BasicAuth(username, t.Password)
 	if err != nil {
-		log.Log.Errorf("Basic auth... %v", err)
+		log.Log.Errorf("Basic auth error... %v", err)
 		return nil, err
 	}
 	log.Log.Infof("Basic auth... done: %s", p.Name())
@@ -38,6 +40,7 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 	return pm, nil
 }
 
+// HandleBearerAuth handler Bearer authentication
 func (sec SecurityHandler) HandleBearerAuth(ctx context.Context, operationName string, t api.BearerAuth) (context.Context, error) {
 	// The header: Authorization: Bearer {base64 string} (or ?access_token={base 64 string} param) has already
 	// been decoded by the runtime as a token
@@ -54,6 +57,7 @@ func (sec SecurityHandler) HandleBearerAuth(ctx context.Context, operationName s
 	return p.(*clu.Context), nil
 }
 
+// HandleTokenCheck handler for Token to authentication
 func (sec SecurityHandler) HandleTokenCheck(ctx context.Context, operationName string, t api.TokenCheck) (context.Context, error) {
 	return &clu.Context{}, nil
 }

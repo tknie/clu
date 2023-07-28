@@ -70,6 +70,7 @@ func (m *myMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	m.Next.ServeHTTP(w, r)
 }
 
+// InitMiddleWare init middleware steps
 func InitMiddleWare(s *api.Server) http.Handler {
 	mainHandler = &myMiddleware{Next: s}
 	corsHandler := cors.New(cors.Options{

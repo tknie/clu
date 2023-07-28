@@ -59,12 +59,15 @@ PUSH http://localhost:8030/rest/view/Albums/ID,Title,published?limit=0&orderby=p
 Feature | Ready-State | Description
 ---------|----------|---------
  Login database | :heavy_check_mark: | Draft
- Query database | :heavy_check_mark: | Draft
- Search database | :heavy_check_mark: | Draft
- Create table database |  | Draft
+ Query record | :heavy_check_mark: | Draft
+ Search record | :heavy_check_mark: | Draft
+ Insert record | :heavy_check_mark: | Draft
+ Delete record | :heavy_check_mark: | Draft
+ Load images out of database | :heavy_check_mark: | Draft
+ Load videos out of database | :heavy_check_mark: | Draft
+ Load binaries out of database | | Draft
+ Insert Large Object (Image, binary or others) |  | Draft
+ Create table |  | Draft
  Insert database |  | Draft
- Update database | | Draft
- Work with large objects (LOB) |  | partial done
- Work with database-specific queries |  | planned
- Enhanced Search topics || planned
- Common search queries (common to SQL or NonSQL databases) |  | planned
+ Work with batch queries |  | planned
+ Complex search queries (common to SQL or NonSQL databases) |  | planned

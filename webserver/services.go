@@ -33,7 +33,10 @@ import (
 	"golang.org/x/net/netutil"
 )
 
+// MaxHeaderSize maximum header size
 var MaxHeaderSize = flagext.ByteSize(1)
+
+// CleanupTimeout cleanup timeout
 var CleanupTimeout = 10 * time.Second
 var mainHandler http.Handler
 var wg = new(sync.WaitGroup)
@@ -49,12 +52,14 @@ func init() {
 
 }
 
+// InitServices init services signal handler
 func InitServices() {
 	signalNotify(interrupt)
 	go handleInterrupt(once)
 
 }
 
+// StartServices start services HTTP and HTTPS
 func StartServices(mainHandler http.Handler) error {
 	startSocket()
 	err := startHTTP()
@@ -71,6 +76,7 @@ func StartServices(mainHandler http.Handler) error {
 	return nil
 }
 
+// startSocket start local socket
 func startSocket() {
 	for _, s := range server.Viewer.Server.Service {
 		if strings.ToLower(s.Type) == "socket" {
@@ -103,6 +109,7 @@ func startSocket() {
 	}
 }
 
+// startHTTP start HTTP service
 func startHTTP() error {
 	for _, s := range server.Viewer.Server.Service {
 		if strings.ToLower(s.Type) == "http" {
@@ -149,6 +156,7 @@ func startHTTP() error {
 	return nil
 }
 
+// startHTTPS start HTTPS service
 func startHTTPS() error {
 	for _, s := range server.Viewer.Server.Service {
 		if strings.ToLower(s.Type) == "https" {
@@ -258,7 +266,7 @@ func startHTTPS() error {
 	return nil
 }
 
-// The TLS configuration before HTTPS server starts.
+// configureTLS The TLS configuration before HTTPS server starts.
 func configureTLS(tlsConfig *tls.Config) {
 	// Make all necessary changes to the TLS configuration here.
 	tlsConfig.Certificates = make([]tls.Certificate, 1)
@@ -282,6 +290,7 @@ func configureTLS(tlsConfig *tls.Config) {
 	}
 }
 
+// Shutdown shutdown
 func Shutdown() error {
 	for _, s := range servers {
 		s.Close()

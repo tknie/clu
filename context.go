@@ -8,6 +8,7 @@
 *    http://www.apache.org/licenses/LICENSE-2.0
 *
  */
+
 package clu
 
 import "time"
@@ -45,7 +46,7 @@ func (sc *Context) UUID() string {
 	return sc.X.UUID
 }
 
-// User interface function
+// UserName user interface function
 func (sc *Context) UserName() string {
 	return sc.User
 }
