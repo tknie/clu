@@ -63,33 +63,6 @@ func (ServerHandler) AddView(ctx context.Context, params api.AddViewParams) (r a
 	return r, ht.ErrNotImplemented
 }
 
-// Browse implements browse operation.
-//
-// Retrieves a list of files in the defined location.
-//
-// GET /rest/file/browse/{location}
-func (ServerHandler) Browse(ctx context.Context, params api.BrowseParams) (r api.BrowseRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// BrowseList implements browseList operation.
-//
-// Retrieves a list of Browseable locations.
-//
-// GET /rest/file/browse
-func (ServerHandler) BrowseList(ctx context.Context) (r api.BrowseListRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// CreateDirectory implements createDirectory operation.
-//
-// Create a new directory.
-//
-// PUT /rest/file/{location}
-func (ServerHandler) CreateDirectory(ctx context.Context, params api.CreateDirectoryParams) (r api.CreateDirectoryRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // DatabaseOperation implements databaseOperation operation.
 //
 // Retrieve the current status of database with the given dbid.
@@ -126,15 +99,6 @@ func (ServerHandler) DeleteDatabase(ctx context.Context, params api.DeleteDataba
 	return r, ht.ErrNotImplemented
 }
 
-// DeleteFileLocation implements deleteFileLocation operation.
-//
-// Delete the file on the given location.
-//
-// DELETE /rest/file/{location}
-func (ServerHandler) DeleteFileLocation(ctx context.Context, params api.DeleteFileLocationParams) (r api.DeleteFileLocationRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // DeleteJobResult implements deleteJobResult operation.
 //
 // Delete a specific job result.
@@ -168,15 +132,6 @@ func (ServerHandler) DeleteView(ctx context.Context, params api.DeleteViewParams
 //
 // DELETE /admin/database/{table}/connection
 func (ServerHandler) DisconnectTCP(ctx context.Context, params api.DisconnectTCPParams) (r api.DisconnectTCPRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DownloadFile implements downloadFile operation.
-//
-// Download a file out of file location.
-//
-// GET /rest/file/{location}
-func (ServerHandler) DownloadFile(ctx context.Context, params api.DownloadFileParams) (r api.DownloadFileRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -358,24 +313,6 @@ func (ServerHandler) PutDatabaseResource(ctx context.Context, params api.PutData
 //
 // DELETE /admin/database/{table}/permission
 func (ServerHandler) RemovePermission(ctx context.Context, params api.RemovePermissionParams) (r api.RemovePermissionRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// RemoveSessionCompat implements removeSessionCompat operation.
-//
-// Remove the session.
-//
-// GET /logoff
-func (ServerHandler) RemoveSessionCompat(ctx context.Context) (r api.RemoveSessionCompatRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// SearchTable implements searchTable operation.
-//
-// Retrieves all fields of an file.
-//
-// GET /rest/tables/{table}/{search}
-func (ServerHandler) SearchTable(ctx context.Context, params api.SearchTableParams) (r api.SearchTableRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

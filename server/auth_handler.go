@@ -17,6 +17,7 @@ import (
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/log"
+	"github.com/tknie/services/auth"
 )
 
 // GetLoginSession implements getLoginSession operation.
@@ -64,4 +65,16 @@ func (ServerHandler) LoginSession(ctx context.Context) (r api.LoginSessionRes, _
 func (ServerHandler) PushLoginSession(ctx context.Context) (r api.PushLoginSessionRes, _ error) {
 	x, err := GenerateJWToken(ctx)
 	return x.(api.PushLoginSessionRes), err
+}
+
+// RemoveSessionCompat implements removeSessionCompat operation.
+//
+// Remove the session.
+//
+// GET /logoff
+func (ServerHandler) RemoveSessionCompat(ctx context.Context) (r api.RemoveSessionCompatRes, _ error) {
+	session := ctx.(*clu.Context)
+
+	auth.InvalidateUUID(session.Token)
+	return r, nil
 }

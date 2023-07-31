@@ -16,6 +16,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"runtime"
 
 	"github.com/google/uuid"
 	"github.com/ogen-go/ogen/middleware"
@@ -68,6 +69,9 @@ func main() {
 		return m
 	}
 
+	services.ServerMessage("Starting API server version %s", services.BuildVersion)
+	services.ServerMessage("Build date %s", services.BuildDate)
+	services.ServerMessage("Go build version %s", runtime.Version())
 	webserver.InitServices()
 
 	// Load XML configuration
@@ -79,7 +83,6 @@ func main() {
 
 	server.AdaptConfig(os.Getenv(server.DefaultConfigFileEnv))
 
-	services.ServerMessage("Starting server ...")
 	s, err := api.NewServer(server.ServerHandler{}, webserver.SecurityHandler{},
 		api.WithNotFound(func(w http.ResponseWriter, r *http.Request) {
 			_, _ = io.WriteString(w, `{"error_message": "not found"}`)

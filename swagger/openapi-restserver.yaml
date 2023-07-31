@@ -1804,14 +1804,14 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - admin
-  /rest/file/browse/{location}:
+  /rest/file/browse/{path}:
     get:
       tags:
         - Browser
       description: Retrieves a list of files in the defined location.
-      operationId: browse
+      operationId: browseLocation
       parameters:
-        - name: location
+        - name: path
           in: path
           description: Identifier of the file location
           required: true
@@ -1825,7 +1825,10 @@ paths:
       responses:
         '200':
           description: Successful response, with list of known databases.
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectoryFiles'
         '400':
           description: Environment evaluation error
           content:
@@ -2012,7 +2015,7 @@ paths:
     get:
       tags:
         - Queries
-      description: Retrieves a list of available maps
+      description: Retrieves a list of available views
       operationId: getMaps
       responses:
         '200':
@@ -2277,7 +2280,7 @@ paths:
     get:
       tags:
         - Queries
-      description: Query a record with a given fields
+      description: Query a record with a given SQL query
       operationId: searchRecordsFields
       parameters:
         - name: table
@@ -2288,9 +2291,7 @@ paths:
             type: string
         - name: search
           in: path
-          description: >-
-            Specific a comma separated list of fields to be part of the result
-            record
+          description: Specific SQL query string
           required: true
           schema:
             type: string
@@ -2649,7 +2650,7 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
-  /rest/tables/{table}/{search}:
+  /rest/tables/{table}/{fields}/{search}:
     get:
       tags:
         - Queries
@@ -2659,6 +2660,12 @@ paths:
         - name: table
           in: path
           description: SQL table
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: path
+          description: fields to search for
           required: true
           schema:
             type: string
@@ -3319,6 +3326,33 @@ components:
           items:
             $ref: '#/components/schemas/DatabaseInformation'
       description: Database entry in database list
+    DirectoryFiles:
+      type: object
+      properties:
+        Location:
+          type: string
+        Path:
+          type: string
+        Files:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        system:
+          type: string
+    File:
+      type: object
+      properties:
+        Name:
+          type: string
+        Type:
+          type: string
+        Modified:
+          type: string
+          format: date-time
+        Size:
+          type: integer
+          format: int64
+          minimum: 0
     Directories:
       type: object
       properties:

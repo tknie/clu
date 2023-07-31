@@ -15,6 +15,7 @@ import (
 	"context"
 	"strings"
 
+	ht "github.com/ogen-go/ogen/http"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/flynn/common"
@@ -138,4 +139,13 @@ func (ServerHandler) NewError(ctx context.Context, err error) (r *api.ErrorStatu
 	r = new(api.ErrorStatusCode)
 	log.Log.Debugf("Server handler error: %v/%s -> %s", err, session.User, r.StatusCode)
 	return r
+}
+
+// SearchTable implements searchTable operation.
+//
+// Retrieves all fields of an file.
+//
+// GET /rest/tables/{table}/{fields}/{search}
+func (ServerHandler) SearchTable(ctx context.Context, params api.SearchTableParams) (r api.SearchTableRes, _ error) {
+	return r, ht.ErrNotImplemented
 }
