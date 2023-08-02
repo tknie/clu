@@ -23,7 +23,7 @@ import (
 // Retrieve the list of users who are allowed to access data.
 //
 // GET /admin/access/{role}
-func (ServerHandler) Access(ctx context.Context, params api.AccessParams) (r api.AccessRes, _ error) {
+func (Handler) Access(ctx context.Context, params api.AccessParams) (r api.AccessRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -32,7 +32,7 @@ func (ServerHandler) Access(ctx context.Context, params api.AccessParams) (r api
 // Add RBAC role.
 //
 // PUT /admin/database/{table}/permission
-func (ServerHandler) AdaptPermission(ctx context.Context, params api.AdaptPermissionParams) (r api.AdaptPermissionRes, _ error) {
+func (Handler) AdaptPermission(ctx context.Context, params api.AdaptPermissionParams) (r api.AdaptPermissionRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -41,7 +41,7 @@ func (ServerHandler) AdaptPermission(ctx context.Context, params api.AdaptPermis
 // Insert user in the list of users who are allowed to access data.
 //
 // POST /admin/access/{role}
-func (ServerHandler) AddAccess(ctx context.Context, params api.AddAccessParams) (r api.AddAccessRes, _ error) {
+func (Handler) AddAccess(ctx context.Context, params api.AddAccessParams) (r api.AddAccessRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -50,7 +50,7 @@ func (ServerHandler) AddAccess(ctx context.Context, params api.AddAccessParams) 
 // Add permission role.
 //
 // PUT /admin/database/{table}/permission/{resource}/{name}
-func (ServerHandler) AddRBACResource(ctx context.Context, params api.AddRBACResourceParams) (r api.AddRBACResourceRes, _ error) {
+func (Handler) AddRBACResource(ctx context.Context, params api.AddRBACResourceParams) (r api.AddRBACResourceRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -59,7 +59,7 @@ func (ServerHandler) AddRBACResource(ctx context.Context, params api.AddRBACReso
 // Add configuration in View repositories.
 //
 // POST /admin/config/views
-func (ServerHandler) AddView(ctx context.Context, params api.AddViewParams) (r api.AddViewRes, _ error) {
+func (Handler) AddView(ctx context.Context, params api.AddViewParams) (r api.AddViewRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -68,7 +68,7 @@ func (ServerHandler) AddView(ctx context.Context, params api.AddViewParams) (r a
 // Retrieve the current status of database with the given dbid.
 //
 // GET /admin/database/{table_operation}
-func (ServerHandler) DatabaseOperation(ctx context.Context, params api.DatabaseOperationParams) (r api.DatabaseOperationRes, _ error) {
+func (Handler) DatabaseOperation(ctx context.Context, params api.DatabaseOperationParams) (r api.DatabaseOperationRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -77,7 +77,7 @@ func (ServerHandler) DatabaseOperation(ctx context.Context, params api.DatabaseO
 // Initiate operations on the given dbid.
 //
 // POST /admin/database/{table_operation}
-func (ServerHandler) DatabasePostOperations(ctx context.Context, params api.DatabasePostOperationsParams) (r api.DatabasePostOperationsRes, _ error) {
+func (Handler) DatabasePostOperations(ctx context.Context, params api.DatabasePostOperationsParams) (r api.DatabasePostOperationsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -86,7 +86,7 @@ func (ServerHandler) DatabasePostOperations(ctx context.Context, params api.Data
 // Delete user in the list of users who are allowed to access data.
 //
 // DELETE /admin/access/{role}
-func (ServerHandler) DelAccess(ctx context.Context, params api.DelAccessParams) (r api.DelAccessRes, _ error) {
+func (Handler) DelAccess(ctx context.Context, params api.DelAccessParams) (r api.DelAccessRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -95,7 +95,7 @@ func (ServerHandler) DelAccess(ctx context.Context, params api.DelAccessParams) 
 // Delete the database.
 //
 // DELETE /admin/database/{table_operation}
-func (ServerHandler) DeleteDatabase(ctx context.Context, params api.DeleteDatabaseParams) (r api.DeleteDatabaseRes, _ error) {
+func (Handler) DeleteDatabase(ctx context.Context, params api.DeleteDatabaseParams) (r api.DeleteDatabaseRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -104,7 +104,7 @@ func (ServerHandler) DeleteDatabase(ctx context.Context, params api.DeleteDataba
 // Delete a specific job result.
 //
 // DELETE /tasks/{jobName}/result/{jobId}
-func (ServerHandler) DeleteJobResult(ctx context.Context, params api.DeleteJobResultParams) (r api.DeleteJobResultRes, _ error) {
+func (Handler) DeleteJobResult(ctx context.Context, params api.DeleteJobResultParams) (r api.DeleteJobResultRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -113,7 +113,7 @@ func (ServerHandler) DeleteJobResult(ctx context.Context, params api.DeleteJobRe
 // Delete RBAC role.
 //
 // DELETE /admin/database/{table}/permission/{resource}/{name}
-func (ServerHandler) DeleteRBACResource(ctx context.Context, params api.DeleteRBACResourceParams) (r api.DeleteRBACResourceRes, _ error) {
+func (Handler) DeleteRBACResource(ctx context.Context, params api.DeleteRBACResourceParams) (r api.DeleteRBACResourceRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -122,7 +122,7 @@ func (ServerHandler) DeleteRBACResource(ctx context.Context, params api.DeleteRB
 // Delete entry in configuration.
 //
 // DELETE /admin/config/views
-func (ServerHandler) DeleteView(ctx context.Context, params api.DeleteViewParams) (r api.DeleteViewRes, _ error) {
+func (Handler) DeleteView(ctx context.Context, params api.DeleteViewParams) (r api.DeleteViewRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -131,7 +131,7 @@ func (ServerHandler) DeleteView(ctx context.Context, params api.DeleteViewParams
 // Disconnect ADATCP connection in the database with the given dbid.
 //
 // DELETE /admin/database/{table}/connection
-func (ServerHandler) DisconnectTCP(ctx context.Context, params api.DisconnectTCPParams) (r api.DisconnectTCPRes, _ error) {
+func (Handler) DisconnectTCP(ctx context.Context, params api.DisconnectTCPParams) (r api.DisconnectTCPRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -140,7 +140,7 @@ func (ServerHandler) DisconnectTCP(ctx context.Context, params api.DisconnectTCP
 // Get configuration.
 //
 // GET /admin/config
-func (ServerHandler) GetConfig(ctx context.Context) (r api.GetConfigRes, _ error) {
+func (Handler) GetConfig(ctx context.Context) (r api.GetConfigRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -149,7 +149,7 @@ func (ServerHandler) GetConfig(ctx context.Context) (r api.GetConfigRes, _ error
 // Retrieve the current TCP connection.
 //
 // GET /admin/database/{table}/connection
-func (ServerHandler) GetConnections(ctx context.Context, params api.GetConnectionsParams) (r api.GetConnectionsRes, _ error) {
+func (Handler) GetConnections(ctx context.Context, params api.GetConnectionsParams) (r api.GetConnectionsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -158,7 +158,7 @@ func (ServerHandler) GetConnections(ctx context.Context, params api.GetConnectio
 // Retrieve a list of user queue entries.
 //
 // GET /admin/database/{table}/sessions
-func (ServerHandler) GetDatabaseSessions(ctx context.Context, params api.GetDatabaseSessionsParams) (r api.GetDatabaseSessionsRes, _ error) {
+func (Handler) GetDatabaseSessions(ctx context.Context, params api.GetDatabaseSessionsParams) (r api.GetDatabaseSessionsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -167,7 +167,7 @@ func (ServerHandler) GetDatabaseSessions(ctx context.Context, params api.GetData
 // Retrieve SQL statistics.
 //
 // GET /admin/database/{table}/stats
-func (ServerHandler) GetDatabaseStats(ctx context.Context, params api.GetDatabaseStatsParams) (r api.GetDatabaseStatsRes, _ error) {
+func (Handler) GetDatabaseStats(ctx context.Context, params api.GetDatabaseStatsParams) (r api.GetDatabaseStatsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -176,7 +176,7 @@ func (ServerHandler) GetDatabaseStats(ctx context.Context, params api.GetDatabas
 // Retrieves a list of databases known by Interface.
 //
 // GET /admin/database
-func (ServerHandler) GetDatabases(ctx context.Context) (r api.GetDatabasesRes, _ error) {
+func (Handler) GetDatabases(ctx context.Context) (r api.GetDatabasesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -185,7 +185,7 @@ func (ServerHandler) GetDatabases(ctx context.Context) (r api.GetDatabasesRes, _
 // Retrieves the list of environments.
 //
 // GET /version/env
-func (ServerHandler) GetEnvironments(ctx context.Context) (r api.GetEnvironmentsRes, _ error) {
+func (Handler) GetEnvironments(ctx context.Context) (r api.GetEnvironmentsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -194,7 +194,7 @@ func (ServerHandler) GetEnvironments(ctx context.Context) (r api.GetEnvironments
 // Retrieves all fields of an file.
 //
 // GET /rest/tables/{table}/fields
-func (ServerHandler) GetFields(ctx context.Context, params api.GetFieldsParams) (r api.GetFieldsRes, _ error) {
+func (Handler) GetFields(ctx context.Context, params api.GetFieldsParams) (r api.GetFieldsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -203,7 +203,7 @@ func (ServerHandler) GetFields(ctx context.Context, params api.GetFieldsParams) 
 // Retrieves a specific job result.
 //
 // GET /tasks/results
-func (ServerHandler) GetJobExecutionResult(ctx context.Context, params api.GetJobExecutionResultParams) (r api.GetJobExecutionResultRes, _ error) {
+func (Handler) GetJobExecutionResult(ctx context.Context, params api.GetJobExecutionResultParams) (r api.GetJobExecutionResultRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -212,7 +212,7 @@ func (ServerHandler) GetJobExecutionResult(ctx context.Context, params api.GetJo
 // Retrieves a full job definition.
 //
 // GET /tasks/{jobName}/full
-func (ServerHandler) GetJobFullInfo(ctx context.Context, params api.GetJobFullInfoParams) (r api.GetJobFullInfoRes, _ error) {
+func (Handler) GetJobFullInfo(ctx context.Context, params api.GetJobFullInfoParams) (r api.GetJobFullInfoRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -221,7 +221,7 @@ func (ServerHandler) GetJobFullInfo(ctx context.Context, params api.GetJobFullIn
 // Retrieves a list of jobs known by the Interface.
 //
 // GET /tasks
-func (ServerHandler) GetJobs(ctx context.Context, params api.GetJobsParams) (r api.GetJobsRes, _ error) {
+func (Handler) GetJobs(ctx context.Context, params api.GetJobsParams) (r api.GetJobsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -230,7 +230,7 @@ func (ServerHandler) GetJobs(ctx context.Context, params api.GetJobsParams) (r a
 // Read job configuration section.
 //
 // GET /admin/config/jobs
-func (ServerHandler) GetJobsConfig(ctx context.Context) (r api.GetJobsConfigRes, _ error) {
+func (Handler) GetJobsConfig(ctx context.Context) (r api.GetJobsConfigRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -239,7 +239,7 @@ func (ServerHandler) GetJobsConfig(ctx context.Context) (r api.GetJobsConfigRes,
 // Retrieves metadata of a Map definition.
 //
 // GET /rest/metadata/view/{table}
-func (ServerHandler) GetMapMetadata(ctx context.Context, params api.GetMapMetadataParams) (r api.GetMapMetadataRes, _ error) {
+func (Handler) GetMapMetadata(ctx context.Context, params api.GetMapMetadataParams) (r api.GetMapMetadataRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -248,7 +248,7 @@ func (ServerHandler) GetMapMetadata(ctx context.Context, params api.GetMapMetada
 // List RBAC assignments permission.
 //
 // GET /admin/database/{table}/permission
-func (ServerHandler) GetPermission(ctx context.Context, params api.GetPermissionParams) (r api.GetPermissionRes, _ error) {
+func (Handler) GetPermission(ctx context.Context, params api.GetPermissionParams) (r api.GetPermissionRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -257,7 +257,7 @@ func (ServerHandler) GetPermission(ctx context.Context, params api.GetPermission
 // Defines the current views.
 //
 // GET /admin/config/views
-func (ServerHandler) GetViews(ctx context.Context) (r api.GetViewsRes, _ error) {
+func (Handler) GetViews(ctx context.Context) (r api.GetViewsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -266,7 +266,7 @@ func (ServerHandler) GetViews(ctx context.Context) (r api.GetViewsRes, _ error) 
 // Store send records into Map definition.
 //
 // POST /rest/view
-func (ServerHandler) InsertMapFileRecords(ctx context.Context, req api.OptInsertMapFileRecordsReq) (r api.InsertMapFileRecordsRes, _ error) {
+func (Handler) InsertMapFileRecords(ctx context.Context, req api.OptInsertMapFileRecordsReq) (r api.InsertMapFileRecordsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -275,7 +275,7 @@ func (ServerHandler) InsertMapFileRecords(ctx context.Context, req api.OptInsert
 // Add RBAC role.
 //
 // GET /admin/database/{table}/permission/{resource}
-func (ServerHandler) ListRBACResource(ctx context.Context, params api.ListRBACResourceParams) (r api.ListRBACResourceRes, _ error) {
+func (Handler) ListRBACResource(ctx context.Context, params api.ListRBACResourceParams) (r api.ListRBACResourceRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -285,7 +285,7 @@ func (ServerHandler) ListRBACResource(ctx context.Context, params api.ListRBACRe
 // be used.
 //
 // POST /admin/database
-func (ServerHandler) PostDatabase(ctx context.Context, req *api.Database) (r api.PostDatabaseRes, _ error) {
+func (Handler) PostDatabase(ctx context.Context, req *api.Database) (r api.PostDatabaseRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -294,7 +294,7 @@ func (ServerHandler) PostDatabase(ctx context.Context, req *api.Database) (r api
 // Create a new Job database.
 //
 // POST /tasks
-func (ServerHandler) PostJob(ctx context.Context, req api.PostJobReq) (r api.PostJobRes, _ error) {
+func (Handler) PostJob(ctx context.Context, req api.PostJobReq) (r api.PostJobRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -303,7 +303,7 @@ func (ServerHandler) PostJob(ctx context.Context, req api.PostJobReq) (r api.Pos
 // Change resource of the database.
 //
 // PUT /admin/database/{table_operation}
-func (ServerHandler) PutDatabaseResource(ctx context.Context, params api.PutDatabaseResourceParams) (r api.PutDatabaseResourceRes, _ error) {
+func (Handler) PutDatabaseResource(ctx context.Context, params api.PutDatabaseResourceParams) (r api.PutDatabaseResourceRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -312,7 +312,7 @@ func (ServerHandler) PutDatabaseResource(ctx context.Context, params api.PutData
 // Add RBAC role.
 //
 // DELETE /admin/database/{table}/permission
-func (ServerHandler) RemovePermission(ctx context.Context, params api.RemovePermissionParams) (r api.RemovePermissionRes, _ error) {
+func (Handler) RemovePermission(ctx context.Context, params api.RemovePermissionParams) (r api.RemovePermissionRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -321,7 +321,7 @@ func (ServerHandler) RemovePermission(ctx context.Context, params api.RemovePerm
 // Store configuration.
 //
 // PUT /admin/config
-func (ServerHandler) SetConfig(ctx context.Context, req api.SetConfigReq) (r api.SetConfigRes, _ error) {
+func (Handler) SetConfig(ctx context.Context, req api.SetConfigReq) (r api.SetConfigRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -330,7 +330,7 @@ func (ServerHandler) SetConfig(ctx context.Context, req api.SetConfigReq) (r api
 // Set the ADADATADIR.
 //
 // PUT /admin/config/jobs
-func (ServerHandler) SetJobsConfig(ctx context.Context, req api.OptJobStore) (r api.SetJobsConfigRes, _ error) {
+func (Handler) SetJobsConfig(ctx context.Context, req api.OptJobStore) (r api.SetJobsConfigRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -339,7 +339,7 @@ func (ServerHandler) SetJobsConfig(ctx context.Context, req api.OptJobStore) (r 
 // Init shutdown procedure.
 //
 // PUT /shutdown/{hash}
-func (ServerHandler) ShutdownServer(ctx context.Context, params api.ShutdownServerParams) (r api.ShutdownServerRes, _ error) {
+func (Handler) ShutdownServer(ctx context.Context, params api.ShutdownServerParams) (r api.ShutdownServerRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -348,7 +348,7 @@ func (ServerHandler) ShutdownServer(ctx context.Context, params api.ShutdownServ
 // Store configuration.
 //
 // POST /admin/config
-func (ServerHandler) StoreConfig(ctx context.Context) (r api.StoreConfigRes, _ error) {
+func (Handler) StoreConfig(ctx context.Context) (r api.StoreConfigRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -357,7 +357,7 @@ func (ServerHandler) StoreConfig(ctx context.Context) (r api.StoreConfigRes, _ e
 // Set a lob at a specific ISN of an field in a Map.
 //
 // PUT /binary/{table}/{field}/{search}
-func (ServerHandler) UpdateLobByMap(ctx context.Context, req api.UpdateLobByMapReq, params api.UpdateLobByMapParams) (r api.UpdateLobByMapRes, _ error) {
+func (Handler) UpdateLobByMap(ctx context.Context, req api.UpdateLobByMapReq, params api.UpdateLobByMapParams) (r api.UpdateLobByMapRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -366,6 +366,6 @@ func (ServerHandler) UpdateLobByMap(ctx context.Context, req api.UpdateLobByMapR
 // Upload a new file to the given location.
 //
 // POST /rest/file/{location}
-func (ServerHandler) UploadFile(ctx context.Context, req *api.UploadFileReq, params api.UploadFileParams) (r api.UploadFileRes, _ error) {
+func (Handler) UploadFile(ctx context.Context, req *api.UploadFileReq, params api.UploadFileParams) (r api.UploadFileRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

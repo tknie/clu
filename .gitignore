@@ -6,7 +6,6 @@ vendor/
 tmp_gopath~/
 test/
 tmp/
-api/
 
 mem.pprof
 

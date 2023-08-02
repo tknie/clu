@@ -25,7 +25,7 @@ import (
 // Retrieves the current version.
 //
 // GET /version
-func (ServerHandler) GetVersion(ctx context.Context) (r api.GetVersionRes, _ error) {
+func (Handler) GetVersion(ctx context.Context) (r api.GetVersionRes, _ error) {
 	r = &api.Versions{Product: api.NewOptString("REST-API"),
 		Version: api.NewOptString(services.BuildVersion)}
 	return r, nil
@@ -36,7 +36,7 @@ func (ServerHandler) GetVersion(ctx context.Context) (r api.GetVersionRes, _ err
 // Retrieves a list of available maps.
 //
 // GET /rest/view
-func (ServerHandler) GetMaps(ctx context.Context) (r api.GetMapsRes, _ error) {
+func (Handler) GetMaps(ctx context.Context) (r api.GetMapsRes, _ error) {
 	session := ctx.(*clu.Context)
 	if !auth.ValidUser(auth.UserRole, false, session.User, "*Maps") {
 		return &api.GetMapsForbidden{}, nil

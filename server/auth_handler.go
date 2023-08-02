@@ -25,7 +25,7 @@ import (
 // Login receiving JWT.
 //
 // GET /login
-func (ServerHandler) GetLoginSession(ctx context.Context) (r api.GetLoginSessionRes, _ error) {
+func (Handler) GetLoginSession(ctx context.Context) (r api.GetLoginSessionRes, _ error) {
 	x, err := GenerateJWToken(ctx)
 	return x.(api.GetLoginSessionRes), err
 }
@@ -52,7 +52,7 @@ func GenerateJWToken(ctx context.Context) (interface{}, error) {
 // Login receiving JWT.
 //
 // PUT /login
-func (ServerHandler) LoginSession(ctx context.Context) (r api.LoginSessionRes, _ error) {
+func (Handler) LoginSession(ctx context.Context) (r api.LoginSessionRes, _ error) {
 	x, err := GenerateJWToken(ctx)
 	return x.(api.LoginSessionRes), err
 }
@@ -62,7 +62,7 @@ func (ServerHandler) LoginSession(ctx context.Context) (r api.LoginSessionRes, _
 // Login receiving JWT.
 //
 // POST /login
-func (ServerHandler) PushLoginSession(ctx context.Context) (r api.PushLoginSessionRes, _ error) {
+func (Handler) PushLoginSession(ctx context.Context) (r api.PushLoginSessionRes, _ error) {
 	x, err := GenerateJWToken(ctx)
 	return x.(api.PushLoginSessionRes), err
 }
@@ -72,7 +72,7 @@ func (ServerHandler) PushLoginSession(ctx context.Context) (r api.PushLoginSessi
 // Remove the session.
 //
 // GET /logoff
-func (ServerHandler) RemoveSessionCompat(ctx context.Context) (r api.RemoveSessionCompatRes, _ error) {
+func (Handler) RemoveSessionCompat(ctx context.Context) (r api.RemoveSessionCompatRes, _ error) {
 	session := ctx.(*clu.Context)
 
 	auth.InvalidateUUID(session.Token)

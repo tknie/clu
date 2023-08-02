@@ -29,7 +29,7 @@ import (
 // Insert given record.
 //
 // POST /rest/view/{table}
-func (ServerHandler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, params api.InsertRecordParams) (r api.InsertRecordRes, _ error) {
+func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, params api.InsertRecordParams) (r api.InsertRecordRes, _ error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Insert records for fields %s -> %s", session.User, params.Table)
 	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
@@ -133,7 +133,7 @@ func parseJx(v jx.Raw) (any, error) {
 // Delete a record with a given search.
 //
 // DELETE /rest/view/{table}/{search}
-func (ServerHandler) DeleteRecordsSearched(ctx context.Context, params api.DeleteRecordsSearchedParams) (r api.DeleteRecordsSearchedRes, _ error) {
+func (Handler) DeleteRecordsSearched(ctx context.Context, params api.DeleteRecordsSearchedParams) (r api.DeleteRecordsSearchedRes, _ error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Search records for fields %s -> %s", session.User, params.Table)
 	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
@@ -162,7 +162,7 @@ func (ServerHandler) DeleteRecordsSearched(ctx context.Context, params api.Delet
 // Update a record dependent on field(s) of a specific table.
 //
 // PUT /rest/view/{table}/{search}
-func (ServerHandler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecordsByFieldsReq,
+func (Handler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecordsByFieldsReq,
 	params api.UpdateRecordsByFieldsParams) (r api.UpdateRecordsByFieldsRes, _ error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Update records for fields %s -> %s", session.User, params.Table)

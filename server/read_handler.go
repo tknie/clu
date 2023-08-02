@@ -23,8 +23,8 @@ import (
 	"github.com/tknie/services/auth"
 )
 
-// ServerHandler server handler to ogen API
-type ServerHandler struct {
+// Handler server handler to ogen API
+type Handler struct {
 }
 
 // SearchRecordsFields implements searchRecordsFields operation.
@@ -32,7 +32,7 @@ type ServerHandler struct {
 // Retrieves a field of a specific ISN of a Map definition.
 //
 // GET /rest/view/{table}/{fields}
-func (ServerHandler) SearchRecordsFields(ctx context.Context, params api.SearchRecordsFieldsParams) (r api.SearchRecordsFieldsRes, _ error) {
+func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecordsFieldsParams) (r api.SearchRecordsFieldsRes, _ error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Search records for fields %s -> %s", session.User, params.Table)
 	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
@@ -76,7 +76,7 @@ func (ServerHandler) SearchRecordsFields(ctx context.Context, params api.SearchR
 // Retrieves a field of a specific ISN of a Map definition.
 //
 // GET /rest/view/{table}/{fields}/{search}
-func (ServerHandler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecordsFieldsParams) (r api.GetMapRecordsFieldsRes, _ error) {
+func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecordsFieldsParams) (r api.GetMapRecordsFieldsRes, _ error) {
 	session := ctx.(*clu.Context)
 	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
 		return &api.GetMapRecordsFieldsForbidden{}, nil
@@ -134,7 +134,7 @@ func checkOrderBy(orderby api.OptString) []string {
 // NewError creates *ErrorStatusCode from error returned by handler.
 //
 // Used for common default response.
-func (ServerHandler) NewError(ctx context.Context, err error) (r *api.ErrorStatusCode) {
+func (Handler) NewError(ctx context.Context, err error) (r *api.ErrorStatusCode) {
 	session := ctx.(*clu.Context)
 	r = new(api.ErrorStatusCode)
 	log.Log.Debugf("Server handler error: %v/%s -> %s", err, session.User, r.StatusCode)
@@ -146,6 +146,6 @@ func (ServerHandler) NewError(ctx context.Context, err error) (r *api.ErrorStatu
 // Retrieves all fields of an file.
 //
 // GET /rest/tables/{table}/{fields}/{search}
-func (ServerHandler) SearchTable(ctx context.Context, params api.SearchTableParams) (r api.SearchTableRes, _ error) {
+func (Handler) SearchTable(ctx context.Context, params api.SearchTableParams) (r api.SearchTableRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

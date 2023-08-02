@@ -1534,21 +1534,15 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
-  /rest/file/{location}:
+  /rest/file/{path}:
     get:
       tags:
         - Browser
       description: Download a file out of file location
       operationId: downloadFile
       parameters:
-        - name: location
+        - name: path
           in: path
-          description: Identifier of the file location
-          required: true
-          schema:
-            type: string
-        - name: file
-          in: query
           description: Identifier of the file location
           required: true
           schema:
@@ -1596,7 +1590,7 @@ paths:
       description: Create a new directory
       operationId: createDirectory
       parameters:
-        - name: location
+        - name: path
           in: path
           description: Identifier of the file location
           required: true
@@ -1644,7 +1638,7 @@ paths:
       description: Upload a new file to the given location
       operationId: uploadFile
       parameters:
-        - name: location
+        - name: path
           in: path
           description: Identifier of the file location
           required: true
@@ -1714,7 +1708,7 @@ paths:
       description: Delete the file on the given location
       operationId: deleteFileLocation
       parameters:
-        - name: location
+        - name: path
           in: path
           description: Identifier of the file location
           required: true
@@ -1817,9 +1811,9 @@ paths:
           required: true
           schema:
             type: string
-        - name: file
+        - name: filter
           in: query
-          description: Identifier of the file location
+          description: Filter the result set
           schema:
             type: string
       responses:
@@ -1829,6 +1823,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DirectoryFiles'
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+            multipart/form-data:
+              schema:
+                type: object
+                required:
+                - file
+                properties:
+                  file:
+                    type: string
+                    format: binary
         '400':
           description: Environment evaluation error
           content:
@@ -1842,13 +1849,13 @@ paths:
           description: Role access denied
           content: {}
         '404':
-          description: Database not available/unknown
+          description: File/Directory not available/unknown
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         default:
-          description: Error authorization
+          description: Generic error
           content:
             application/json:
               schema:
@@ -1909,7 +1916,7 @@ paths:
         '401':
           description: Unauthorized access
           headers:
-            www_authenticate:
+            Www_authenticate:
               schema:
                 type: string
           content: {}
@@ -1987,7 +1994,7 @@ paths:
         '401':
           description: Unauthorized access
           headers:
-            www_authenticate:
+            Www_authenticate:
               schema:
                 type: string
           content: {}
@@ -2456,14 +2463,6 @@ paths:
         - name: search
           in: path
           description: search
-          required: true
-          schema:
-            type: string
-        - name: fields
-          in: path
-          description: >-
-            Specific a comma separated list of fields to be part of the result
-            record
           required: true
           schema:
             type: string
@@ -3015,7 +3014,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         default:
-          description: Error authorization
+          description: admin role access problem
           content:
             application/json:
               schema:
@@ -3378,6 +3377,12 @@ components:
     Error:
       type: object
       properties:
+        code:
+          type: string
+        message:
+          type: string
+        target:
+          type: string
         Error:
           type: object
           properties:

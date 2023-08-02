@@ -83,7 +83,7 @@ func main() {
 
 	server.AdaptConfig(os.Getenv(server.DefaultConfigFileEnv))
 
-	s, err := api.NewServer(server.ServerHandler{}, webserver.SecurityHandler{},
+	s, err := api.NewServer(server.Handler{}, webserver.SecurityHandler{},
 		api.WithNotFound(func(w http.ResponseWriter, r *http.Request) {
 			_, _ = io.WriteString(w, `{"error_message": "not found"}`)
 		}))
