@@ -70,7 +70,7 @@ cleanVendor: ; $(info $(M) cleaning vendor…)    @ ## Cleanup vendor
 cleanAPI: ; $(info $(M) cleaning models…)    @ ## Cleanup models
 	@rm -rf $(CURDIR)/api
 
-$(BIN)/cluapi: prepare generatemodels fmt lint lib $(EXECS)
+$(BIN)/cluapi: prepare fmt lint lib $(EXECS)
 
 startServer: $(CERTIFICATE) $(BIN)/cmd/cluapi ; $(info $(M) starting server…)
 	@echo "Start $(VERSION) build at $(DATE)"
