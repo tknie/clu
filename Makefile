@@ -55,10 +55,10 @@ export LOGPATH CURDIR PLUGINSBIN REST_SERVER SERVER_HOME BIN
 
 include $(CURDIR)/make/common.mk
 
-generatemodels: $(CURDIR)/api
+generatemodels: cleanAPI $(CURDIR)/api
 
 .PHONY: clean
-clean: cleanModules cleanVendor cleanAPI cleanCommon ; $(info $(M) cleaning…)	@ ## Cleanup everything
+clean: cleanModules cleanVendor cleanCommon ; $(info $(M) cleaning…)	@ ## Cleanup everything
 	@rm -rf restadmin.test jobs.test
 	@rm -rf bin pkg logs test promote $(CURDIR)/server.pid
 	@rm -rf test/tests.* test/coverage.*

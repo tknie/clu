@@ -34,7 +34,7 @@ UPX := $(shell command -v upx 2> /dev/null)
 export TIMEOUT GO CGO_CFLAGS CGO_LDFLAGS GO_FLAGS CGO_EXT_LDFLAGS TESTFILES
 
 .PHONY: all
-all: prepare generatemodels fmt lint lib $(EXECS) $(NEXECS) $(PLUGINS) test-build
+all: prepare fmt lint lib $(EXECS) $(NEXECS) $(PLUGINS) test-build
 
 exec: $(EXECS) $(NEXECS)
 
