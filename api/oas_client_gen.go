@@ -2937,7 +2937,7 @@ func (c *Client) sendDeleteView(ctx context.Context, params DeleteViewParams) (r
 
 // DisconnectTCP invokes disconnectTCP operation.
 //
-// Disconnect ADATCP connection in the database with the given dbid.
+// Disconnect connection in the database with the given dbid.
 //
 // DELETE /rest/database/{table}/connection
 func (c *Client) DisconnectTCP(ctx context.Context, params DisconnectTCPParams) (DisconnectTCPRes, error) {

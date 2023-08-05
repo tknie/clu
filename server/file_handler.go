@@ -49,13 +49,34 @@ func (Handler) BrowseList(ctx context.Context) (r api.BrowseListRes, _ error) {
 //
 // Create a new directory.
 //
-// PUT /rest/file/{location}
+// PUT /rest/file/{path}
 func (Handler) CreateDirectory(ctx context.Context, params api.CreateDirectoryParams) (r api.CreateDirectoryRes, _ error) {
 	session := ctx.(*clu.Context)
 	if !auth.ValidUser(auth.AdministratorRole, false, session.User, "") {
 		return &api.CreateDirectoryForbidden{}, nil
 	}
-	return r, ht.ErrNotImplemented
+	if !auth.ValidUser(auth.AdministratorRole, false, session.User, "") {
+		return &api.CreateDirectoryForbidden{}, nil
+	}
+	d, path, err := extraceLocationPath(params.Path)
+	if err != nil {
+		err := fmt.Errorf("location reference missing")
+		return &api.CreateDirectoryNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+
+	}
+	fileName := os.ExpandEnv(d.Location + "/" + path)
+	log.Log.Debugf("FileName %s", fileName)
+	_, ferr := os.Stat(fileName)
+	if ferr != nil {
+		if !os.IsNotExist(ferr) {
+			err := fmt.Errorf("error opening location %s: %v", d.Name, ferr)
+			return &api.CreateDirectoryNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		}
+		os.Mkdir(fileName, os.ModePerm)
+		return &api.StatusResponse{Status: api.NewOptStatusResponseStatus(api.StatusResponseStatus{})}, nil
+	}
+	err = fmt.Errorf("Directory/File already exists")
+	return &api.CreateDirectoryBadRequest{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 }
 
 // DeleteFileLocation implements deleteFileLocation operation.
@@ -164,7 +185,7 @@ func (Handler) BrowseLocation(ctx context.Context, params api.BrowseLocationPara
 		return &api.BrowseLocationNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 	}
 	fileName := os.ExpandEnv(d.Location + "/" + path)
-	log.Log.Debugf("FileName %s", fileName)
+	log.Log.Debugf("FileName %s Filter %s", fileName, params.Filter.Value)
 	f, ferr := os.Open(fileName)
 	if ferr != nil {
 		err := fmt.Errorf("error opening location %s", d.Name)
@@ -176,7 +197,7 @@ func (Handler) BrowseLocation(ctx context.Context, params api.BrowseLocationPara
 		return &api.BrowseLocationNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 	}
 	if fileInfo.IsDir() {
-		return returnDirectoryInfo(d, path, f)
+		return returnDirectoryInfo(d, path, params.Filter.Value, f)
 	}
 	return returnFileStream(d, path, f)
 	// content := api.File{Name: api.NewOptString(fileInfo.Name()), Type: api.NewOptString("File"),
@@ -184,7 +205,8 @@ func (Handler) BrowseLocation(ctx context.Context, params api.BrowseLocationPara
 	// return &api.DirectoryFiles{Files: []api.File{content}, System: api.NewOptString(runtime.GOOS)}, nil
 }
 
-func returnDirectoryInfo(d *Directory, path string, f *os.File) (api.BrowseLocationRes, error) {
+// returnDirectoryInfo generate directory information list
+func returnDirectoryInfo(d *Directory, path, pattern string, f *os.File) (api.BrowseLocationRes, error) {
 	files, err := f.ReadDir(0)
 	if err != nil {
 		err := fmt.Errorf("error reading path of location %s", d.Name)
@@ -192,25 +214,36 @@ func returnDirectoryInfo(d *Directory, path string, f *os.File) (api.BrowseLocat
 	}
 	fl := &api.DirectoryFiles{Location: api.NewOptString(d.Location),
 		Path:   api.NewOptString(path),
+		Files:  make([]api.File, 0),
 		System: api.NewOptString(runtime.GOOS)}
 
 	for _, f := range files {
-		fileType := "File"
-		if f.IsDir() {
-			fileType = "Directory"
+		b := true
+		if pattern != "" {
+			b, err = filepath.Match(pattern, f.Name())
+			if err != nil {
+				return nil, err
+			}
 		}
-		fi, err := f.Info()
-		if err != nil {
-			return nil, err
-		}
+		if !strings.HasPrefix(f.Name(), ".") && b {
+			fileType := "File"
+			if f.IsDir() {
+				fileType = "Directory"
+			}
+			fi, err := f.Info()
+			if err != nil {
+				return nil, err
+			}
 
-		content := api.File{Name: api.NewOptString(f.Name()), Type: api.NewOptString(fileType),
-			Modified: api.NewOptDateTime(fi.ModTime()), Size: api.NewOptInt64(fi.Size())}
-		fl.Files = append(fl.Files, content)
+			content := api.File{Name: api.NewOptString(f.Name()), Type: api.NewOptString(fileType),
+				Modified: api.NewOptDateTime(fi.ModTime()), Size: api.NewOptInt64(fi.Size())}
+			fl.Files = append(fl.Files, content)
+		}
 	}
 	return fl, nil
 }
 
+// returnFileStream return stream from a file to the corresponding HTTP response
 func returnFileStream(d *Directory, path string, f *os.File) (api.BrowseLocationRes, error) {
 	read, err := initStreamFromFile(f)
 	if err != nil {
@@ -228,4 +261,13 @@ func returnFileStream(d *Directory, path string, f *os.File) (api.BrowseLocation
 	ok2 := &api.BrowseLocationOKMultipartFormData{File: ht.MultipartFile{Name: f.Name(), File: reader}}
 	fmt.Println("ok2", ok2.File.Name)
 	return ok2, nil
+}
+
+// UploadFile implements uploadFile operation.
+//
+// Upload a new file to the given location.
+//
+// POST /rest/file/{location}
+func (Handler) UploadFile(ctx context.Context, req *api.UploadFileReq, params api.UploadFileParams) (r api.UploadFileRes, _ error) {
+	return r, ht.ErrNotImplemented
 }

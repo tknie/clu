@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	"github.com/go-faster/jx"
+	ht "github.com/ogen-go/ogen/http"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/flynn/common"
@@ -220,4 +221,13 @@ func (Handler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecor
 	resp := api.Response{NrRecords: api.NewOptInt(int(uNr))}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	return respH, nil
+}
+
+// UpdateLobByMap implements updateLobByMap operation.
+//
+// Set a lob at a specific ISN of an field in a Map.
+//
+// PUT /binary/{table}/{field}/{search}
+func (Handler) UpdateLobByMap(ctx context.Context, req api.UpdateLobByMapReq, params api.UpdateLobByMapParams) (r api.UpdateLobByMapRes, _ error) {
+	return r, ht.ErrNotImplemented
 }

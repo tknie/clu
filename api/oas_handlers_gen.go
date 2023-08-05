@@ -3342,7 +3342,7 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 
 // handleDisconnectTCPRequest handles disconnectTCP operation.
 //
-// Disconnect ADATCP connection in the database with the given dbid.
+// Disconnect connection in the database with the given dbid.
 //
 // DELETE /rest/database/{table}/connection
 func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {

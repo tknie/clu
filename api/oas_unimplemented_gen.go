@@ -168,7 +168,7 @@ func (UnimplementedHandler) DeleteView(ctx context.Context, params DeleteViewPar
 
 // DisconnectTCP implements disconnectTCP operation.
 //
-// Disconnect ADATCP connection in the database with the given dbid.
+// Disconnect connection in the database with the given dbid.
 //
 // DELETE /rest/database/{table}/connection
 func (UnimplementedHandler) DisconnectTCP(ctx context.Context, params DisconnectTCPParams) (r DisconnectTCPRes, _ error) {

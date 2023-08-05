@@ -2278,9 +2278,9 @@ func decodeDeleteViewParams(args [0]string, argsEscaped bool, r *http.Request) (
 type DisconnectTCPParams struct {
 	// SQL table.
 	Table string
-	// First entry of ADATCP connection ID.
+	// First entry of connection ID.
 	StartID OptInt
-	// Last entry of ADATCP connection ID.
+	// Last entry of connection ID.
 	EndID OptInt
 }
 

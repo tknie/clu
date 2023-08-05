@@ -112,7 +112,7 @@ type Handler interface {
 	DeleteView(ctx context.Context, params DeleteViewParams) (DeleteViewRes, error)
 	// DisconnectTCP implements disconnectTCP operation.
 	//
-	// Disconnect ADATCP connection in the database with the given dbid.
+	// Disconnect connection in the database with the given dbid.
 	//
 	// DELETE /rest/database/{table}/connection
 	DisconnectTCP(ctx context.Context, params DisconnectTCPParams) (DisconnectTCPRes, error)

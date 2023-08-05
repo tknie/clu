@@ -1301,7 +1301,7 @@ paths:
     delete:
       tags:
         - Administrator
-      description: Disconnect ADATCP connection in the database with the given dbid
+      description: Disconnect connection in the database with the given dbid
       operationId: disconnectTCP
       parameters:
         - name: table
@@ -1312,17 +1312,17 @@ paths:
             type: string
         - name: start_id
           in: query
-          description: First entry of ADATCP connection ID
+          description: First entry of connection ID
           schema:
             type: integer
         - name: end_id
           in: query
-          description: Last entry of ADATCP connection ID
+          description: Last entry of connection ID
           schema:
             type: integer
       responses:
         '200':
-          description: Successful response, when database ADATCP connections init is send
+          description: Successful response, when database connections init is send
           content:
             application/json:
               schema:
