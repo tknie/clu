@@ -34,7 +34,7 @@ func (Handler) GetVersion(ctx context.Context) (r api.GetVersionRes, _ error) {
 
 // GetMaps implements getMaps operation.
 //
-// Retrieves a list of available maps.
+// Retrieves a list of available views.
 //
 // GET /rest/view
 func (Handler) GetMaps(ctx context.Context) (r api.GetMapsRes, _ error) {
@@ -111,5 +111,10 @@ func (Handler) DeleteDatabase(ctx context.Context, params api.DeleteDatabasePara
 //
 // PUT /shutdown/{hash}
 func (Handler) ShutdownServer(ctx context.Context, params api.ShutdownServerParams) (r api.ShutdownServerRes, _ error) {
+	session := ctx.(*clu.Context)
+	if !auth.ValidUser(auth.AdministratorRole, false, session.User, "") {
+		return &api.ShutdownServerForbidden{}, nil
+	}
+
 	return r, ht.ErrNotImplemented
 }

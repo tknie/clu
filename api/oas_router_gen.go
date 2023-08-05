@@ -781,24 +781,22 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 					switch elem[0] {
-					case 'b': // Prefix: "bles/"
-						if l := len("bles/"); len(elem) >= l && elem[0:l] == "bles/" {
+					case 'b': // Prefix: "bles"
+						if l := len("bles"); len(elem) >= l && elem[0:l] == "bles" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
-						// Param: "table"
-						// Match until "/"
-						idx := strings.IndexByte(elem, '/')
-						if idx < 0 {
-							idx = len(elem)
-						}
-						args[0] = elem[:idx]
-						elem = elem[idx:]
-
 						if len(elem) == 0 {
-							break
+							switch r.Method {
+							case "GET":
+								s.handleListTablesRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
@@ -808,38 +806,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								break
 							}
 
-							if len(elem) == 0 {
-								break
-							}
-							switch elem[0] {
-							case 'f': // Prefix: "fields"
-								if l := len("fields"); len(elem) >= l && elem[0:l] == "fields" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch r.Method {
-									case "GET":
-										s.handleGetFieldsRequest([1]string{
-											args[0],
-										}, elemIsEscaped, w, r)
-									default:
-										s.notAllowed(w, r, "GET")
-									}
-
-									return
-								}
-							}
-							// Param: "fields"
+							// Param: "table"
 							// Match until "/"
 							idx := strings.IndexByte(elem, '/')
 							if idx < 0 {
 								idx = len(elem)
 							}
-							args[1] = elem[:idx]
+							args[0] = elem[:idx]
 							elem = elem[idx:]
 
 							if len(elem) == 0 {
@@ -853,25 +826,71 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 									break
 								}
 
-								// Param: "search"
-								// Leaf parameter
-								args[2] = elem
-								elem = ""
-
 								if len(elem) == 0 {
-									// Leaf node.
-									switch r.Method {
-									case "GET":
-										s.handleSearchTableRequest([3]string{
-											args[0],
-											args[1],
-											args[2],
-										}, elemIsEscaped, w, r)
-									default:
-										s.notAllowed(w, r, "GET")
+									break
+								}
+								switch elem[0] {
+								case 'f': // Prefix: "fields"
+									if l := len("fields"); len(elem) >= l && elem[0:l] == "fields" {
+										elem = elem[l:]
+									} else {
+										break
 									}
 
-									return
+									if len(elem) == 0 {
+										// Leaf node.
+										switch r.Method {
+										case "GET":
+											s.handleGetFieldsRequest([1]string{
+												args[0],
+											}, elemIsEscaped, w, r)
+										default:
+											s.notAllowed(w, r, "GET")
+										}
+
+										return
+									}
+								}
+								// Param: "fields"
+								// Match until "/"
+								idx := strings.IndexByte(elem, '/')
+								if idx < 0 {
+									idx = len(elem)
+								}
+								args[1] = elem[:idx]
+								elem = elem[idx:]
+
+								if len(elem) == 0 {
+									break
+								}
+								switch elem[0] {
+								case '/': // Prefix: "/"
+									if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+										elem = elem[l:]
+									} else {
+										break
+									}
+
+									// Param: "search"
+									// Leaf parameter
+									args[2] = elem
+									elem = ""
+
+									if len(elem) == 0 {
+										// Leaf node.
+										switch r.Method {
+										case "GET":
+											s.handleSearchTableRequest([3]string{
+												args[0],
+												args[1],
+												args[2],
+											}, elemIsEscaped, w, r)
+										default:
+											s.notAllowed(w, r, "GET")
+										}
+
+										return
+									}
 								}
 							}
 						}
@@ -2144,24 +2163,25 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						break
 					}
 					switch elem[0] {
-					case 'b': // Prefix: "bles/"
-						if l := len("bles/"); len(elem) >= l && elem[0:l] == "bles/" {
+					case 'b': // Prefix: "bles"
+						if l := len("bles"); len(elem) >= l && elem[0:l] == "bles" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
-						// Param: "table"
-						// Match until "/"
-						idx := strings.IndexByte(elem, '/')
-						if idx < 0 {
-							idx = len(elem)
-						}
-						args[0] = elem[:idx]
-						elem = elem[idx:]
-
 						if len(elem) == 0 {
-							break
+							switch method {
+							case "GET":
+								r.name = "ListTables"
+								r.operationID = "listTables"
+								r.pathPattern = "/rest/tables"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
@@ -2171,39 +2191,13 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								break
 							}
 
-							if len(elem) == 0 {
-								break
-							}
-							switch elem[0] {
-							case 'f': // Prefix: "fields"
-								if l := len("fields"); len(elem) >= l && elem[0:l] == "fields" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									switch method {
-									case "GET":
-										// Leaf: GetFields
-										r.name = "GetFields"
-										r.operationID = "getFields"
-										r.pathPattern = "/rest/tables/{table}/fields"
-										r.args = args
-										r.count = 1
-										return r, true
-									default:
-										return
-									}
-								}
-							}
-							// Param: "fields"
+							// Param: "table"
 							// Match until "/"
 							idx := strings.IndexByte(elem, '/')
 							if idx < 0 {
 								idx = len(elem)
 							}
-							args[1] = elem[:idx]
+							args[0] = elem[:idx]
 							elem = elem[idx:]
 
 							if len(elem) == 0 {
@@ -2217,23 +2211,70 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									break
 								}
 
-								// Param: "search"
-								// Leaf parameter
-								args[2] = elem
-								elem = ""
+								if len(elem) == 0 {
+									break
+								}
+								switch elem[0] {
+								case 'f': // Prefix: "fields"
+									if l := len("fields"); len(elem) >= l && elem[0:l] == "fields" {
+										elem = elem[l:]
+									} else {
+										break
+									}
+
+									if len(elem) == 0 {
+										switch method {
+										case "GET":
+											// Leaf: GetFields
+											r.name = "GetFields"
+											r.operationID = "getFields"
+											r.pathPattern = "/rest/tables/{table}/fields"
+											r.args = args
+											r.count = 1
+											return r, true
+										default:
+											return
+										}
+									}
+								}
+								// Param: "fields"
+								// Match until "/"
+								idx := strings.IndexByte(elem, '/')
+								if idx < 0 {
+									idx = len(elem)
+								}
+								args[1] = elem[:idx]
+								elem = elem[idx:]
 
 								if len(elem) == 0 {
-									switch method {
-									case "GET":
-										// Leaf: SearchTable
-										r.name = "SearchTable"
-										r.operationID = "searchTable"
-										r.pathPattern = "/rest/tables/{table}/{fields}/{search}"
-										r.args = args
-										r.count = 3
-										return r, true
-									default:
-										return
+									break
+								}
+								switch elem[0] {
+								case '/': // Prefix: "/"
+									if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+										elem = elem[l:]
+									} else {
+										break
+									}
+
+									// Param: "search"
+									// Leaf parameter
+									args[2] = elem
+									elem = ""
+
+									if len(elem) == 0 {
+										switch method {
+										case "GET":
+											// Leaf: SearchTable
+											r.name = "SearchTable"
+											r.operationID = "searchTable"
+											r.pathPattern = "/rest/tables/{table}/{fields}/{search}"
+											r.args = args
+											r.count = 3
+											return r, true
+										default:
+											return
+										}
 									}
 								}
 							}

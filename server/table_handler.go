@@ -44,3 +44,12 @@ func (Handler) GetMapMetadata(ctx context.Context, params api.GetMapMetadataPara
 func (Handler) InsertMapFileRecords(ctx context.Context, req api.OptInsertMapFileRecordsReq) (r api.InsertMapFileRecordsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
+
+// ListTables implements listTables operation.
+//
+// Retrieves all tables of databases.
+//
+// GET /rest/tables
+func (Handler) ListTables(ctx context.Context) (r api.ListTablesRes, _ error) {
+	return r, ht.ErrNotImplemented
+}

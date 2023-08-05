@@ -2031,11 +2031,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Maps'
-              example:
-                Maps:
-                  - EMPLOYEE-FDT
-                  - EMPLOYEES-NAT
-                  - EMPLOYEES-NAT-DDM
         '401':
           description: Authorization error
           content: {}
@@ -2620,6 +2615,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Fields'
+        '400':
+          description: Wrong paramters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error requesting the list of maps.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
+  /rest/tables:
+    get:
+      tags:
+        - Queries
+      description: Retrieves all tables of databases
+      operationId: listTables
+      responses:
+        '200':
+          description: Successful response, with the list of tables
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Maps'
         '400':
           description: Wrong paramters
           content:

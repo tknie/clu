@@ -266,6 +266,12 @@ type Handler interface {
 	//
 	// GET /rest/database/{table}/permission/{resource}
 	ListRBACResource(ctx context.Context, params ListRBACResourceParams) (ListRBACResourceRes, error)
+	// ListTables implements listTables operation.
+	//
+	// Retrieves all tables of databases.
+	//
+	// GET /rest/tables
+	ListTables(ctx context.Context) (ListTablesRes, error)
 	// LoginSession implements loginSession operation.
 	//
 	// Login receiving JWT.

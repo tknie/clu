@@ -3125,6 +3125,24 @@ type ListRBACResourceUnauthorized struct{}
 
 func (*ListRBACResourceUnauthorized) listRBACResourceRes() {}
 
+type ListTablesBadRequest Error
+
+func (*ListTablesBadRequest) listTablesRes() {}
+
+// ListTablesForbidden is response for ListTables operation.
+type ListTablesForbidden struct{}
+
+func (*ListTablesForbidden) listTablesRes() {}
+
+type ListTablesNotFound Error
+
+func (*ListTablesNotFound) listTablesRes() {}
+
+// ListTablesUnauthorized is response for ListTables operation.
+type ListTablesUnauthorized struct{}
+
+func (*ListTablesUnauthorized) listTablesRes() {}
+
 // LoginSessionForbidden is response for LoginSession operation.
 type LoginSessionForbidden struct{}
 
@@ -3508,7 +3526,8 @@ func (s *Maps) SetMaps(val []Map) {
 	s.Maps = val
 }
 
-func (*Maps) getMapsRes() {}
+func (*Maps) getMapsRes()    {}
+func (*Maps) listTablesRes() {}
 
 // NewOptActivityStatsStatistics returns new OptActivityStatsStatistics with value set to v.
 func NewOptActivityStatsStatistics(v ActivityStatsStatistics) OptActivityStatsStatistics {

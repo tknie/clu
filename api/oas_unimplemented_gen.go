@@ -400,6 +400,15 @@ func (UnimplementedHandler) ListRBACResource(ctx context.Context, params ListRBA
 	return r, ht.ErrNotImplemented
 }
 
+// ListTables implements listTables operation.
+//
+// Retrieves all tables of databases.
+//
+// GET /rest/tables
+func (UnimplementedHandler) ListTables(ctx context.Context) (r ListTablesRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // LoginSession implements loginSession operation.
 //
 // Login receiving JWT.

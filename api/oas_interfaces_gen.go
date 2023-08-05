@@ -173,6 +173,10 @@ type ListRBACResourceRes interface {
 	listRBACResourceRes()
 }
 
+type ListTablesRes interface {
+	listTablesRes()
+}
+
 type LoginSessionRes interface {
 	loginSessionRes()
 }
