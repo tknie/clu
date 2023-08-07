@@ -149,3 +149,12 @@ func (Handler) NewError(ctx context.Context, err error) (r *api.ErrorStatusCode)
 func (Handler) SearchTable(ctx context.Context, params api.SearchTableParams) (r api.SearchTableRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
+
+// SearchModelling implements searchModelling operation.
+//
+// Retrieves all fields of an file.
+//
+// GET /rest/map/{path}
+func (Handler) SearchModelling(ctx context.Context, params api.SearchModellingParams) (r api.SearchModellingRes, _ error) {
+	return r, ht.ErrNotImplemented
+}

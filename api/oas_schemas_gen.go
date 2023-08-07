@@ -5519,7 +5519,8 @@ func (s *Response) SetRecords(val []ResponseRecordsItem) {
 	s.Records = val
 }
 
-func (*Response) searchTableRes() {}
+func (*Response) searchModellingRes() {}
+func (*Response) searchTableRes()     {}
 
 // ResponseHeaders wraps Response with response headers.
 type ResponseHeaders struct {
@@ -5563,6 +5564,24 @@ func (s *ResponseRecordsItem) init() ResponseRecordsItem {
 	}
 	return m
 }
+
+type SearchModellingBadRequest Error
+
+func (*SearchModellingBadRequest) searchModellingRes() {}
+
+// SearchModellingForbidden is response for SearchModelling operation.
+type SearchModellingForbidden struct{}
+
+func (*SearchModellingForbidden) searchModellingRes() {}
+
+type SearchModellingNotFound Error
+
+func (*SearchModellingNotFound) searchModellingRes() {}
+
+// SearchModellingUnauthorized is response for SearchModelling operation.
+type SearchModellingUnauthorized struct{}
+
+func (*SearchModellingUnauthorized) searchModellingRes() {}
 
 // SearchRecordsFieldsForbidden is response for SearchRecordsFields operation.
 type SearchRecordsFieldsForbidden struct{}

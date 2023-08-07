@@ -5333,6 +5333,72 @@ func decodeRemovePermissionParams(args [1]string, argsEscaped bool, r *http.Requ
 	return params, nil
 }
 
+// SearchModellingParams is parameters of searchModelling operation.
+type SearchModellingParams struct {
+	// Modelling map and paramters.
+	Path string
+}
+
+func unpackSearchModellingParams(packed middleware.Parameters) (params SearchModellingParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "path",
+			In:   "path",
+		}
+		params.Path = packed[key].(string)
+	}
+	return params
+}
+
+func decodeSearchModellingParams(args [1]string, argsEscaped bool, r *http.Request) (params SearchModellingParams, _ error) {
+	// Decode path: path.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "path",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Path = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "path",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // SearchRecordsFieldsParams is parameters of searchRecordsFields operation.
 type SearchRecordsFieldsParams struct {
 	// SQL table.

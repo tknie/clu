@@ -209,6 +209,10 @@ type RemoveSessionCompatRes interface {
 	removeSessionCompatRes()
 }
 
+type SearchModellingRes interface {
+	searchModellingRes()
+}
+
 type SearchRecordsFieldsRes interface {
 	searchRecordsFieldsRes()
 }

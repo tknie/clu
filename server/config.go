@@ -139,7 +139,9 @@ type Mapping struct {
 
 // DatabaseMap database modelling configuration
 type DatabaseMap struct {
+	Name        string `yaml:"Name"`
 	SrcDatabase string `yaml:"Database"`
+	SQL         string `yaml:"SQL"`
 	SrcTable    string `yaml:"SourceTable"`
 	SrcField    string `yaml:"SourceField"`
 	DestTable   string `yaml:"DestinationTable"`

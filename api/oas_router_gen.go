@@ -720,30 +720,67 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 						return
 					}
-				case 'm': // Prefix: "metadata/view/"
-					if l := len("metadata/view/"); len(elem) >= l && elem[0:l] == "metadata/view/" {
+				case 'm': // Prefix: "m"
+					if l := len("m"); len(elem) >= l && elem[0:l] == "m" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
-					// Param: "table"
-					// Leaf parameter
-					args[0] = elem
-					elem = ""
-
 					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "GET":
-							s.handleGetMapMetadataRequest([1]string{
-								args[0],
-							}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "GET")
+						break
+					}
+					switch elem[0] {
+					case 'a': // Prefix: "ap/"
+						if l := len("ap/"); len(elem) >= l && elem[0:l] == "ap/" {
+							elem = elem[l:]
+						} else {
+							break
 						}
 
-						return
+						// Param: "path"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleSearchModellingRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+					case 'e': // Prefix: "etadata/view/"
+						if l := len("etadata/view/"); len(elem) >= l && elem[0:l] == "etadata/view/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "table"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleGetMapMetadataRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
 					}
 				case 's': // Prefix: "shutdown/"
 					if l := len("shutdown/"); len(elem) >= l && elem[0:l] == "shutdown/" {
@@ -2100,30 +2137,68 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							return
 						}
 					}
-				case 'm': // Prefix: "metadata/view/"
-					if l := len("metadata/view/"); len(elem) >= l && elem[0:l] == "metadata/view/" {
+				case 'm': // Prefix: "m"
+					if l := len("m"); len(elem) >= l && elem[0:l] == "m" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
-					// Param: "table"
-					// Leaf parameter
-					args[0] = elem
-					elem = ""
-
 					if len(elem) == 0 {
-						switch method {
-						case "GET":
-							// Leaf: GetMapMetadata
-							r.name = "GetMapMetadata"
-							r.operationID = "getMapMetadata"
-							r.pathPattern = "/rest/metadata/view/{table}"
-							r.args = args
-							r.count = 1
-							return r, true
-						default:
-							return
+						break
+					}
+					switch elem[0] {
+					case 'a': // Prefix: "ap/"
+						if l := len("ap/"); len(elem) >= l && elem[0:l] == "ap/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "path"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: SearchModelling
+								r.name = "SearchModelling"
+								r.operationID = "searchModelling"
+								r.pathPattern = "/rest/map/{path}"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+					case 'e': // Prefix: "etadata/view/"
+						if l := len("etadata/view/"); len(elem) >= l && elem[0:l] == "etadata/view/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "table"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: GetMapMetadata
+								r.name = "GetMapMetadata"
+								r.operationID = "getMapMetadata"
+								r.pathPattern = "/rest/metadata/view/{table}"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
 						}
 					}
 				case 's': // Prefix: "shutdown/"

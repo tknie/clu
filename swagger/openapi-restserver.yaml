@@ -2544,6 +2544,55 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
+  /rest/map/{path}:
+    get:
+      tags:
+        - Queries
+      description: Retrieves all fields of an file
+      operationId: searchModelling
+      parameters:
+        - name: path
+          in: path
+          description: Modelling map and paramters
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response, with the list of fields in tables.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          description: Wrong paramters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Error requesting the list of maps.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
   /rest/metadata/view/{table}:
     get:
       tags:

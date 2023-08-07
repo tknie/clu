@@ -315,6 +315,12 @@ type Handler interface {
 	//
 	// GET /logoff
 	RemoveSessionCompat(ctx context.Context) (RemoveSessionCompatRes, error)
+	// SearchModelling implements searchModelling operation.
+	//
+	// Retrieves all fields of an file.
+	//
+	// GET /rest/map/{path}
+	SearchModelling(ctx context.Context, params SearchModellingParams) (SearchModellingRes, error)
 	// SearchRecordsFields implements searchRecordsFields operation.
 	//
 	// Query a record with a given SQL query.

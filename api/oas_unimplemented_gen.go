@@ -473,6 +473,15 @@ func (UnimplementedHandler) RemoveSessionCompat(ctx context.Context) (r RemoveSe
 	return r, ht.ErrNotImplemented
 }
 
+// SearchModelling implements searchModelling operation.
+//
+// Retrieves all fields of an file.
+//
+// GET /rest/map/{path}
+func (UnimplementedHandler) SearchModelling(ctx context.Context, params SearchModellingParams) (r SearchModellingRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // SearchRecordsFields implements searchRecordsFields operation.
 //
 // Query a record with a given SQL query.
