@@ -60,3 +60,21 @@ func (Handler) DeleteJobResult(ctx context.Context, params api.DeleteJobResultPa
 func (Handler) PostJob(ctx context.Context, req api.PostJobReq) (r api.PostJobRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
+
+// GetJobResult implements getJobResult operation.
+//
+// Delete a specific job result.
+//
+// GET /rest/tasks/{jobName}/{jobId}
+func (Handler) GetJobResult(ctx context.Context, params api.GetJobResultParams) (r api.GetJobResultRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// TriggerJob implements triggerJob operation.
+//
+// Trigger a job.
+//
+// PUT /rest/tasks/{jobName}
+func (Handler) TriggerJob(ctx context.Context, params api.TriggerJobParams) (r api.TriggerJobRes, _ error) {
+	return r, ht.ErrNotImplemented
+}

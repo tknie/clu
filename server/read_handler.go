@@ -158,3 +158,12 @@ func (Handler) SearchTable(ctx context.Context, params api.SearchTableParams) (r
 func (Handler) SearchModelling(ctx context.Context, params api.SearchModellingParams) (r api.SearchModellingRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
+
+// ListModelling implements listModelling operation.
+//
+// Retrieves all fields of an file.
+//
+// GET /rest/map
+func (Handler) ListModelling(ctx context.Context) (r api.ListModellingRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
