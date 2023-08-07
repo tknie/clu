@@ -117,6 +117,10 @@ type GetJobFullInfoRes interface {
 	getJobFullInfoRes()
 }
 
+type GetJobResultRes interface {
+	getJobResultRes()
+}
+
 type GetJobsConfigRes interface {
 	getJobsConfigRes()
 }
@@ -167,6 +171,10 @@ type InsertMapFileRecordsRes interface {
 
 type InsertRecordRes interface {
 	insertRecordRes()
+}
+
+type ListModellingRes interface {
+	listModellingRes()
 }
 
 type ListRBACResourceRes interface {
@@ -239,6 +247,10 @@ type ShutdownServerRes interface {
 
 type StoreConfigRes interface {
 	storeConfigRes()
+}
+
+type TriggerJobRes interface {
+	triggerJobRes()
 }
 
 type UpdateLobByMapReq interface {

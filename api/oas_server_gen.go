@@ -90,7 +90,7 @@ type Handler interface {
 	//
 	// Delete a specific job result.
 	//
-	// DELETE /rest/tasks/{jobName}/result/{jobId}
+	// DELETE /rest/tasks/{jobName}/{jobId}
 	DeleteJobResult(ctx context.Context, params DeleteJobResultParams) (DeleteJobResultRes, error)
 	// DeleteRBACResource implements deleteRBACResource operation.
 	//
@@ -180,8 +180,14 @@ type Handler interface {
 	//
 	// Retrieves a full job definition.
 	//
-	// GET /rest/tasks/{jobName}/full
+	// GET /rest/tasks/{jobName}
 	GetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (GetJobFullInfoRes, error)
+	// GetJobResult implements getJobResult operation.
+	//
+	// Delete a specific job result.
+	//
+	// GET /rest/tasks/{jobName}/{jobId}
+	GetJobResult(ctx context.Context, params GetJobResultParams) (GetJobResultRes, error)
 	// GetJobs implements getJobs operation.
 	//
 	// Retrieves a list of jobs known by the Interface.
@@ -260,6 +266,12 @@ type Handler interface {
 	//
 	// POST /rest/view/{table}
 	InsertRecord(ctx context.Context, req OptInsertRecordReq, params InsertRecordParams) (InsertRecordRes, error)
+	// ListModelling implements listModelling operation.
+	//
+	// Retrieves all fields of an file.
+	//
+	// GET /rest/map
+	ListModelling(ctx context.Context) (ListModellingRes, error)
 	// ListRBACResource implements listRBACResource operation.
 	//
 	// Add permission role.
@@ -357,6 +369,12 @@ type Handler interface {
 	//
 	// POST /config
 	StoreConfig(ctx context.Context) (StoreConfigRes, error)
+	// TriggerJob implements triggerJob operation.
+	//
+	// Trigger a job.
+	//
+	// PUT /rest/tasks/{jobName}
+	TriggerJob(ctx context.Context, params TriggerJobParams) (TriggerJobRes, error)
 	// UpdateLobByMap implements updateLobByMap operation.
 	//
 	// Set a lob at a specific ISN of an field in a Map.

@@ -2190,6 +2190,24 @@ type GetJobFullInfoUnauthorized struct{}
 
 func (*GetJobFullInfoUnauthorized) getJobFullInfoRes() {}
 
+type GetJobResultBadRequest Error
+
+func (*GetJobResultBadRequest) getJobResultRes() {}
+
+// GetJobResultForbidden is response for GetJobResult operation.
+type GetJobResultForbidden struct{}
+
+func (*GetJobResultForbidden) getJobResultRes() {}
+
+type GetJobResultNotFound Error
+
+func (*GetJobResultNotFound) getJobResultRes() {}
+
+// GetJobResultUnauthorized is response for GetJobResult operation.
+type GetJobResultUnauthorized struct{}
+
+func (*GetJobResultUnauthorized) getJobResultRes() {}
+
 // GetJobsConfigForbidden is response for GetJobsConfig operation.
 type GetJobsConfigForbidden struct{}
 
@@ -2805,6 +2823,7 @@ func (s *JobResult) SetJobResult(val OptJobResultJobResult) {
 }
 
 func (*JobResult) getJobExecutionResultRes() {}
+func (*JobResult) getJobResultRes()          {}
 
 type JobResultJobResult struct {
 	Description OptString   `json:"Description"`
@@ -3016,6 +3035,24 @@ func (s *JobsList) SetJobDefinition(val []JobDefinition) {
 }
 
 func (*JobsList) getJobsRes() {}
+
+type ListModellingBadRequest Error
+
+func (*ListModellingBadRequest) listModellingRes() {}
+
+// ListModellingForbidden is response for ListModelling operation.
+type ListModellingForbidden struct{}
+
+func (*ListModellingForbidden) listModellingRes() {}
+
+type ListModellingNotFound Error
+
+func (*ListModellingNotFound) listModellingRes() {}
+
+// ListModellingUnauthorized is response for ListModelling operation.
+type ListModellingUnauthorized struct{}
+
+func (*ListModellingUnauthorized) listModellingRes() {}
 
 // ListRBACResourceForbidden is response for ListRBACResource operation.
 type ListRBACResourceForbidden struct{}
@@ -3526,8 +3563,9 @@ func (s *Maps) SetMaps(val []Map) {
 	s.Maps = val
 }
 
-func (*Maps) getMapsRes()    {}
-func (*Maps) listTablesRes() {}
+func (*Maps) getMapsRes()       {}
+func (*Maps) listModellingRes() {}
+func (*Maps) listTablesRes()    {}
 
 // NewOptActivityStatsStatistics returns new OptActivityStatsStatistics with value set to v.
 func NewOptActivityStatsStatistics(v ActivityStatsStatistics) OptActivityStatsStatistics {
@@ -5521,6 +5559,7 @@ func (s *Response) SetRecords(val []ResponseRecordsItem) {
 
 func (*Response) searchModellingRes() {}
 func (*Response) searchTableRes()     {}
+func (*Response) triggerJobRes()      {}
 
 // ResponseHeaders wraps Response with response headers.
 type ResponseHeaders struct {
@@ -5995,6 +6034,24 @@ func (s *TokenCheck) GetAPIKey() string {
 func (s *TokenCheck) SetAPIKey(val string) {
 	s.APIKey = val
 }
+
+type TriggerJobBadRequest Error
+
+func (*TriggerJobBadRequest) triggerJobRes() {}
+
+// TriggerJobForbidden is response for TriggerJob operation.
+type TriggerJobForbidden struct{}
+
+func (*TriggerJobForbidden) triggerJobRes() {}
+
+type TriggerJobNotFound Error
+
+func (*TriggerJobNotFound) triggerJobRes() {}
+
+// TriggerJobUnauthorized is response for TriggerJob operation.
+type TriggerJobUnauthorized struct{}
+
+func (*TriggerJobUnauthorized) triggerJobRes() {}
 
 // UpdateLobByMapForbidden is response for UpdateLobByMap operation.
 type UpdateLobByMapForbidden struct{}

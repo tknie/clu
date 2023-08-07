@@ -3237,6 +3237,126 @@ func decodeGetJobFullInfoParams(args [1]string, argsEscaped bool, r *http.Reques
 	return params, nil
 }
 
+// GetJobResultParams is parameters of getJobResult operation.
+type GetJobResultParams struct {
+	// Job name to be requested.
+	JobName string
+	// Job id of execution result to be requested.
+	JobId string
+}
+
+func unpackGetJobResultParams(packed middleware.Parameters) (params GetJobResultParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "jobName",
+			In:   "path",
+		}
+		params.JobName = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "jobId",
+			In:   "path",
+		}
+		params.JobId = packed[key].(string)
+	}
+	return params
+}
+
+func decodeGetJobResultParams(args [2]string, argsEscaped bool, r *http.Request) (params GetJobResultParams, _ error) {
+	// Decode path: jobName.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "jobName",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.JobName = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "jobName",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode path: jobId.
+	if err := func() error {
+		param := args[1]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[1])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "jobId",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.JobId = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "jobId",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // GetJobsParams is parameters of getJobs operation.
 type GetJobsParams struct {
 	// Timestamp of first job entry.
@@ -6324,6 +6444,72 @@ func decodeShutdownServerParams(args [1]string, argsEscaped bool, r *http.Reques
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "hash",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// TriggerJobParams is parameters of triggerJob operation.
+type TriggerJobParams struct {
+	// Job Name to be requested.
+	JobName string
+}
+
+func unpackTriggerJobParams(packed middleware.Parameters) (params TriggerJobParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "jobName",
+			In:   "path",
+		}
+		params.JobName = packed[key].(string)
+	}
+	return params
+}
+
+func decodeTriggerJobParams(args [1]string, argsEscaped bool, r *http.Request) (params TriggerJobParams, _ error) {
+	// Decode path: jobName.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "jobName",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.JobName = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "jobName",
 			In:   "path",
 			Err:  err,
 		}

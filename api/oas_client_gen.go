@@ -2108,7 +2108,7 @@ func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLo
 //
 // Delete a specific job result.
 //
-// DELETE /rest/tasks/{jobName}/result/{jobId}
+// DELETE /rest/tasks/{jobName}/{jobId}
 func (c *Client) DeleteJobResult(ctx context.Context, params DeleteJobResultParams) (DeleteJobResultRes, error) {
 	res, err := c.sendDeleteJobResult(ctx, params)
 	_ = res
@@ -2169,7 +2169,7 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 		}
 		pathParts[1] = encoded
 	}
-	pathParts[2] = "/result/"
+	pathParts[2] = "/"
 	{
 		// Encode "jobId" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -4573,7 +4573,7 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 //
 // Retrieves a full job definition.
 //
-// GET /rest/tasks/{jobName}/full
+// GET /rest/tasks/{jobName}
 func (c *Client) GetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (GetJobFullInfoRes, error) {
 	res, err := c.sendGetJobFullInfo(ctx, params)
 	_ = res
@@ -4614,7 +4614,7 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [3]string
+	var pathParts [2]string
 	pathParts[0] = "/rest/tasks/"
 	{
 		// Encode "jobName" parameter.
@@ -4634,7 +4634,6 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 		}
 		pathParts[1] = encoded
 	}
-	pathParts[2] = "/full"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -4709,6 +4708,171 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 
 	stage = "DecodeResponse"
 	result, err := decodeGetJobFullInfoResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetJobResult invokes getJobResult operation.
+//
+// Delete a specific job result.
+//
+// GET /rest/tasks/{jobName}/{jobId}
+func (c *Client) GetJobResult(ctx context.Context, params GetJobResultParams) (GetJobResultRes, error) {
+	res, err := c.sendGetJobResult(ctx, params)
+	_ = res
+	return res, err
+}
+
+func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams) (res GetJobResultRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getJobResult"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "GetJobResult",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [4]string
+	pathParts[0] = "/rest/tasks/"
+	{
+		// Encode "jobName" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "jobName",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.JobName))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	pathParts[2] = "/"
+	{
+		// Encode "jobId" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "jobId",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.JobId))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[3] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:BasicAuth"
+			switch err := c.securityBasicAuth(ctx, "GetJobResult", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BasicAuth\"")
+			}
+		}
+		{
+			stage = "Security:TokenCheck"
+			switch err := c.securityTokenCheck(ctx, "GetJobResult", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 1
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"TokenCheck\"")
+			}
+		}
+		{
+			stage = "Security:BearerAuth"
+			switch err := c.securityBearerAuth(ctx, "GetJobResult", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 2
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BearerAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+				{0b00000010},
+				{0b00000100},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, errors.New("no security requirement satisfied")
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetJobResultResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -6839,6 +7003,134 @@ func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordRe
 
 	stage = "DecodeResponse"
 	result, err := decodeInsertRecordResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ListModelling invokes listModelling operation.
+//
+// Retrieves all fields of an file.
+//
+// GET /rest/map
+func (c *Client) ListModelling(ctx context.Context) (ListModellingRes, error) {
+	res, err := c.sendListModelling(ctx)
+	_ = res
+	return res, err
+}
+
+func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("listModelling"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "ListModelling",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/rest/map"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:BasicAuth"
+			switch err := c.securityBasicAuth(ctx, "ListModelling", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BasicAuth\"")
+			}
+		}
+		{
+			stage = "Security:TokenCheck"
+			switch err := c.securityTokenCheck(ctx, "ListModelling", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 1
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"TokenCheck\"")
+			}
+		}
+		{
+			stage = "Security:BearerAuth"
+			switch err := c.securityBearerAuth(ctx, "ListModelling", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 2
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BearerAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+				{0b00000010},
+				{0b00000100},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, errors.New("no security requirement satisfied")
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeListModellingResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -9355,6 +9647,152 @@ func (c *Client) sendStoreConfig(ctx context.Context) (res StoreConfigRes, err e
 
 	stage = "DecodeResponse"
 	result, err := decodeStoreConfigResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// TriggerJob invokes triggerJob operation.
+//
+// Trigger a job.
+//
+// PUT /rest/tasks/{jobName}
+func (c *Client) TriggerJob(ctx context.Context, params TriggerJobParams) (TriggerJobRes, error) {
+	res, err := c.sendTriggerJob(ctx, params)
+	_ = res
+	return res, err
+}
+
+func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (res TriggerJobRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("triggerJob"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "TriggerJob",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/rest/tasks/"
+	{
+		// Encode "jobName" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "jobName",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.JobName))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "PUT", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:BasicAuth"
+			switch err := c.securityBasicAuth(ctx, "TriggerJob", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BasicAuth\"")
+			}
+		}
+		{
+			stage = "Security:TokenCheck"
+			switch err := c.securityTokenCheck(ctx, "TriggerJob", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 1
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"TokenCheck\"")
+			}
+		}
+		{
+			stage = "Security:BearerAuth"
+			switch err := c.securityBearerAuth(ctx, "TriggerJob", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 2
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BearerAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+				{0b00000010},
+				{0b00000100},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, errors.New("no security requirement satisfied")
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeTriggerJobResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

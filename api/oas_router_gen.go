@@ -731,30 +731,49 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 					switch elem[0] {
-					case 'a': // Prefix: "ap/"
-						if l := len("ap/"); len(elem) >= l && elem[0:l] == "ap/" {
+					case 'a': // Prefix: "ap"
+						if l := len("ap"); len(elem) >= l && elem[0:l] == "ap" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
-						// Param: "path"
-						// Leaf parameter
-						args[0] = elem
-						elem = ""
-
 						if len(elem) == 0 {
-							// Leaf node.
 							switch r.Method {
 							case "GET":
-								s.handleSearchModellingRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
+								s.handleListModellingRequest([0]string{}, elemIsEscaped, w, r)
 							default:
 								s.notAllowed(w, r, "GET")
 							}
 
 							return
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/"
+							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							// Param: "path"
+							// Leaf parameter
+							args[0] = elem
+							elem = ""
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "GET":
+									s.handleSearchModellingRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "GET")
+								}
+
+								return
+							}
 						}
 					case 'e': // Prefix: "etadata/view/"
 						if l := len("etadata/view/"); len(elem) >= l && elem[0:l] == "etadata/view/" {
@@ -991,7 +1010,20 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							elem = elem[idx:]
 
 							if len(elem) == 0 {
-								break
+								switch r.Method {
+								case "GET":
+									s.handleGetJobFullInfoRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								case "PUT":
+									s.handleTriggerJobRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "GET,PUT")
+								}
+
+								return
 							}
 							switch elem[0] {
 							case '/': // Prefix: "/"
@@ -1001,56 +1033,29 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 									break
 								}
 
+								// Param: "jobId"
+								// Leaf parameter
+								args[1] = elem
+								elem = ""
+
 								if len(elem) == 0 {
-									break
-								}
-								switch elem[0] {
-								case 'f': // Prefix: "full"
-									if l := len("full"); len(elem) >= l && elem[0:l] == "full" {
-										elem = elem[l:]
-									} else {
-										break
+									// Leaf node.
+									switch r.Method {
+									case "DELETE":
+										s.handleDeleteJobResultRequest([2]string{
+											args[0],
+											args[1],
+										}, elemIsEscaped, w, r)
+									case "GET":
+										s.handleGetJobResultRequest([2]string{
+											args[0],
+											args[1],
+										}, elemIsEscaped, w, r)
+									default:
+										s.notAllowed(w, r, "DELETE,GET")
 									}
 
-									if len(elem) == 0 {
-										// Leaf node.
-										switch r.Method {
-										case "GET":
-											s.handleGetJobFullInfoRequest([1]string{
-												args[0],
-											}, elemIsEscaped, w, r)
-										default:
-											s.notAllowed(w, r, "GET")
-										}
-
-										return
-									}
-								case 'r': // Prefix: "result/"
-									if l := len("result/"); len(elem) >= l && elem[0:l] == "result/" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									// Param: "jobId"
-									// Leaf parameter
-									args[1] = elem
-									elem = ""
-
-									if len(elem) == 0 {
-										// Leaf node.
-										switch r.Method {
-										case "DELETE":
-											s.handleDeleteJobResultRequest([2]string{
-												args[0],
-												args[1],
-											}, elemIsEscaped, w, r)
-										default:
-											s.notAllowed(w, r, "DELETE")
-										}
-
-										return
-									}
+									return
 								}
 							}
 						}
@@ -2148,30 +2153,52 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						break
 					}
 					switch elem[0] {
-					case 'a': // Prefix: "ap/"
-						if l := len("ap/"); len(elem) >= l && elem[0:l] == "ap/" {
+					case 'a': // Prefix: "ap"
+						if l := len("ap"); len(elem) >= l && elem[0:l] == "ap" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
-						// Param: "path"
-						// Leaf parameter
-						args[0] = elem
-						elem = ""
-
 						if len(elem) == 0 {
 							switch method {
 							case "GET":
-								// Leaf: SearchModelling
-								r.name = "SearchModelling"
-								r.operationID = "searchModelling"
-								r.pathPattern = "/rest/map/{path}"
+								r.name = "ListModelling"
+								r.operationID = "listModelling"
+								r.pathPattern = "/rest/map"
 								r.args = args
-								r.count = 1
+								r.count = 0
 								return r, true
 							default:
 								return
+							}
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/"
+							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							// Param: "path"
+							// Leaf parameter
+							args[0] = elem
+							elem = ""
+
+							if len(elem) == 0 {
+								switch method {
+								case "GET":
+									// Leaf: SearchModelling
+									r.name = "SearchModelling"
+									r.operationID = "searchModelling"
+									r.pathPattern = "/rest/map/{path}"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
 							}
 						}
 					case 'e': // Prefix: "etadata/view/"
@@ -2425,7 +2452,24 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							elem = elem[idx:]
 
 							if len(elem) == 0 {
-								break
+								switch method {
+								case "GET":
+									r.name = "GetJobFullInfo"
+									r.operationID = "getJobFullInfo"
+									r.pathPattern = "/rest/tasks/{jobName}"
+									r.args = args
+									r.count = 1
+									return r, true
+								case "PUT":
+									r.name = "TriggerJob"
+									r.operationID = "triggerJob"
+									r.pathPattern = "/rest/tasks/{jobName}"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
 							}
 							switch elem[0] {
 							case '/': // Prefix: "/"
@@ -2435,56 +2479,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									break
 								}
 
+								// Param: "jobId"
+								// Leaf parameter
+								args[1] = elem
+								elem = ""
+
 								if len(elem) == 0 {
-									break
-								}
-								switch elem[0] {
-								case 'f': // Prefix: "full"
-									if l := len("full"); len(elem) >= l && elem[0:l] == "full" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									if len(elem) == 0 {
-										switch method {
-										case "GET":
-											// Leaf: GetJobFullInfo
-											r.name = "GetJobFullInfo"
-											r.operationID = "getJobFullInfo"
-											r.pathPattern = "/rest/tasks/{jobName}/full"
-											r.args = args
-											r.count = 1
-											return r, true
-										default:
-											return
-										}
-									}
-								case 'r': // Prefix: "result/"
-									if l := len("result/"); len(elem) >= l && elem[0:l] == "result/" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									// Param: "jobId"
-									// Leaf parameter
-									args[1] = elem
-									elem = ""
-
-									if len(elem) == 0 {
-										switch method {
-										case "DELETE":
-											// Leaf: DeleteJobResult
-											r.name = "DeleteJobResult"
-											r.operationID = "deleteJobResult"
-											r.pathPattern = "/rest/tasks/{jobName}/result/{jobId}"
-											r.args = args
-											r.count = 2
-											return r, true
-										default:
-											return
-										}
+									switch method {
+									case "DELETE":
+										// Leaf: DeleteJobResult
+										r.name = "DeleteJobResult"
+										r.operationID = "deleteJobResult"
+										r.pathPattern = "/rest/tasks/{jobName}/{jobId}"
+										r.args = args
+										r.count = 2
+										return r, true
+									case "GET":
+										// Leaf: GetJobResult
+										r.name = "GetJobResult"
+										r.operationID = "getJobResult"
+										r.pathPattern = "/rest/tasks/{jobName}/{jobId}"
+										r.args = args
+										r.count = 2
+										return r, true
+									default:
+										return
 									}
 								}
 							}

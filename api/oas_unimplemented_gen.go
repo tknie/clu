@@ -134,7 +134,7 @@ func (UnimplementedHandler) DeleteFileLocation(ctx context.Context, params Delet
 //
 // Delete a specific job result.
 //
-// DELETE /rest/tasks/{jobName}/result/{jobId}
+// DELETE /rest/tasks/{jobName}/{jobId}
 func (UnimplementedHandler) DeleteJobResult(ctx context.Context, params DeleteJobResultParams) (r DeleteJobResultRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -269,8 +269,17 @@ func (UnimplementedHandler) GetJobExecutionResult(ctx context.Context, params Ge
 //
 // Retrieves a full job definition.
 //
-// GET /rest/tasks/{jobName}/full
+// GET /rest/tasks/{jobName}
 func (UnimplementedHandler) GetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (r GetJobFullInfoRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetJobResult implements getJobResult operation.
+//
+// Delete a specific job result.
+//
+// GET /rest/tasks/{jobName}/{jobId}
+func (UnimplementedHandler) GetJobResult(ctx context.Context, params GetJobResultParams) (r GetJobResultRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -388,6 +397,15 @@ func (UnimplementedHandler) InsertMapFileRecords(ctx context.Context, req OptIns
 //
 // POST /rest/view/{table}
 func (UnimplementedHandler) InsertRecord(ctx context.Context, req OptInsertRecordReq, params InsertRecordParams) (r InsertRecordRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ListModelling implements listModelling operation.
+//
+// Retrieves all fields of an file.
+//
+// GET /rest/map
+func (UnimplementedHandler) ListModelling(ctx context.Context) (r ListModellingRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -533,6 +551,15 @@ func (UnimplementedHandler) ShutdownServer(ctx context.Context, params ShutdownS
 //
 // POST /config
 func (UnimplementedHandler) StoreConfig(ctx context.Context) (r StoreConfigRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// TriggerJob implements triggerJob operation.
+//
+// Trigger a job.
+//
+// PUT /rest/tasks/{jobName}
+func (UnimplementedHandler) TriggerJob(ctx context.Context, params TriggerJobParams) (r TriggerJobRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
