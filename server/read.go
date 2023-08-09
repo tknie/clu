@@ -47,6 +47,8 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, er
 				d[s] = raw
 			case *time.Time:
 				d[s] = jx.Raw([]byte("\"" + (*t).String() + "\""))
+			case time.Time:
+				d[s] = jx.Raw([]byte("\"" + (t).String() + "\""))
 			default:
 				if r != nil {
 					log.Log.Debugf("using default ---> %v %T\n", r, t)
