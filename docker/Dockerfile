@@ -21,7 +21,7 @@ COPY config.yaml $INSTALLDIR/configuration/config.yaml.template
 RUN cd $INSTALLDIR && \
     mkdir $INSTALLDIR/tmp && \
     mkdir -p /data && chown -R admin:admin /data $INSTALLDIR/tmp $INSTALLDIR/logs && \
-    chmod 770 /data && \
+    chmod 777 /data && \
     chmod 775 $INSTALLDIR && \
     rm $INSTALLDIR/keys/certificate.p12 $INSTALLDIR/keys/key.pem
 
