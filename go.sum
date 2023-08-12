@@ -52,6 +52,8 @@ github.com/go-sql-driver/mysql v1.7.1 h1:lUIinVbN1DY0xBg0eMOzmmtGoHwWBbvnWubQUrt
 github.com/go-sql-driver/mysql v1.7.1/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
 github.com/godror/godror v0.38.0 h1:xs4FSSxJtycXGr5Kv9ASWyyyBoCExBqKrtZfVSMz4ZM=
 github.com/godror/godror v0.38.0/go.mod h1:cof1GHidUSPHIk3/59RN1qrvic+a/M779A/A7XvCsfo=
+github.com/godror/godror v0.38.1 h1:ssjMzGsTHqeNVDVIJY5lwfr7ZZ4DBq9giHxT4LSK3Zg=
+github.com/godror/godror v0.38.1/go.mod h1:cof1GHidUSPHIk3/59RN1qrvic+a/M779A/A7XvCsfo=
 github.com/godror/knownpb v0.1.1 h1:A4J7jdx7jWBhJm18NntafzSC//iZDHkDi1+juwQ5pTI=
 github.com/godror/knownpb v0.1.1/go.mod h1:4nRFbQo1dDuwKnblRXDxrfCFYeT4hjg3GjMqef58eRE=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
@@ -118,6 +120,8 @@ github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5 h1:+34UxatamjuvPD1
 github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5/go.mod h1:DC4v8JNsIjEalswlmpzWh8xB75iIj9vmGX8kiDHUu9g=
 github.com/tknie/flynn v0.0.0-20230811150540-604321462373 h1:BKHCazAC/V+opsVT62gL6NEEsKUJusUznc6SOz/Ky5I=
 github.com/tknie/flynn v0.0.0-20230811150540-604321462373/go.mod h1:s/zpwZDk6aR0MPUhX1LowKLR0EdNK9Mvdeck+6VgBD8=
+github.com/tknie/flynn v0.0.0-20230812202504-56c0b1949291 h1:8vck/1lkP+B0P1AOtx8TvUEqNgZo8WOPX/kqZj0WNZc=
+github.com/tknie/flynn v0.0.0-20230812202504-56c0b1949291/go.mod h1:s/zpwZDk6aR0MPUhX1LowKLR0EdNK9Mvdeck+6VgBD8=
 github.com/tknie/log v0.0.0-20230709123301-620bb99e7bd6 h1:dnEHO+xSu0R+PZUIrLfhQofsQaxEmRyDOgzbyC5+7iM=
 github.com/tknie/log v0.0.0-20230709123301-620bb99e7bd6/go.mod h1:W67unT0xxqTLc9tyxpdV1lED/JuD0veFgxT/astdxt4=
 github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d h1:3zGPtYkv/JaryvdSS5B1de4myatWo6LmJpYdl3Es4Bg=
