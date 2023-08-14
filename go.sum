@@ -50,8 +50,6 @@ github.com/go-openapi/swag v0.22.4 h1:QLMzNJnMGPRNDCbySlcj1x01tzU8/9LTTL9hZZZogB
 github.com/go-openapi/swag v0.22.4/go.mod h1:UzaqsxGiab7freDnrUUra0MwWfN/q7tE4j+VcZ0yl14=
 github.com/go-sql-driver/mysql v1.7.1 h1:lUIinVbN1DY0xBg0eMOzmmtGoHwWBbvnWubQUrtU8EI=
 github.com/go-sql-driver/mysql v1.7.1/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
-github.com/godror/godror v0.38.0 h1:xs4FSSxJtycXGr5Kv9ASWyyyBoCExBqKrtZfVSMz4ZM=
-github.com/godror/godror v0.38.0/go.mod h1:cof1GHidUSPHIk3/59RN1qrvic+a/M779A/A7XvCsfo=
 github.com/godror/godror v0.38.1 h1:ssjMzGsTHqeNVDVIJY5lwfr7ZZ4DBq9giHxT4LSK3Zg=
 github.com/godror/godror v0.38.1/go.mod h1:cof1GHidUSPHIk3/59RN1qrvic+a/M779A/A7XvCsfo=
 github.com/godror/knownpb v0.1.1 h1:A4J7jdx7jWBhJm18NntafzSC//iZDHkDi1+juwQ5pTI=
@@ -91,8 +89,8 @@ github.com/mitchellh/go-ps v1.0.0/go.mod h1:J4lOc8z8yJs6vUwklHw2XEIiT4z4C40KtWVN
 github.com/msteinert/pam v1.1.0 h1:VhLun/0n0kQYxiRBJJvVpC2jR6d21SWJFjpvUVj20Kc=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
-github.com/ogen-go/ogen v0.72.1 h1:rNgBxI7yBh2irIwuQyd7Q8SNhZPK69VjYCaiN6MP1u8=
-github.com/ogen-go/ogen v0.72.1/go.mod h1:2SgZ9FRMXsuUhdTq23nFBFgMaXQl6yennmAnIs+hofM=
+github.com/ogen-go/ogen v0.73.0 h1:h9HFV2V/h7UTKewlJpvOjx0gHIjjn4O9mjKe3eLNWkY=
+github.com/ogen-go/ogen v0.73.0/go.mod h1:CS1RfTfLLcxw968GF2pEw8r6P6YTlU+mCOTGJvl7P2c=
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
 github.com/oklog/ulid/v2 v2.0.2 h1:r4fFzBm+bv0wNKNh5eXTwU7i85y5x+uwkxCUTNVQqLc=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
@@ -118,8 +116,6 @@ github.com/tknie/adabas-go-api v1.7.9 h1:+va7jnV1+pc99kub6sDC2z1ud+vxUHDeTY7Ilvd
 github.com/tknie/adabas-go-api v1.7.9/go.mod h1:Mmr1FHFy14iPgMVwt9RY/3i+IFCQ9Di4a+PmQICeTk0=
 github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5 h1:+34UxatamjuvPD1Pb5jmTvgjcIDtWXisODLhScwPu+w=
 github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5/go.mod h1:DC4v8JNsIjEalswlmpzWh8xB75iIj9vmGX8kiDHUu9g=
-github.com/tknie/flynn v0.0.0-20230811150540-604321462373 h1:BKHCazAC/V+opsVT62gL6NEEsKUJusUznc6SOz/Ky5I=
-github.com/tknie/flynn v0.0.0-20230811150540-604321462373/go.mod h1:s/zpwZDk6aR0MPUhX1LowKLR0EdNK9Mvdeck+6VgBD8=
 github.com/tknie/flynn v0.0.0-20230812202504-56c0b1949291 h1:8vck/1lkP+B0P1AOtx8TvUEqNgZo8WOPX/kqZj0WNZc=
 github.com/tknie/flynn v0.0.0-20230812202504-56c0b1949291/go.mod h1:s/zpwZDk6aR0MPUhX1LowKLR0EdNK9Mvdeck+6VgBD8=
 github.com/tknie/log v0.0.0-20230709123301-620bb99e7bd6 h1:dnEHO+xSu0R+PZUIrLfhQofsQaxEmRyDOgzbyC5+7iM=
