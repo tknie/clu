@@ -7,7 +7,7 @@ require (
 	github.com/go-faster/jx v1.1.0
 	github.com/go-openapi/runtime v0.26.0
 	github.com/go-openapi/swag v0.22.4
-	github.com/ogen-go/ogen v0.72.1
+	github.com/ogen-go/ogen v0.73.0
 	github.com/rs/cors v1.9.0
 	github.com/tknie/log v0.0.0-20230709123301-620bb99e7bd6
 	github.com/tknie/services v0.0.0-20230619190937-7a0d8b966dde
@@ -24,14 +24,14 @@ require (
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
-	github.com/godror/godror v0.38.1 // indirect
+	github.com/godror/godror v0.39.0 // indirect
 	github.com/godror/knownpb v0.1.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.4.3 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/tknie/adabas-go-api v1.7.9 // indirect
+	github.com/tknie/adabas-go-api v1.7.10 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 )
 
@@ -51,11 +51,11 @@ require (
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5
-	github.com/tknie/flynn v0.0.0-20230812202504-56c0b1949291
+	github.com/tknie/flynn v0.0.0-20230815190157-49b6a1127777
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.25.0
 	golang.org/x/crypto v0.12.0 // indirect
-	golang.org/x/exp v0.0.0-20230811145659-89c5cff77bcb // indirect
+	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 // indirect
 	golang.org/x/net v0.14.0
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
