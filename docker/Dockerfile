@@ -10,7 +10,7 @@
 #       http://www.apache.org/licenses/LICENSE-2.0
 #
 
-FROM ubuntu:22.04.2
+FROM ubuntu:22.04
 
 ENV user_id 1777
 ENV group_id 1777
