@@ -31,7 +31,7 @@ require (
 	github.com/jackc/pgx/v5 v5.4.3 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/tknie/adabas-go-api v1.7.10 // indirect
+	github.com/tknie/adabas-go-api v1.7.11-0.20230927173718-c1f8db24a2a8 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 )
 
@@ -51,7 +51,7 @@ require (
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5
-	github.com/tknie/flynn v0.0.0-20230903192458-f1bfb0327a28
+	github.com/tknie/flynn v0.0.0-20230927182234-9c1914abe6c7
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.13.0 // indirect
