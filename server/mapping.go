@@ -116,7 +116,7 @@ func loadTableOfDatabases() {
 			}
 		}
 		if len(newDatabases) > 0 {
-			services.ServerMessage("Add table(s) to dictionary: %v", newDatabases)
+			services.ServerMessage("Found table(s) to dictionary:\n%v", newDatabases)
 		}
 	}
 
