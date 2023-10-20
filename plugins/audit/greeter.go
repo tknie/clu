@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/tknie/clu/server"
+	"github.com/tknie/log"
 	"github.com/tknie/services"
 )
 
@@ -67,18 +68,24 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 		if strings.HasPrefix(strings.ToLower(w.RequestURI), "/login") {
 			services.ServerMessage("Used: %v User: %s -> %s %s -> %s from %s)",
 				time.Since(x.start), user, w.Method, reqURI, uuid, server.RemoteHost(w))
+			log.Log.Debugf("Used: %v User: %s -> %s %s -> %s from %s)",
+				time.Since(x.start), user, w.Method, reqURI, uuid, server.RemoteHost(w))
 			return
 		}
-		services.ServerMessage("Used: %v User: %s -> %s %s from %s)",
+		log.Log.Debugf("Used: %v User: %s -> %s %s from %s)",
 			time.Since(x.start), user, w.Method, reqURI, server.RemoteHost(w))
 		return
 	}
 	if u, _, ok := w.BasicAuth(); ok {
 		services.ServerMessage("Failed: %v Token %s User: %s %s %s %s Host: %s",
 			elapsed, uuid, u, w.Method, server.RemoteHost(w), reqURI, w.Host)
+		log.Log.Errorf("Failed: %v Token %s User: %s %s %s %s Host: %s",
+			elapsed, uuid, u, w.Method, server.RemoteHost(w), reqURI, w.Host)
 		return
 	}
 	services.ServerMessage("Failed: %v Token %s Unknown user %s %s %s Host: %s",
+		elapsed, uuid, w.Method, server.RemoteHost(w), reqURI, w.Host)
+	log.Log.Errorf("Failed: %v Token %s Unknown user %s %s %s Host: %s",
 		elapsed, uuid, w.Method, server.RemoteHost(w), reqURI, w.Host)
 }
 
