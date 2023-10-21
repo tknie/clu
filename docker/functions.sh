@@ -27,7 +27,7 @@ function offline_scripts {
 # Create common Docker specific parameters into INI
 #
 function init_parameter {
-   echo $(date +"%Y-%m-%d %H:%m:%s")" Set default parameter set"
+   echo $(date +"%Y-%m-%d %H:%m:%S")" Set default parameter set"
 }
 
 
@@ -35,5 +35,5 @@ function init_parameter {
 # Evaluate Docker parameters to be passed to parameter
 #
 function prepare_parameter {
-   echo $(date +"%Y-%m-%d %H:%m:%s")" Prepare parameter set"
+   echo $(date +"%Y-%m-%d %H:%m:%S")" Prepare parameter set"
 }

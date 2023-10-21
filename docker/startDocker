@@ -42,14 +42,14 @@ EXITCODE=0
 # Clean up function to start shutdown of databases
 #
 function clean_up {
-   echo $(date +"%Y-%m-%d %H:%m:%s")" Clean up environment"
+   echo $(date +"%Y-%m-%d %H:%m:%S")" Clean up environment"
    exit ${EXITCODE}
 }
 
 # Init ${DATADIR} environment for databases locations
 #
 function init_environment {
-   echo $(date +"%Y-%m-%d %H:%m:%s")" Prepare container directories"
+   echo $(date +"%Y-%m-%d %H:%m:%S")" Prepare container directories"
    if [ ! -d ${DATADIR}/configuration ]; then
       if [ ! -d ${DATADIR}/logs ]; then
          mkdir ${DATADIR}/logs
@@ -74,7 +74,7 @@ function init_environment {
 # Stop the administration tasks
 #
 function stop_administration {
-   echo $(date +"%Y-%m-%d %H:%m:%s")" Stop REST administration"
+   echo $(date +"%Y-%m-%d %H:%m:%S")" Stop REST administration"
    cd ${REST_SERVER}/tmp
    sh ${REST_SERVER}/bin/service.sh stop
    kill ${RUNPID}
@@ -100,13 +100,13 @@ prepare_parameter
 offline_scripts
 
 # Background start of server
-echo $(date +"%Y-%m-%d %H:%m:%s")" Start API server"
+echo $(date +"%Y-%m-%d %H:%m:%S")" Start API server"
 sh ${REST_SERVER}/bin/service.sh run &
 RUNPID=$!
-echo $(date +"%Y-%m-%d %H:%m:%s")" server started with pid ${RUNPID}"
+echo $(date +"%Y-%m-%d %H:%m:%S")" server started with pid ${RUNPID}"
 
 if [ ! "$RUNPID" == "" ]; then
-  # echo $(date +"%Y-%m-%d %H:%m:%s")" waiting on pid ${RUNPID}"
+  # echo $(date +"%Y-%m-%d %H:%m:%S")" waiting on pid ${RUNPID}"
   wait ${RUNPID}
   ret=$?
   RUNPID=
@@ -116,7 +116,7 @@ fi
 # Database is starting, mode need to be changed and timeout for minimum startup sequence
 STOP_MODE=stop
 
-echo $(date +"%Y-%m-%d %H:%m:%s")" Stop tasks ..."
+echo $(date +"%Y-%m-%d %H:%m:%S")" Stop tasks ..."
 kill ${RUNPID}
 
 exit ${ret}

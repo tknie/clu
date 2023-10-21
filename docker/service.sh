@@ -65,9 +65,9 @@ export HOST
 
 # starting Rest Interface (kernel)
 start() {
-  echo $(date +"%Y-%m-%d %H:%m:%s")" Starting API server in background mode"
-  echo $(date +"%Y-%m-%d %H:%m:%s")" Server config file: ${SERVER_CONFIG}"
-  echo $(date +"%Y-%m-%d %H:%m:%s")" Server startup console out: ${SERVER_CONSOLE}"
+  echo $(date +"%Y-%m-%d %H:%m:%S")" Starting API server in background mode"
+  echo $(date +"%Y-%m-%d %H:%m:%S")" Server config file: ${SERVER_CONFIG}"
+  echo $(date +"%Y-%m-%d %H:%m:%S")" Server startup console out: ${SERVER_CONSOLE}"
 
   cd ${SERVER_HOME}
   nohup bin/cluapi server -c ${SERVER_CONFIG} $* >${SERVER_CONSOLE} 2>&1 &
@@ -94,9 +94,9 @@ case "$ACTION" in
   run)
         cd ${SERVER_HOME}
 
-        echo $(date +"%Y-%m-%d %H:%m:%s")" Starting API server in foreground"
-        echo $(date +"%Y-%m-%d %H:%m:%s")" Server config file: ${SERVER_CONFIG}"
-        echo $(date +"%Y-%m-%d %H:%m:%s")" Server console out: ${SERVER_CONSOLE}"
+        echo $(date +"%Y-%m-%d %H:%m:%S")" Starting API server in foreground"
+        echo $(date +"%Y-%m-%d %H:%m:%S")" Server config file: ${SERVER_CONFIG}"
+        echo $(date +"%Y-%m-%d %H:%m:%S")" Server console out: ${SERVER_CONSOLE}"
 
         bin/cluapi server -c ${SERVER_CONFIG} $*
         ;;
