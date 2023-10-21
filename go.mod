@@ -10,7 +10,7 @@ require (
 	github.com/ogen-go/ogen v0.76.0
 	github.com/rs/cors v1.10.1
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
-	github.com/tknie/services v0.0.0-20231005182240-0b3fc3457b38
+	github.com/tknie/services v0.0.0-20231021195326-75e89c40ee5b
 	go.opentelemetry.io/otel v1.19.0
 	go.opentelemetry.io/otel/metric v1.19.0
 	go.opentelemetry.io/otel/trace v1.19.0
@@ -47,11 +47,11 @@ require (
 	github.com/go-openapi/errors v0.20.4 // indirect
 	github.com/google/uuid v1.3.1
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5
-	github.com/tknie/flynn v0.0.0-20231001203916-5961838e6cde
+	github.com/tknie/flynn v0.0.0-20231021195715-ed6a4cb5a4bd
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.14.0 // indirect
