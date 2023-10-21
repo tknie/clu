@@ -26,6 +26,7 @@ RUN apt update && apt install -y util-linux openssl && \
     useradd -d $INSTALLDIR -m -s /bin/bash -u $user_id -g admin admin
 
 COPY startDocker stopDocker functions.sh $INSTALLDIR/docker/
+COPY service.sh $INSTALLDIR/bin/
 ADD --chown=$user_id:$group_id cluapi.tar.gz $INSTALLDIR
 COPY config.yaml $INSTALLDIR/configuration/config.yaml.template
 

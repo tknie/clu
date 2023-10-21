@@ -14,7 +14,7 @@
 #set -xv
 
 usage() {
-echo " cluapi Rest Server"
+echo " CLUAPI Rest Server"
 echo " Usage:"
 echo "    service[options] command [params]"
 echo "         options"
@@ -43,7 +43,7 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 # Find a location for the SERVER console
 #####################################################
 SERVER_HOME=$INSTALLDIR
-SERVER_CONFIG=${SERVER_CONFIG:-${DATADIR}/configuration/config.xml}
+SERVER_CONFIG=${SERVER_CONFIG:-${DATADIR}/configuration/config.yaml}
 export SERVER_CONFIG
 
 LOGPATH=/data/logs/
@@ -65,16 +65,16 @@ export HOST
 
 # starting Rest Interface (kernel)
 start() {
-  echo $(date +"%Y-%m-%d %H:%m") " Starting API server in background mode"
-  echo $(date +"%Y-%m-%d %H:%m") " Server config file: ${SERVER_CONFIG}"
-  echo $(date +"%Y-%m-%d %H:%m") " Server startup console out: ${SERVER_CONSOLE}"
+  echo $(date +"%Y-%m-%d %H:%m:%s")" Starting API server in background mode"
+  echo $(date +"%Y-%m-%d %H:%m:%s")" Server config file: ${SERVER_CONFIG}"
+  echo $(date +"%Y-%m-%d %H:%m:%s")" Server startup console out: ${SERVER_CONSOLE}"
 
   cd ${SERVER_HOME}
   nohup bin/cluapi server -c ${SERVER_CONFIG} $* >${SERVER_CONSOLE} 2>&1 &
 }
 
 stop() {
-  echo $(date +"%Y-%m-%d %H:%m") " Stopping API server"
+  echo $(date +"%Y-%m-%d %H:%m")" Stopping API server"
   cd ${SERVER_HOME}
   bin/cluapi client -s
 }
@@ -94,9 +94,9 @@ case "$ACTION" in
   run)
         cd ${SERVER_HOME}
 
-        echo $(date +"%Y-%m-%d %H:%m") " Starting API server in foreground"
-        echo $(date +"%Y-%m-%d %H:%m") " Server config file: ${SERVER_CONFIG}"
-        echo $(date +"%Y-%m-%d %H:%m") " Server console out: ${SERVER_CONSOLE}"
+        echo $(date +"%Y-%m-%d %H:%m:%s")" Starting API server in foreground"
+        echo $(date +"%Y-%m-%d %H:%m:%s")" Server config file: ${SERVER_CONFIG}"
+        echo $(date +"%Y-%m-%d %H:%m:%s")" Server console out: ${SERVER_CONSOLE}"
 
         bin/cluapi server -c ${SERVER_CONFIG} $*
         ;;

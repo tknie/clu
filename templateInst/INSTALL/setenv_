@@ -15,7 +15,7 @@
 # OS specific support.  $var _must_ be set to either true or false.
 unameS=`uname -s`
 
-SERVER_HOME=${INSTALL_DIR}/Metaverse
+SERVER_HOME=${INSTALL_DIR}
 LOGPATH=${SERVER_HOME}/logs
 
 ACTION="help"

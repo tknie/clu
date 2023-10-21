@@ -100,13 +100,13 @@ prepare_parameter
 offline_scripts
 
 # Background start of server
-echo $(date +"%Y-%m-%d %H:%m")"D: Start API server"
+echo $(date +"%Y-%m-%d %H:%m:%s")" Start API server"
 sh ${REST_SERVER}/bin/service.sh run &
 RUNPID=$!
-echo $(date +"%Y-%m-%d %H:%m")"D: server started with pid ${RUNPID}"
+echo $(date +"%Y-%m-%d %H:%m:%s")" server started with pid ${RUNPID}"
 
 if [ ! "$RUNPID" == "" ]; then
-  echo $(date +"%Y-%m-%d %H:%m")"D: waiting on pid ${RUNPID}"
+  # echo $(date +"%Y-%m-%d %H:%m:%s")" waiting on pid ${RUNPID}"
   wait ${RUNPID}
   ret=$?
   RUNPID=
