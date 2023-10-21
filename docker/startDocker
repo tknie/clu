@@ -49,7 +49,7 @@ function clean_up {
 # Init ${DATADIR} environment for databases locations
 #
 function init_environment {
-   echo $(date +"%Y-%m-%d %H:%m:s")" Prepare container directories"
+   echo $(date +"%Y-%m-%d %H:%m:%s")" Prepare container directories"
    if [ ! -d ${DATADIR}/configuration ]; then
       if [ ! -d ${DATADIR}/logs ]; then
          mkdir ${DATADIR}/logs
@@ -116,7 +116,7 @@ fi
 # Database is starting, mode need to be changed and timeout for minimum startup sequence
 STOP_MODE=stop
 
-echo $(date +"%Y-%m-%d %H:%m")"Stop tasks ..."
+echo $(date +"%Y-%m-%d %H:%m:%s")" Stop tasks ..."
 kill ${RUNPID}
 
 exit ${ret}

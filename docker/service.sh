@@ -74,7 +74,7 @@ start() {
 }
 
 stop() {
-  echo $(date +"%Y-%m-%d %H:%m")" Stopping API server"
+  echo $(date +"%Y-%m-%d %H:%m%s")" Stopping API server"
   cd ${SERVER_HOME}
   bin/cluapi client -s
 }
