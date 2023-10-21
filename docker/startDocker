@@ -42,14 +42,14 @@ EXITCODE=0
 # Clean up function to start shutdown of databases
 #
 function clean_up {
-   echo $(date +"%Y-%m-%d %H:%m")" Clean up environment"
+   echo $(date +"%Y-%m-%d %H:%m:%s")" Clean up environment"
    exit ${EXITCODE}
 }
 
 # Init ${DATADIR} environment for databases locations
 #
 function init_environment {
-   echo $(date +"%Y-%m-%d %H:%m")"D: Prepare container directories"
+   echo $(date +"%Y-%m-%d %H:%m:s")" Prepare container directories"
    if [ ! -d ${DATADIR}/configuration ]; then
       if [ ! -d ${DATADIR}/logs ]; then
          mkdir ${DATADIR}/logs
@@ -74,7 +74,7 @@ function init_environment {
 # Stop the administration tasks
 #
 function stop_administration {
-   echo $(date +"%Y-%m-%d %H:%m")"D: Stop REST administration"
+   echo $(date +"%Y-%m-%d %H:%m:%s")" Stop REST administration"
    cd ${REST_SERVER}/tmp
    sh ${REST_SERVER}/bin/service.sh stop
    kill ${RUNPID}
