@@ -30,7 +30,7 @@ jobs:
 #      run: go generate .
 
     - name: Build
-      run: go build -v ./cmd/cluapi
+      run: make
 
 #    - name: Test
 #      run: go test -v ./...
