@@ -73,7 +73,6 @@ cleanAPI: ; $(info $(M) cleaning models…)    @ ## Cleanup models
 $(BIN)/cluapi: prepare fmt lint lib $(EXECS)
 
 startServer: $(CERTIFICATE) $(BIN)/cmd/cluapi ; $(info $(M) starting server…)
-	@echo "Start $(VERSION) build at $(DATE)"
 	@rm -f $(CURDIR)/logs/*; \
 	if [ ! -d $(CURDIR)/tmp ]; then \
 	  mkdir $(CURDIR)/tmp; fi; \

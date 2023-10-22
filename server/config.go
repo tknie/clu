@@ -221,5 +221,5 @@ func LoadedConfig() {
 	for _, f := range allCallbacks {
 		f()
 	}
-	services.ServerMessage("Configuration loading finished")
+	services.ServerMessage("Configuration loading completed")
 }

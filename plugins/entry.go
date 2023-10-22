@@ -171,18 +171,18 @@ func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 		case int(AuditPlugin):
 			symAudit, err := plug.Lookup("Audit")
 			if err != nil {
-				services.ServerMessage("Error openeing Audit plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
+				services.ServerMessage("Error opening Audit plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
 			} else {
-				services.ServerMessage("Add Audit plugin %s Version: %s", loader.Name(), loader.Version())
+				services.ServerMessage("Audit plugin: %s Version: %s", loader.Name(), loader.Version())
 				audit := symAudit.(Audit)
 				auditPlugins[info.Name()] = &AuditLoader{loader, audit}
 			}
 		case int(AdabasPlugin):
 			symAdabas, err := plug.Lookup("Adabas")
 			if err != nil {
-				services.ServerMessage("Error openeing Adabas plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
+				services.ServerMessage("Error opening Adabas plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
 			} else {
-				services.ServerMessage("Add Adabas plugin %s Version: %s", loader.Name(), loader.Version())
+				services.ServerMessage("Adabas plugin: %s Version: %s", loader.Name(), loader.Version())
 				adaSym := symAdabas.(Adabas)
 				adabasPlugins[info.Name()] = &AdabasLoader{loader, adaSym}
 			}
