@@ -22,10 +22,3 @@ function offline_scripts {
       rm /data/offline.sh
    fi
 }
-
-#
-# Create common Docker specific parameters into INI
-#
-function init_parameter {
-   # echo $(date +"%Y-%m-%d %H:%m:%S")" Set default parameter set"
-}
