@@ -29,11 +29,3 @@ function offline_scripts {
 function init_parameter {
    # echo $(date +"%Y-%m-%d %H:%m:%S")" Set default parameter set"
 }
-
-
-#
-# Evaluate Docker parameters to be passed to parameter
-#
-function prepare_parameter {
-   # echo $(date +"%Y-%m-%d %H:%m:%S")" Prepare parameter set"
-}

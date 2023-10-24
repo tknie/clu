@@ -94,8 +94,6 @@ init_environment
 # Trap various signals to clean up the environment
 trap clean_up EXIT HUP INT TERM SIGHUP SIGINT SIGTERM QUIT
 
-prepare_parameter
-
 # Start offline scripts if available
 offline_scripts
 
