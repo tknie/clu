@@ -46,9 +46,6 @@ SERVER_HOME=$INSTALLDIR
 SERVER_CONFIG=${SERVER_CONFIG:-${DATADIR}/configuration/config.yaml}
 export SERVER_CONFIG
 
-LOGPATH=/data/logs/
-SERVER_CONSOLE="${LOGPATH}/server.${HOSTNAME}.log"
-
 # Possibility to override ports or TLS topics
 #
 # Define certificates
@@ -65,12 +62,11 @@ export HOST
 
 # starting Rest Interface (kernel)
 start() {
-  echo $(date +"%Y-%m-%d %H:%m:%S")" Starting API server in background mode"
-  echo $(date +"%Y-%m-%d %H:%m:%S")" Server config file: ${SERVER_CONFIG}"
-  echo $(date +"%Y-%m-%d %H:%m:%S")" Server startup console out: ${SERVER_CONSOLE}"
+  echo $(date +"%Y-%m-%d %H:%m:%S")" Starting CLUAPI server in background mode"
+  echo $(date +"%Y-%m-%d %H:%m:%S")" Service config file: ${SERVER_CONFIG}"
 
   cd ${SERVER_HOME}
-  nohup bin/cluapi server -c ${SERVER_CONFIG} $* >${SERVER_CONSOLE} 2>&1 &
+  nohup bin/cluapi server -c ${SERVER_CONFIG} $* &
 }
 
 stop() {
@@ -94,9 +90,8 @@ case "$ACTION" in
   run)
         cd ${SERVER_HOME}
 
-        echo $(date +"%Y-%m-%d %H:%m:%S")" Starting API server in foreground"
-        echo $(date +"%Y-%m-%d %H:%m:%S")" Server config file: ${SERVER_CONFIG}"
-        echo $(date +"%Y-%m-%d %H:%m:%S")" Server console out: ${SERVER_CONSOLE}"
+        echo $(date +"%Y-%m-%d %H:%m:%S")" Starting CLUAPI server in foreground"
+        echo $(date +"%Y-%m-%d %H:%m:%S")" Service config file: ${SERVER_CONFIG}"
 
         bin/cluapi server -c ${SERVER_CONFIG} $*
         ;;

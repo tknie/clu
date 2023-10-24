@@ -69,7 +69,7 @@ func main() {
 		return m
 	}
 
-	services.ServerMessage("Starting API server version %s", services.BuildVersion)
+	services.ServerMessage("Starting CLUAPI server version %s", services.BuildVersion)
 	services.ServerMessage("Build date %s", services.BuildDate)
 	services.ServerMessage("Go build version %s", runtime.Version())
 	webserver.InitServices()
