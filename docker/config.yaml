@@ -33,8 +33,8 @@ server:
         type: SQL
         driver: pgx
         target: postgres://<user>:<password>@${POSTGRES_HOST}:${POSTGRES_PORT}/bitgarten
-  content: ${INSTALLDIR}/static
-  plugins: ${INSTALLDIR}/plugins
+  content: ${HOME}/static
+  plugins: ${HOME}/plugins
   shutdown:
     passcode: {}
     # Password to shutdown, will be send encrypted

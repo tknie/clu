@@ -30,8 +30,8 @@ server:
       - type: file
         passwordFile: configuration/realm.properties
       - type: system
-  content: /aaa
-  plugins: plugins
+  content: ${CURDIR}/static
+  plugins: ${CURDIR}/plugins
   shutdown:
     passcode: {}
     # Password to shutdown, will be send encrypted
