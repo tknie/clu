@@ -127,12 +127,13 @@ func fileServerMiddleware(next http.Handler) http.Handler {
 }
 
 func clearPath(r *http.Request) string {
-	if server.Viewer.Server.Prefix == "" {
-		return r.URL.Path
-	}
-	path := r.URL.Path
-	for _, prefix := range strings.Split(server.Viewer.Server.Prefix, ",") {
-		path = strings.TrimPrefix(r.URL.Path, strings.Trim(prefix, " "))
-	}
-	return path
+	return r.URL.Path
+	// if server.Viewer.Server.Prefix == "" {
+	// 	return r.URL.Path
+	// }
+	// path := r.URL.Path
+	// for _, prefix := range strings.Split(server.Viewer.Server.Prefix, ",") {
+	// 	path = strings.TrimPrefix(r.URL.Path, strings.Trim(prefix, " "))
+	// }
+	// return path
 }
