@@ -54,6 +54,8 @@ func (m *myMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		m.Next.ServeHTTP(w, r)
 		return
 	}
+
+	log.Log.Debugf("OperationID: %s", route.OperationID())
 	// Match operation by spec operation ID.
 	// Notice that the operation ID is optional and may be empty.
 	//
@@ -70,14 +72,16 @@ func (m *myMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	m.Next.ServeHTTP(w, r)
 }
 
-// InitMiddleWare init middleware steps
+// InitMiddleWare init middleware steps for CORS allowance and
+// different other middleware options
 func InitMiddleWare(s *api.Server) http.Handler {
 	mainHandler = &myMiddleware{Next: s}
 	corsHandler := cors.New(cors.Options{
-		Debug:            (services.LogLevel == 1),
-		AllowedHeaders:   []string{"*"},
-		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions},
+		Debug:          (services.LogLevel == 1),
+		AllowedHeaders: []string{"*"},
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost,
+			http.MethodDelete, http.MethodOptions},
 		AllowCredentials: true,
 		MaxAge:           1000,
 	})
