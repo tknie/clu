@@ -7,10 +7,10 @@ require (
 	github.com/go-faster/jx v1.1.0
 	github.com/go-openapi/runtime v0.26.0
 	github.com/go-openapi/swag v0.22.4
-	github.com/ogen-go/ogen v0.76.0
+	github.com/ogen-go/ogen v0.77.0
 	github.com/rs/cors v1.10.1
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
-	github.com/tknie/services v0.0.0-20231022170627-e853beffeb9a
+	github.com/tknie/services v0.0.0-20231022173037-edd74e3d985f
 	go.opentelemetry.io/otel v1.19.0
 	go.opentelemetry.io/otel/metric v1.19.0
 	go.opentelemetry.io/otel/trace v1.19.0
@@ -21,7 +21,7 @@ require (
 require (
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
-	github.com/go-logr/logr v1.2.4 // indirect
+	github.com/go-logr/logr v1.3.0 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/godror/godror v0.40.3 // indirect
@@ -45,13 +45,13 @@ require (
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.6 // indirect
 	github.com/go-openapi/errors v0.20.4 // indirect
-	github.com/google/uuid v1.3.1
+	github.com/google/uuid v1.4.0
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5
-	github.com/tknie/flynn v0.0.0-20231021203930-605f1e524388
+	github.com/tknie/flynn v0.0.0-20231029172315-a0dfbf7b5df9
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.14.0 // indirect
