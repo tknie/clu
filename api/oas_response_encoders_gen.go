@@ -4,7 +4,6 @@ package api
 
 import (
 	"io"
-	"mime/multipart"
 	"net/http"
 
 	"github.com/go-faster/errors"
@@ -13,6 +12,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/ogen-go/ogen/conv"
+	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/uri"
 )
 
@@ -23,11 +23,12 @@ func encodeAccessResponse(response AccessRes, w http.ResponseWriter, span trace.
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *AccessBadRequest:
@@ -35,11 +36,12 @@ func encodeAccessResponse(response AccessRes, w http.ResponseWriter, span trace.
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *AccessUnauthorized:
@@ -59,11 +61,12 @@ func encodeAccessResponse(response AccessRes, w http.ResponseWriter, span trace.
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -78,11 +81,12 @@ func encodeAdaptPermissionResponse(response AdaptPermissionRes, w http.ResponseW
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -90,11 +94,12 @@ func encodeAdaptPermissionResponse(response AdaptPermissionRes, w http.ResponseW
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *AdaptPermissionUnauthorized:
@@ -127,11 +132,12 @@ func encodeAddAccessResponse(response AddAccessRes, w http.ResponseWriter, span 
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *AddAccessUnauthorized:
@@ -151,11 +157,12 @@ func encodeAddAccessResponse(response AddAccessRes, w http.ResponseWriter, span 
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -170,11 +177,12 @@ func encodeAddRBACResourceResponse(response AddRBACResourceRes, w http.ResponseW
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -182,11 +190,12 @@ func encodeAddRBACResourceResponse(response AddRBACResourceRes, w http.ResponseW
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *AddRBACResourceUnauthorized:
@@ -219,11 +228,12 @@ func encodeAddViewResponse(response AddViewRes, w http.ResponseWriter, span trac
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *AddViewUnauthorized:
@@ -243,6 +253,70 @@ func encodeAddViewResponse(response AddViewRes, w http.ResponseWriter, span trac
 	}
 }
 
+func encodeBatchQueryResponse(response BatchQueryRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *ResponseHeaders:
+		w.Header().Set("Content-Type", "application/json")
+		// Encoding response headers.
+		{
+			h := uri.NewHeaderEncoder(w.Header())
+			// Encode "X-Token" header.
+			{
+				cfg := uri.HeaderParameterEncodingConfig{
+					Name:    "X-Token",
+					Explode: false,
+				}
+				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+					if val, ok := response.XToken.Get(); ok {
+						return e.EncodeValue(conv.StringToString(val))
+					}
+					return nil
+				}); err != nil {
+					return errors.Wrap(err, "encode X-Token header")
+				}
+			}
+		}
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *BatchQueryUnauthorized:
+		w.WriteHeader(401)
+		span.SetStatus(codes.Error, http.StatusText(401))
+
+		return nil
+
+	case *BatchQueryForbidden:
+		w.WriteHeader(403)
+		span.SetStatus(codes.Error, http.StatusText(403))
+
+		return nil
+
+	case *Error:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(404)
+		span.SetStatus(codes.Error, http.StatusText(404))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
 func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Directories:
@@ -250,11 +324,12 @@ func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, spa
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *BrowseListBadRequest:
@@ -262,11 +337,12 @@ func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, spa
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *BrowseListUnauthorized:
@@ -286,11 +362,12 @@ func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, spa
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -305,18 +382,12 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
-		return nil
 
-	case *BrowseLocationOKMultipartFormData:
-		w.Header().Set("Content-Type", "multipart/form-data")
-		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
-		response.File.WriteMultipart("AAA", multipart.NewWriter(w))
 		return nil
 
 	case *BrowseLocationOKApplicationOctetStream:
@@ -328,6 +399,7 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *BrowseLocationBadRequest:
@@ -335,11 +407,12 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *BrowseLocationUnauthorized:
@@ -359,11 +432,12 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -378,11 +452,12 @@ func encodeCreateDirectoryResponse(response CreateDirectoryRes, w http.ResponseW
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *CreateDirectoryBadRequest:
@@ -390,11 +465,12 @@ func encodeCreateDirectoryResponse(response CreateDirectoryRes, w http.ResponseW
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *CreateDirectoryUnauthorized:
@@ -414,11 +490,12 @@ func encodeCreateDirectoryResponse(response CreateDirectoryRes, w http.ResponseW
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -433,11 +510,12 @@ func encodeDatabaseOperationResponse(response DatabaseOperationRes, w http.Respo
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *StatusResponse:
@@ -445,11 +523,12 @@ func encodeDatabaseOperationResponse(response DatabaseOperationRes, w http.Respo
 		w.WriteHeader(202)
 		span.SetStatus(codes.Ok, http.StatusText(202))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -457,11 +536,12 @@ func encodeDatabaseOperationResponse(response DatabaseOperationRes, w http.Respo
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DatabaseOperationUnauthorized:
@@ -488,11 +568,12 @@ func encodeDatabasePostOperationsResponse(response DatabasePostOperationsRes, w 
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *StatusResponse:
@@ -500,11 +581,12 @@ func encodeDatabasePostOperationsResponse(response DatabasePostOperationsRes, w 
 		w.WriteHeader(202)
 		span.SetStatus(codes.Ok, http.StatusText(202))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -512,11 +594,12 @@ func encodeDatabasePostOperationsResponse(response DatabasePostOperationsRes, w 
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DatabasePostOperationsUnauthorized:
@@ -549,11 +632,12 @@ func encodeDelAccessResponse(response DelAccessRes, w http.ResponseWriter, span 
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DelAccessUnauthorized:
@@ -573,11 +657,12 @@ func encodeDelAccessResponse(response DelAccessRes, w http.ResponseWriter, span 
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -592,11 +677,12 @@ func encodeDeleteDatabaseResponse(response DeleteDatabaseRes, w http.ResponseWri
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -604,11 +690,12 @@ func encodeDeleteDatabaseResponse(response DeleteDatabaseRes, w http.ResponseWri
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DeleteDatabaseUnauthorized:
@@ -635,11 +722,12 @@ func encodeDeleteFileLocationResponse(response DeleteFileLocationRes, w http.Res
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DeleteFileLocationBadRequest:
@@ -647,11 +735,12 @@ func encodeDeleteFileLocationResponse(response DeleteFileLocationRes, w http.Res
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DeleteFileLocationUnauthorized:
@@ -671,11 +760,12 @@ func encodeDeleteFileLocationResponse(response DeleteFileLocationRes, w http.Res
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -690,11 +780,12 @@ func encodeDeleteJobResultResponse(response DeleteJobResultRes, w http.ResponseW
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DeleteJobResultBadRequest:
@@ -702,11 +793,12 @@ func encodeDeleteJobResultResponse(response DeleteJobResultRes, w http.ResponseW
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DeleteJobResultUnauthorized:
@@ -726,11 +818,12 @@ func encodeDeleteJobResultResponse(response DeleteJobResultRes, w http.ResponseW
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -745,11 +838,12 @@ func encodeDeleteRBACResourceResponse(response DeleteRBACResourceRes, w http.Res
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -757,11 +851,12 @@ func encodeDeleteRBACResourceResponse(response DeleteRBACResourceRes, w http.Res
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DeleteRBACResourceUnauthorized:
@@ -807,11 +902,12 @@ func encodeDeleteRecordsSearchedResponse(response DeleteRecordsSearchedRes, w ht
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DeleteRecordsSearchedUnauthorized:
@@ -831,11 +927,12 @@ func encodeDeleteRecordsSearchedResponse(response DeleteRecordsSearchedRes, w ht
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -856,11 +953,12 @@ func encodeDeleteViewResponse(response DeleteViewRes, w http.ResponseWriter, spa
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DeleteViewUnauthorized:
@@ -887,11 +985,12 @@ func encodeDisconnectTCPResponse(response DisconnectTCPRes, w http.ResponseWrite
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -899,11 +998,12 @@ func encodeDisconnectTCPResponse(response DisconnectTCPRes, w http.ResponseWrite
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DisconnectTCPUnauthorized:
@@ -934,6 +1034,7 @@ func encodeDownloadFileResponse(response DownloadFileRes, w http.ResponseWriter,
 		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DownloadFileBadRequest:
@@ -941,11 +1042,12 @@ func encodeDownloadFileResponse(response DownloadFileRes, w http.ResponseWriter,
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *DownloadFileUnauthorized:
@@ -965,11 +1067,12 @@ func encodeDownloadFileResponse(response DownloadFileRes, w http.ResponseWriter,
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -984,11 +1087,12 @@ func encodeGetConfigResponse(response GetConfigRes, w http.ResponseWriter, span 
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -996,11 +1100,12 @@ func encodeGetConfigResponse(response GetConfigRes, w http.ResponseWriter, span 
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetConfigUnauthorized:
@@ -1027,11 +1132,12 @@ func encodeGetConnectionsResponse(response GetConnectionsRes, w http.ResponseWri
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -1039,11 +1145,12 @@ func encodeGetConnectionsResponse(response GetConnectionsRes, w http.ResponseWri
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetConnectionsUnauthorized:
@@ -1070,11 +1177,12 @@ func encodeGetDatabaseSessionsResponse(response GetDatabaseSessionsRes, w http.R
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -1082,11 +1190,12 @@ func encodeGetDatabaseSessionsResponse(response GetDatabaseSessionsRes, w http.R
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetDatabaseSessionsUnauthorized:
@@ -1113,11 +1222,12 @@ func encodeGetDatabaseStatsResponse(response GetDatabaseStatsRes, w http.Respons
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -1125,11 +1235,12 @@ func encodeGetDatabaseStatsResponse(response GetDatabaseStatsRes, w http.Respons
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetDatabaseStatsUnauthorized:
@@ -1156,11 +1267,12 @@ func encodeGetDatabasesResponse(response GetDatabasesRes, w http.ResponseWriter,
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -1168,11 +1280,12 @@ func encodeGetDatabasesResponse(response GetDatabasesRes, w http.ResponseWriter,
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetDatabasesUnauthorized:
@@ -1218,11 +1331,12 @@ func encodeGetEnvironmentsResponse(response GetEnvironmentsRes, w http.ResponseW
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -1230,11 +1344,12 @@ func encodeGetEnvironmentsResponse(response GetEnvironmentsRes, w http.ResponseW
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetEnvironmentsUnauthorized:
@@ -1280,11 +1395,12 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetFieldsBadRequest:
@@ -1292,11 +1408,12 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetFieldsUnauthorized:
@@ -1316,11 +1433,12 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -1339,6 +1457,7 @@ func encodeGetImageResponse(response GetImageRes, w http.ResponseWriter, span tr
 		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetImageOKImageJpeg:
@@ -1350,6 +1469,7 @@ func encodeGetImageResponse(response GetImageRes, w http.ResponseWriter, span tr
 		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetImageOKImagePNG:
@@ -1361,6 +1481,7 @@ func encodeGetImageResponse(response GetImageRes, w http.ResponseWriter, span tr
 		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetImageUnauthorized:
@@ -1399,11 +1520,12 @@ func encodeGetImageResponse(response GetImageRes, w http.ResponseWriter, span tr
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -1418,11 +1540,12 @@ func encodeGetJobExecutionResultResponse(response GetJobExecutionResultRes, w ht
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetJobExecutionResultBadRequest:
@@ -1430,11 +1553,12 @@ func encodeGetJobExecutionResultResponse(response GetJobExecutionResultRes, w ht
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetJobExecutionResultUnauthorized:
@@ -1454,11 +1578,12 @@ func encodeGetJobExecutionResultResponse(response GetJobExecutionResultRes, w ht
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -1473,11 +1598,12 @@ func encodeGetJobFullInfoResponse(response GetJobFullInfoRes, w http.ResponseWri
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetJobFullInfoBadRequest:
@@ -1485,11 +1611,12 @@ func encodeGetJobFullInfoResponse(response GetJobFullInfoRes, w http.ResponseWri
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetJobFullInfoUnauthorized:
@@ -1509,11 +1636,12 @@ func encodeGetJobFullInfoResponse(response GetJobFullInfoRes, w http.ResponseWri
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -1528,11 +1656,12 @@ func encodeGetJobResultResponse(response GetJobResultRes, w http.ResponseWriter,
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetJobResultBadRequest:
@@ -1540,11 +1669,12 @@ func encodeGetJobResultResponse(response GetJobResultRes, w http.ResponseWriter,
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetJobResultUnauthorized:
@@ -1564,11 +1694,12 @@ func encodeGetJobResultResponse(response GetJobResultRes, w http.ResponseWriter,
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -1583,11 +1714,12 @@ func encodeGetJobsResponse(response GetJobsRes, w http.ResponseWriter, span trac
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetJobsUnauthorized:
@@ -1620,11 +1752,12 @@ func encodeGetJobsConfigResponse(response GetJobsConfigRes, w http.ResponseWrite
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -1632,11 +1765,12 @@ func encodeGetJobsConfigResponse(response GetJobsConfigRes, w http.ResponseWrite
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetJobsConfigUnauthorized:
@@ -1667,6 +1801,7 @@ func encodeGetLobByMapResponse(response GetLobByMapRes, w http.ResponseWriter, s
 		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetLobByMapUnauthorized:
@@ -1686,11 +1821,12 @@ func encodeGetLobByMapResponse(response GetLobByMapRes, w http.ResponseWriter, s
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -1724,11 +1860,12 @@ func encodeGetLoginSessionResponse(response GetLoginSessionRes, w http.ResponseW
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetLoginSessionUnauthorized:
@@ -1748,11 +1885,12 @@ func encodeGetLoginSessionResponse(response GetLoginSessionRes, w http.ResponseW
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -1786,11 +1924,12 @@ func encodeGetMapMetadataResponse(response GetMapMetadataRes, w http.ResponseWri
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetMapMetadataUnauthorized:
@@ -1810,11 +1949,12 @@ func encodeGetMapMetadataResponse(response GetMapMetadataRes, w http.ResponseWri
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -1848,11 +1988,12 @@ func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.R
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetMapRecordsFieldsUnauthorized:
@@ -1872,11 +2013,12 @@ func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.R
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -1891,11 +2033,12 @@ func encodeGetMapsResponse(response GetMapsRes, w http.ResponseWriter, span trac
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetMapsUnauthorized:
@@ -1915,11 +2058,12 @@ func encodeGetMapsResponse(response GetMapsRes, w http.ResponseWriter, span trac
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -1940,11 +2084,12 @@ func encodeGetPermissionResponse(response GetPermissionRes, w http.ResponseWrite
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetPermissionUnauthorized:
@@ -1971,11 +2116,12 @@ func encodeGetVersionResponse(response GetVersionRes, w http.ResponseWriter, spa
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -1983,11 +2129,12 @@ func encodeGetVersionResponse(response GetVersionRes, w http.ResponseWriter, spa
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2006,6 +2153,7 @@ func encodeGetVideoResponse(response GetVideoRes, w http.ResponseWriter, span tr
 		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetVideoOKVideoMP4:
@@ -2017,6 +2165,7 @@ func encodeGetVideoResponse(response GetVideoRes, w http.ResponseWriter, span tr
 		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetVideoUnauthorized:
@@ -2055,11 +2204,12 @@ func encodeGetVideoResponse(response GetVideoRes, w http.ResponseWriter, span tr
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2099,11 +2249,12 @@ func encodeGetViewsResponse(response GetViewsRes, w http.ResponseWriter, span tr
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *GetViewsUnauthorized:
@@ -2149,11 +2300,12 @@ func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *InsertMapFileRecordsBadRequest:
@@ -2161,11 +2313,12 @@ func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *InsertMapFileRecordsUnauthorized:
@@ -2185,11 +2338,12 @@ func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2223,11 +2377,12 @@ func encodeInsertRecordResponse(response InsertRecordRes, w http.ResponseWriter,
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *InsertRecordUnauthorized:
@@ -2247,11 +2402,12 @@ func encodeInsertRecordResponse(response InsertRecordRes, w http.ResponseWriter,
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2266,11 +2422,12 @@ func encodeListModellingResponse(response ListModellingRes, w http.ResponseWrite
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *ListModellingBadRequest:
@@ -2278,11 +2435,12 @@ func encodeListModellingResponse(response ListModellingRes, w http.ResponseWrite
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *ListModellingUnauthorized:
@@ -2302,11 +2460,12 @@ func encodeListModellingResponse(response ListModellingRes, w http.ResponseWrite
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2327,11 +2486,12 @@ func encodeListRBACResourceResponse(response ListRBACResourceRes, w http.Respons
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *ListRBACResourceUnauthorized:
@@ -2358,11 +2518,12 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *ListTablesBadRequest:
@@ -2370,11 +2531,12 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *ListTablesUnauthorized:
@@ -2394,11 +2556,12 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2432,11 +2595,12 @@ func encodeLoginSessionResponse(response LoginSessionRes, w http.ResponseWriter,
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *LoginSessionUnauthorized:
@@ -2456,11 +2620,12 @@ func encodeLoginSessionResponse(response LoginSessionRes, w http.ResponseWriter,
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2475,11 +2640,12 @@ func encodePostDatabaseResponse(response PostDatabaseRes, w http.ResponseWriter,
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -2487,11 +2653,12 @@ func encodePostDatabaseResponse(response PostDatabaseRes, w http.ResponseWriter,
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *PostDatabaseUnauthorized:
@@ -2518,11 +2685,12 @@ func encodePostJobResponse(response PostJobRes, w http.ResponseWriter, span trac
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *PostJobBadRequest:
@@ -2530,11 +2698,12 @@ func encodePostJobResponse(response PostJobRes, w http.ResponseWriter, span trac
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *PostJobUnauthorized:
@@ -2554,11 +2723,12 @@ func encodePostJobResponse(response PostJobRes, w http.ResponseWriter, span trac
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2592,11 +2762,12 @@ func encodePushLoginSessionResponse(response PushLoginSessionRes, w http.Respons
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *PushLoginSessionUnauthorized:
@@ -2616,11 +2787,12 @@ func encodePushLoginSessionResponse(response PushLoginSessionRes, w http.Respons
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2635,11 +2807,12 @@ func encodePutDatabaseResourceResponse(response PutDatabaseResourceRes, w http.R
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *StatusResponse:
@@ -2647,11 +2820,12 @@ func encodePutDatabaseResourceResponse(response PutDatabaseResourceRes, w http.R
 		w.WriteHeader(202)
 		span.SetStatus(codes.Ok, http.StatusText(202))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -2659,11 +2833,12 @@ func encodePutDatabaseResourceResponse(response PutDatabaseResourceRes, w http.R
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *PutDatabaseResourceUnauthorized:
@@ -2690,11 +2865,12 @@ func encodeRemovePermissionResponse(response RemovePermissionRes, w http.Respons
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *Error:
@@ -2702,11 +2878,12 @@ func encodeRemovePermissionResponse(response RemovePermissionRes, w http.Respons
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *RemovePermissionUnauthorized:
@@ -2739,11 +2916,12 @@ func encodeRemoveSessionCompatResponse(response RemoveSessionCompatRes, w http.R
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *RemoveSessionCompatNotFound:
@@ -2751,11 +2929,12 @@ func encodeRemoveSessionCompatResponse(response RemoveSessionCompatRes, w http.R
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2770,11 +2949,12 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *SearchModellingBadRequest:
@@ -2782,11 +2962,12 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *SearchModellingUnauthorized:
@@ -2806,11 +2987,12 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2844,11 +3026,12 @@ func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.R
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *SearchRecordsFieldsUnauthorized:
@@ -2868,11 +3051,12 @@ func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.R
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2887,11 +3071,12 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *SearchTableBadRequest:
@@ -2899,11 +3084,12 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *SearchTableUnauthorized:
@@ -2923,11 +3109,12 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -2967,11 +3154,12 @@ func encodeSetConfigResponse(response SetConfigRes, w http.ResponseWriter, span 
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *SetConfigUnauthorized:
@@ -3004,11 +3192,12 @@ func encodeSetJobsConfigResponse(response SetJobsConfigRes, w http.ResponseWrite
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *SetJobsConfigUnauthorized:
@@ -3035,11 +3224,12 @@ func encodeShutdownServerResponse(response ShutdownServerRes, w http.ResponseWri
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *ShutdownServerUnauthorized:
@@ -3059,11 +3249,12 @@ func encodeShutdownServerResponse(response ShutdownServerRes, w http.ResponseWri
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -3103,11 +3294,12 @@ func encodeStoreConfigResponse(response StoreConfigRes, w http.ResponseWriter, s
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *StoreConfigUnauthorized:
@@ -3134,11 +3326,12 @@ func encodeTriggerJobResponse(response TriggerJobRes, w http.ResponseWriter, spa
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *TriggerJobBadRequest:
@@ -3146,11 +3339,12 @@ func encodeTriggerJobResponse(response TriggerJobRes, w http.ResponseWriter, spa
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *TriggerJobUnauthorized:
@@ -3170,11 +3364,12 @@ func encodeTriggerJobResponse(response TriggerJobRes, w http.ResponseWriter, spa
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -3189,11 +3384,12 @@ func encodeUpdateLobByMapResponse(response UpdateLobByMapRes, w http.ResponseWri
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *UpdateLobByMapUnauthorized:
@@ -3213,11 +3409,12 @@ func encodeUpdateLobByMapResponse(response UpdateLobByMapRes, w http.ResponseWri
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -3251,11 +3448,12 @@ func encodeUpdateRecordsByFieldsResponse(response UpdateRecordsByFieldsRes, w ht
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *UpdateRecordsByFieldsUnauthorized:
@@ -3275,11 +3473,12 @@ func encodeUpdateRecordsByFieldsResponse(response UpdateRecordsByFieldsRes, w ht
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -3294,11 +3493,12 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *UploadFileOKTextPlain:
@@ -3310,6 +3510,7 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *UploadFileBadRequest:
@@ -3317,11 +3518,12 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	case *UploadFileUnauthorized:
@@ -3341,11 +3543,12 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
+
 		return nil
 
 	default:
@@ -3368,10 +3571,14 @@ func encodeErrorResponse(response *ErrorStatusCode, w http.ResponseWriter, span 
 		span.SetStatus(codes.Ok, st)
 	}
 
-	e := jx.GetEncoder()
+	e := new(jx.Encoder)
 	response.Response.Encode(e)
 	if _, err := e.WriteTo(w); err != nil {
 		return errors.Wrap(err, "write")
+	}
+
+	if code >= http.StatusInternalServerError {
+		return errors.Wrapf(ht.ErrInternalServerErrorResponse, "code: %d, message: %s", code, http.StatusText(code))
 	}
 	return nil
 

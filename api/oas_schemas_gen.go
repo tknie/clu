@@ -67,6 +67,18 @@ const (
 	AccessRole_ADMINISTRATOR AccessRole = "ADMINISTRATOR"
 )
 
+// AllValues returns all AccessRole values.
+func (AccessRole) AllValues() []AccessRole {
+	return []AccessRole{
+		AccessRole_User,
+		AccessRole_user,
+		AccessRole_USER,
+		AccessRole_Administrator,
+		AccessRole_administrator,
+		AccessRole_ADMINISTRATOR,
+	}
+}
+
 // MarshalText implements encoding.TextMarshaler.
 func (s AccessRole) MarshalText() ([]byte, error) {
 	switch s {
@@ -188,6 +200,18 @@ const (
 	AddAccessRole_ADMINISTRATOR AddAccessRole = "ADMINISTRATOR"
 )
 
+// AllValues returns all AddAccessRole values.
+func (AddAccessRole) AllValues() []AddAccessRole {
+	return []AddAccessRole{
+		AddAccessRole_User,
+		AddAccessRole_user,
+		AddAccessRole_USER,
+		AddAccessRole_Administrator,
+		AddAccessRole_administrator,
+		AddAccessRole_ADMINISTRATOR,
+	}
+}
+
 // MarshalText implements encoding.TextMarshaler.
 func (s AddAccessRole) MarshalText() ([]byte, error) {
 	switch s {
@@ -260,6 +284,24 @@ const (
 	AddRBACResourceResource_operation AddRBACResourceResource = "operation"
 	AddRBACResourceResource_OPERATION AddRBACResourceResource = "OPERATION"
 )
+
+// AllValues returns all AddRBACResourceResource values.
+func (AddRBACResourceResource) AllValues() []AddRBACResourceResource {
+	return []AddRBACResourceResource{
+		AddRBACResourceResource_Role,
+		AddRBACResourceResource_role,
+		AddRBACResourceResource_ROLE,
+		AddRBACResourceResource_Object,
+		AddRBACResourceResource_object,
+		AddRBACResourceResource_OBJECT,
+		AddRBACResourceResource_User,
+		AddRBACResourceResource_user,
+		AddRBACResourceResource_USER,
+		AddRBACResourceResource_Operation,
+		AddRBACResourceResource_operation,
+		AddRBACResourceResource_OPERATION,
+	}
+}
 
 // MarshalText implements encoding.TextMarshaler.
 func (s AddRBACResourceResource) MarshalText() ([]byte, error) {
@@ -438,6 +480,16 @@ func (s *BasicAuth) SetPassword(val string) {
 	s.Password = val
 }
 
+// BatchQueryForbidden is response for BatchQuery operation.
+type BatchQueryForbidden struct{}
+
+func (*BatchQueryForbidden) batchQueryRes() {}
+
+// BatchQueryUnauthorized is response for BatchQuery operation.
+type BatchQueryUnauthorized struct{}
+
+func (*BatchQueryUnauthorized) batchQueryRes() {}
+
 type BearerAuth struct {
 	Token string
 }
@@ -502,8 +554,6 @@ func (*BrowseLocationOKApplicationOctetStream) browseLocationRes() {}
 type BrowseLocationOKMultipartFormData struct {
 	File ht.MultipartFile `json:"file"`
 }
-
-func (*BrowseLocationOKMultipartFormData) browseLocationRes() {}
 
 // GetFile returns the value of File.
 func (s *BrowseLocationOKMultipartFormData) GetFile() ht.MultipartFile {
@@ -1196,6 +1246,18 @@ const (
 	DelAccessRole_ADMINISTRATOR DelAccessRole = "ADMINISTRATOR"
 )
 
+// AllValues returns all DelAccessRole values.
+func (DelAccessRole) AllValues() []DelAccessRole {
+	return []DelAccessRole{
+		DelAccessRole_User,
+		DelAccessRole_user,
+		DelAccessRole_USER,
+		DelAccessRole_Administrator,
+		DelAccessRole_administrator,
+		DelAccessRole_ADMINISTRATOR,
+	}
+}
+
 // MarshalText implements encoding.TextMarshaler.
 func (s DelAccessRole) MarshalText() ([]byte, error) {
 	switch s {
@@ -1314,6 +1376,24 @@ const (
 	DeleteRBACResourceResource_operation DeleteRBACResourceResource = "operation"
 	DeleteRBACResourceResource_OPERATION DeleteRBACResourceResource = "OPERATION"
 )
+
+// AllValues returns all DeleteRBACResourceResource values.
+func (DeleteRBACResourceResource) AllValues() []DeleteRBACResourceResource {
+	return []DeleteRBACResourceResource{
+		DeleteRBACResourceResource_Role,
+		DeleteRBACResourceResource_role,
+		DeleteRBACResourceResource_ROLE,
+		DeleteRBACResourceResource_Object,
+		DeleteRBACResourceResource_object,
+		DeleteRBACResourceResource_OBJECT,
+		DeleteRBACResourceResource_User,
+		DeleteRBACResourceResource_user,
+		DeleteRBACResourceResource_USER,
+		DeleteRBACResourceResource_Operation,
+		DeleteRBACResourceResource_operation,
+		DeleteRBACResourceResource_OPERATION,
+	}
+}
 
 // MarshalText implements encoding.TextMarshaler.
 func (s DeleteRBACResourceResource) MarshalText() ([]byte, error) {
@@ -1665,6 +1745,7 @@ func (s *Error) SetError(val OptErrorError) {
 func (*Error) adaptPermissionRes()        {}
 func (*Error) addRBACResourceRes()        {}
 func (*Error) addViewRes()                {}
+func (*Error) batchQueryRes()             {}
 func (*Error) databaseOperationRes()      {}
 func (*Error) databasePostOperationsRes() {}
 func (*Error) deleteDatabaseRes()         {}
@@ -2310,6 +2391,14 @@ const (
 	GetPermissionListAssignments GetPermissionList = "assignments"
 	GetPermissionListUserrole    GetPermissionList = "userrole"
 )
+
+// AllValues returns all GetPermissionList values.
+func (GetPermissionList) AllValues() []GetPermissionList {
+	return []GetPermissionList{
+		GetPermissionListAssignments,
+		GetPermissionListUserrole,
+	}
+}
 
 // MarshalText implements encoding.TextMarshaler.
 func (s GetPermissionList) MarshalText() ([]byte, error) {
@@ -3080,6 +3169,24 @@ const (
 	ListRBACResourceResource_operation ListRBACResourceResource = "operation"
 	ListRBACResourceResource_OPERATION ListRBACResourceResource = "OPERATION"
 )
+
+// AllValues returns all ListRBACResourceResource values.
+func (ListRBACResourceResource) AllValues() []ListRBACResourceResource {
+	return []ListRBACResourceResource{
+		ListRBACResourceResource_Role,
+		ListRBACResourceResource_role,
+		ListRBACResourceResource_ROLE,
+		ListRBACResourceResource_Object,
+		ListRBACResourceResource_object,
+		ListRBACResourceResource_OBJECT,
+		ListRBACResourceResource_User,
+		ListRBACResourceResource_user,
+		ListRBACResourceResource_USER,
+		ListRBACResourceResource_Operation,
+		ListRBACResourceResource_operation,
+		ListRBACResourceResource_OPERATION,
+	}
+}
 
 // MarshalText implements encoding.TextMarshaler.
 func (s ListRBACResourceResource) MarshalText() ([]byte, error) {
@@ -5223,6 +5330,98 @@ func (o OptMultipartFile) Or(d ht.MultipartFile) ht.MultipartFile {
 	return d
 }
 
+// NewOptSQLQuery returns new OptSQLQuery with value set to v.
+func NewOptSQLQuery(v SQLQuery) OptSQLQuery {
+	return OptSQLQuery{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSQLQuery is optional SQLQuery.
+type OptSQLQuery struct {
+	Value SQLQuery
+	Set   bool
+}
+
+// IsSet returns true if OptSQLQuery was set.
+func (o OptSQLQuery) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSQLQuery) Reset() {
+	var v SQLQuery
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSQLQuery) SetTo(v SQLQuery) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSQLQuery) Get() (v SQLQuery, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSQLQuery) Or(d SQLQuery) SQLQuery {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptSQLQueryBatch returns new OptSQLQueryBatch with value set to v.
+func NewOptSQLQueryBatch(v SQLQueryBatch) OptSQLQueryBatch {
+	return OptSQLQueryBatch{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSQLQueryBatch is optional SQLQueryBatch.
+type OptSQLQueryBatch struct {
+	Value SQLQueryBatch
+	Set   bool
+}
+
+// IsSet returns true if OptSQLQueryBatch was set.
+func (o OptSQLQueryBatch) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSQLQueryBatch) Reset() {
+	var v SQLQueryBatch
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSQLQueryBatch) SetTo(v SQLQueryBatch) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSQLQueryBatch) Get() (v SQLQueryBatch, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSQLQueryBatch) Or(d SQLQueryBatch) SQLQueryBatch {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptSessionsSession returns new OptSessionsSession with value set to v.
 func NewOptSessionsSession(v SessionsSession) OptSessionsSession {
 	return OptSessionsSession{
@@ -5587,6 +5786,7 @@ func (s *ResponseHeaders) SetResponse(val Response) {
 	s.Response = val
 }
 
+func (*ResponseHeaders) batchQueryRes()            {}
 func (*ResponseHeaders) deleteRecordsSearchedRes() {}
 func (*ResponseHeaders) getMapRecordsFieldsRes()   {}
 func (*ResponseHeaders) insertRecordRes()          {}
@@ -5602,6 +5802,35 @@ func (s *ResponseRecordsItem) init() ResponseRecordsItem {
 		*s = m
 	}
 	return m
+}
+
+// Ref: #/components/schemas/SQLQuery
+type SQLQuery struct {
+	Batch OptSQLQueryBatch `json:"Batch"`
+}
+
+// GetBatch returns the value of Batch.
+func (s *SQLQuery) GetBatch() OptSQLQueryBatch {
+	return s.Batch
+}
+
+// SetBatch sets the value of Batch.
+func (s *SQLQuery) SetBatch(val OptSQLQueryBatch) {
+	s.Batch = val
+}
+
+type SQLQueryBatch struct {
+	SQL OptString `json:"SQL"`
+}
+
+// GetSQL returns the value of SQL.
+func (s *SQLQueryBatch) GetSQL() OptString {
+	return s.SQL
+}
+
+// SetSQL sets the value of SQL.
+func (s *SQLQueryBatch) SetSQL(val OptString) {
+	s.SQL = val
 }
 
 type SearchModellingBadRequest Error

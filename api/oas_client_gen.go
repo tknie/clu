@@ -12,6 +12,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/metric"
+	semconv "go.opentelemetry.io/otel/semconv/v1.19.0"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/ogen-go/ogen/conv"
@@ -20,6 +21,401 @@ import (
 	"github.com/ogen-go/ogen/otelogen"
 	"github.com/ogen-go/ogen/uri"
 )
+
+// Invoker invokes operations described by OpenAPI v3 specification.
+type Invoker interface {
+	// Access invokes access operation.
+	//
+	// Retrieve the list of users who are allowed to access data.
+	//
+	// GET /admin/access/{role}
+	Access(ctx context.Context, params AccessParams) (AccessRes, error)
+	// AdaptPermission invokes adaptPermission operation.
+	//
+	// Add RBAC role.
+	//
+	// PUT /rest/database/{table}/permission
+	AdaptPermission(ctx context.Context, params AdaptPermissionParams) (AdaptPermissionRes, error)
+	// AddAccess invokes addAccess operation.
+	//
+	// Insert user in the list of users who are allowed to access data.
+	//
+	// POST /admin/access/{role}
+	AddAccess(ctx context.Context, params AddAccessParams) (AddAccessRes, error)
+	// AddRBACResource invokes addRBACResource operation.
+	//
+	// Add permission role.
+	//
+	// PUT /rest/database/{table}/permission/{resource}/{name}
+	AddRBACResource(ctx context.Context, params AddRBACResourceParams) (AddRBACResourceRes, error)
+	// AddView invokes addView operation.
+	//
+	// Add configuration in View repositories.
+	//
+	// POST /config/views
+	AddView(ctx context.Context, params AddViewParams) (AddViewRes, error)
+	// BatchQuery invokes batchQuery operation.
+	//
+	// Call a SQL query batch command posted in body.
+	//
+	// POST /rest/batch
+	BatchQuery(ctx context.Context, request OptSQLQuery) (BatchQueryRes, error)
+	// BrowseList invokes browseList operation.
+	//
+	// Retrieves a list of Browseable locations.
+	//
+	// GET /rest/file/browse
+	BrowseList(ctx context.Context) (BrowseListRes, error)
+	// BrowseLocation invokes browseLocation operation.
+	//
+	// Retrieves a list of files in the defined location.
+	//
+	// GET /rest/file/browse/{path}
+	BrowseLocation(ctx context.Context, params BrowseLocationParams) (BrowseLocationRes, error)
+	// CreateDirectory invokes createDirectory operation.
+	//
+	// Create a new directory.
+	//
+	// PUT /rest/file/{path}
+	CreateDirectory(ctx context.Context, params CreateDirectoryParams) (CreateDirectoryRes, error)
+	// DatabaseOperation invokes databaseOperation operation.
+	//
+	// Retrieve the current status of database with the given dbid.
+	//
+	// GET /rest/database/{table_operation}
+	DatabaseOperation(ctx context.Context, params DatabaseOperationParams) (DatabaseOperationRes, error)
+	// DatabasePostOperations invokes databasePostOperations operation.
+	//
+	// Initiate operations on the given dbid.
+	//
+	// POST /rest/database/{table_operation}
+	DatabasePostOperations(ctx context.Context, params DatabasePostOperationsParams) (DatabasePostOperationsRes, error)
+	// DelAccess invokes delAccess operation.
+	//
+	// Delete user in the list of users who are allowed to access data.
+	//
+	// DELETE /admin/access/{role}
+	DelAccess(ctx context.Context, params DelAccessParams) (DelAccessRes, error)
+	// DeleteDatabase invokes deleteDatabase operation.
+	//
+	// Delete the database.
+	//
+	// DELETE /rest/database/{table_operation}
+	DeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (DeleteDatabaseRes, error)
+	// DeleteFileLocation invokes deleteFileLocation operation.
+	//
+	// Delete the file on the given location.
+	//
+	// DELETE /rest/file/{path}
+	DeleteFileLocation(ctx context.Context, params DeleteFileLocationParams) (DeleteFileLocationRes, error)
+	// DeleteJobResult invokes deleteJobResult operation.
+	//
+	// Delete a specific job result.
+	//
+	// DELETE /rest/tasks/{jobName}/{jobId}
+	DeleteJobResult(ctx context.Context, params DeleteJobResultParams) (DeleteJobResultRes, error)
+	// DeleteRBACResource invokes deleteRBACResource operation.
+	//
+	// Delete RBAC role.
+	//
+	// DELETE /rest/database/{table}/permission/{resource}/{name}
+	DeleteRBACResource(ctx context.Context, params DeleteRBACResourceParams) (DeleteRBACResourceRes, error)
+	// DeleteRecordsSearched invokes deleteRecordsSearched operation.
+	//
+	// Delete a record with a given search.
+	//
+	// DELETE /rest/view/{table}/{search}
+	DeleteRecordsSearched(ctx context.Context, params DeleteRecordsSearchedParams) (DeleteRecordsSearchedRes, error)
+	// DeleteView invokes deleteView operation.
+	//
+	// Delete entry in configuration.
+	//
+	// DELETE /config/views
+	DeleteView(ctx context.Context, params DeleteViewParams) (DeleteViewRes, error)
+	// DisconnectTCP invokes disconnectTCP operation.
+	//
+	// Disconnect connection in the database with the given dbid.
+	//
+	// DELETE /rest/database/{table}/connection
+	DisconnectTCP(ctx context.Context, params DisconnectTCPParams) (DisconnectTCPRes, error)
+	// DownloadFile invokes downloadFile operation.
+	//
+	// Download a file out of file location.
+	//
+	// GET /rest/file/{path}
+	DownloadFile(ctx context.Context, params DownloadFileParams) (DownloadFileRes, error)
+	// GetConfig invokes getConfig operation.
+	//
+	// Get configuration.
+	//
+	// GET /config
+	GetConfig(ctx context.Context) (GetConfigRes, error)
+	// GetConnections invokes getConnections operation.
+	//
+	// Retrieve the current TCP connection.
+	//
+	// GET /rest/database/{table}/connection
+	GetConnections(ctx context.Context, params GetConnectionsParams) (GetConnectionsRes, error)
+	// GetDatabaseSessions invokes getDatabaseSessions operation.
+	//
+	// Retrieve a list of user queue entries.
+	//
+	// GET /rest/database/{table}/sessions
+	GetDatabaseSessions(ctx context.Context, params GetDatabaseSessionsParams) (GetDatabaseSessionsRes, error)
+	// GetDatabaseStats invokes getDatabaseStats operation.
+	//
+	// Retrieve SQL statistics.
+	//
+	// GET /rest/database/{table}/stats
+	GetDatabaseStats(ctx context.Context, params GetDatabaseStatsParams) (GetDatabaseStatsRes, error)
+	// GetDatabases invokes getDatabases operation.
+	//
+	// Retrieves a list of databases known by Interface.
+	//
+	// GET /rest/database
+	GetDatabases(ctx context.Context) (GetDatabasesRes, error)
+	// GetEnvironments invokes getEnvironments operation.
+	//
+	// Retrieves the list of environments.
+	//
+	// GET /rest/env
+	GetEnvironments(ctx context.Context) (GetEnvironmentsRes, error)
+	// GetFields invokes getFields operation.
+	//
+	// Retrieves all fields of an file.
+	//
+	// GET /rest/tables/{table}/fields
+	GetFields(ctx context.Context, params GetFieldsParams) (GetFieldsRes, error)
+	// GetImage invokes getImage operation.
+	//
+	// Retrieves a field of a specific ISN of a Map definition.
+	//
+	// GET /image/{table}/{field}/{search}
+	GetImage(ctx context.Context, params GetImageParams) (GetImageRes, error)
+	// GetJobExecutionResult invokes getJobExecutionResult operation.
+	//
+	// Retrieves a specific job result.
+	//
+	// GET /rest/tasks/results
+	GetJobExecutionResult(ctx context.Context, params GetJobExecutionResultParams) (GetJobExecutionResultRes, error)
+	// GetJobFullInfo invokes getJobFullInfo operation.
+	//
+	// Retrieves a full job definition.
+	//
+	// GET /rest/tasks/{jobName}
+	GetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (GetJobFullInfoRes, error)
+	// GetJobResult invokes getJobResult operation.
+	//
+	// Delete a specific job result.
+	//
+	// GET /rest/tasks/{jobName}/{jobId}
+	GetJobResult(ctx context.Context, params GetJobResultParams) (GetJobResultRes, error)
+	// GetJobs invokes getJobs operation.
+	//
+	// Retrieves a list of jobs known by the Interface.
+	//
+	// GET /rest/tasks
+	GetJobs(ctx context.Context, params GetJobsParams) (GetJobsRes, error)
+	// GetJobsConfig invokes getJobsConfig operation.
+	//
+	// Read job configuration section.
+	//
+	// GET /config/jobs
+	GetJobsConfig(ctx context.Context) (GetJobsConfigRes, error)
+	// GetLobByMap invokes getLobByMap operation.
+	//
+	// Retrieves a lob of a specific ISN of an field in a Map.
+	//
+	// GET /binary/{table}/{field}/{search}
+	GetLobByMap(ctx context.Context, params GetLobByMapParams) (GetLobByMapRes, error)
+	// GetLoginSession invokes getLoginSession operation.
+	//
+	// Login receiving JWT.
+	//
+	// GET /login
+	GetLoginSession(ctx context.Context) (GetLoginSessionRes, error)
+	// GetMapMetadata invokes getMapMetadata operation.
+	//
+	// Retrieves metadata of a Map definition.
+	//
+	// GET /rest/metadata/view/{table}
+	GetMapMetadata(ctx context.Context, params GetMapMetadataParams) (GetMapMetadataRes, error)
+	// GetMapRecordsFields invokes getMapRecordsFields operation.
+	//
+	// Retrieves a field of a specific ISN of a Map definition.
+	//
+	// GET /rest/view/{table}/{fields}/{search}
+	GetMapRecordsFields(ctx context.Context, params GetMapRecordsFieldsParams) (GetMapRecordsFieldsRes, error)
+	// GetMaps invokes getMaps operation.
+	//
+	// Retrieves a list of available views.
+	//
+	// GET /rest/view
+	GetMaps(ctx context.Context) (GetMapsRes, error)
+	// GetPermission invokes getPermission operation.
+	//
+	// List RBAC assignments permission.
+	//
+	// GET /rest/database/{table}/permission
+	GetPermission(ctx context.Context, params GetPermissionParams) (GetPermissionRes, error)
+	// GetVersion invokes getVersion operation.
+	//
+	// Retrieves the current version.
+	//
+	// GET /version
+	GetVersion(ctx context.Context) (GetVersionRes, error)
+	// GetVideo invokes getVideo operation.
+	//
+	// Retrieves a video stream of a specific ISN of a Map definition.
+	//
+	// GET /video/{table}/{field}/{search}
+	GetVideo(ctx context.Context, params GetVideoParams) (GetVideoRes, error)
+	// GetViews invokes getViews operation.
+	//
+	// Defines the current views.
+	//
+	// GET /config/views
+	GetViews(ctx context.Context) (GetViewsRes, error)
+	// InsertMapFileRecords invokes insertMapFileRecords operation.
+	//
+	// Store send records into Map definition.
+	//
+	// POST /rest/view
+	InsertMapFileRecords(ctx context.Context, request OptInsertMapFileRecordsReq) (InsertMapFileRecordsRes, error)
+	// InsertRecord invokes insertRecord operation.
+	//
+	// Insert given record.
+	//
+	// POST /rest/view/{table}
+	InsertRecord(ctx context.Context, request OptInsertRecordReq, params InsertRecordParams) (InsertRecordRes, error)
+	// ListModelling invokes listModelling operation.
+	//
+	// Retrieves all fields of an file.
+	//
+	// GET /rest/map
+	ListModelling(ctx context.Context) (ListModellingRes, error)
+	// ListRBACResource invokes listRBACResource operation.
+	//
+	// Add permission role.
+	//
+	// GET /rest/database/{table}/permission/{resource}
+	ListRBACResource(ctx context.Context, params ListRBACResourceParams) (ListRBACResourceRes, error)
+	// ListTables invokes listTables operation.
+	//
+	// Retrieves all tables of databases.
+	//
+	// GET /rest/tables
+	ListTables(ctx context.Context) (ListTablesRes, error)
+	// LoginSession invokes loginSession operation.
+	//
+	// Login receiving JWT.
+	//
+	// PUT /login
+	LoginSession(ctx context.Context) (LoginSessionRes, error)
+	// PostDatabase invokes postDatabase operation.
+	//
+	// Create a new database, the input need to be JSON. A structure level parameter indicate version to
+	// be used.
+	//
+	// POST /rest/database
+	PostDatabase(ctx context.Context, request *Database) (PostDatabaseRes, error)
+	// PostJob invokes postJob operation.
+	//
+	// Create a new Job database.
+	//
+	// POST /rest/tasks
+	PostJob(ctx context.Context, request PostJobReq) (PostJobRes, error)
+	// PushLoginSession invokes pushLoginSession operation.
+	//
+	// Login receiving JWT.
+	//
+	// POST /login
+	PushLoginSession(ctx context.Context) (PushLoginSessionRes, error)
+	// PutDatabaseResource invokes putDatabaseResource operation.
+	//
+	// Change resource of the database.
+	//
+	// PUT /rest/database/{table_operation}
+	PutDatabaseResource(ctx context.Context, params PutDatabaseResourceParams) (PutDatabaseResourceRes, error)
+	// RemovePermission invokes removePermission operation.
+	//
+	// Add RBAC role.
+	//
+	// DELETE /rest/database/{table}/permission
+	RemovePermission(ctx context.Context, params RemovePermissionParams) (RemovePermissionRes, error)
+	// RemoveSessionCompat invokes removeSessionCompat operation.
+	//
+	// Remove the session.
+	//
+	// GET /logoff
+	RemoveSessionCompat(ctx context.Context) (RemoveSessionCompatRes, error)
+	// SearchModelling invokes searchModelling operation.
+	//
+	// Retrieves all fields of an file.
+	//
+	// GET /rest/map/{path}
+	SearchModelling(ctx context.Context, params SearchModellingParams) (SearchModellingRes, error)
+	// SearchRecordsFields invokes searchRecordsFields operation.
+	//
+	// Query a record with a given SQL query.
+	//
+	// GET /rest/view/{table}/{search}
+	SearchRecordsFields(ctx context.Context, params SearchRecordsFieldsParams) (SearchRecordsFieldsRes, error)
+	// SearchTable invokes searchTable operation.
+	//
+	// Retrieves all fields of an file.
+	//
+	// GET /rest/tables/{table}/{fields}/{search}
+	SearchTable(ctx context.Context, params SearchTableParams) (SearchTableRes, error)
+	// SetConfig invokes setConfig operation.
+	//
+	// Store configuration.
+	//
+	// PUT /config
+	SetConfig(ctx context.Context, request SetConfigReq) (SetConfigRes, error)
+	// SetJobsConfig invokes setJobsConfig operation.
+	//
+	// Set the ADADATADIR.
+	//
+	// PUT /config/jobs
+	SetJobsConfig(ctx context.Context, request OptJobStore) (SetJobsConfigRes, error)
+	// ShutdownServer invokes shutdownServer operation.
+	//
+	// Init shutdown procedure.
+	//
+	// PUT /rest/shutdown/{hash}
+	ShutdownServer(ctx context.Context, params ShutdownServerParams) (ShutdownServerRes, error)
+	// StoreConfig invokes storeConfig operation.
+	//
+	// Store configuration.
+	//
+	// POST /config
+	StoreConfig(ctx context.Context) (StoreConfigRes, error)
+	// TriggerJob invokes triggerJob operation.
+	//
+	// Trigger a job.
+	//
+	// PUT /rest/tasks/{jobName}
+	TriggerJob(ctx context.Context, params TriggerJobParams) (TriggerJobRes, error)
+	// UpdateLobByMap invokes updateLobByMap operation.
+	//
+	// Set a lob at a specific ISN of an field in a Map.
+	//
+	// PUT /binary/{table}/{field}/{search}
+	UpdateLobByMap(ctx context.Context, request UpdateLobByMapReq, params UpdateLobByMapParams) (UpdateLobByMapRes, error)
+	// UpdateRecordsByFields invokes updateRecordsByFields operation.
+	//
+	// Update a record dependent on field(s) of a specific table.
+	//
+	// PUT /rest/view/{table}/{search}
+	UpdateRecordsByFields(ctx context.Context, request OptUpdateRecordsByFieldsReq, params UpdateRecordsByFieldsParams) (UpdateRecordsByFieldsRes, error)
+	// UploadFile invokes uploadFile operation.
+	//
+	// Upload a new file to the given location.
+	//
+	// POST /rest/file/{path}
+	UploadFile(ctx context.Context, request *UploadFileReq, params UploadFileParams) (UploadFileRes, error)
+}
 
 // Client implements OAS client.
 type Client struct {
@@ -82,13 +478,14 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 // GET /admin/access/{role}
 func (c *Client) Access(ctx context.Context, params AccessParams) (AccessRes, error) {
 	res, err := c.sendAccess(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendAccess(ctx context.Context, params AccessParams) (res AccessRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("access"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/admin/access/{role}"),
 	}
 
 	// Run stopwatch.
@@ -201,7 +598,7 @@ func (c *Client) sendAccess(ctx context.Context, params AccessParams) (res Acces
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -228,13 +625,14 @@ func (c *Client) sendAccess(ctx context.Context, params AccessParams) (res Acces
 // PUT /rest/database/{table}/permission
 func (c *Client) AdaptPermission(ctx context.Context, params AdaptPermissionParams) (AdaptPermissionRes, error) {
 	res, err := c.sendAdaptPermission(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendAdaptPermission(ctx context.Context, params AdaptPermissionParams) (res AdaptPermissionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("adaptPermission"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/rest/database/{table}/permission"),
 	}
 
 	// Run stopwatch.
@@ -348,7 +746,7 @@ func (c *Client) sendAdaptPermission(ctx context.Context, params AdaptPermission
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -375,13 +773,14 @@ func (c *Client) sendAdaptPermission(ctx context.Context, params AdaptPermission
 // POST /admin/access/{role}
 func (c *Client) AddAccess(ctx context.Context, params AddAccessParams) (AddAccessRes, error) {
 	res, err := c.sendAddAccess(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendAddAccess(ctx context.Context, params AddAccessParams) (res AddAccessRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addAccess"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/admin/access/{role}"),
 	}
 
 	// Run stopwatch.
@@ -512,7 +911,7 @@ func (c *Client) sendAddAccess(ctx context.Context, params AddAccessParams) (res
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -539,13 +938,14 @@ func (c *Client) sendAddAccess(ctx context.Context, params AddAccessParams) (res
 // PUT /rest/database/{table}/permission/{resource}/{name}
 func (c *Client) AddRBACResource(ctx context.Context, params AddRBACResourceParams) (AddRBACResourceRes, error) {
 	res, err := c.sendAddRBACResource(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendAddRBACResource(ctx context.Context, params AddRBACResourceParams) (res AddRBACResourceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addRBACResource"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}/{name}"),
 	}
 
 	// Run stopwatch.
@@ -696,7 +1096,7 @@ func (c *Client) sendAddRBACResource(ctx context.Context, params AddRBACResource
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -723,13 +1123,14 @@ func (c *Client) sendAddRBACResource(ctx context.Context, params AddRBACResource
 // POST /config/views
 func (c *Client) AddView(ctx context.Context, params AddViewParams) (AddViewRes, error) {
 	res, err := c.sendAddView(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res AddViewRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addView"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/config/views"),
 	}
 
 	// Run stopwatch.
@@ -856,7 +1257,7 @@ func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res Add
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -876,6 +1277,138 @@ func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res Add
 	return result, nil
 }
 
+// BatchQuery invokes batchQuery operation.
+//
+// Call a SQL query batch command posted in body.
+//
+// POST /rest/batch
+func (c *Client) BatchQuery(ctx context.Context, request OptSQLQuery) (BatchQueryRes, error) {
+	res, err := c.sendBatchQuery(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendBatchQuery(ctx context.Context, request OptSQLQuery) (res BatchQueryRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("batchQuery"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/rest/batch"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "BatchQuery",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/rest/batch"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeBatchQueryRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:BasicAuth"
+			switch err := c.securityBasicAuth(ctx, "BatchQuery", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BasicAuth\"")
+			}
+		}
+		{
+			stage = "Security:TokenCheck"
+			switch err := c.securityTokenCheck(ctx, "BatchQuery", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 1
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"TokenCheck\"")
+			}
+		}
+		{
+			stage = "Security:BearerAuth"
+			switch err := c.securityBearerAuth(ctx, "BatchQuery", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 2
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BearerAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+				{0b00000010},
+				{0b00000100},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeBatchQueryResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // BrowseList invokes browseList operation.
 //
 // Retrieves a list of Browseable locations.
@@ -883,13 +1416,14 @@ func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res Add
 // GET /rest/file/browse
 func (c *Client) BrowseList(ctx context.Context) (BrowseListRes, error) {
 	res, err := c.sendBrowseList(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendBrowseList(ctx context.Context) (res BrowseListRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("browseList"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/file/browse"),
 	}
 
 	// Run stopwatch.
@@ -984,7 +1518,7 @@ func (c *Client) sendBrowseList(ctx context.Context) (res BrowseListRes, err err
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -1011,13 +1545,14 @@ func (c *Client) sendBrowseList(ctx context.Context) (res BrowseListRes, err err
 // GET /rest/file/browse/{path}
 func (c *Client) BrowseLocation(ctx context.Context, params BrowseLocationParams) (BrowseLocationRes, error) {
 	res, err := c.sendBrowseLocation(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendBrowseLocation(ctx context.Context, params BrowseLocationParams) (res BrowseLocationRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("browseLocation"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/file/browse/{path}"),
 	}
 
 	// Run stopwatch.
@@ -1151,7 +1686,7 @@ func (c *Client) sendBrowseLocation(ctx context.Context, params BrowseLocationPa
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -1178,13 +1713,14 @@ func (c *Client) sendBrowseLocation(ctx context.Context, params BrowseLocationPa
 // PUT /rest/file/{path}
 func (c *Client) CreateDirectory(ctx context.Context, params CreateDirectoryParams) (CreateDirectoryRes, error) {
 	res, err := c.sendCreateDirectory(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendCreateDirectory(ctx context.Context, params CreateDirectoryParams) (res CreateDirectoryRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createDirectory"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 
 	// Run stopwatch.
@@ -1297,7 +1833,7 @@ func (c *Client) sendCreateDirectory(ctx context.Context, params CreateDirectory
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -1324,13 +1860,14 @@ func (c *Client) sendCreateDirectory(ctx context.Context, params CreateDirectory
 // GET /rest/database/{table_operation}
 func (c *Client) DatabaseOperation(ctx context.Context, params DatabaseOperationParams) (DatabaseOperationRes, error) {
 	res, err := c.sendDatabaseOperation(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDatabaseOperation(ctx context.Context, params DatabaseOperationParams) (res DatabaseOperationRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("databaseOperation"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
 	// Run stopwatch.
@@ -1443,7 +1980,7 @@ func (c *Client) sendDatabaseOperation(ctx context.Context, params DatabaseOpera
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -1470,13 +2007,14 @@ func (c *Client) sendDatabaseOperation(ctx context.Context, params DatabaseOpera
 // POST /rest/database/{table_operation}
 func (c *Client) DatabasePostOperations(ctx context.Context, params DatabasePostOperationsParams) (DatabasePostOperationsRes, error) {
 	res, err := c.sendDatabasePostOperations(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDatabasePostOperations(ctx context.Context, params DatabasePostOperationsParams) (res DatabasePostOperationsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("databasePostOperations"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
 	// Run stopwatch.
@@ -1610,7 +2148,7 @@ func (c *Client) sendDatabasePostOperations(ctx context.Context, params Database
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -1637,13 +2175,14 @@ func (c *Client) sendDatabasePostOperations(ctx context.Context, params Database
 // DELETE /admin/access/{role}
 func (c *Client) DelAccess(ctx context.Context, params DelAccessParams) (DelAccessRes, error) {
 	res, err := c.sendDelAccess(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDelAccess(ctx context.Context, params DelAccessParams) (res DelAccessRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("delAccess"),
+		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRouteKey.String("/admin/access/{role}"),
 	}
 
 	// Run stopwatch.
@@ -1774,7 +2313,7 @@ func (c *Client) sendDelAccess(ctx context.Context, params DelAccessParams) (res
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -1801,13 +2340,14 @@ func (c *Client) sendDelAccess(ctx context.Context, params DelAccessParams) (res
 // DELETE /rest/database/{table_operation}
 func (c *Client) DeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (DeleteDatabaseRes, error) {
 	res, err := c.sendDeleteDatabase(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (res DeleteDatabaseRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteDatabase"),
+		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
 	// Run stopwatch.
@@ -1920,7 +2460,7 @@ func (c *Client) sendDeleteDatabase(ctx context.Context, params DeleteDatabasePa
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -1947,13 +2487,14 @@ func (c *Client) sendDeleteDatabase(ctx context.Context, params DeleteDatabasePa
 // DELETE /rest/file/{path}
 func (c *Client) DeleteFileLocation(ctx context.Context, params DeleteFileLocationParams) (DeleteFileLocationRes, error) {
 	res, err := c.sendDeleteFileLocation(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLocationParams) (res DeleteFileLocationRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteFileLocation"),
+		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 
 	// Run stopwatch.
@@ -2084,7 +2625,7 @@ func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLo
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -2111,13 +2652,14 @@ func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLo
 // DELETE /rest/tasks/{jobName}/{jobId}
 func (c *Client) DeleteJobResult(ctx context.Context, params DeleteJobResultParams) (DeleteJobResultRes, error) {
 	res, err := c.sendDeleteJobResult(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResultParams) (res DeleteJobResultRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteJobResult"),
+		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}/{jobId}"),
 	}
 
 	// Run stopwatch.
@@ -2249,7 +2791,7 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -2276,13 +2818,14 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 // DELETE /rest/database/{table}/permission/{resource}/{name}
 func (c *Client) DeleteRBACResource(ctx context.Context, params DeleteRBACResourceParams) (DeleteRBACResourceRes, error) {
 	res, err := c.sendDeleteRBACResource(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDeleteRBACResource(ctx context.Context, params DeleteRBACResourceParams) (res DeleteRBACResourceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteRBACResource"),
+		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}/{name}"),
 	}
 
 	// Run stopwatch.
@@ -2433,7 +2976,7 @@ func (c *Client) sendDeleteRBACResource(ctx context.Context, params DeleteRBACRe
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -2460,13 +3003,14 @@ func (c *Client) sendDeleteRBACResource(ctx context.Context, params DeleteRBACRe
 // DELETE /rest/view/{table}/{search}
 func (c *Client) DeleteRecordsSearched(ctx context.Context, params DeleteRecordsSearchedParams) (DeleteRecordsSearchedRes, error) {
 	res, err := c.sendDeleteRecordsSearched(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDeleteRecordsSearched(ctx context.Context, params DeleteRecordsSearchedParams) (res DeleteRecordsSearchedRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteRecordsSearched"),
+		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
 
 	// Run stopwatch.
@@ -2755,7 +3299,7 @@ func (c *Client) sendDeleteRecordsSearched(ctx context.Context, params DeleteRec
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -2782,13 +3326,14 @@ func (c *Client) sendDeleteRecordsSearched(ctx context.Context, params DeleteRec
 // DELETE /config/views
 func (c *Client) DeleteView(ctx context.Context, params DeleteViewParams) (DeleteViewRes, error) {
 	res, err := c.sendDeleteView(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDeleteView(ctx context.Context, params DeleteViewParams) (res DeleteViewRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteView"),
+		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRouteKey.String("/config/views"),
 	}
 
 	// Run stopwatch.
@@ -2915,7 +3460,7 @@ func (c *Client) sendDeleteView(ctx context.Context, params DeleteViewParams) (r
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -2942,13 +3487,14 @@ func (c *Client) sendDeleteView(ctx context.Context, params DeleteViewParams) (r
 // DELETE /rest/database/{table}/connection
 func (c *Client) DisconnectTCP(ctx context.Context, params DisconnectTCPParams) (DisconnectTCPRes, error) {
 	res, err := c.sendDisconnectTCP(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDisconnectTCP(ctx context.Context, params DisconnectTCPParams) (res DisconnectTCPRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("disconnectTCP"),
+		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRouteKey.String("/rest/database/{table}/connection"),
 	}
 
 	// Run stopwatch.
@@ -3100,7 +3646,7 @@ func (c *Client) sendDisconnectTCP(ctx context.Context, params DisconnectTCPPara
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -3127,13 +3673,14 @@ func (c *Client) sendDisconnectTCP(ctx context.Context, params DisconnectTCPPara
 // GET /rest/file/{path}
 func (c *Client) DownloadFile(ctx context.Context, params DownloadFileParams) (DownloadFileRes, error) {
 	res, err := c.sendDownloadFile(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendDownloadFile(ctx context.Context, params DownloadFileParams) (res DownloadFileRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("downloadFile"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 
 	// Run stopwatch.
@@ -3246,7 +3793,7 @@ func (c *Client) sendDownloadFile(ctx context.Context, params DownloadFileParams
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -3273,13 +3820,14 @@ func (c *Client) sendDownloadFile(ctx context.Context, params DownloadFileParams
 // GET /config
 func (c *Client) GetConfig(ctx context.Context) (GetConfigRes, error) {
 	res, err := c.sendGetConfig(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetConfig(ctx context.Context) (res GetConfigRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getConfig"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/config"),
 	}
 
 	// Run stopwatch.
@@ -3374,7 +3922,7 @@ func (c *Client) sendGetConfig(ctx context.Context) (res GetConfigRes, err error
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -3401,13 +3949,14 @@ func (c *Client) sendGetConfig(ctx context.Context) (res GetConfigRes, err error
 // GET /rest/database/{table}/connection
 func (c *Client) GetConnections(ctx context.Context, params GetConnectionsParams) (GetConnectionsRes, error) {
 	res, err := c.sendGetConnections(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetConnections(ctx context.Context, params GetConnectionsParams) (res GetConnectionsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getConnections"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/database/{table}/connection"),
 	}
 
 	// Run stopwatch.
@@ -3521,7 +4070,7 @@ func (c *Client) sendGetConnections(ctx context.Context, params GetConnectionsPa
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -3548,13 +4097,14 @@ func (c *Client) sendGetConnections(ctx context.Context, params GetConnectionsPa
 // GET /rest/database/{table}/sessions
 func (c *Client) GetDatabaseSessions(ctx context.Context, params GetDatabaseSessionsParams) (GetDatabaseSessionsRes, error) {
 	res, err := c.sendGetDatabaseSessions(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetDatabaseSessions(ctx context.Context, params GetDatabaseSessionsParams) (res GetDatabaseSessionsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getDatabaseSessions"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/database/{table}/sessions"),
 	}
 
 	// Run stopwatch.
@@ -3668,7 +4218,7 @@ func (c *Client) sendGetDatabaseSessions(ctx context.Context, params GetDatabase
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -3695,13 +4245,14 @@ func (c *Client) sendGetDatabaseSessions(ctx context.Context, params GetDatabase
 // GET /rest/database/{table}/stats
 func (c *Client) GetDatabaseStats(ctx context.Context, params GetDatabaseStatsParams) (GetDatabaseStatsRes, error) {
 	res, err := c.sendGetDatabaseStats(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetDatabaseStats(ctx context.Context, params GetDatabaseStatsParams) (res GetDatabaseStatsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getDatabaseStats"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/database/{table}/stats"),
 	}
 
 	// Run stopwatch.
@@ -3815,7 +4366,7 @@ func (c *Client) sendGetDatabaseStats(ctx context.Context, params GetDatabaseSta
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -3842,13 +4393,14 @@ func (c *Client) sendGetDatabaseStats(ctx context.Context, params GetDatabaseSta
 // GET /rest/database
 func (c *Client) GetDatabases(ctx context.Context) (GetDatabasesRes, error) {
 	res, err := c.sendGetDatabases(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetDatabases(ctx context.Context) (res GetDatabasesRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getDatabases"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/database"),
 	}
 
 	// Run stopwatch.
@@ -3943,7 +4495,7 @@ func (c *Client) sendGetDatabases(ctx context.Context) (res GetDatabasesRes, err
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -3970,13 +4522,14 @@ func (c *Client) sendGetDatabases(ctx context.Context) (res GetDatabasesRes, err
 // GET /rest/env
 func (c *Client) GetEnvironments(ctx context.Context) (GetEnvironmentsRes, error) {
 	res, err := c.sendGetEnvironments(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetEnvironments(ctx context.Context) (res GetEnvironmentsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getEnvironments"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/env"),
 	}
 
 	// Run stopwatch.
@@ -4041,13 +4594,14 @@ func (c *Client) sendGetEnvironments(ctx context.Context) (res GetEnvironmentsRe
 // GET /rest/tables/{table}/fields
 func (c *Client) GetFields(ctx context.Context, params GetFieldsParams) (GetFieldsRes, error) {
 	res, err := c.sendGetFields(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetFields(ctx context.Context, params GetFieldsParams) (res GetFieldsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getFields"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/tables/{table}/fields"),
 	}
 
 	// Run stopwatch.
@@ -4161,7 +4715,7 @@ func (c *Client) sendGetFields(ctx context.Context, params GetFieldsParams) (res
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -4188,13 +4742,14 @@ func (c *Client) sendGetFields(ctx context.Context, params GetFieldsParams) (res
 // GET /image/{table}/{field}/{search}
 func (c *Client) GetImage(ctx context.Context, params GetImageParams) (GetImageRes, error) {
 	res, err := c.sendGetImage(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res GetImageRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getImage"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/image/{table}/{field}/{search}"),
 	}
 
 	// Run stopwatch.
@@ -4383,7 +4938,7 @@ func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res G
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -4410,13 +4965,14 @@ func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res G
 // GET /rest/tasks/results
 func (c *Client) GetJobExecutionResult(ctx context.Context, params GetJobExecutionResultParams) (GetJobExecutionResultRes, error) {
 	res, err := c.sendGetJobExecutionResult(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExecutionResultParams) (res GetJobExecutionResultRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobExecutionResult"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/tasks/results"),
 	}
 
 	// Run stopwatch.
@@ -4549,7 +5105,7 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -4576,13 +5132,14 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 // GET /rest/tasks/{jobName}
 func (c *Client) GetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (GetJobFullInfoRes, error) {
 	res, err := c.sendGetJobFullInfo(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (res GetJobFullInfoRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobFullInfo"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}"),
 	}
 
 	// Run stopwatch.
@@ -4695,7 +5252,7 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -4722,13 +5279,14 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 // GET /rest/tasks/{jobName}/{jobId}
 func (c *Client) GetJobResult(ctx context.Context, params GetJobResultParams) (GetJobResultRes, error) {
 	res, err := c.sendGetJobResult(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams) (res GetJobResultRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobResult"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}/{jobId}"),
 	}
 
 	// Run stopwatch.
@@ -4860,7 +5418,7 @@ func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -4887,13 +5445,14 @@ func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams
 // GET /rest/tasks
 func (c *Client) GetJobs(ctx context.Context, params GetJobsParams) (GetJobsRes, error) {
 	res, err := c.sendGetJobs(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res GetJobsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobs"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/tasks"),
 	}
 
 	// Run stopwatch.
@@ -5026,7 +5585,7 @@ func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res Get
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -5053,13 +5612,14 @@ func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res Get
 // GET /config/jobs
 func (c *Client) GetJobsConfig(ctx context.Context) (GetJobsConfigRes, error) {
 	res, err := c.sendGetJobsConfig(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetJobsConfig(ctx context.Context) (res GetJobsConfigRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobsConfig"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/config/jobs"),
 	}
 
 	// Run stopwatch.
@@ -5154,7 +5714,7 @@ func (c *Client) sendGetJobsConfig(ctx context.Context) (res GetJobsConfigRes, e
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -5181,13 +5741,14 @@ func (c *Client) sendGetJobsConfig(ctx context.Context) (res GetJobsConfigRes, e
 // GET /binary/{table}/{field}/{search}
 func (c *Client) GetLobByMap(ctx context.Context, params GetLobByMapParams) (GetLobByMapRes, error) {
 	res, err := c.sendGetLobByMap(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) (res GetLobByMapRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLobByMap"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
 	}
 
 	// Run stopwatch.
@@ -5376,7 +5937,7 @@ func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) 
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -5403,13 +5964,14 @@ func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) 
 // GET /login
 func (c *Client) GetLoginSession(ctx context.Context) (GetLoginSessionRes, error) {
 	res, err := c.sendGetLoginSession(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetLoginSession(ctx context.Context) (res GetLoginSessionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLoginSession"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/login"),
 	}
 
 	// Run stopwatch.
@@ -5492,7 +6054,7 @@ func (c *Client) sendGetLoginSession(ctx context.Context) (res GetLoginSessionRe
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -5519,13 +6081,14 @@ func (c *Client) sendGetLoginSession(ctx context.Context) (res GetLoginSessionRe
 // GET /rest/metadata/view/{table}
 func (c *Client) GetMapMetadata(ctx context.Context, params GetMapMetadataParams) (GetMapMetadataRes, error) {
 	res, err := c.sendGetMapMetadata(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetMapMetadata(ctx context.Context, params GetMapMetadataParams) (res GetMapMetadataRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMapMetadata"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/metadata/view/{table}"),
 	}
 
 	// Run stopwatch.
@@ -5638,7 +6201,7 @@ func (c *Client) sendGetMapMetadata(ctx context.Context, params GetMapMetadataPa
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -5665,13 +6228,14 @@ func (c *Client) sendGetMapMetadata(ctx context.Context, params GetMapMetadataPa
 // GET /rest/view/{table}/{fields}/{search}
 func (c *Client) GetMapRecordsFields(ctx context.Context, params GetMapRecordsFieldsParams) (GetMapRecordsFieldsRes, error) {
 	res, err := c.sendGetMapRecordsFields(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetMapRecordsFields(ctx context.Context, params GetMapRecordsFieldsParams) (res GetMapRecordsFieldsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMapRecordsFields"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/view/{table}/{fields}/{search}"),
 	}
 
 	// Run stopwatch.
@@ -5979,7 +6543,7 @@ func (c *Client) sendGetMapRecordsFields(ctx context.Context, params GetMapRecor
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -6006,13 +6570,14 @@ func (c *Client) sendGetMapRecordsFields(ctx context.Context, params GetMapRecor
 // GET /rest/view
 func (c *Client) GetMaps(ctx context.Context) (GetMapsRes, error) {
 	res, err := c.sendGetMaps(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetMaps(ctx context.Context) (res GetMapsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMaps"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/view"),
 	}
 
 	// Run stopwatch.
@@ -6107,7 +6672,7 @@ func (c *Client) sendGetMaps(ctx context.Context) (res GetMapsRes, err error) {
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -6134,13 +6699,14 @@ func (c *Client) sendGetMaps(ctx context.Context) (res GetMapsRes, err error) {
 // GET /rest/database/{table}/permission
 func (c *Client) GetPermission(ctx context.Context, params GetPermissionParams) (GetPermissionRes, error) {
 	res, err := c.sendGetPermission(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetPermission(ctx context.Context, params GetPermissionParams) (res GetPermissionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getPermission"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/database/{table}/permission"),
 	}
 
 	// Run stopwatch.
@@ -6275,7 +6841,7 @@ func (c *Client) sendGetPermission(ctx context.Context, params GetPermissionPara
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -6302,13 +6868,14 @@ func (c *Client) sendGetPermission(ctx context.Context, params GetPermissionPara
 // GET /version
 func (c *Client) GetVersion(ctx context.Context) (GetVersionRes, error) {
 	res, err := c.sendGetVersion(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetVersion(ctx context.Context) (res GetVersionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getVersion"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/version"),
 	}
 
 	// Run stopwatch.
@@ -6373,13 +6940,14 @@ func (c *Client) sendGetVersion(ctx context.Context) (res GetVersionRes, err err
 // GET /video/{table}/{field}/{search}
 func (c *Client) GetVideo(ctx context.Context, params GetVideoParams) (GetVideoRes, error) {
 	res, err := c.sendGetVideo(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res GetVideoRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getVideo"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/video/{table}/{field}/{search}"),
 	}
 
 	// Run stopwatch.
@@ -6582,7 +7150,7 @@ func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res G
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -6609,13 +7177,14 @@ func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res G
 // GET /config/views
 func (c *Client) GetViews(ctx context.Context) (GetViewsRes, error) {
 	res, err := c.sendGetViews(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendGetViews(ctx context.Context) (res GetViewsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getViews"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/config/views"),
 	}
 
 	// Run stopwatch.
@@ -6710,7 +7279,7 @@ func (c *Client) sendGetViews(ctx context.Context) (res GetViewsRes, err error) 
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -6737,13 +7306,14 @@ func (c *Client) sendGetViews(ctx context.Context) (res GetViewsRes, err error) 
 // POST /rest/view
 func (c *Client) InsertMapFileRecords(ctx context.Context, request OptInsertMapFileRecordsReq) (InsertMapFileRecordsRes, error) {
 	res, err := c.sendInsertMapFileRecords(ctx, request)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendInsertMapFileRecords(ctx context.Context, request OptInsertMapFileRecordsReq) (res InsertMapFileRecordsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("insertMapFileRecords"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/rest/view"),
 	}
 
 	// Run stopwatch.
@@ -6841,7 +7411,7 @@ func (c *Client) sendInsertMapFileRecords(ctx context.Context, request OptInsert
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -6868,13 +7438,14 @@ func (c *Client) sendInsertMapFileRecords(ctx context.Context, request OptInsert
 // POST /rest/view/{table}
 func (c *Client) InsertRecord(ctx context.Context, request OptInsertRecordReq, params InsertRecordParams) (InsertRecordRes, error) {
 	res, err := c.sendInsertRecord(ctx, request, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordReq, params InsertRecordParams) (res InsertRecordRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("insertRecord"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/rest/view/{table}"),
 	}
 
 	// Run stopwatch.
@@ -6990,7 +7561,7 @@ func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordRe
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -7017,13 +7588,14 @@ func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordRe
 // GET /rest/map
 func (c *Client) ListModelling(ctx context.Context) (ListModellingRes, error) {
 	res, err := c.sendListModelling(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listModelling"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/map"),
 	}
 
 	// Run stopwatch.
@@ -7118,7 +7690,7 @@ func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, e
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -7145,13 +7717,14 @@ func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, e
 // GET /rest/database/{table}/permission/{resource}
 func (c *Client) ListRBACResource(ctx context.Context, params ListRBACResourceParams) (ListRBACResourceRes, error) {
 	res, err := c.sendListRBACResource(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendListRBACResource(ctx context.Context, params ListRBACResourceParams) (res ListRBACResourceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listRBACResource"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}"),
 	}
 
 	// Run stopwatch.
@@ -7283,7 +7856,7 @@ func (c *Client) sendListRBACResource(ctx context.Context, params ListRBACResour
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -7310,13 +7883,14 @@ func (c *Client) sendListRBACResource(ctx context.Context, params ListRBACResour
 // GET /rest/tables
 func (c *Client) ListTables(ctx context.Context) (ListTablesRes, error) {
 	res, err := c.sendListTables(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendListTables(ctx context.Context) (res ListTablesRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listTables"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/tables"),
 	}
 
 	// Run stopwatch.
@@ -7411,7 +7985,7 @@ func (c *Client) sendListTables(ctx context.Context) (res ListTablesRes, err err
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -7438,13 +8012,14 @@ func (c *Client) sendListTables(ctx context.Context) (res ListTablesRes, err err
 // PUT /login
 func (c *Client) LoginSession(ctx context.Context) (LoginSessionRes, error) {
 	res, err := c.sendLoginSession(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendLoginSession(ctx context.Context) (res LoginSessionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("loginSession"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/login"),
 	}
 
 	// Run stopwatch.
@@ -7527,7 +8102,7 @@ func (c *Client) sendLoginSession(ctx context.Context) (res LoginSessionRes, err
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -7555,13 +8130,14 @@ func (c *Client) sendLoginSession(ctx context.Context) (res LoginSessionRes, err
 // POST /rest/database
 func (c *Client) PostDatabase(ctx context.Context, request *Database) (PostDatabaseRes, error) {
 	res, err := c.sendPostDatabase(ctx, request)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res PostDatabaseRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postDatabase"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/rest/database"),
 	}
 
 	// Run stopwatch.
@@ -7659,7 +8235,7 @@ func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res P
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -7686,13 +8262,14 @@ func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res P
 // POST /rest/tasks
 func (c *Client) PostJob(ctx context.Context, request PostJobReq) (PostJobRes, error) {
 	res, err := c.sendPostJob(ctx, request)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJobRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postJob"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/rest/tasks"),
 	}
 	// Validate request before sending.
 	switch request := request.(type) {
@@ -7801,7 +8378,7 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -7828,13 +8405,14 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 // POST /login
 func (c *Client) PushLoginSession(ctx context.Context) (PushLoginSessionRes, error) {
 	res, err := c.sendPushLoginSession(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendPushLoginSession(ctx context.Context) (res PushLoginSessionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("pushLoginSession"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/login"),
 	}
 
 	// Run stopwatch.
@@ -7917,7 +8495,7 @@ func (c *Client) sendPushLoginSession(ctx context.Context) (res PushLoginSession
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -7944,13 +8522,14 @@ func (c *Client) sendPushLoginSession(ctx context.Context) (res PushLoginSession
 // PUT /rest/database/{table_operation}
 func (c *Client) PutDatabaseResource(ctx context.Context, params PutDatabaseResourceParams) (PutDatabaseResourceRes, error) {
 	res, err := c.sendPutDatabaseResource(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendPutDatabaseResource(ctx context.Context, params PutDatabaseResourceParams) (res PutDatabaseResourceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("putDatabaseResource"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
 	// Run stopwatch.
@@ -8118,7 +8697,7 @@ func (c *Client) sendPutDatabaseResource(ctx context.Context, params PutDatabase
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -8145,13 +8724,14 @@ func (c *Client) sendPutDatabaseResource(ctx context.Context, params PutDatabase
 // DELETE /rest/database/{table}/permission
 func (c *Client) RemovePermission(ctx context.Context, params RemovePermissionParams) (RemovePermissionRes, error) {
 	res, err := c.sendRemovePermission(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendRemovePermission(ctx context.Context, params RemovePermissionParams) (res RemovePermissionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("removePermission"),
+		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRouteKey.String("/rest/database/{table}/permission"),
 	}
 
 	// Run stopwatch.
@@ -8265,7 +8845,7 @@ func (c *Client) sendRemovePermission(ctx context.Context, params RemovePermissi
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -8292,13 +8872,14 @@ func (c *Client) sendRemovePermission(ctx context.Context, params RemovePermissi
 // GET /logoff
 func (c *Client) RemoveSessionCompat(ctx context.Context) (RemoveSessionCompatRes, error) {
 	res, err := c.sendRemoveSessionCompat(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendRemoveSessionCompat(ctx context.Context) (res RemoveSessionCompatRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("removeSessionCompat"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/logoff"),
 	}
 
 	// Run stopwatch.
@@ -8393,7 +8974,7 @@ func (c *Client) sendRemoveSessionCompat(ctx context.Context) (res RemoveSession
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -8420,13 +9001,14 @@ func (c *Client) sendRemoveSessionCompat(ctx context.Context) (res RemoveSession
 // GET /rest/map/{path}
 func (c *Client) SearchModelling(ctx context.Context, params SearchModellingParams) (SearchModellingRes, error) {
 	res, err := c.sendSearchModelling(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendSearchModelling(ctx context.Context, params SearchModellingParams) (res SearchModellingRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchModelling"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/map/{path}"),
 	}
 
 	// Run stopwatch.
@@ -8539,7 +9121,7 @@ func (c *Client) sendSearchModelling(ctx context.Context, params SearchModelling
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -8566,13 +9148,14 @@ func (c *Client) sendSearchModelling(ctx context.Context, params SearchModelling
 // GET /rest/view/{table}/{search}
 func (c *Client) SearchRecordsFields(ctx context.Context, params SearchRecordsFieldsParams) (SearchRecordsFieldsRes, error) {
 	res, err := c.sendSearchRecordsFields(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendSearchRecordsFields(ctx context.Context, params SearchRecordsFieldsParams) (res SearchRecordsFieldsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchRecordsFields"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
 
 	// Run stopwatch.
@@ -8861,7 +9444,7 @@ func (c *Client) sendSearchRecordsFields(ctx context.Context, params SearchRecor
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -8888,13 +9471,14 @@ func (c *Client) sendSearchRecordsFields(ctx context.Context, params SearchRecor
 // GET /rest/tables/{table}/{fields}/{search}
 func (c *Client) SearchTable(ctx context.Context, params SearchTableParams) (SearchTableRes, error) {
 	res, err := c.sendSearchTable(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendSearchTable(ctx context.Context, params SearchTableParams) (res SearchTableRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchTable"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/tables/{table}/{fields}/{search}"),
 	}
 
 	// Run stopwatch.
@@ -9066,7 +9650,7 @@ func (c *Client) sendSearchTable(ctx context.Context, params SearchTableParams) 
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -9093,13 +9677,14 @@ func (c *Client) sendSearchTable(ctx context.Context, params SearchTableParams) 
 // PUT /config
 func (c *Client) SetConfig(ctx context.Context, request SetConfigReq) (SetConfigRes, error) {
 	res, err := c.sendSetConfig(ctx, request)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res SetConfigRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("setConfig"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/config"),
 	}
 	// Validate request before sending.
 	switch request := request.(type) {
@@ -9213,7 +9798,7 @@ func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res S
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -9240,13 +9825,14 @@ func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res S
 // PUT /config/jobs
 func (c *Client) SetJobsConfig(ctx context.Context, request OptJobStore) (SetJobsConfigRes, error) {
 	res, err := c.sendSetJobsConfig(ctx, request)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (res SetJobsConfigRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("setJobsConfig"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/config/jobs"),
 	}
 	// Validate request before sending.
 	if err := func() error {
@@ -9360,7 +9946,7 @@ func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (re
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -9387,13 +9973,14 @@ func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (re
 // PUT /rest/shutdown/{hash}
 func (c *Client) ShutdownServer(ctx context.Context, params ShutdownServerParams) (ShutdownServerRes, error) {
 	res, err := c.sendShutdownServer(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendShutdownServer(ctx context.Context, params ShutdownServerParams) (res ShutdownServerRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("shutdownServer"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/rest/shutdown/{hash}"),
 	}
 
 	// Run stopwatch.
@@ -9506,7 +10093,7 @@ func (c *Client) sendShutdownServer(ctx context.Context, params ShutdownServerPa
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -9533,13 +10120,14 @@ func (c *Client) sendShutdownServer(ctx context.Context, params ShutdownServerPa
 // POST /config
 func (c *Client) StoreConfig(ctx context.Context) (StoreConfigRes, error) {
 	res, err := c.sendStoreConfig(ctx)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendStoreConfig(ctx context.Context) (res StoreConfigRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("storeConfig"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/config"),
 	}
 
 	// Run stopwatch.
@@ -9634,7 +10222,7 @@ func (c *Client) sendStoreConfig(ctx context.Context) (res StoreConfigRes, err e
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -9661,13 +10249,14 @@ func (c *Client) sendStoreConfig(ctx context.Context) (res StoreConfigRes, err e
 // PUT /rest/tasks/{jobName}
 func (c *Client) TriggerJob(ctx context.Context, params TriggerJobParams) (TriggerJobRes, error) {
 	res, err := c.sendTriggerJob(ctx, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (res TriggerJobRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("triggerJob"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}"),
 	}
 
 	// Run stopwatch.
@@ -9780,7 +10369,7 @@ func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (r
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -9807,13 +10396,14 @@ func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (r
 // PUT /binary/{table}/{field}/{search}
 func (c *Client) UpdateLobByMap(ctx context.Context, request UpdateLobByMapReq, params UpdateLobByMapParams) (UpdateLobByMapRes, error) {
 	res, err := c.sendUpdateLobByMap(ctx, request, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendUpdateLobByMap(ctx context.Context, request UpdateLobByMapReq, params UpdateLobByMapParams) (res UpdateLobByMapRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateLobByMap"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
 	}
 	// Validate request before sending.
 	switch request := request.(type) {
@@ -9976,7 +10566,7 @@ func (c *Client) sendUpdateLobByMap(ctx context.Context, request UpdateLobByMapR
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -10003,13 +10593,14 @@ func (c *Client) sendUpdateLobByMap(ctx context.Context, request UpdateLobByMapR
 // PUT /rest/view/{table}/{search}
 func (c *Client) UpdateRecordsByFields(ctx context.Context, request OptUpdateRecordsByFieldsReq, params UpdateRecordsByFieldsParams) (UpdateRecordsByFieldsRes, error) {
 	res, err := c.sendUpdateRecordsByFields(ctx, request, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendUpdateRecordsByFields(ctx context.Context, request OptUpdateRecordsByFieldsReq, params UpdateRecordsByFieldsParams) (res UpdateRecordsByFieldsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateRecordsByFields"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
 
 	// Run stopwatch.
@@ -10144,7 +10735,7 @@ func (c *Client) sendUpdateRecordsByFields(ctx context.Context, request OptUpdat
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 
@@ -10171,13 +10762,14 @@ func (c *Client) sendUpdateRecordsByFields(ctx context.Context, request OptUpdat
 // POST /rest/file/{path}
 func (c *Client) UploadFile(ctx context.Context, request *UploadFileReq, params UploadFileParams) (UploadFileRes, error) {
 	res, err := c.sendUploadFile(ctx, request, params)
-	_ = res
 	return res, err
 }
 
 func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileReq, params UploadFileParams) (res UploadFileRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("uploadFile"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 
 	// Run stopwatch.
@@ -10311,7 +10903,7 @@ func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileReq, par
 			}
 			return false
 		}(); !ok {
-			return res, errors.New("no security requirement satisfied")
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 		}
 	}
 

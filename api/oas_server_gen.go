@@ -38,6 +38,12 @@ type Handler interface {
 	//
 	// POST /config/views
 	AddView(ctx context.Context, params AddViewParams) (AddViewRes, error)
+	// BatchQuery implements batchQuery operation.
+	//
+	// Call a SQL query batch command posted in body.
+	//
+	// POST /rest/batch
+	BatchQuery(ctx context.Context, req OptSQLQuery) (BatchQueryRes, error)
 	// BrowseList implements browseList operation.
 	//
 	// Retrieves a list of Browseable locations.

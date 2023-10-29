@@ -21,6 +21,10 @@ type AddViewRes interface {
 	addViewRes()
 }
 
+type BatchQueryRes interface {
+	batchQueryRes()
+}
+
 type BrowseListRes interface {
 	browseListRes()
 }

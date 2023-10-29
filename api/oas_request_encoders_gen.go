@@ -15,6 +15,26 @@ import (
 	"github.com/ogen-go/ogen/uri"
 )
 
+func encodeBatchQueryRequest(
+	req OptSQLQuery,
+	r *http.Request,
+) error {
+	const contentType = "application/json"
+	if !req.Set {
+		// Keep request with empty body if value is not set.
+		return nil
+	}
+	e := new(jx.Encoder)
+	{
+		if req.Set {
+			req.Encode(e)
+		}
+	}
+	encoded := e.Bytes()
+	ht.SetBody(r, bytes.NewReader(encoded), contentType)
+	return nil
+}
+
 func encodeInsertMapFileRecordsRequest(
 	req OptInsertMapFileRecordsReq,
 	r *http.Request,
@@ -51,7 +71,7 @@ func encodeInsertRecordRequest(
 		// Keep request with empty body if value is not set.
 		return nil
 	}
-	e := jx.GetEncoder()
+	e := new(jx.Encoder)
 	{
 		if req.Set {
 			req.Encode(e)
@@ -67,7 +87,7 @@ func encodePostDatabaseRequest(
 	r *http.Request,
 ) error {
 	const contentType = "application/json"
-	e := jx.GetEncoder()
+	e := new(jx.Encoder)
 	{
 		if req != nil {
 			req.Encode(e)
@@ -88,7 +108,7 @@ func encodePostJobRequest(
 		return nil
 	case *JobParameter:
 		const contentType = "application/json"
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		{
 			req.Encode(e)
 		}
@@ -112,7 +132,7 @@ func encodeSetConfigRequest(
 	switch req := req.(type) {
 	case *Config:
 		const contentType = "application/json"
-		e := jx.GetEncoder()
+		e := new(jx.Encoder)
 		{
 			req.Encode(e)
 		}
@@ -138,7 +158,7 @@ func encodeSetJobsConfigRequest(
 		// Keep request with empty body if value is not set.
 		return nil
 	}
-	e := jx.GetEncoder()
+	e := new(jx.Encoder)
 	{
 		if req.Set {
 			req.Encode(e)
@@ -189,7 +209,7 @@ func encodeUpdateRecordsByFieldsRequest(
 		// Keep request with empty body if value is not set.
 		return nil
 	}
-	e := jx.GetEncoder()
+	e := new(jx.Encoder)
 	{
 		if req.Set {
 			req.Encode(e)
