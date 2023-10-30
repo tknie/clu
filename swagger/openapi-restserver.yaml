@@ -595,6 +595,54 @@ paths:
         - BearerAuth:
             - admin
       x-codegen-request-body-name: jobConfig
+  /rest/batch:
+    post:
+      tags:
+        - Queries
+      description: >-
+        Call a SQL query batch command posted in body
+      operationId: batchQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SQLQuery'
+        required: false
+      responses:
+        '200':
+          description: Successful response, retrieve the field information.
+          headers:
+            X-Token:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Could not read the specified field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+      x-codegen-request-body-name: database
   /rest/database:
     get:
       tags:
@@ -3244,7 +3292,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         default:
-          description: admin role access problem
+          description: Admin role access problem
           content:
             application/json:
               schema:
@@ -3374,6 +3422,14 @@ paths:
             - admin
 components:
   schemas:
+    SQLQuery:
+      type: object
+      properties:
+        Batch:
+          type: object
+          properties:
+            SQL:
+              type: string
     Database:
       type: object
     Server:
