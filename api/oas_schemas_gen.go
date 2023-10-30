@@ -555,6 +555,8 @@ type BrowseLocationOKMultipartFormData struct {
 	File ht.MultipartFile `json:"file"`
 }
 
+func (*BrowseLocationOKMultipartFormData) browseLocationRes() {}
+
 // GetFile returns the value of File.
 func (s *BrowseLocationOKMultipartFormData) GetFile() ht.MultipartFile {
 	return s.File

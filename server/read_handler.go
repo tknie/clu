@@ -135,9 +135,13 @@ func checkOrderBy(orderby api.OptString) []string {
 //
 // Used for common default response.
 func (Handler) NewError(ctx context.Context, err error) (r *api.ErrorStatusCode) {
-	session := ctx.(*clu.Context)
 	r = new(api.ErrorStatusCode)
-	log.Log.Debugf("Server handler error: %v/%s -> %s", err, session.User, r.StatusCode)
+	switch session := ctx.(type) {
+	case *clu.Context:
+		log.Log.Debugf("Server handler error: %v/%s -> %s", err, session.User, r.StatusCode)
+	default:
+		log.Log.Debugf("Unknown error context: %T", ctx)
+	}
 	return r
 }
 
@@ -165,5 +169,14 @@ func (Handler) SearchModelling(ctx context.Context, params api.SearchModellingPa
 //
 // GET /rest/map
 func (Handler) ListModelling(ctx context.Context) (r api.ListModellingRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// BatchQuery implements batchQuery operation.
+//
+// Call a SQL query batch command posted in body.
+//
+// POST /rest/batch
+func (Handler) BatchQuery(ctx context.Context, req api.OptSQLQuery) (r api.BatchQueryRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
