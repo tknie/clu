@@ -51,7 +51,7 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, er
 				d[s] = jx.Raw([]byte("\"" + (t).String() + "\""))
 			default:
 				if r != nil {
-					log.Log.Infof("using default ---> %v %T\n", r, t)
+					log.Log.Debugf("using default ---> %v %T", r, t)
 					d[s] = jx.Raw(fmt.Sprintf("%v", r))
 				}
 			}

@@ -57,7 +57,7 @@ func databaseHash(dm *Database) string {
 func registerDatabases(dm *Database) (*common.Reference, error) {
 	dHash := databaseHash(dm)
 	if ref, ok := dbList[dHash]; ok {
-		log.Log.Infof("Found database hash %s -> %s", dHash, dm.String())
+		log.Log.Debugf("Found database hash %s -> %s", dHash, dm.String())
 		return ref, nil
 	}
 	log.Log.Infof("Add database hash %s -> %s", dHash, dm.String())
@@ -92,7 +92,7 @@ func registerDatabases(dm *Database) (*common.Reference, error) {
 }
 
 func loadTableOfDatabases() {
-	log.Log.Infof("Refreshing database list")
+	log.Log.Debugf("Refreshing database list")
 	for _, dm := range Viewer.Database.DatabaseAccess.Database {
 		//u := dm.URL
 		//m := regexp.MustCompile(`(?m):[^:]*@`)

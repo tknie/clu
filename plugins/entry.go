@@ -55,7 +55,7 @@ type Loader interface {
 
 // Audit auditing method to send to plugin
 type Audit interface {
-	ReceiveAudit(*http.Request)
+	ReceiveAudit(string, string, *http.Request)
 	SendAudit(time.Duration, string, string, *http.Request)
 	SendAuditError(time.Duration, string, string, *http.Request, error)
 }
@@ -235,12 +235,12 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 		c := &http.Cookie{Name: "User", Value: p.UUID()}
 		r.AddCookie(c)
 		for _, x := range auditPlugins {
-			x.Audit.ReceiveAudit(r)
+			x.Audit.ReceiveAudit(p.User, p.UUID(), r)
 		}
 		return
 	}
 	for _, x := range auditPlugins {
-		x.Audit.ReceiveAudit(r)
+		x.Audit.ReceiveAudit(p.User, p.UUID(), r)
 	}
 }
 
