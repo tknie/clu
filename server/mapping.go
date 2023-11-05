@@ -164,5 +164,5 @@ func ConnectTable(ctx *clu.Context, table string) (common.RegDbID, error) {
 
 // CloseTable close table id
 func CloseTable(id common.RegDbID) {
-	flynn.Unregister(id)
+	id.Unregister()
 }

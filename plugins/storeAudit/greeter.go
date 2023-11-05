@@ -13,7 +13,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -24,6 +23,7 @@ import (
 	"github.com/tknie/clu/server"
 	"github.com/tknie/flynn"
 	"github.com/tknie/flynn/common"
+	"github.com/tknie/log"
 	"github.com/tknie/services"
 )
 
@@ -50,7 +50,7 @@ var fieldList = []string{"Triggered", "Elapsed",
 
 // SessionInfo session info storage
 type SessionInfo struct {
-	ID         uint64 `dbsql:"ID::SERIAL"`
+	ID         uint64 `flynn:"ID::SERIAL"`
 	Triggered  time.Time
 	Elapsed    int64
 	ServerHost string
@@ -58,9 +58,9 @@ type SessionInfo struct {
 	RemoteAddr string
 	RemoteHost string
 	UUID       string
-	RequestURI string `dbsql:"URI"`
+	RequestURI string `flynn:"URI"`
 	Service    string
-	User       string `dbsql:"RequestUser"`
+	User       string `flynn:"RequestUser"`
 	Host       string
 	TableName  string
 	AlbumID    uint64
@@ -83,13 +83,14 @@ func init() {
 	tableName = os.Getenv("REST_AUDIT_LOG_TABLENAME")
 	if url == "" || tableName == "" {
 		services.ServerMessage("Log parameter storage disabled...")
+		log.Log.Debugf("STORE_AUDIT: Disable due to URL error")
 		disableStore = true
 		return
 	}
 	var err error
 	dbRef, password, err = common.NewReference(url)
 	if err != nil {
-		log.Fatal("REST audit URL incorrect: " + url)
+		log.Log.Fatal("REST audit URL incorrect: " + url)
 	}
 	if password == "" {
 		password = os.Getenv("REST_AUDIT_LOG_PASS")
@@ -103,7 +104,7 @@ func init() {
 		return
 	}
 
-	defer flynn.Unregister(id)
+	defer id.Unregister()
 
 	si := NewSessionInfo("Init", "0000-0000", adminUser, startEventMethod)
 
@@ -145,15 +146,21 @@ func startStore() {
 	insert := &common.Entries{Fields: fieldList}
 	wg.Add(1)
 	defer wg.Done()
+	defer services.ServerMessage("Ending store audit log")
 	for {
+		log.Log.Debugf("STORE_AUDIT: Waiting store channel (%v)", disableStore)
 		select {
 		case si := <-storeChan:
+			log.Log.Debugf("STORE_AUDIT: Receive store channel (%v)", disableStore)
 			if !disableStore {
+				log.Log.Debugf("STORE_AUDIT: Store channel (%v)", disableStore)
 				id, err := flynn.RegisterDatabase(dbRef, password)
 				if err != nil {
 					services.ServerMessage("Register store audit log fails: %v(%s)", err, url)
+					log.Log.Debugf("STORE_AUDIT: Register error exiting ....")
 					return
 				}
+				log.Log.Debugf("STORE_AUDIT: Start insert audit to database")
 				x := strings.Index(si.RemoteHost, ",")
 				addr := si.RemoteAddr
 				host := si.RemoteHost
@@ -166,29 +173,50 @@ func startStore() {
 					si.Method, addr, host,
 					si.Service, si.RequestURI, si.Host, si.Status,
 					si.TableName, si.AlbumID, si.Fields}}
+				log.Log.Debugf("STORE_AUDIT: Insert store channel (%v)", disableStore)
 				err = id.Insert(tableName, insert)
 				if err != nil {
 					services.ServerMessage("Error store to session %s/%s(%s) : %v",
 						host, addr, tableName, err)
+					log.Log.Debugf("STORE_AUDIT: Disable due to INSERT error")
+					disableStore = true
+				}
+				log.Log.Debugf("STORE_AUDIT: Commit store channel (%v)", disableStore)
+				err = id.Commit()
+				if err != nil {
+					services.ServerMessage("Error commiting to session %s/%s(%s) : %v",
+						host, addr, tableName, err)
+					log.Log.Debugf("STORE_AUDIT: Disable due to COMMIT error")
 					disableStore = true
 				}
 				if si.Method == stopEventMethod {
+					log.Log.Debugf("STORE_AUDIT: Disable due to STOP")
 					disableStore = true
 				}
-				flynn.Unregister(id)
+				log.Log.Debugf("STORE_AUDIT: End store channel 2 (%v)", disableStore)
+				err = id.Unregister()
+				if err != nil {
+					log.Log.Errorf("STORE_AUDIT: error unregister: %v", err)
+				}
 			}
+			log.Log.Debugf("STORE_AUDIT: End store channel (%v)", disableStore)
 		case <-time.After(1 * time.Second):
 			if len(storeChan) > cap(storeChan)-100 {
 				for si := range storeChan {
 					fmt.Println("Skip session store of", si.ID)
 				}
+				log.Log.Debugf("STORE_AUDIT: Disable due to store capacity")
 				disableStore = true
 			}
 		}
+		log.Log.Debugf("STORE_AUDIT: Check disable (%v)", disableStore)
 		if disableStore {
+			log.Log.Debugf("STORE_AUDIT: store disabled, exiting ...")
 			return
 		}
+		log.Log.Debugf("STORE_AUDIT: loop (%v)", disableStore)
 	}
+	log.Log.Debugf("STORE_AUDIT: exit (%v)", disableStore)
 }
 
 // Types type of plugin working with
@@ -222,6 +250,7 @@ func key(uuid string, r *http.Request) string {
 
 // ReceiveAudit receive audit info incoming request
 func (g greeting) ReceiveAudit(user string, uuid string, r *http.Request) {
+	log.Log.Debugf("STORE_AUDIT: Receive audit to map")
 	sessionMap.Store(key(uuid, r), &session{user: user, uuid: uuid, start: time.Now()})
 }
 
@@ -242,6 +271,7 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 	} else {
 		si.User = "Unknown"
 	}
+	log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v)", disableStore)
 	storeChan <- si
 }
 

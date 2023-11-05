@@ -240,7 +240,11 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 		return
 	}
 	for _, x := range auditPlugins {
-		x.Audit.ReceiveAudit(p.User, p.UUID(), r)
+		if p == nil {
+			x.Audit.ReceiveAudit("Unknown", "", r)
+		} else {
+			x.Audit.ReceiveAudit(p.User, p.UUID(), r)
+		}
 	}
 }
 

@@ -220,5 +220,6 @@ func RemoteHost(r *http.Request) string {
 	} else {
 		remoteHost = fmt.Sprintf("%s, %v", remoteHost, n)
 	}
+	log.Log.Debugf("Remote host set to %s", remoteHost)
 	return remoteHost
 }
