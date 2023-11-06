@@ -3,7 +3,7 @@ module github.com/tknie/clu
 go 1.20
 
 require (
-	github.com/go-faster/errors v0.6.1
+	github.com/go-faster/errors v0.7.0
 	github.com/go-faster/jx v1.1.0
 	github.com/go-openapi/runtime v0.26.0
 	github.com/go-openapi/swag v0.22.4
