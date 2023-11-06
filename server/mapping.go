@@ -153,12 +153,14 @@ func ConnectTable(ctx *clu.Context, table string) (common.RegDbID, error) {
 	}
 	refCopy := *ref
 	refCopy.User = ctx.User
+	log.Log.Debugf("Connect table (register handle)")
 	id, err := flynn.RegisterDatabase(&refCopy, ctx.Pass)
 	if err != nil {
 		services.ServerMessage("Error registering database %s:%d...%v",
 			ref.Host, ref.Port, err)
 		return 0, fmt.Errorf("error registering database")
 	}
+	log.Log.Debugf("Got register handle")
 	return id, nil
 }
 
