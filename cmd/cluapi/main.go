@@ -76,7 +76,6 @@ func main() {
 
 	// Load XML configuration
 	server.InitConfig(true)
-
 	plugins.InitPlugins()
 
 	server.InitDatabases()

@@ -52,12 +52,12 @@ require (
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20230429175850-6f60500223d5
-	github.com/tknie/flynn v0.0.0-20231106143942-94732681b759
+	github.com/tknie/flynn v0.0.0-20231108195547-89d6f5d6654d
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.26.0
-	golang.org/x/crypto v0.14.0 // indirect
+	golang.org/x/crypto v0.15.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
-	golang.org/x/net v0.17.0
+	golang.org/x/net v0.18.0
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/text v0.14.0 // indirect

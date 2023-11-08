@@ -54,7 +54,8 @@ func databaseHash(dm *Database) string {
 	return fmt.Sprintf("%X", md5.Sum([]byte(dm.User+"@"+dm.Host+":"+dm.Port)))
 }
 
-func registerDatabases(dm *Database) (*common.Reference, error) {
+// Handles handle database
+func Handles(dm *Database) (*common.Reference, error) {
 	dHash := databaseHash(dm)
 	if ref, ok := dbList[dHash]; ok {
 		log.Log.Debugf("Found database hash %s -> %s", dHash, dm.String())
@@ -80,7 +81,8 @@ func registerDatabases(dm *Database) (*common.Reference, error) {
 		User:     os.ExpandEnv(dm.User),
 		Database: os.ExpandEnv(dm.Database),
 	}
-	_, err = flynn.RegisterDatabase(ref, os.ExpandEnv(dm.Password))
+	log.Log.Debugf("Register database handler")
+	_, err = flynn.Handler(ref, os.ExpandEnv(dm.Password))
 	if err != nil {
 		services.ServerMessage("Error registering database %s:%d...%v", dm.Host, port, err)
 		return nil, fmt.Errorf("error registering database")
@@ -98,7 +100,7 @@ func loadTableOfDatabases() {
 		//m := regexp.MustCompile(`(?m):[^:]*@`)
 		//m := regexp.MustCompile(`(?m)\${[^{]*PASS[^}]*}`)
 		//res := m.ReplaceAllString(u, ":****@")
-		id, err := registerDatabases(&dm)
+		id, err := Handles(&dm)
 		if err != nil {
 			continue
 		}
@@ -154,17 +156,18 @@ func ConnectTable(ctx *clu.Context, table string) (common.RegDbID, error) {
 	refCopy := *ref
 	refCopy.User = ctx.User
 	log.Log.Debugf("Connect table (register handle)")
-	id, err := flynn.RegisterDatabase(&refCopy, ctx.Pass)
+	id, err := flynn.Handler(&refCopy, ctx.Pass)
 	if err != nil {
 		services.ServerMessage("Error registering database %s:%d...%v",
 			ref.Host, ref.Port, err)
 		return 0, fmt.Errorf("error registering database")
 	}
-	log.Log.Debugf("Got register handle")
+	log.Log.Debugf("Got register handle %s", id)
 	return id, nil
 }
 
 // CloseTable close table id
 func CloseTable(id common.RegDbID) {
-	id.Unregister()
+	log.Log.Debugf("Close table and free %s", id)
+	id.FreeHandler()
 }

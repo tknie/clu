@@ -273,6 +273,7 @@ func SendAudit(started time.Time, w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	log.Log.Debugf("Call sendaudit for user %s", user)
 	elapsed := time.Since(started)
 	for _, x := range auditPlugins {
 		x.Audit.SendAudit(elapsed, user, uuid, r)
