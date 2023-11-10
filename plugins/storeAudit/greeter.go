@@ -254,7 +254,8 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 	if disableStore {
 		return
 	}
-	si := NewSessionInfo("Ok", uuid, "Unknown", w.Method)
+	log.Log.Debugf("STORE_AUDIT: send audit %s/%s", user, uuid)
+	si := NewSessionInfo("Ok", uuid, user, w.Method)
 	si.adapt(w)
 	si.extractURI(w)
 	if e, ok := sessionMap.Load(key(uuid, w)); ok {
@@ -264,9 +265,9 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 	} else if u, _, ok := w.BasicAuth(); ok {
 		si.User = u
 	} else {
-		si.User = "Unknown"
+		si.User = user
 	}
-	log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v)", disableStore)
+	log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v/%s)", disableStore, si.User)
 	storeChan <- si
 }
 

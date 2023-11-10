@@ -18,6 +18,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"plugin"
+	"runtime/debug"
 	"strings"
 	"sync"
 	"syscall"
@@ -229,10 +230,10 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 	if disablePlugin {
 		return
 	}
-	log.Log.Debugf("Receive auditing plugins request: %v %v %v",
-		r.Method, r.URL, server.RemoteHost(r))
+	log.Log.Debugf("Receive auditing plugins request: %v %v %v %T %p",
+		r.Method, r.URL, server.RemoteHost(r), p, p)
 	if p != nil {
-		c := &http.Cookie{Name: "User", Value: p.UUID()}
+		c := &http.Cookie{Name: p.User, Value: p.UUID()}
 		r.AddCookie(c)
 		for _, x := range auditPlugins {
 			x.Audit.ReceiveAudit(p.User, p.UUID(), r)
@@ -241,7 +242,9 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 	}
 	for _, x := range auditPlugins {
 		if p == nil {
-			x.Audit.ReceiveAudit("Unknown", "", r)
+			debug.PrintStack()
+			log.Log.Fatal("Error clu context not defined")
+			//			x.Audit.ReceiveAudit("Unknown", "", r)
 		} else {
 			x.Audit.ReceiveAudit(p.User, p.UUID(), r)
 		}
@@ -271,6 +274,8 @@ func SendAudit(started time.Time, w http.ResponseWriter, r *http.Request) {
 			uuid = c.UUID()
 			user = c.User
 		}
+	default:
+		log.Log.Debugf("User evaluation failed in " + strings.ToLower(splitToken[0]))
 	}
 
 	log.Log.Debugf("Call sendaudit for user %s", user)

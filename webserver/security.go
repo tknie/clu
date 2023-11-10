@@ -13,10 +13,12 @@ package webserver
 
 import (
 	"context"
+	"net/http"
 	"strings"
 
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
+	"github.com/tknie/clu/plugins"
 	"github.com/tknie/clu/server"
 	"github.com/tknie/log"
 	"github.com/tknie/services/auth"
@@ -37,6 +39,7 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 	log.Log.Infof("Basic auth... done: %s", p.Name())
 	pm := p.(*clu.Context)
 	server.GenerateJWToken(pm)
+	// plugins.ReceiveAudit(nil, req)
 	return pm, nil
 }
 
@@ -60,4 +63,9 @@ func (sec SecurityHandler) HandleBearerAuth(ctx context.Context, operationName s
 // HandleTokenCheck handler for Token to authentication
 func (sec SecurityHandler) HandleTokenCheck(ctx context.Context, operationName string, t api.TokenCheck) (context.Context, error) {
 	return &clu.Context{}, nil
+}
+
+// Request request secruity handler
+func (sec SecurityHandler) Request(ctx context.Context, req *http.Request) {
+	plugins.ReceiveAudit(ctx.(*clu.Context), req)
 }
