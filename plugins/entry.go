@@ -232,6 +232,9 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 	}
 	log.Log.Debugf("Receive auditing plugins request: %v %v %v %T %p",
 		r.Method, r.URL, server.RemoteHost(r), p, p)
+	if r.RequestURI == "/version" {
+		return
+	}
 	if p != nil {
 		c := &http.Cookie{Name: p.User, Value: p.UUID()}
 		r.AddCookie(c)
@@ -254,6 +257,9 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 // SendAudit send audit information to plugins
 func SendAudit(started time.Time, w http.ResponseWriter, r *http.Request) {
 	if disablePlugin || r.Method == "OPTIONS" {
+		return
+	}
+	if r.RequestURI == "/version" {
 		return
 	}
 	log.Log.Debugf("Send auditing plugins request: %v %v %v", r.Method, r.URL, server.RemoteHost(r))
@@ -288,6 +294,9 @@ func SendAudit(started time.Time, w http.ResponseWriter, r *http.Request) {
 // SendAuditError send audit errors to plugins
 func SendAuditError(started time.Time, r *http.Request, err error) {
 	if disablePlugin {
+		return
+	}
+	if r.RequestURI == "/version" {
 		return
 	}
 	username, _, ok := r.BasicAuth()
