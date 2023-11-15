@@ -10,7 +10,7 @@ require (
 	github.com/ogen-go/ogen v0.77.0
 	github.com/rs/cors v1.10.1
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
-	github.com/tknie/services v0.0.0-20231111093830-cbe6cb623911
+	github.com/tknie/services v0.0.0-20231115205640-832a5a5e2f36
 	go.opentelemetry.io/otel v1.20.0
 	go.opentelemetry.io/otel/metric v1.20.0
 	go.opentelemetry.io/otel/trace v1.20.0
