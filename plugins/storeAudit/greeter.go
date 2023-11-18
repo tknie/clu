@@ -277,7 +277,7 @@ func (si *SessionInfo) extractURI(w *http.Request) {
 	if x > 0 {
 		uri = w.RequestURI[:x]
 	}
-	uri = removePrefix(uri, "/image")
+	uri = removePrefix(uri, "/image/")
 	uri = removePrefix(uri, "/rest/view/")
 	uriPart := strings.Split(uri, "/")
 	fields := []string{}
