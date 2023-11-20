@@ -42,7 +42,7 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 	d, err := ConnectTable(session, params.Table)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err // NewAPIError(err), nil
 	}
 	defer CloseTable(d)
 
@@ -63,7 +63,7 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 	data, err := query(d, q)
 	if err != nil {
 		log.Log.Errorf("Error during query on %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 
 	resp := api.Response{Records: data}
@@ -85,7 +85,7 @@ func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecords
 	d, err := ConnectTable(session, params.Table)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	defer CloseTable(d)
 
@@ -106,7 +106,7 @@ func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecords
 	data, err := query(d, q)
 	if err != nil {
 		log.Log.Errorf("Error during query on %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 
 	log.Log.Debugf("Return payload")
@@ -129,20 +129,6 @@ func checkOrderBy(orderby api.OptString) []string {
 	}
 	orderbyList := strings.Split(orderby.Value, ",")
 	return orderbyList
-}
-
-// NewError creates *ErrorStatusCode from error returned by handler.
-//
-// Used for common default response.
-func (Handler) NewError(ctx context.Context, err error) (r *api.ErrorStatusCode) {
-	r = new(api.ErrorStatusCode)
-	switch session := ctx.(type) {
-	case *clu.Context:
-		log.Log.Debugf("Server handler error: %v/%s -> %s", err, session.User, r.StatusCode)
-	default:
-		log.Log.Debugf("Unknown error context: %T", ctx)
-	}
-	return r
 }
 
 // SearchTable implements searchTable operation.

@@ -40,7 +40,7 @@ func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, par
 	d, err := ConnectTable(session, params.Table)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	defer CloseTable(d)
 
@@ -52,7 +52,7 @@ func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, par
 			v, err := parseJx(v)
 			if err != nil {
 				log.Log.Debugf("Error %s: %v", n, err)
-				return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+				return nil, err
 			}
 			log.Log.Debugf("[%s]=%v", n, v)
 			m[n] = v
@@ -80,7 +80,7 @@ func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, par
 	err = d.Insert(params.Table, input)
 	if err != nil {
 		log.Log.Debugf("Error: %v", err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	fmt.Println("INSERT:", records)
 	resp := api.Response{NrRecords: api.NewOptInt(1)}
@@ -144,13 +144,13 @@ func (Handler) DeleteRecordsSearched(ctx context.Context, params api.DeleteRecor
 	d, err := ConnectTable(session, params.Table)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	defer CloseTable(d)
 	dr, err := d.Delete(params.Table, &common.Entries{Criteria: params.Search})
 	if err != nil {
 		log.Log.Errorf("Error delete search %s->%s:%v", params.Table, params.Search, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	fmt.Println("DR", dr)
 	resp := api.Response{NrRecords: api.NewOptInt(int(dr))}
@@ -174,7 +174,7 @@ func (Handler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecor
 	d, err := ConnectTable(session, params.Table)
 	if err != nil {
 		log.Log.Errorf("Error update table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	defer CloseTable(d)
 
@@ -186,7 +186,7 @@ func (Handler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecor
 			v, err := parseJx(v)
 			if err != nil {
 				log.Log.Debugf("Error %s: %v", n, err)
-				return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+				return nil, err
 			}
 			log.Log.Debugf("[%s]=%v", n, v)
 			m[n] = v
@@ -215,7 +215,7 @@ func (Handler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecor
 	uNr, err := d.Update(params.Table, input)
 	if err != nil {
 		log.Log.Debugf("Error: %v", err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	fmt.Println("Update:", records)
 	resp := api.Response{NrRecords: api.NewOptInt(int(uNr))}

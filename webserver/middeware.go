@@ -106,7 +106,7 @@ func fileServerMiddleware(next http.Handler) http.Handler {
 			if strings.HasPrefix(path, s) {
 				// r.URL.Path = path
 				if plugins.HasPlugins() {
-					defer plugins.SendAudit(time.Now(), w, r)
+					defer plugins.SendAuditEnded(time.Now(), r)
 				}
 				next.ServeHTTP(w, r)
 				return

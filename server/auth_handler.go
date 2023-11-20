@@ -38,7 +38,7 @@ func GenerateJWToken(ctx context.Context) (interface{}, error) {
 		token, err := Viewer.Server.WebToken.GenerateJWToken("*", session)
 		if err != nil {
 			log.Log.Errorf("Error token generation:%v", err)
-			return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+			return nil, err
 		}
 		session.Token = token
 	}

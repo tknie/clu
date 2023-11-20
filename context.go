@@ -11,7 +11,13 @@
 
 package clu
 
-import "time"
+import (
+	"net/http"
+	"time"
+)
+
+// Audit callback function to be enabled
+var Audit func(time.Time, *http.Request, error)
 
 // Context server context
 type Context struct {
@@ -24,7 +30,17 @@ type Context struct {
 		Remote  string
 		Session interface{}
 	}
-	Token string
+	Token          string
+	started        time.Time
+	CurrentRequest *http.Request
+	dataMap        map[string]any
+}
+
+// NewContext new server context with user and password
+func NewContext(user, pass string) *Context {
+	return &Context{
+		User: user, dataMap: make(map[string]any),
+		Pass: pass, started: time.Now()}
 }
 
 // Deadline dead line
@@ -84,4 +100,21 @@ func (sc *Context) Session() interface{} {
 // SetSession set session info interface function
 func (sc *Context) SetSession(s interface{}) {
 	sc.X.Session = s
+}
+
+// SendAuditError send audit error in context
+func (sc *Context) SendAuditError(started time.Time, err error) {
+	if Audit != nil {
+		Audit(started, sc.CurrentRequest, err)
+	}
+}
+
+// StoreData entry specific storage of data
+func (sc *Context) StoreData(key string, value any) {
+	sc.dataMap[key] = value
+}
+
+// GetData entry specific storage of data is requested
+func (sc *Context) GetData(key string) any {
+	return sc.dataMap[key]
 }

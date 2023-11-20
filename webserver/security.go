@@ -13,6 +13,7 @@ package webserver
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -62,10 +63,12 @@ func (sec SecurityHandler) HandleBearerAuth(ctx context.Context, operationName s
 
 // HandleTokenCheck handler for Token to authentication
 func (sec SecurityHandler) HandleTokenCheck(ctx context.Context, operationName string, t api.TokenCheck) (context.Context, error) {
-	return &clu.Context{}, nil
+	return nil, fmt.Errorf("not supported yet")
 }
 
 // Request request secruity handler
 func (sec SecurityHandler) Request(ctx context.Context, req *http.Request) {
-	plugins.ReceiveAudit(ctx.(*clu.Context), req)
+	cluCtx := ctx.(*clu.Context)
+	cluCtx.CurrentRequest = req
+	plugins.ReceiveAudit(cluCtx, req)
 }

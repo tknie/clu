@@ -255,7 +255,7 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 		return
 	}
 	log.Log.Debugf("STORE_AUDIT: send audit %s/%s", user, uuid)
-	si := NewSessionInfo("Ok", uuid, user, w.Method)
+	si := NewSessionInfo("Ended", uuid, user, w.Method)
 	si.adapt(w)
 	si.extractURI(w)
 	if e, ok := sessionMap.Load(key(uuid, w)); ok {

@@ -155,6 +155,11 @@ func InitPlugins() {
 
 	if len(auditPlugins) > 0 {
 		pluginsFound = true
+		clu.Audit = func(started time.Time, req *http.Request, err error) {
+			if HasPlugins() {
+				SendAuditError(started, req, err)
+			}
+		}
 	}
 
 	interrupt = make(chan os.Signal, 1)
@@ -247,15 +252,15 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 		if p == nil {
 			debug.PrintStack()
 			log.Log.Fatal("Error clu context not defined")
-			//			x.Audit.ReceiveAudit("Unknown", "", r)
+			x.Audit.ReceiveAudit("Unknown", "-", r)
 		} else {
 			x.Audit.ReceiveAudit(p.User, p.UUID(), r)
 		}
 	}
 }
 
-// SendAudit send audit information to plugins
-func SendAudit(started time.Time, w http.ResponseWriter, r *http.Request) {
+// SendAuditEnded send audit information to plugins
+func SendAuditEnded(started time.Time, r *http.Request) {
 	if disablePlugin || r.Method == "OPTIONS" {
 		return
 	}

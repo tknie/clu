@@ -37,14 +37,14 @@ func (Handler) GetImage(ctx context.Context, params api.GetImageParams) (r api.G
 		params.Field, params.Search, "")
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	read.mimetype = "image/jpeg"
 	read.field = params.Field
 	reader, err := read.streamResponderFunc()
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	r = &api.GetImageOKImageGIF{Data: reader}
 	log.Log.Debugf("Return IMAGE: %#v\n", r)
@@ -67,14 +67,14 @@ func (Handler) GetVideo(ctx context.Context, params api.GetVideoParams) (r api.G
 		params.Field, params.Search, params.MimetypeField)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	read.mimetype = params.MimetypeField
 	read.field = params.Field
 	reader, err := read.streamResponderFunc()
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	if read.mimetype == "video/mp3" || read.mimetype == "" {
 		r = &api.GetVideoOKVideoMP4{Data: reader}
@@ -102,14 +102,14 @@ func (Handler) GetLobByMap(ctx context.Context, params api.GetLobByMapParams) (r
 		params.Field, params.Search, "")
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	read.mimetype = "application/octet-stream"
 	read.field = params.Field
 	reader, err := read.streamResponderFunc()
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
-		return &api.Error{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		return nil, err
 	}
 	r = &api.GetLobByMapOK{Data: reader}
 	log.Log.Debugf("Return LOB: %#v\n", r)
