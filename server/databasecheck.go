@@ -143,7 +143,7 @@ func (viewer *RestServer) CloseConfig() {
 }
 
 func (db *Database) String() string {
-	return db.User + "@***" + db.User + ":" + db.Port
+	return db.User + ":***@" + db.Host + ":" + db.Port
 }
 
 // Add add new url

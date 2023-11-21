@@ -58,10 +58,10 @@ func databaseHash(dm *Database) string {
 func Handles(dm *Database) (*common.Reference, error) {
 	dHash := databaseHash(dm)
 	if ref, ok := dbList[dHash]; ok {
-		log.Log.Debugf("Found database hash %s -> %s", dHash, dm.String())
+		log.Log.Debugf("Found database hash %s -> %s", dHash, os.ExpandEnv(dm.String()))
 		return ref, nil
 	}
-	log.Log.Infof("Add database hash %s -> %s", dHash, dm.String())
+	log.Log.Infof("Add database hash %s -> %s", dHash, os.ExpandEnv(dm.String()))
 
 	p := os.ExpandEnv(dm.Port)
 	if p == "" {
