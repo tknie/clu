@@ -25,6 +25,7 @@ import (
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
+	"github.com/tknie/services/auth"
 )
 
 const startEventMethod = "Start"
@@ -244,12 +245,12 @@ func key(uuid string, r *http.Request) string {
 }
 
 // LoginAudit login audit info incoming request
-func (g greeting) LoginAudit(method, user, status string) {
+func (g greeting) LoginAudit(method string, status string, user *auth.UserInfo) {
 	if disableStore {
 		return
 	}
 	log.Log.Debugf("STORE_AUDIT: login audit %s -> %s", user, status)
-	si := NewSessionInfo("Ended", "", user, method)
+	si := NewSessionInfo("Login", "", user.User, method)
 
 	log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v/%s)", disableStore, si.User)
 	storeChan <- si

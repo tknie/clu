@@ -154,7 +154,7 @@ func ConnectTable(ctx *clu.Context, table string) (common.RegDbID, error) {
 		return 0, err
 	}
 	refCopy := *ref
-	refCopy.User = ctx.User
+	refCopy.User = ctx.User.User
 	log.Log.Debugf("Connect table (register handle)")
 	id, err := flynn.Handler(&refCopy, ctx.Pass)
 	if err != nil {

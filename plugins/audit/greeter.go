@@ -21,6 +21,7 @@ import (
 	"github.com/tknie/clu/server"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
+	"github.com/tknie/services/auth"
 )
 
 type greeting string
@@ -53,7 +54,7 @@ func (g greeting) Stop() {
 }
 
 // LoginAudit login audit info incoming request
-func (g greeting) LoginAudit(method, user, status string) {
+func (g greeting) LoginAudit(method string, status string, user *auth.UserInfo) {
 }
 
 // ReceiveAudit receive audit info incoming request

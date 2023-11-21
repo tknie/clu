@@ -57,7 +57,7 @@ type Loader interface {
 
 // Audit auditing method to send to plugin
 type Audit interface {
-	LoginAudit(string, string, string)
+	LoginAudit(string, string, *auth.UserInfo)
 	ReceiveAudit(string, string, *http.Request)
 	SendAudit(time.Duration, string, string, *http.Request)
 	SendAuditError(time.Duration, string, string, *http.Request, error)
@@ -103,7 +103,7 @@ func handleInterrupt(interrupt chan os.Signal) {
 
 func init() {
 	auth.TriggerInvalidUUID = func(a *auth.UserInfo) {
-		LoginAudit("Invalidated", a.User, "DONE")
+		LoginAudit("Invalidated", "LOGOFF", a)
 	}
 }
 
@@ -239,9 +239,9 @@ func HasPlugins() bool {
 }
 
 // LoginAudit login audit
-func LoginAudit(method, username, status string) {
+func LoginAudit(method string, status string, user *auth.UserInfo) {
 	for _, x := range auditPlugins {
-		x.Audit.LoginAudit(method, username, status)
+		x.Audit.LoginAudit(method, status, user)
 	}
 }
 
@@ -256,10 +256,10 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 		return
 	}
 	if p != nil {
-		c := &http.Cookie{Name: p.User, Value: p.UUID()}
+		c := &http.Cookie{Name: p.User.User, Value: p.UUID()}
 		r.AddCookie(c)
 		for _, x := range auditPlugins {
-			x.Audit.ReceiveAudit(p.User, p.UUID(), r)
+			x.Audit.ReceiveAudit(p.User.User, p.UUID(), r)
 		}
 		return
 	}
@@ -269,7 +269,7 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 			log.Log.Fatal("Error clu context not defined")
 			x.Audit.ReceiveAudit("Unknown", "-", r)
 		} else {
-			x.Audit.ReceiveAudit(p.User, p.UUID(), r)
+			x.Audit.ReceiveAudit(p.User.User, p.UUID(), r)
 		}
 	}
 }
@@ -298,7 +298,7 @@ func SendAuditEnded(started time.Time, r *http.Request) {
 		} else {
 			c := p.(*clu.Context)
 			uuid = c.UUID()
-			user = c.User
+			user = c.User.User
 		}
 	default:
 		log.Log.Debugf("User evaluation failed in " + strings.ToLower(splitToken[0]))

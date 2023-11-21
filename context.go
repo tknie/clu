@@ -14,6 +14,8 @@ package clu
 import (
 	"net/http"
 	"time"
+
+	"github.com/tknie/services/auth"
 )
 
 // Audit callback function to be enabled
@@ -21,11 +23,10 @@ var Audit func(time.Time, *http.Request, error)
 
 // Context server context
 type Context struct {
-	User string
+	User *auth.UserInfo
+	// User string
 	Pass string
-	X    struct {
-		UUID    string
-		Name    string
+	Auth struct {
 		Roles   []string
 		Remote  string
 		Session interface{}
@@ -39,7 +40,7 @@ type Context struct {
 // NewContext new server context with user and password
 func NewContext(user, pass string) *Context {
 	return &Context{
-		User: user, dataMap: make(map[string]any),
+		User: &auth.UserInfo{User: user}, dataMap: make(map[string]any),
 		Pass: pass, started: time.Now()}
 }
 
@@ -59,47 +60,47 @@ func (sc *Context) Value(key any) any {
 
 // UUID UUID interface function
 func (sc *Context) UUID() string {
-	return sc.X.UUID
+	return sc.User.UUID
 }
 
 // UserName user interface function
 func (sc *Context) UserName() string {
-	return sc.User
+	return sc.User.User
 }
 
 // Name Name interface function
 func (sc *Context) Name() string {
-	return sc.X.Name
+	return sc.User.LongName
 }
 
 // AddRoles add roles interface function
 func (sc *Context) AddRoles(r []string) {
-	sc.X.Roles = append(sc.X.Roles, r...)
+	sc.Auth.Roles = append(sc.Auth.Roles, r...)
 }
 
 // Remote remote info interface function
 func (sc *Context) Remote() string {
-	return sc.X.Remote
+	return sc.Auth.Remote
 }
 
 // SetRemote set remote info interface function
 func (sc *Context) SetRemote(r string) {
-	sc.X.Remote = r
+	sc.Auth.Remote = r
 }
 
 // Roles roles info interface function
 func (sc *Context) Roles() []string {
-	return sc.X.Roles
+	return sc.Auth.Roles
 }
 
 // Session session info interface function
 func (sc *Context) Session() interface{} {
-	return sc.X.Session
+	return sc.Auth.Session
 }
 
 // SetSession set session info interface function
 func (sc *Context) SetSession(s interface{}) {
-	sc.X.Session = s
+	sc.Auth.Session = s
 }
 
 // SendAuditError send audit error in context

@@ -59,9 +59,9 @@ func main() {
 	auth.PrincipalCreater = func(UUID, user, pass string) auth.PrincipalInterface {
 		log.Log.Debugf("Create principal %s with password", user)
 		m := clu.NewContext(user, pass)
-		m.X.UUID = uuid.New().String()
-		m.X.Name = user
-		m.X.Roles = []string{"user", "admin"}
+		m.User.UUID = uuid.New().String()
+		m.User.LongName = user
+		m.Auth.Roles = []string{"user", "admin"}
 		log.Log.Debugf("Create OGEN principal: %#v", m)
 		return m
 	}
