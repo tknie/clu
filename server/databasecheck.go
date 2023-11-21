@@ -142,22 +142,7 @@ func (viewer *RestServer) CloseConfig() {
 	services.CloseConfig()
 }
 
+// String representation of Database instance
 func (db *Database) String() string {
 	return db.User + ":***@" + db.Host + ":" + db.Port
 }
-
-// Add add new url
-//func (da *DatabaseAccess) Add(url string, file int) {
-// da.Database = append(da.Database, Database{URL: url})
-//}
-
-// Del delete given url
-//func (da *DatabaseAccess) Del(url string, file int) {
-//	database := make([]Database, 0)
-//	for _, d := range da.Database {
-//		if d.URL != url {
-//			database = append(database, d)
-//		}
-//	}
-//	da.Database = database
-//}

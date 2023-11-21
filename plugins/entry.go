@@ -28,6 +28,7 @@ import (
 	"github.com/tknie/clu/server"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
+	"github.com/tknie/services/auth"
 )
 
 // PluginTypes different types of plugins for
@@ -56,6 +57,7 @@ type Loader interface {
 
 // Audit auditing method to send to plugin
 type Audit interface {
+	LoginAudit(string, string, string)
 	ReceiveAudit(string, string, *http.Request)
 	SendAudit(time.Duration, string, string, *http.Request)
 	SendAuditError(time.Duration, string, string, *http.Request, error)
@@ -97,6 +99,10 @@ func handleInterrupt(interrupt chan os.Signal) {
 			ShutdownPlugins()
 		}
 	})
+}
+
+func init() {
+	auth.TriggerInvalidUUID = func(a any) {}
 }
 
 // InitPlugins initialize plugins in given plugin directory
@@ -228,6 +234,13 @@ func loadPlugin(mod string) (*plugin.Plugin, error) {
 // HasPlugins if any plugin is available to send data to
 func HasPlugins() bool {
 	return pluginsFound
+}
+
+// LoginAudit login audit
+func LoginAudit(method, username, status string) {
+	for _, x := range auditPlugins {
+		x.Audit.LoginAudit(method, username, status)
+	}
 }
 
 // ReceiveAudit send audit information to plugins

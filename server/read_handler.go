@@ -137,6 +137,7 @@ func checkOrderBy(orderby api.OptString) []string {
 //
 // GET /rest/tables/{table}/{fields}/{search}
 func (Handler) SearchTable(ctx context.Context, params api.SearchTableParams) (r api.SearchTableRes, _ error) {
+
 	return r, ht.ErrNotImplemented
 }
 
@@ -146,7 +147,24 @@ func (Handler) SearchTable(ctx context.Context, params api.SearchTableParams) (r
 //
 // GET /rest/map/{path}
 func (Handler) SearchModelling(ctx context.Context, params api.SearchModellingParams) (r api.SearchModellingRes, _ error) {
-	return r, ht.ErrNotImplemented
+	session := ctx.(*clu.Context)
+	if !auth.ValidUser(auth.UserRole, false, session.User, params.Path) {
+		return &api.SearchModellingForbidden{}, nil
+	}
+	log.Log.Debugf("SQL search field of an table %s - %v", params.Path, params.Path)
+	d, err := ConnectTable(session, params.Path)
+	if err != nil {
+		log.Log.Errorf("Error search table %s:%v", params.Path, err)
+		return nil, err
+	}
+	defer CloseTable(d)
+
+	fields, err := d.GetTableColumn(params.Path)
+	if err != nil {
+		return nil, err
+	}
+	res := &api.Response{MapName: api.NewOptString(params.Path), FieldNames: fields}
+	return res, nil
 }
 
 // ListModelling implements listModelling operation.

@@ -45,11 +45,15 @@ func (g greeting) Name() string {
 
 // Version version of the number
 func (g greeting) Version() string {
-	return "1.1"
+	return "1.2"
 }
 
 // Stop stop plugin
 func (g greeting) Stop() {
+}
+
+// LoginAudit login audit info incoming request
+func (g greeting) LoginAudit(method, user, status string) {
 }
 
 // ReceiveAudit receive audit info incoming request

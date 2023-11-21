@@ -226,7 +226,7 @@ func (g greeting) Name() string {
 
 // Version version of the number
 func (g greeting) Version() string {
-	return "1.1"
+	return "1.2"
 }
 
 // Stop stop plugin
@@ -241,6 +241,18 @@ func (g greeting) Stop() {
 
 func key(uuid string, r *http.Request) string {
 	return uuid + "#" + server.RemoteHost(r) + r.RequestURI
+}
+
+// LoginAudit login audit info incoming request
+func (g greeting) LoginAudit(method, user, status string) {
+	if disableStore {
+		return
+	}
+	log.Log.Debugf("STORE_AUDIT: login audit %s -> %s", user, status)
+	si := NewSessionInfo("Ended", "", user, method)
+
+	log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v/%s)", disableStore, si.User)
+	storeChan <- si
 }
 
 // ReceiveAudit receive audit info incoming request

@@ -35,11 +35,18 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 	p, err := auth.BasicAuth(username, t.Password)
 	if err != nil {
 		log.Log.Errorf("Basic auth error... %v", err)
+		plugins.LoginAudit("LOGIN", username, err.Error())
 		return nil, err
 	}
 	log.Log.Infof("Basic auth... done: %s", p.Name())
 	pm := p.(*clu.Context)
-	server.GenerateJWToken(pm)
+	_, err = server.GenerateJWToken(pm)
+	if err != nil {
+		log.Log.Errorf("Basic auth error... %v", err)
+		plugins.LoginAudit("LOGIN", username, err.Error())
+		return nil, err
+	}
+	plugins.LoginAudit("LOGIN", pm.Name(), "Authenticated")
 	// plugins.ReceiveAudit(nil, req)
 	return pm, nil
 }

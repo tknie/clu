@@ -2596,7 +2596,7 @@ paths:
     get:
       tags:
         - Queries
-      description: Retrieves all fields of an file
+      description: Retrieves all tables, views or data representation objects
       operationId: listModelling
       responses:
         '200':
@@ -2638,7 +2638,7 @@ paths:
     get:
       tags:
         - Queries
-      description: Retrieves all fields of an file
+      description: Retrieves all columns, fields of a tables, views or data representation
       operationId: searchModelling
       parameters:
         - name: path

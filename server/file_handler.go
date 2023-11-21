@@ -200,9 +200,6 @@ func (Handler) BrowseLocation(ctx context.Context, params api.BrowseLocationPara
 		return returnDirectoryInfo(d, path, params.Filter.Value, f)
 	}
 	return returnFileStream(d, path, f)
-	// content := api.File{Name: api.NewOptString(fileInfo.Name()), Type: api.NewOptString("File"),
-	// 	Modified: api.NewOptDateTime(fileInfo.ModTime()), Size: api.NewOptInt64(fileInfo.Size())}
-	// return &api.DirectoryFiles{Files: []api.File{content}, System: api.NewOptString(runtime.GOOS)}, nil
 }
 
 // returnDirectoryInfo generate directory information list

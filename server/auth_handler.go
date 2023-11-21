@@ -13,6 +13,7 @@ package server
 
 import (
 	"context"
+	"time"
 
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
@@ -75,6 +76,6 @@ func (Handler) PushLoginSession(ctx context.Context) (r api.PushLoginSessionRes,
 func (Handler) RemoveSessionCompat(ctx context.Context) (r api.RemoveSessionCompatRes, _ error) {
 	session := ctx.(*clu.Context)
 
-	auth.InvalidateUUID(session.Token)
+	auth.InvalidateUUID(session.Token, time.Now())
 	return r, nil
 }
