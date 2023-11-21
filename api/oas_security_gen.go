@@ -57,6 +57,7 @@ func (s *Server) securityBasicAuth(ctx context.Context, operationName string, re
 	} else if err != nil {
 		return nil, false, err
 	}
+	// CLU TKN addition
 	s.sec.Request(rctx, req)
 
 	return rctx, true, err
@@ -75,6 +76,7 @@ func (s *Server) securityBearerAuth(ctx context.Context, operationName string, r
 	} else if err != nil {
 		return nil, false, err
 	}
+	// CLU TKN addition
 	s.sec.Request(rctx, req)
 
 	return rctx, true, err
@@ -93,6 +95,7 @@ func (s *Server) securityTokenCheck(ctx context.Context, operationName string, r
 	} else if err != nil {
 		return nil, false, err
 	}
+	// CLU TKN addition
 	s.sec.Request(rctx, req)
 
 	return rctx, true, err
