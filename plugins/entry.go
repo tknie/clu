@@ -102,7 +102,9 @@ func handleInterrupt(interrupt chan os.Signal) {
 }
 
 func init() {
-	auth.TriggerInvalidUUID = func(a any) {}
+	auth.TriggerInvalidUUID = func(a *auth.UserInfo) {
+		LoginAudit("Invalidated", a.User, "DONE")
+	}
 }
 
 // InitPlugins initialize plugins in given plugin directory
