@@ -250,7 +250,7 @@ func (g greeting) LoginAudit(method string, status string, user *auth.UserInfo) 
 		return
 	}
 	log.Log.Debugf("STORE_AUDIT: login audit %s -> %s", user, status)
-	si := NewSessionInfo("Login", "", user.User, method)
+	si := NewSessionInfo(status, user.UUID, user.User, method)
 
 	log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v/%s)", disableStore, si.User)
 	storeChan <- si

@@ -103,7 +103,8 @@ func handleInterrupt(interrupt chan os.Signal) {
 
 func init() {
 	auth.TriggerInvalidUUID = func(a *auth.UserInfo) {
-		LoginAudit("Invalidated", "LOGOFF", a)
+		log.Log.Debugf("Logoff (invalidate UUID) triggered")
+		LoginAudit("LOGIN", "logoff", a)
 	}
 }
 

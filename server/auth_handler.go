@@ -77,5 +77,6 @@ func (Handler) RemoveSessionCompat(ctx context.Context) (r api.RemoveSessionComp
 	session := ctx.(*clu.Context)
 
 	auth.InvalidateUUID(session.Token, time.Now())
-	return r, nil
+
+	return &api.RemoveSessionCompatOK{}, nil
 }

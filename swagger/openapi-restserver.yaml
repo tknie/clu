@@ -171,6 +171,39 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
+  /logoout:
+    put:
+      tags:
+        - Environment
+      description: Logout the session
+      operationId: logoutSessionCompat
+      responses:
+        '200':
+          description: Successful response, session is invalidated
+          content: {}
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Error logoff
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - user
   /rest/shutdown/{hash}:
     put:
       tags:

@@ -29,7 +29,7 @@ var prefixesOfServices = []string{"/rest/", "/binary/",
 	"/image/", "/video",
 	"/adabas/", "/version",
 	"/scheduler/", "/file/",
-	"/login", "/logout",
+	"/login", "/logout", "/logoff",
 	"/shutdown", "/redirect",
 	"/docs", "/swagger.json"}
 var staticContent = os.Getenv("API_STATIC_CONTENT")
