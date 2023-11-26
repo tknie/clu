@@ -59,7 +59,7 @@ func initStreamFromTable(srvctx *clu.Context, table,
 	s := strings.ToLower(field)
 	if d, ok := result[s]; ok {
 		if d == nil {
-			return nil, fmt.Errorf("internal error result map nil")
+			return nil, fmt.Errorf("stream query result empty")
 		}
 		read = &streamRead{data: d.([]byte)}
 		if mimetypeField != "" {
@@ -70,7 +70,7 @@ func initStreamFromTable(srvctx *clu.Context, table,
 		}
 		return
 	}
-	err = fmt.Errorf("field not in result map")
+	err = fmt.Errorf("field not in result")
 	return
 }
 

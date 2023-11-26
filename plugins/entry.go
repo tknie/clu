@@ -285,7 +285,7 @@ func SendAuditEnded(started time.Time, r *http.Request) {
 	}
 	log.Log.Debugf("Send auditing plugins request: %v %v %v", r.Method, r.URL, server.RemoteHost(r))
 	user := "Unknown"
-	uuid := ""
+	uuid := "Not defined"
 	reqToken := r.Header.Get("Authorization")
 	splitToken := strings.Split(reqToken, " ")
 	switch strings.ToLower(splitToken[0]) {
@@ -295,7 +295,7 @@ func SendAuditEnded(started time.Time, r *http.Request) {
 		reqToken = strings.TrimSpace(splitToken[1])
 		p, err := server.Viewer.Server.WebToken.JWTContainsRoles(reqToken, []string{"admin"})
 		if err != nil {
-			uuid = "Not available"
+			uuid = err.Error()
 		} else {
 			c := p.(*clu.Context)
 			uuid = c.UUID()

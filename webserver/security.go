@@ -57,9 +57,7 @@ func (sec SecurityHandler) HandleBearerAuth(ctx context.Context, operationName s
 	// been decoded by the runtime as a token
 	p, err := server.Viewer.Server.WebToken.JWTContainsRoles(t.Token, []string{"admin"})
 	if err != nil {
-		if log.IsDebugLevel() {
-			log.Log.Debugf("Bearer auth return: %v", err)
-		}
+		log.Log.Errorf("Bearer auth return: %v", err)
 		return nil, err
 	}
 	if log.IsDebugLevel() {
