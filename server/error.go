@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ogen-go/ogen/ogenerrors"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/errorrepo"
@@ -42,6 +43,10 @@ func (Handler) NewError(ctx context.Context, err error) (r *api.ErrorStatusCode)
 		log.Log.Errorf("Unknown error context: %T", ctx)
 	}
 	switch e := err.(type) {
+	case *ogenerrors.SecurityError:
+		r.StatusCode = http.StatusForbidden
+		r.Response = *NewAPIError("SECERR", err)
+		return r
 	case *api.ErrorStatusCode:
 		return e
 	case *errorrepo.Error:
