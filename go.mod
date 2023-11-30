@@ -1,6 +1,8 @@
 module github.com/tknie/clu
 
-go 1.20
+go 1.21
+
+toolchain go1.21.4
 
 require (
 	github.com/go-faster/errors v0.7.0
@@ -24,7 +26,7 @@ require (
 	github.com/go-logr/logr v1.3.0 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
-	github.com/godror/godror v0.40.3 // indirect
+	github.com/godror/godror v0.40.4 // indirect
 	github.com/godror/knownpb v0.1.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
@@ -32,7 +34,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/tknie/adabas-go-api v1.7.11-0.20230927173718-c1f8db24a2a8 // indirect
+	github.com/tknie/adabas-go-api v1.7.11-0.20231130200115-0931956e3a9c // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 )
 
@@ -52,14 +54,14 @@ require (
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20231119173834-6ad8a3cefbc0
-	github.com/tknie/flynn v0.0.0-20231108195547-89d6f5d6654d
+	github.com/tknie/flynn v0.0.0-20231126200642-f561be849cd5
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.26.0
-	golang.org/x/crypto v0.15.0 // indirect
-	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
-	golang.org/x/net v0.18.0
+	golang.org/x/crypto v0.16.0 // indirect
+	golang.org/x/exp v0.0.0-20231127185646-65229373498e // indirect
+	golang.org/x/net v0.19.0
 	golang.org/x/sync v0.5.0 // indirect
-	golang.org/x/sys v0.14.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
