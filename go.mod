@@ -2,8 +2,6 @@ module github.com/tknie/clu
 
 go 1.21
 
-toolchain go1.21.4
-
 require (
 	github.com/go-faster/errors v0.7.0
 	github.com/go-faster/jx v1.1.0
