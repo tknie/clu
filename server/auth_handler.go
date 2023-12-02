@@ -15,6 +15,7 @@ import (
 	"context"
 	"time"
 
+	ht "github.com/ogen-go/ogen/http"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/log"
@@ -79,4 +80,13 @@ func (Handler) RemoveSessionCompat(ctx context.Context) (r api.RemoveSessionComp
 	auth.InvalidateUUID(session.Token, time.Now())
 
 	return &api.RemoveSessionCompatOK{}, nil
+}
+
+// LogoutSessionCompat implements logoutSessionCompat operation.
+//
+// Logout the session.
+//
+// PUT /logout
+func (Handler) LogoutSessionCompat(ctx context.Context) (r api.LogoutSessionCompatRes, _ error) {
+	return r, ht.ErrNotImplemented
 }

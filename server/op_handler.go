@@ -32,6 +32,15 @@ func (Handler) GetVersion(ctx context.Context) (r api.GetVersionRes, _ error) {
 	return r, nil
 }
 
+// GetUserInfo implements getUserInfo operation.
+//
+// Retrieves the user information.
+//
+// GET /rest/user
+func (Handler) GetUserInfo(ctx context.Context) (r api.GetUserInfoRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetMaps implements getMaps operation.
 //
 // Retrieves a list of available views.
