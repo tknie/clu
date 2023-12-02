@@ -242,6 +242,12 @@ type Handler interface {
 	//
 	// GET /rest/database/{table}/permission
 	GetPermission(ctx context.Context, params GetPermissionParams) (GetPermissionRes, error)
+	// GetUserInfo implements getUserInfo operation.
+	//
+	// Retrieves the user information.
+	//
+	// GET /rest/user
+	GetUserInfo(ctx context.Context) (GetUserInfoRes, error)
 	// GetVersion implements getVersion operation.
 	//
 	// Retrieves the current version.
@@ -274,7 +280,7 @@ type Handler interface {
 	InsertRecord(ctx context.Context, req OptInsertRecordReq, params InsertRecordParams) (InsertRecordRes, error)
 	// ListModelling implements listModelling operation.
 	//
-	// Retrieves all fields of an file.
+	// Retrieves all tables, views or data representation objects.
 	//
 	// GET /rest/map
 	ListModelling(ctx context.Context) (ListModellingRes, error)
@@ -296,6 +302,12 @@ type Handler interface {
 	//
 	// PUT /login
 	LoginSession(ctx context.Context) (LoginSessionRes, error)
+	// LogoutSessionCompat implements logoutSessionCompat operation.
+	//
+	// Logout the session.
+	//
+	// PUT /logout
+	LogoutSessionCompat(ctx context.Context) (LogoutSessionCompatRes, error)
 	// PostDatabase implements postDatabase operation.
 	//
 	// Create a new database, the input need to be JSON. A structure level parameter indicate version to
@@ -335,7 +347,7 @@ type Handler interface {
 	RemoveSessionCompat(ctx context.Context) (RemoveSessionCompatRes, error)
 	// SearchModelling implements searchModelling operation.
 	//
-	// Retrieves all fields of an file.
+	// Retrieves all columns, fields of a tables, views or data representation.
 	//
 	// GET /rest/map/{path}
 	SearchModelling(ctx context.Context, params SearchModellingParams) (SearchModellingRes, error)

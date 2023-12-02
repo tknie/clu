@@ -11,4 +11,4 @@
 
 package clu
 
-//go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --debug.ignoreNotImplemented "oauth2 security" --target api --clean swagger/openapi-restserver.yaml
+//go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --target api --clean swagger/openapi-restserver.yaml

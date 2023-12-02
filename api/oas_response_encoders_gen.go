@@ -19,7 +19,7 @@ import (
 func encodeAccessResponse(response AccessRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Users:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -32,7 +32,7 @@ func encodeAccessResponse(response AccessRes, w http.ResponseWriter, span trace.
 		return nil
 
 	case *AccessBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -57,7 +57,7 @@ func encodeAccessResponse(response AccessRes, w http.ResponseWriter, span trace.
 		return nil
 
 	case *AccessNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -77,7 +77,7 @@ func encodeAccessResponse(response AccessRes, w http.ResponseWriter, span trace.
 func encodeAdaptPermissionResponse(response AdaptPermissionRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -90,7 +90,7 @@ func encodeAdaptPermissionResponse(response AdaptPermissionRes, w http.ResponseW
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -128,7 +128,7 @@ func encodeAddAccessResponse(response AddAccessRes, w http.ResponseWriter, span 
 		return nil
 
 	case *AddAccessBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -153,7 +153,7 @@ func encodeAddAccessResponse(response AddAccessRes, w http.ResponseWriter, span 
 		return nil
 
 	case *AddAccessNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -173,7 +173,7 @@ func encodeAddAccessResponse(response AddAccessRes, w http.ResponseWriter, span 
 func encodeAddRBACResourceResponse(response AddRBACResourceRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -186,7 +186,7 @@ func encodeAddRBACResourceResponse(response AddRBACResourceRes, w http.ResponseW
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -224,7 +224,7 @@ func encodeAddViewResponse(response AddViewRes, w http.ResponseWriter, span trac
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -256,7 +256,7 @@ func encodeAddViewResponse(response AddViewRes, w http.ResponseWriter, span trac
 func encodeBatchQueryResponse(response BatchQueryRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *ResponseHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -300,7 +300,7 @@ func encodeBatchQueryResponse(response BatchQueryRes, w http.ResponseWriter, spa
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -320,7 +320,7 @@ func encodeBatchQueryResponse(response BatchQueryRes, w http.ResponseWriter, spa
 func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Directories:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -333,7 +333,7 @@ func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, spa
 		return nil
 
 	case *BrowseListBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -358,7 +358,7 @@ func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, spa
 		return nil
 
 	case *BrowseListNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -378,7 +378,7 @@ func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, spa
 func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *DirectoryFiles:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -403,7 +403,7 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 		return nil
 
 	case *BrowseLocationBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -428,7 +428,7 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 		return nil
 
 	case *BrowseLocationNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -448,7 +448,7 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 func encodeCreateDirectoryResponse(response CreateDirectoryRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -461,7 +461,7 @@ func encodeCreateDirectoryResponse(response CreateDirectoryRes, w http.ResponseW
 		return nil
 
 	case *CreateDirectoryBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -486,7 +486,7 @@ func encodeCreateDirectoryResponse(response CreateDirectoryRes, w http.ResponseW
 		return nil
 
 	case *CreateDirectoryNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -506,7 +506,7 @@ func encodeCreateDirectoryResponse(response CreateDirectoryRes, w http.ResponseW
 func encodeDatabaseOperationResponse(response DatabaseOperationRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *DatabaseStatus:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -519,7 +519,7 @@ func encodeDatabaseOperationResponse(response DatabaseOperationRes, w http.Respo
 		return nil
 
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(202)
 		span.SetStatus(codes.Ok, http.StatusText(202))
 
@@ -532,7 +532,7 @@ func encodeDatabaseOperationResponse(response DatabaseOperationRes, w http.Respo
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -564,7 +564,7 @@ func encodeDatabaseOperationResponse(response DatabaseOperationRes, w http.Respo
 func encodeDatabasePostOperationsResponse(response DatabasePostOperationsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *DatabaseStatus:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -577,7 +577,7 @@ func encodeDatabasePostOperationsResponse(response DatabasePostOperationsRes, w 
 		return nil
 
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(202)
 		span.SetStatus(codes.Ok, http.StatusText(202))
 
@@ -590,7 +590,7 @@ func encodeDatabasePostOperationsResponse(response DatabasePostOperationsRes, w 
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -628,7 +628,7 @@ func encodeDelAccessResponse(response DelAccessRes, w http.ResponseWriter, span 
 		return nil
 
 	case *DelAccessBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -653,7 +653,7 @@ func encodeDelAccessResponse(response DelAccessRes, w http.ResponseWriter, span 
 		return nil
 
 	case *DelAccessNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -673,7 +673,7 @@ func encodeDelAccessResponse(response DelAccessRes, w http.ResponseWriter, span 
 func encodeDeleteDatabaseResponse(response DeleteDatabaseRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -686,7 +686,7 @@ func encodeDeleteDatabaseResponse(response DeleteDatabaseRes, w http.ResponseWri
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -718,7 +718,7 @@ func encodeDeleteDatabaseResponse(response DeleteDatabaseRes, w http.ResponseWri
 func encodeDeleteFileLocationResponse(response DeleteFileLocationRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -731,7 +731,7 @@ func encodeDeleteFileLocationResponse(response DeleteFileLocationRes, w http.Res
 		return nil
 
 	case *DeleteFileLocationBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -756,7 +756,7 @@ func encodeDeleteFileLocationResponse(response DeleteFileLocationRes, w http.Res
 		return nil
 
 	case *DeleteFileLocationNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -776,7 +776,7 @@ func encodeDeleteFileLocationResponse(response DeleteFileLocationRes, w http.Res
 func encodeDeleteJobResultResponse(response DeleteJobResultRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *JobStatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -789,7 +789,7 @@ func encodeDeleteJobResultResponse(response DeleteJobResultRes, w http.ResponseW
 		return nil
 
 	case *DeleteJobResultBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -814,7 +814,7 @@ func encodeDeleteJobResultResponse(response DeleteJobResultRes, w http.ResponseW
 		return nil
 
 	case *DeleteJobResultNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -834,7 +834,7 @@ func encodeDeleteJobResultResponse(response DeleteJobResultRes, w http.ResponseW
 func encodeDeleteRBACResourceResponse(response DeleteRBACResourceRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -847,7 +847,7 @@ func encodeDeleteRBACResourceResponse(response DeleteRBACResourceRes, w http.Res
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -879,7 +879,7 @@ func encodeDeleteRBACResourceResponse(response DeleteRBACResourceRes, w http.Res
 func encodeDeleteRecordsSearchedResponse(response DeleteRecordsSearchedRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *ResponseHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -923,7 +923,7 @@ func encodeDeleteRecordsSearchedResponse(response DeleteRecordsSearchedRes, w ht
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -949,7 +949,7 @@ func encodeDeleteViewResponse(response DeleteViewRes, w http.ResponseWriter, spa
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -981,7 +981,7 @@ func encodeDeleteViewResponse(response DeleteViewRes, w http.ResponseWriter, spa
 func encodeDisconnectTCPResponse(response DisconnectTCPRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -994,7 +994,7 @@ func encodeDisconnectTCPResponse(response DisconnectTCPRes, w http.ResponseWrite
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1038,7 +1038,7 @@ func encodeDownloadFileResponse(response DownloadFileRes, w http.ResponseWriter,
 		return nil
 
 	case *DownloadFileBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1063,7 +1063,7 @@ func encodeDownloadFileResponse(response DownloadFileRes, w http.ResponseWriter,
 		return nil
 
 	case *DownloadFileNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -1083,7 +1083,7 @@ func encodeDownloadFileResponse(response DownloadFileRes, w http.ResponseWriter,
 func encodeGetConfigResponse(response GetConfigRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Config:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -1096,7 +1096,7 @@ func encodeGetConfigResponse(response GetConfigRes, w http.ResponseWriter, span 
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1128,7 +1128,7 @@ func encodeGetConfigResponse(response GetConfigRes, w http.ResponseWriter, span 
 func encodeGetConnectionsResponse(response GetConnectionsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *TCP:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -1141,7 +1141,7 @@ func encodeGetConnectionsResponse(response GetConnectionsRes, w http.ResponseWri
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1173,7 +1173,7 @@ func encodeGetConnectionsResponse(response GetConnectionsRes, w http.ResponseWri
 func encodeGetDatabaseSessionsResponse(response GetDatabaseSessionsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Sessions:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -1186,7 +1186,7 @@ func encodeGetDatabaseSessionsResponse(response GetDatabaseSessionsRes, w http.R
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1218,7 +1218,7 @@ func encodeGetDatabaseSessionsResponse(response GetDatabaseSessionsRes, w http.R
 func encodeGetDatabaseStatsResponse(response GetDatabaseStatsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *ActivityStats:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -1231,7 +1231,7 @@ func encodeGetDatabaseStatsResponse(response GetDatabaseStatsRes, w http.Respons
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1263,7 +1263,7 @@ func encodeGetDatabaseStatsResponse(response GetDatabaseStatsRes, w http.Respons
 func encodeGetDatabasesResponse(response GetDatabasesRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Databases:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -1276,7 +1276,7 @@ func encodeGetDatabasesResponse(response GetDatabasesRes, w http.ResponseWriter,
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1308,7 +1308,7 @@ func encodeGetDatabasesResponse(response GetDatabasesRes, w http.ResponseWriter,
 func encodeGetEnvironmentsResponse(response GetEnvironmentsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *EnvironmentsHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1340,7 +1340,7 @@ func encodeGetEnvironmentsResponse(response GetEnvironmentsRes, w http.ResponseW
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1372,7 +1372,7 @@ func encodeGetEnvironmentsResponse(response GetEnvironmentsRes, w http.ResponseW
 func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *FieldsHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1404,7 +1404,7 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 		return nil
 
 	case *GetFieldsBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1429,7 +1429,7 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 		return nil
 
 	case *GetFieldsNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -1516,7 +1516,7 @@ func encodeGetImageResponse(response GetImageRes, w http.ResponseWriter, span tr
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -1536,7 +1536,7 @@ func encodeGetImageResponse(response GetImageRes, w http.ResponseWriter, span tr
 func encodeGetJobExecutionResultResponse(response GetJobExecutionResultRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *JobResult:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -1549,7 +1549,7 @@ func encodeGetJobExecutionResultResponse(response GetJobExecutionResultRes, w ht
 		return nil
 
 	case *GetJobExecutionResultBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1574,7 +1574,7 @@ func encodeGetJobExecutionResultResponse(response GetJobExecutionResultRes, w ht
 		return nil
 
 	case *GetJobExecutionResultNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -1594,7 +1594,7 @@ func encodeGetJobExecutionResultResponse(response GetJobExecutionResultRes, w ht
 func encodeGetJobFullInfoResponse(response GetJobFullInfoRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *JobFull:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -1607,7 +1607,7 @@ func encodeGetJobFullInfoResponse(response GetJobFullInfoRes, w http.ResponseWri
 		return nil
 
 	case *GetJobFullInfoBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1632,7 +1632,7 @@ func encodeGetJobFullInfoResponse(response GetJobFullInfoRes, w http.ResponseWri
 		return nil
 
 	case *GetJobFullInfoNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -1652,7 +1652,7 @@ func encodeGetJobFullInfoResponse(response GetJobFullInfoRes, w http.ResponseWri
 func encodeGetJobResultResponse(response GetJobResultRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *JobResult:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -1665,7 +1665,7 @@ func encodeGetJobResultResponse(response GetJobResultRes, w http.ResponseWriter,
 		return nil
 
 	case *GetJobResultBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1690,7 +1690,7 @@ func encodeGetJobResultResponse(response GetJobResultRes, w http.ResponseWriter,
 		return nil
 
 	case *GetJobResultNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -1710,7 +1710,7 @@ func encodeGetJobResultResponse(response GetJobResultRes, w http.ResponseWriter,
 func encodeGetJobsResponse(response GetJobsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *JobsList:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -1748,7 +1748,7 @@ func encodeGetJobsResponse(response GetJobsRes, w http.ResponseWriter, span trac
 func encodeGetJobsConfigResponse(response GetJobsConfigRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *JobStore:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -1761,7 +1761,7 @@ func encodeGetJobsConfigResponse(response GetJobsConfigRes, w http.ResponseWrite
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -1817,7 +1817,7 @@ func encodeGetLobByMapResponse(response GetLobByMapRes, w http.ResponseWriter, s
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -1837,7 +1837,7 @@ func encodeGetLobByMapResponse(response GetLobByMapRes, w http.ResponseWriter, s
 func encodeGetLoginSessionResponse(response GetLoginSessionRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *AuthorizationTokenHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1881,7 +1881,7 @@ func encodeGetLoginSessionResponse(response GetLoginSessionRes, w http.ResponseW
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -1901,7 +1901,7 @@ func encodeGetLoginSessionResponse(response GetLoginSessionRes, w http.ResponseW
 func encodeGetMapMetadataResponse(response GetMapMetadataRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *MappingHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1945,7 +1945,7 @@ func encodeGetMapMetadataResponse(response GetMapMetadataRes, w http.ResponseWri
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -1965,7 +1965,7 @@ func encodeGetMapMetadataResponse(response GetMapMetadataRes, w http.ResponseWri
 func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *ResponseHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2009,7 +2009,7 @@ func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.R
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2029,7 +2029,7 @@ func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.R
 func encodeGetMapsResponse(response GetMapsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Maps:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -2054,7 +2054,7 @@ func encodeGetMapsResponse(response GetMapsRes, w http.ResponseWriter, span trac
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2080,7 +2080,7 @@ func encodeGetPermissionResponse(response GetPermissionRes, w http.ResponseWrite
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2109,10 +2109,10 @@ func encodeGetPermissionResponse(response GetPermissionRes, w http.ResponseWrite
 	}
 }
 
-func encodeGetVersionResponse(response GetVersionRes, w http.ResponseWriter, span trace.Span) error {
+func encodeGetUserInfoResponse(response GetUserInfoRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *Versions:
-		w.Header().Set("Content-Type", "application/json")
+	case *User:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -2125,7 +2125,52 @@ func encodeGetVersionResponse(response GetVersionRes, w http.ResponseWriter, spa
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *GetUserInfoUnauthorized:
+		w.WriteHeader(401)
+		span.SetStatus(codes.Error, http.StatusText(401))
+
+		return nil
+
+	case *GetUserInfoForbidden:
+		w.WriteHeader(403)
+		span.SetStatus(codes.Error, http.StatusText(403))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
+func encodeGetVersionResponse(response GetVersionRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *Versions:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *Error:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2200,7 +2245,7 @@ func encodeGetVideoResponse(response GetVideoRes, w http.ResponseWriter, span tr
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2245,7 +2290,7 @@ func encodeGetViewsResponse(response GetViewsRes, w http.ResponseWriter, span tr
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2277,7 +2322,7 @@ func encodeGetViewsResponse(response GetViewsRes, w http.ResponseWriter, span tr
 func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StoreResponseHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2309,7 +2354,7 @@ func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http
 		return nil
 
 	case *InsertMapFileRecordsBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2334,7 +2379,7 @@ func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http
 		return nil
 
 	case *InsertMapFileRecordsNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2354,7 +2399,7 @@ func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http
 func encodeInsertRecordResponse(response InsertRecordRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *ResponseHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2398,7 +2443,7 @@ func encodeInsertRecordResponse(response InsertRecordRes, w http.ResponseWriter,
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2418,7 +2463,7 @@ func encodeInsertRecordResponse(response InsertRecordRes, w http.ResponseWriter,
 func encodeListModellingResponse(response ListModellingRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Maps:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -2431,7 +2476,7 @@ func encodeListModellingResponse(response ListModellingRes, w http.ResponseWrite
 		return nil
 
 	case *ListModellingBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2456,7 +2501,7 @@ func encodeListModellingResponse(response ListModellingRes, w http.ResponseWrite
 		return nil
 
 	case *ListModellingNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2482,7 +2527,7 @@ func encodeListRBACResourceResponse(response ListRBACResourceRes, w http.Respons
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2514,7 +2559,7 @@ func encodeListRBACResourceResponse(response ListRBACResourceRes, w http.Respons
 func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Maps:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -2527,7 +2572,7 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 		return nil
 
 	case *ListTablesBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2552,7 +2597,7 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 		return nil
 
 	case *ListTablesNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2572,7 +2617,7 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 func encodeLoginSessionResponse(response LoginSessionRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *AuthorizationTokenHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2616,7 +2661,46 @@ func encodeLoginSessionResponse(response LoginSessionRes, w http.ResponseWriter,
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(404)
+		span.SetStatus(codes.Error, http.StatusText(404))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
+func encodeLogoutSessionCompatResponse(response LogoutSessionCompatRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *LogoutSessionCompatOK:
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		return nil
+
+	case *LogoutSessionCompatBadRequest:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *LogoutSessionCompatNotFound:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2636,7 +2720,7 @@ func encodeLoginSessionResponse(response LoginSessionRes, w http.ResponseWriter,
 func encodePostDatabaseResponse(response PostDatabaseRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -2649,7 +2733,7 @@ func encodePostDatabaseResponse(response PostDatabaseRes, w http.ResponseWriter,
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2681,7 +2765,7 @@ func encodePostDatabaseResponse(response PostDatabaseRes, w http.ResponseWriter,
 func encodePostJobResponse(response PostJobRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -2694,7 +2778,7 @@ func encodePostJobResponse(response PostJobRes, w http.ResponseWriter, span trac
 		return nil
 
 	case *PostJobBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2719,7 +2803,7 @@ func encodePostJobResponse(response PostJobRes, w http.ResponseWriter, span trac
 		return nil
 
 	case *PostJobNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2739,7 +2823,7 @@ func encodePostJobResponse(response PostJobRes, w http.ResponseWriter, span trac
 func encodePushLoginSessionResponse(response PushLoginSessionRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *AuthorizationTokenHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2783,7 +2867,7 @@ func encodePushLoginSessionResponse(response PushLoginSessionRes, w http.Respons
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2803,7 +2887,7 @@ func encodePushLoginSessionResponse(response PushLoginSessionRes, w http.Respons
 func encodePutDatabaseResourceResponse(response PutDatabaseResourceRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *DatabaseStatus:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -2816,7 +2900,7 @@ func encodePutDatabaseResourceResponse(response PutDatabaseResourceRes, w http.R
 		return nil
 
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(202)
 		span.SetStatus(codes.Ok, http.StatusText(202))
 
@@ -2829,7 +2913,7 @@ func encodePutDatabaseResourceResponse(response PutDatabaseResourceRes, w http.R
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2861,7 +2945,7 @@ func encodePutDatabaseResourceResponse(response PutDatabaseResourceRes, w http.R
 func encodeRemovePermissionResponse(response RemovePermissionRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -2874,7 +2958,7 @@ func encodeRemovePermissionResponse(response RemovePermissionRes, w http.Respons
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2912,7 +2996,7 @@ func encodeRemoveSessionCompatResponse(response RemoveSessionCompatRes, w http.R
 		return nil
 
 	case *RemoveSessionCompatBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2925,7 +3009,7 @@ func encodeRemoveSessionCompatResponse(response RemoveSessionCompatRes, w http.R
 		return nil
 
 	case *RemoveSessionCompatNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -2945,7 +3029,7 @@ func encodeRemoveSessionCompatResponse(response RemoveSessionCompatRes, w http.R
 func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Response:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -2958,7 +3042,7 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 		return nil
 
 	case *SearchModellingBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -2983,7 +3067,7 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 		return nil
 
 	case *SearchModellingNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -3003,7 +3087,7 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *ResponseHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -3047,7 +3131,7 @@ func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.R
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -3067,7 +3151,7 @@ func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.R
 func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Response:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -3080,7 +3164,7 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 		return nil
 
 	case *SearchTableBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -3105,7 +3189,7 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 		return nil
 
 	case *SearchTableNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -3150,7 +3234,7 @@ func encodeSetConfigResponse(response SetConfigRes, w http.ResponseWriter, span 
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -3188,7 +3272,7 @@ func encodeSetJobsConfigResponse(response SetJobsConfigRes, w http.ResponseWrite
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -3220,7 +3304,7 @@ func encodeSetJobsConfigResponse(response SetJobsConfigRes, w http.ResponseWrite
 func encodeShutdownServerResponse(response ShutdownServerRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -3245,7 +3329,7 @@ func encodeShutdownServerResponse(response ShutdownServerRes, w http.ResponseWri
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -3290,7 +3374,7 @@ func encodeStoreConfigResponse(response StoreConfigRes, w http.ResponseWriter, s
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -3322,7 +3406,7 @@ func encodeStoreConfigResponse(response StoreConfigRes, w http.ResponseWriter, s
 func encodeTriggerJobResponse(response TriggerJobRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Response:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -3335,7 +3419,7 @@ func encodeTriggerJobResponse(response TriggerJobRes, w http.ResponseWriter, spa
 		return nil
 
 	case *TriggerJobBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -3360,7 +3444,7 @@ func encodeTriggerJobResponse(response TriggerJobRes, w http.ResponseWriter, spa
 		return nil
 
 	case *TriggerJobNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -3380,7 +3464,7 @@ func encodeTriggerJobResponse(response TriggerJobRes, w http.ResponseWriter, spa
 func encodeUpdateLobByMapResponse(response UpdateLobByMapRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StoreResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -3405,7 +3489,7 @@ func encodeUpdateLobByMapResponse(response UpdateLobByMapRes, w http.ResponseWri
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -3425,7 +3509,7 @@ func encodeUpdateLobByMapResponse(response UpdateLobByMapRes, w http.ResponseWri
 func encodeUpdateRecordsByFieldsResponse(response UpdateRecordsByFieldsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *ResponseHeaders:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -3469,7 +3553,7 @@ func encodeUpdateRecordsByFieldsResponse(response UpdateRecordsByFieldsRes, w ht
 		return nil
 
 	case *Error:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -3489,7 +3573,7 @@ func encodeUpdateRecordsByFieldsResponse(response UpdateRecordsByFieldsRes, w ht
 func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StatusResponse:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -3502,7 +3586,7 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 		return nil
 
 	case *UploadFileOKTextPlain:
-		w.Header().Set("Content-Type", "text/plain")
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -3514,7 +3598,7 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 		return nil
 
 	case *UploadFileBadRequest:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
 
@@ -3539,7 +3623,7 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 		return nil
 
 	case *UploadFileNotFound:
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
 
@@ -3557,15 +3641,14 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 }
 
 func encodeErrorResponse(response *ErrorStatusCode, w http.ResponseWriter, span trace.Span) error {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	code := response.StatusCode
 	if code == 0 {
 		// Set default status code.
 		code = http.StatusOK
 	}
 	w.WriteHeader(code)
-	st := http.StatusText(code)
-	if code >= http.StatusBadRequest {
+	if st := http.StatusText(code); code >= http.StatusBadRequest {
 		span.SetStatus(codes.Error, st)
 	} else {
 		span.SetStatus(codes.Ok, st)

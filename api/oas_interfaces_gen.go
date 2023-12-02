@@ -157,6 +157,10 @@ type GetPermissionRes interface {
 	getPermissionRes()
 }
 
+type GetUserInfoRes interface {
+	getUserInfoRes()
+}
+
 type GetVersionRes interface {
 	getVersionRes()
 }
@@ -191,6 +195,10 @@ type ListTablesRes interface {
 
 type LoginSessionRes interface {
 	loginSessionRes()
+}
+
+type LogoutSessionCompatRes interface {
+	logoutSessionCompatRes()
 }
 
 type PostDatabaseRes interface {

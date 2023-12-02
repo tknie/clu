@@ -209,6 +209,15 @@ func decodeAdaptPermissionResponse(resp *http.Response) (res AdaptPermissionRes,
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -459,6 +468,15 @@ func decodeAddRBACResourceResponse(resp *http.Response) (res AddRBACResourceRes,
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -999,6 +1017,15 @@ func decodeBrowseLocationResponse(resp *http.Response) (res BrowseLocationRes, _
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			return &response, nil
 		case ct == "application/octet-stream":
 			reader := resp.Body
@@ -1166,6 +1193,15 @@ func decodeCreateDirectoryResponse(resp *http.Response) (res CreateDirectoryRes,
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -1361,6 +1397,15 @@ func decodeDatabaseOperationResponse(resp *http.Response) (res DatabaseOperation
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -1519,6 +1564,15 @@ func decodeDatabasePostOperationsResponse(resp *http.Response) (res DatabasePost
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -1771,6 +1825,15 @@ func decodeDeleteDatabaseResponse(resp *http.Response) (res DeleteDatabaseRes, _
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -1894,6 +1957,15 @@ func decodeDeleteFileLocationResponse(resp *http.Response) (res DeleteFileLocati
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -2212,6 +2284,15 @@ func decodeDeleteRBACResourceResponse(resp *http.Response) (res DeleteRBACResour
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -2593,6 +2674,15 @@ func decodeDisconnectTCPResponse(resp *http.Response) (res DisconnectTCPRes, _ e
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -2859,6 +2949,15 @@ func decodeGetConfigResponse(resp *http.Response) (res GetConfigRes, _ error) {
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -3231,6 +3330,15 @@ func decodeGetDatabaseStatsResponse(resp *http.Response) (res GetDatabaseStatsRe
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -3644,6 +3752,15 @@ func decodeGetFieldsResponse(resp *http.Response) (res GetFieldsRes, _ error) {
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			var wrapper FieldsHeaders
 			wrapper.Response = response
 			h := uri.NewHeaderDecoder(resp.Header)
@@ -4008,6 +4125,15 @@ func decodeGetJobExecutionResultResponse(resp *http.Response) (res GetJobExecuti
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -4166,6 +4292,15 @@ func decodeGetJobFullInfoResponse(resp *http.Response) (res GetJobFullInfoRes, _
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -4326,6 +4461,15 @@ func decodeGetJobResultResponse(resp *http.Response) (res GetJobResultRes, _ err
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -4485,6 +4629,15 @@ func decodeGetJobsResponse(resp *http.Response) (res GetJobsRes, _ error) {
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -4576,6 +4729,15 @@ func decodeGetJobsConfigResponse(resp *http.Response) (res GetJobsConfigRes, _ e
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -5438,6 +5600,139 @@ func decodeGetPermissionResponse(resp *http.Response) (res GetPermissionRes, _ e
 	case 403:
 		// Code 403.
 		return &GetPermissionForbidden{}, nil
+	}
+	// Convenient error response.
+	defRes, err := func() (res *ErrorStatusCode, err error) {
+		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if err != nil {
+			return res, errors.Wrap(err, "parse media type")
+		}
+		switch {
+		case ct == "application/json":
+			buf, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return res, err
+			}
+			d := jx.DecodeBytes(buf)
+
+			var response Error
+			if err := func() error {
+				if err := response.Decode(d); err != nil {
+					return err
+				}
+				if err := d.Skip(); err != io.EOF {
+					return errors.New("unexpected trailing data")
+				}
+				return nil
+			}(); err != nil {
+				err = &ogenerrors.DecodeBodyError{
+					ContentType: ct,
+					Body:        buf,
+					Err:         err,
+				}
+				return res, err
+			}
+			return &ErrorStatusCode{
+				StatusCode: resp.StatusCode,
+				Response:   response,
+			}, nil
+		default:
+			return res, validate.InvalidContentType(ct)
+		}
+	}()
+	if err != nil {
+		return res, errors.Wrapf(err, "default (code %d)", resp.StatusCode)
+	}
+	return res, errors.Wrap(defRes, "error")
+}
+
+func decodeGetUserInfoResponse(resp *http.Response) (res GetUserInfoRes, _ error) {
+	switch resp.StatusCode {
+	case 200:
+		// Code 200.
+		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if err != nil {
+			return res, errors.Wrap(err, "parse media type")
+		}
+		switch {
+		case ct == "application/json":
+			buf, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return res, err
+			}
+			d := jx.DecodeBytes(buf)
+
+			var response User
+			if err := func() error {
+				if err := response.Decode(d); err != nil {
+					return err
+				}
+				if err := d.Skip(); err != io.EOF {
+					return errors.New("unexpected trailing data")
+				}
+				return nil
+			}(); err != nil {
+				err = &ogenerrors.DecodeBodyError{
+					ContentType: ct,
+					Body:        buf,
+					Err:         err,
+				}
+				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
+			return &response, nil
+		default:
+			return res, validate.InvalidContentType(ct)
+		}
+	case 400:
+		// Code 400.
+		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if err != nil {
+			return res, errors.Wrap(err, "parse media type")
+		}
+		switch {
+		case ct == "application/json":
+			buf, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return res, err
+			}
+			d := jx.DecodeBytes(buf)
+
+			var response Error
+			if err := func() error {
+				if err := response.Decode(d); err != nil {
+					return err
+				}
+				if err := d.Skip(); err != io.EOF {
+					return errors.New("unexpected trailing data")
+				}
+				return nil
+			}(); err != nil {
+				err = &ogenerrors.DecodeBodyError{
+					ContentType: ct,
+					Body:        buf,
+					Err:         err,
+				}
+				return res, err
+			}
+			return &response, nil
+		default:
+			return res, validate.InvalidContentType(ct)
+		}
+	case 401:
+		// Code 401.
+		return &GetUserInfoUnauthorized{}, nil
+	case 403:
+		// Code 403.
+		return &GetUserInfoForbidden{}, nil
 	}
 	// Convenient error response.
 	defRes, err := func() (res *ErrorStatusCode, err error) {
@@ -6826,6 +7121,127 @@ func decodeLoginSessionResponse(resp *http.Response) (res LoginSessionRes, _ err
 	return res, errors.Wrap(defRes, "error")
 }
 
+func decodeLogoutSessionCompatResponse(resp *http.Response) (res LogoutSessionCompatRes, _ error) {
+	switch resp.StatusCode {
+	case 200:
+		// Code 200.
+		return &LogoutSessionCompatOK{}, nil
+	case 400:
+		// Code 400.
+		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if err != nil {
+			return res, errors.Wrap(err, "parse media type")
+		}
+		switch {
+		case ct == "application/json":
+			buf, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return res, err
+			}
+			d := jx.DecodeBytes(buf)
+
+			var response LogoutSessionCompatBadRequest
+			if err := func() error {
+				if err := response.Decode(d); err != nil {
+					return err
+				}
+				if err := d.Skip(); err != io.EOF {
+					return errors.New("unexpected trailing data")
+				}
+				return nil
+			}(); err != nil {
+				err = &ogenerrors.DecodeBodyError{
+					ContentType: ct,
+					Body:        buf,
+					Err:         err,
+				}
+				return res, err
+			}
+			return &response, nil
+		default:
+			return res, validate.InvalidContentType(ct)
+		}
+	case 404:
+		// Code 404.
+		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if err != nil {
+			return res, errors.Wrap(err, "parse media type")
+		}
+		switch {
+		case ct == "application/json":
+			buf, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return res, err
+			}
+			d := jx.DecodeBytes(buf)
+
+			var response LogoutSessionCompatNotFound
+			if err := func() error {
+				if err := response.Decode(d); err != nil {
+					return err
+				}
+				if err := d.Skip(); err != io.EOF {
+					return errors.New("unexpected trailing data")
+				}
+				return nil
+			}(); err != nil {
+				err = &ogenerrors.DecodeBodyError{
+					ContentType: ct,
+					Body:        buf,
+					Err:         err,
+				}
+				return res, err
+			}
+			return &response, nil
+		default:
+			return res, validate.InvalidContentType(ct)
+		}
+	}
+	// Convenient error response.
+	defRes, err := func() (res *ErrorStatusCode, err error) {
+		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if err != nil {
+			return res, errors.Wrap(err, "parse media type")
+		}
+		switch {
+		case ct == "application/json":
+			buf, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return res, err
+			}
+			d := jx.DecodeBytes(buf)
+
+			var response Error
+			if err := func() error {
+				if err := response.Decode(d); err != nil {
+					return err
+				}
+				if err := d.Skip(); err != io.EOF {
+					return errors.New("unexpected trailing data")
+				}
+				return nil
+			}(); err != nil {
+				err = &ogenerrors.DecodeBodyError{
+					ContentType: ct,
+					Body:        buf,
+					Err:         err,
+				}
+				return res, err
+			}
+			return &ErrorStatusCode{
+				StatusCode: resp.StatusCode,
+				Response:   response,
+			}, nil
+		default:
+			return res, validate.InvalidContentType(ct)
+		}
+	}()
+	if err != nil {
+		return res, errors.Wrapf(err, "default (code %d)", resp.StatusCode)
+	}
+	return res, errors.Wrap(defRes, "error")
+}
+
 func decodePostDatabaseResponse(resp *http.Response) (res PostDatabaseRes, _ error) {
 	switch resp.StatusCode {
 	case 200:
@@ -6858,6 +7274,15 @@ func decodePostDatabaseResponse(resp *http.Response) (res PostDatabaseRes, _ err
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -6982,6 +7407,15 @@ func decodePostJobResponse(resp *http.Response) (res PostJobRes, _ error) {
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -7341,6 +7775,15 @@ func decodePutDatabaseResourceResponse(resp *http.Response) (res PutDatabaseReso
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -7464,6 +7907,15 @@ func decodeRemovePermissionResponse(resp *http.Response) (res RemovePermissionRe
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:
@@ -8415,6 +8867,15 @@ func decodeShutdownServerResponse(resp *http.Response) (res ShutdownServerRes, _
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -9116,6 +9577,15 @@ func decodeUploadFileResponse(resp *http.Response) (res UploadFileRes, _ error) 
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		case ct == "text/plain":

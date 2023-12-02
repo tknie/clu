@@ -5990,6 +5990,82 @@ func (s *ListTablesNotFound) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes LogoutSessionCompatBadRequest as json.
+func (s *LogoutSessionCompatBadRequest) Encode(e *jx.Encoder) {
+	unwrapped := (*Error)(s)
+
+	unwrapped.Encode(e)
+}
+
+// Decode decodes LogoutSessionCompatBadRequest from json.
+func (s *LogoutSessionCompatBadRequest) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode LogoutSessionCompatBadRequest to nil")
+	}
+	var unwrapped Error
+	if err := func() error {
+		if err := unwrapped.Decode(d); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = LogoutSessionCompatBadRequest(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *LogoutSessionCompatBadRequest) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *LogoutSessionCompatBadRequest) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes LogoutSessionCompatNotFound as json.
+func (s *LogoutSessionCompatNotFound) Encode(e *jx.Encoder) {
+	unwrapped := (*Error)(s)
+
+	unwrapped.Encode(e)
+}
+
+// Decode decodes LogoutSessionCompatNotFound from json.
+func (s *LogoutSessionCompatNotFound) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode LogoutSessionCompatNotFound to nil")
+	}
+	var unwrapped Error
+	if err := func() error {
+		if err := unwrapped.Decode(d); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = LogoutSessionCompatNotFound(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *LogoutSessionCompatNotFound) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *LogoutSessionCompatNotFound) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes Map as json.
 func (s Map) Encode(e *jx.Encoder) {
 	unwrapped := string(s)
@@ -8421,6 +8497,41 @@ func (s *OptString) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes uuid.UUID as json.
+func (o OptUUID) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	json.EncodeUUID(e, o.Value)
+}
+
+// Decode decodes uuid.UUID from json.
+func (o *OptUUID) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptUUID to nil")
+	}
+	o.Set = true
+	v, err := json.DecodeUUID(d)
+	if err != nil {
+		return err
+	}
+	o.Value = v
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptUUID) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptUUID) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes UpdateRecordsByFieldsReq as json.
 func (o OptUpdateRecordsByFieldsReq) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -8450,6 +8561,39 @@ func (s OptUpdateRecordsByFieldsReq) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptUpdateRecordsByFieldsReq) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes UserUser as json.
+func (o OptUserUser) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes UserUser from json.
+func (o *OptUserUser) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptUserUser to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptUserUser) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptUserUser) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -10084,6 +10228,234 @@ func (s *UploadFileNotFound) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *UploadFileNotFound) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *User) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *User) encodeFields(e *jx.Encoder) {
+	{
+		if s.User.Set {
+			e.FieldStart("User")
+			s.User.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfUser = [1]string{
+	0: "User",
+}
+
+// Decode decodes User from json.
+func (s *User) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode User to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "User":
+			if err := func() error {
+				s.User.Reset()
+				if err := s.User.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"User\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode User")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *User) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *User) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *UserUser) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *UserUser) encodeFields(e *jx.Encoder) {
+	{
+		if s.Email.Set {
+			e.FieldStart("email")
+			s.Email.Encode(e)
+		}
+	}
+	{
+		if s.Name.Set {
+			e.FieldStart("name")
+			s.Name.Encode(e)
+		}
+	}
+	{
+		if s.Picture.Set {
+			e.FieldStart("Picture")
+			s.Picture.Encode(e)
+		}
+	}
+	{
+		if s.Thumbnail.Set {
+			e.FieldStart("Thumbnail")
+			s.Thumbnail.Encode(e)
+		}
+	}
+	{
+		if s.LongName.Set {
+			e.FieldStart("LongName")
+			s.LongName.Encode(e)
+		}
+	}
+	{
+		if s.UUID.Set {
+			e.FieldStart("UUID")
+			s.UUID.Encode(e)
+		}
+	}
+	{
+		if s.Created.Set {
+			e.FieldStart("Created")
+			s.Created.Encode(e, json.EncodeDateTime)
+		}
+	}
+}
+
+var jsonFieldsNameOfUserUser = [7]string{
+	0: "email",
+	1: "name",
+	2: "Picture",
+	3: "Thumbnail",
+	4: "LongName",
+	5: "UUID",
+	6: "Created",
+}
+
+// Decode decodes UserUser from json.
+func (s *UserUser) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode UserUser to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "email":
+			if err := func() error {
+				s.Email.Reset()
+				if err := s.Email.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"email\"")
+			}
+		case "name":
+			if err := func() error {
+				s.Name.Reset()
+				if err := s.Name.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "Picture":
+			if err := func() error {
+				s.Picture.Reset()
+				if err := s.Picture.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"Picture\"")
+			}
+		case "Thumbnail":
+			if err := func() error {
+				s.Thumbnail.Reset()
+				if err := s.Thumbnail.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"Thumbnail\"")
+			}
+		case "LongName":
+			if err := func() error {
+				s.LongName.Reset()
+				if err := s.LongName.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"LongName\"")
+			}
+		case "UUID":
+			if err := func() error {
+				s.UUID.Reset()
+				if err := s.UUID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"UUID\"")
+			}
+		case "Created":
+			if err := func() error {
+				s.Created.Reset()
+				if err := s.Created.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"Created\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode UserUser")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *UserUser) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *UserUser) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

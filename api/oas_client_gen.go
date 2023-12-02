@@ -258,6 +258,12 @@ type Invoker interface {
 	//
 	// GET /rest/database/{table}/permission
 	GetPermission(ctx context.Context, params GetPermissionParams) (GetPermissionRes, error)
+	// GetUserInfo invokes getUserInfo operation.
+	//
+	// Retrieves the user information.
+	//
+	// GET /rest/user
+	GetUserInfo(ctx context.Context) (GetUserInfoRes, error)
 	// GetVersion invokes getVersion operation.
 	//
 	// Retrieves the current version.
@@ -290,7 +296,7 @@ type Invoker interface {
 	InsertRecord(ctx context.Context, request OptInsertRecordReq, params InsertRecordParams) (InsertRecordRes, error)
 	// ListModelling invokes listModelling operation.
 	//
-	// Retrieves all fields of an file.
+	// Retrieves all tables, views or data representation objects.
 	//
 	// GET /rest/map
 	ListModelling(ctx context.Context) (ListModellingRes, error)
@@ -312,6 +318,12 @@ type Invoker interface {
 	//
 	// PUT /login
 	LoginSession(ctx context.Context) (LoginSessionRes, error)
+	// LogoutSessionCompat invokes logoutSessionCompat operation.
+	//
+	// Logout the session.
+	//
+	// PUT /logout
+	LogoutSessionCompat(ctx context.Context) (LogoutSessionCompatRes, error)
 	// PostDatabase invokes postDatabase operation.
 	//
 	// Create a new database, the input need to be JSON. A structure level parameter indicate version to
@@ -351,7 +363,7 @@ type Invoker interface {
 	RemoveSessionCompat(ctx context.Context) (RemoveSessionCompatRes, error)
 	// SearchModelling invokes searchModelling operation.
 	//
-	// Retrieves all fields of an file.
+	// Retrieves all columns, fields of a tables, views or data representation.
 	//
 	// GET /rest/map/{path}
 	SearchModelling(ctx context.Context, params SearchModellingParams) (SearchModellingRes, error)
@@ -6861,6 +6873,78 @@ func (c *Client) sendGetPermission(ctx context.Context, params GetPermissionPara
 	return result, nil
 }
 
+// GetUserInfo invokes getUserInfo operation.
+//
+// Retrieves the user information.
+//
+// GET /rest/user
+func (c *Client) GetUserInfo(ctx context.Context) (GetUserInfoRes, error) {
+	res, err := c.sendGetUserInfo(ctx)
+	return res, err
+}
+
+func (c *Client) sendGetUserInfo(ctx context.Context) (res GetUserInfoRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getUserInfo"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/rest/user"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "GetUserInfo",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/rest/user"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetUserInfoResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // GetVersion invokes getVersion operation.
 //
 // Retrieves the current version.
@@ -7583,7 +7667,7 @@ func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordRe
 
 // ListModelling invokes listModelling operation.
 //
-// Retrieves all fields of an file.
+// Retrieves all tables, views or data representation objects.
 //
 // GET /rest/map
 func (c *Client) ListModelling(ctx context.Context) (ListModellingRes, error) {
@@ -8122,6 +8206,135 @@ func (c *Client) sendLoginSession(ctx context.Context) (res LoginSessionRes, err
 	return result, nil
 }
 
+// LogoutSessionCompat invokes logoutSessionCompat operation.
+//
+// Logout the session.
+//
+// PUT /logout
+func (c *Client) LogoutSessionCompat(ctx context.Context) (LogoutSessionCompatRes, error) {
+	res, err := c.sendLogoutSessionCompat(ctx)
+	return res, err
+}
+
+func (c *Client) sendLogoutSessionCompat(ctx context.Context) (res LogoutSessionCompatRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("logoutSessionCompat"),
+		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRouteKey.String("/logout"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "LogoutSessionCompat",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/logout"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "PUT", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:BasicAuth"
+			switch err := c.securityBasicAuth(ctx, "LogoutSessionCompat", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BasicAuth\"")
+			}
+		}
+		{
+			stage = "Security:TokenCheck"
+			switch err := c.securityTokenCheck(ctx, "LogoutSessionCompat", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 1
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"TokenCheck\"")
+			}
+		}
+		{
+			stage = "Security:BearerAuth"
+			switch err := c.securityBearerAuth(ctx, "LogoutSessionCompat", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 2
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BearerAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+				{0b00000010},
+				{0b00000100},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeLogoutSessionCompatResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // PostDatabase invokes postDatabase operation.
 //
 // Create a new database, the input need to be JSON. A structure level parameter indicate version to
@@ -8270,17 +8483,6 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 		otelogen.OperationID("postJob"),
 		semconv.HTTPMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/tasks"),
-	}
-	// Validate request before sending.
-	switch request := request.(type) {
-	case *PostJobReqEmptyBody:
-		// Validation is not needed for the empty body type.
-	case *JobParameter:
-		// Validation is not required for this type.
-	case *PostJobReqTextPlain:
-		// Validation is not required for this type.
-	default:
-		return res, errors.Errorf("unexpected request type: %T", request)
 	}
 
 	// Run stopwatch.
@@ -8996,7 +9198,7 @@ func (c *Client) sendRemoveSessionCompat(ctx context.Context) (res RemoveSession
 
 // SearchModelling invokes searchModelling operation.
 //
-// Retrieves all fields of an file.
+// Retrieves all columns, fields of a tables, views or data representation.
 //
 // GET /rest/map/{path}
 func (c *Client) SearchModelling(ctx context.Context, params SearchModellingParams) (SearchModellingRes, error) {
@@ -9686,22 +9888,6 @@ func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res S
 		semconv.HTTPMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/config"),
 	}
-	// Validate request before sending.
-	switch request := request.(type) {
-	case *Config:
-		if err := func() error {
-			if err := request.Validate(); err != nil {
-				return err
-			}
-			return nil
-		}(); err != nil {
-			return res, errors.Wrap(err, "validate")
-		}
-	case *SetConfigReqTextPlain:
-		// Validation is not required for this type.
-	default:
-		return res, errors.Errorf("unexpected request type: %T", request)
-	}
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -9833,22 +10019,6 @@ func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (re
 		otelogen.OperationID("setJobsConfig"),
 		semconv.HTTPMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/config/jobs"),
-	}
-	// Validate request before sending.
-	if err := func() error {
-		if value, ok := request.Get(); ok {
-			if err := func() error {
-				if err := value.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		return res, errors.Wrap(err, "validate")
 	}
 
 	// Run stopwatch.
@@ -10404,15 +10574,6 @@ func (c *Client) sendUpdateLobByMap(ctx context.Context, request UpdateLobByMapR
 		otelogen.OperationID("updateLobByMap"),
 		semconv.HTTPMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
-	}
-	// Validate request before sending.
-	switch request := request.(type) {
-	case *UpdateLobByMapReqApplicationOctetStream:
-		// Validation is not required for this type.
-	case *UpdateLobByMapReqMultipartFormData:
-		// Validation is not required for this type.
-	default:
-		return res, errors.Errorf("unexpected request type: %T", request)
 	}
 
 	// Run stopwatch.

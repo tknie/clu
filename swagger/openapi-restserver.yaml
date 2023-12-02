@@ -171,7 +171,7 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
-  /logoout:
+  /logout:
     put:
       tags:
         - Environment
@@ -264,6 +264,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Environments'
+        '400':
+          description: Environment evaluation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rest/user:
+    get:
+      tags:
+        - Environment
+      description: Retrieves the user information
+      operationId: getUserInfo
+      responses:
+        '200':
+          description: Successful response, with a list of environment and versions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         '400':
           description: Environment evaluation error
           content:
@@ -3644,6 +3675,29 @@ components:
           items:
             $ref: '#/components/schemas/DatabaseInformation'
       description: Database entry in database list
+    User:
+      type: object
+      properties:
+        User:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+            name:
+              type: string
+            Picture:
+              type: string
+            Thumbnail:
+              type: string
+            LongName:
+              type: string
+            UUID:
+              type: string
+              format: uuid            
+            Created:
+              type: string
+              format: date-time
     DirectoryFiles:
       type: object
       properties:

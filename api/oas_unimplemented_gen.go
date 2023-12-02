@@ -364,6 +364,15 @@ func (UnimplementedHandler) GetPermission(ctx context.Context, params GetPermiss
 	return r, ht.ErrNotImplemented
 }
 
+// GetUserInfo implements getUserInfo operation.
+//
+// Retrieves the user information.
+//
+// GET /rest/user
+func (UnimplementedHandler) GetUserInfo(ctx context.Context) (r GetUserInfoRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetVersion implements getVersion operation.
 //
 // Retrieves the current version.
@@ -411,7 +420,7 @@ func (UnimplementedHandler) InsertRecord(ctx context.Context, req OptInsertRecor
 
 // ListModelling implements listModelling operation.
 //
-// Retrieves all fields of an file.
+// Retrieves all tables, views or data representation objects.
 //
 // GET /rest/map
 func (UnimplementedHandler) ListModelling(ctx context.Context) (r ListModellingRes, _ error) {
@@ -442,6 +451,15 @@ func (UnimplementedHandler) ListTables(ctx context.Context) (r ListTablesRes, _ 
 //
 // PUT /login
 func (UnimplementedHandler) LoginSession(ctx context.Context) (r LoginSessionRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// LogoutSessionCompat implements logoutSessionCompat operation.
+//
+// Logout the session.
+//
+// PUT /logout
+func (UnimplementedHandler) LogoutSessionCompat(ctx context.Context) (r LogoutSessionCompatRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -502,7 +520,7 @@ func (UnimplementedHandler) RemoveSessionCompat(ctx context.Context) (r RemoveSe
 
 // SearchModelling implements searchModelling operation.
 //
-// Retrieves all fields of an file.
+// Retrieves all columns, fields of a tables, views or data representation.
 //
 // GET /rest/map/{path}
 func (UnimplementedHandler) SearchModelling(ctx context.Context, params SearchModellingParams) (r SearchModellingRes, _ error) {

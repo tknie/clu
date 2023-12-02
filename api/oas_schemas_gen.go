@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
+	"github.com/google/uuid"
 
 	ht "github.com/ogen-go/ogen/http"
 )
@@ -1769,6 +1770,7 @@ func (*Error) getMapMetadataRes()         {}
 func (*Error) getMapRecordsFieldsRes()    {}
 func (*Error) getMapsRes()                {}
 func (*Error) getPermissionRes()          {}
+func (*Error) getUserInfoRes()            {}
 func (*Error) getVersionRes()             {}
 func (*Error) getVideoRes()               {}
 func (*Error) getViewsRes()               {}
@@ -2437,6 +2439,16 @@ func (*GetPermissionOK) getPermissionRes() {}
 type GetPermissionUnauthorized struct{}
 
 func (*GetPermissionUnauthorized) getPermissionRes() {}
+
+// GetUserInfoForbidden is response for GetUserInfo operation.
+type GetUserInfoForbidden struct{}
+
+func (*GetUserInfoForbidden) getUserInfoRes() {}
+
+// GetUserInfoUnauthorized is response for GetUserInfo operation.
+type GetUserInfoUnauthorized struct{}
+
+func (*GetUserInfoUnauthorized) getUserInfoRes() {}
 
 // GetVideoForbidden is response for GetVideo operation.
 type GetVideoForbidden struct{}
@@ -3298,6 +3310,19 @@ func (*LoginSessionForbidden) loginSessionRes() {}
 type LoginSessionUnauthorized struct{}
 
 func (*LoginSessionUnauthorized) loginSessionRes() {}
+
+type LogoutSessionCompatBadRequest Error
+
+func (*LogoutSessionCompatBadRequest) logoutSessionCompatRes() {}
+
+type LogoutSessionCompatNotFound Error
+
+func (*LogoutSessionCompatNotFound) logoutSessionCompatRes() {}
+
+// LogoutSessionCompatOK is response for LogoutSessionCompat operation.
+type LogoutSessionCompatOK struct{}
+
+func (*LogoutSessionCompatOK) logoutSessionCompatRes() {}
 
 type Map string
 
@@ -5562,6 +5587,52 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
+// NewOptUUID returns new OptUUID with value set to v.
+func NewOptUUID(v uuid.UUID) OptUUID {
+	return OptUUID{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptUUID is optional uuid.UUID.
+type OptUUID struct {
+	Value uuid.UUID
+	Set   bool
+}
+
+// IsSet returns true if OptUUID was set.
+func (o OptUUID) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptUUID) Reset() {
+	var v uuid.UUID
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptUUID) SetTo(v uuid.UUID) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptUUID) Get() (v uuid.UUID, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptUUID) Or(d uuid.UUID) uuid.UUID {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptUpdateRecordsByFieldsReq returns new OptUpdateRecordsByFieldsReq with value set to v.
 func NewOptUpdateRecordsByFieldsReq(v UpdateRecordsByFieldsReq) OptUpdateRecordsByFieldsReq {
 	return OptUpdateRecordsByFieldsReq{
@@ -5602,6 +5673,52 @@ func (o OptUpdateRecordsByFieldsReq) Get() (v UpdateRecordsByFieldsReq, ok bool)
 
 // Or returns value if set, or given parameter if does not.
 func (o OptUpdateRecordsByFieldsReq) Or(d UpdateRecordsByFieldsReq) UpdateRecordsByFieldsReq {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptUserUser returns new OptUserUser with value set to v.
+func NewOptUserUser(v UserUser) OptUserUser {
+	return OptUserUser{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptUserUser is optional UserUser.
+type OptUserUser struct {
+	Value UserUser
+	Set   bool
+}
+
+// IsSet returns true if OptUserUser was set.
+func (o OptUserUser) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptUserUser) Reset() {
+	var v UserUser
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptUserUser) SetTo(v UserUser) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptUserUser) Get() (v UserUser, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptUserUser) Or(d UserUser) UserUser {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -6410,6 +6527,103 @@ func (s *UploadFileReq) SetUploadFile(val ht.MultipartFile) {
 type UploadFileUnauthorized struct{}
 
 func (*UploadFileUnauthorized) uploadFileRes() {}
+
+// Ref: #/components/schemas/User
+type User struct {
+	User OptUserUser `json:"User"`
+}
+
+// GetUser returns the value of User.
+func (s *User) GetUser() OptUserUser {
+	return s.User
+}
+
+// SetUser sets the value of User.
+func (s *User) SetUser(val OptUserUser) {
+	s.User = val
+}
+
+func (*User) getUserInfoRes() {}
+
+type UserUser struct {
+	Email     OptString   `json:"email"`
+	Name      OptString   `json:"name"`
+	Picture   OptString   `json:"Picture"`
+	Thumbnail OptString   `json:"Thumbnail"`
+	LongName  OptString   `json:"LongName"`
+	UUID      OptUUID     `json:"UUID"`
+	Created   OptDateTime `json:"Created"`
+}
+
+// GetEmail returns the value of Email.
+func (s *UserUser) GetEmail() OptString {
+	return s.Email
+}
+
+// GetName returns the value of Name.
+func (s *UserUser) GetName() OptString {
+	return s.Name
+}
+
+// GetPicture returns the value of Picture.
+func (s *UserUser) GetPicture() OptString {
+	return s.Picture
+}
+
+// GetThumbnail returns the value of Thumbnail.
+func (s *UserUser) GetThumbnail() OptString {
+	return s.Thumbnail
+}
+
+// GetLongName returns the value of LongName.
+func (s *UserUser) GetLongName() OptString {
+	return s.LongName
+}
+
+// GetUUID returns the value of UUID.
+func (s *UserUser) GetUUID() OptUUID {
+	return s.UUID
+}
+
+// GetCreated returns the value of Created.
+func (s *UserUser) GetCreated() OptDateTime {
+	return s.Created
+}
+
+// SetEmail sets the value of Email.
+func (s *UserUser) SetEmail(val OptString) {
+	s.Email = val
+}
+
+// SetName sets the value of Name.
+func (s *UserUser) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetPicture sets the value of Picture.
+func (s *UserUser) SetPicture(val OptString) {
+	s.Picture = val
+}
+
+// SetThumbnail sets the value of Thumbnail.
+func (s *UserUser) SetThumbnail(val OptString) {
+	s.Thumbnail = val
+}
+
+// SetLongName sets the value of LongName.
+func (s *UserUser) SetLongName(val OptString) {
+	s.LongName = val
+}
+
+// SetUUID sets the value of UUID.
+func (s *UserUser) SetUUID(val OptUUID) {
+	s.UUID = val
+}
+
+// SetCreated sets the value of Created.
+func (s *UserUser) SetCreated(val OptDateTime) {
+	s.Created = val
+}
 
 // Ref: #/components/schemas/Users
 type Users struct {

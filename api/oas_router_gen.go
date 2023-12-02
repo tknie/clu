@@ -347,23 +347,53 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 						return
 					}
-				case 'o': // Prefix: "off"
-					if l := len("off"); len(elem) >= l && elem[0:l] == "off" {
+				case 'o': // Prefix: "o"
+					if l := len("o"); len(elem) >= l && elem[0:l] == "o" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "GET":
-							s.handleRemoveSessionCompatRequest([0]string{}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "GET")
+						break
+					}
+					switch elem[0] {
+					case 'f': // Prefix: "ff"
+						if l := len("ff"); len(elem) >= l && elem[0:l] == "ff" {
+							elem = elem[l:]
+						} else {
+							break
 						}
 
-						return
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleRemoveSessionCompatRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+					case 'u': // Prefix: "ut"
+						if l := len("ut"); len(elem) >= l && elem[0:l] == "ut" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "PUT":
+								s.handleLogoutSessionCompatRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "PUT")
+							}
+
+							return
+						}
 					}
 				}
 			case 'r': // Prefix: "rest/"
@@ -1083,6 +1113,24 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 						}
 					}
+				case 'u': // Prefix: "user"
+					if l := len("user"); len(elem) >= l && elem[0:l] == "user" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleGetUserInfoRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
 				case 'v': // Prefix: "view"
 					if l := len("view"); len(elem) >= l && elem[0:l] == "view" {
 						elem = elem[l:]
@@ -1759,26 +1807,60 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							return
 						}
 					}
-				case 'o': // Prefix: "off"
-					if l := len("off"); len(elem) >= l && elem[0:l] == "off" {
+				case 'o': // Prefix: "o"
+					if l := len("o"); len(elem) >= l && elem[0:l] == "o" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						switch method {
-						case "GET":
-							// Leaf: RemoveSessionCompat
-							r.name = "RemoveSessionCompat"
-							r.summary = ""
-							r.operationID = "removeSessionCompat"
-							r.pathPattern = "/logoff"
-							r.args = args
-							r.count = 0
-							return r, true
-						default:
-							return
+						break
+					}
+					switch elem[0] {
+					case 'f': // Prefix: "ff"
+						if l := len("ff"); len(elem) >= l && elem[0:l] == "ff" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: RemoveSessionCompat
+								r.name = "RemoveSessionCompat"
+								r.summary = ""
+								r.operationID = "removeSessionCompat"
+								r.pathPattern = "/logoff"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+					case 'u': // Prefix: "ut"
+						if l := len("ut"); len(elem) >= l && elem[0:l] == "ut" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "PUT":
+								// Leaf: LogoutSessionCompat
+								r.name = "LogoutSessionCompat"
+								r.summary = ""
+								r.operationID = "logoutSessionCompat"
+								r.pathPattern = "/logout"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
 						}
 					}
 				}
@@ -2618,6 +2700,28 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									}
 								}
 							}
+						}
+					}
+				case 'u': // Prefix: "user"
+					if l := len("user"); len(elem) >= l && elem[0:l] == "user" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							// Leaf: GetUserInfo
+							r.name = "GetUserInfo"
+							r.summary = ""
+							r.operationID = "getUserInfo"
+							r.pathPattern = "/rest/user"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
 						}
 					}
 				case 'v': // Prefix: "view"

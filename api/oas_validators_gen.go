@@ -30,6 +30,10 @@ func (s AccessRole) Validate() error {
 }
 
 func (s *ActivityStats) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.Statistics.Get(); ok {
@@ -56,6 +60,10 @@ func (s *ActivityStats) Validate() error {
 }
 
 func (s *ActivityStatsStatistics) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.BPHitRate.Get(); ok {
@@ -132,6 +140,10 @@ func (s AddRBACResourceResource) Validate() error {
 }
 
 func (s *Config) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.Server.Get(); ok {
@@ -230,6 +242,10 @@ func (s *Config) Validate() error {
 }
 
 func (s *ConfigDatabaseAccess) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		var failures []validate.FieldError
@@ -263,6 +279,10 @@ func (s *ConfigDatabaseAccess) Validate() error {
 }
 
 func (s *ConfigMapping) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		var failures []validate.FieldError
@@ -296,6 +316,10 @@ func (s *ConfigMapping) Validate() error {
 }
 
 func (s *ConfigMetrics) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		var failures []validate.FieldError
@@ -329,6 +353,10 @@ func (s *ConfigMetrics) Validate() error {
 }
 
 func (s *ConfigServer) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		var failures []validate.FieldError
@@ -362,6 +390,10 @@ func (s *ConfigServer) Validate() error {
 }
 
 func (s *ConfigServerServiceItem) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.Port.Get(); ok {
@@ -388,6 +420,10 @@ func (s *ConfigServerServiceItem) Validate() error {
 }
 
 func (s *DatabaseConfig) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.File.Get(); ok {
@@ -464,6 +500,10 @@ func (s DeleteRBACResourceResource) Validate() error {
 }
 
 func (s *DirectoryFiles) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		var failures []validate.FieldError
@@ -497,6 +537,10 @@ func (s *DirectoryFiles) Validate() error {
 }
 
 func (s *Executions) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.ExitCode.Get(); ok {
@@ -531,6 +575,10 @@ func (s Fields) Validate() error {
 }
 
 func (s *FieldsHeaders) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if err := s.Response.Validate(); err != nil {
@@ -550,6 +598,10 @@ func (s *FieldsHeaders) Validate() error {
 }
 
 func (s *File) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.Size.Get(); ok {
@@ -596,6 +648,10 @@ func (s GetPermissionList) Validate() error {
 }
 
 func (s *JobDefinition) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		var failures []validate.FieldError
@@ -629,6 +685,10 @@ func (s *JobDefinition) Validate() error {
 }
 
 func (s *JobFull) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.Job.Get(); ok {
@@ -655,6 +715,10 @@ func (s *JobFull) Validate() error {
 }
 
 func (s *JobResult) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.JobResult.Get(); ok {
@@ -681,6 +745,10 @@ func (s *JobResult) Validate() error {
 }
 
 func (s *JobResultJobResult) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.ExitCode.Get(); ok {
@@ -725,6 +793,10 @@ func (s *JobResultJobResult) Validate() error {
 }
 
 func (s *JobStore) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.Database.Get(); ok {
@@ -751,6 +823,10 @@ func (s *JobStore) Validate() error {
 }
 
 func (s *JobsList) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		var failures []validate.FieldError
@@ -815,6 +891,10 @@ func (s ListRBACResourceResource) Validate() error {
 }
 
 func (s *StatusResponse) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.Status.Get(); ok {
@@ -841,6 +921,10 @@ func (s *StatusResponse) Validate() error {
 }
 
 func (s *StatusResponseStatus) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
 	var failures []validate.FieldError
 	if err := func() error {
 		if value, ok := s.Dbid.Get(); ok {
@@ -857,6 +941,74 @@ func (s *StatusResponseStatus) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "Dbid",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *User) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.User.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "User",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *UserUser) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.Email.Get(); ok {
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    0,
+					MinLengthSet: false,
+					MaxLength:    0,
+					MaxLengthSet: false,
+					Email:        true,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(value)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "email",
 			Error: err,
 		})
 	}
