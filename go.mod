@@ -7,7 +7,7 @@ require (
 	github.com/go-faster/jx v1.1.0
 	github.com/go-openapi/runtime v0.26.0
 	github.com/go-openapi/swag v0.22.4
-	github.com/ogen-go/ogen v0.79.1
+	github.com/ogen-go/ogen v0.80.1
 	github.com/rs/cors v1.10.1
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
 	github.com/tknie/services v0.0.0-20231126173040-c6ad63e09e08
