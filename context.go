@@ -37,11 +37,23 @@ type Context struct {
 	dataMap        map[string]any
 }
 
+// NewContextUserInfo new server context with user information and password
+func NewContextUserInfo(userInfo *auth.UserInfo, pass string) *Context {
+	return &Context{
+		User: userInfo,
+		Auth: struct {
+			Roles   []string
+			Remote  string
+			Session interface{}
+		}{Session: auth.NewSessionInfo(userInfo.User)},
+		dataMap: make(map[string]any),
+		Pass:    pass, started: time.Now()}
+}
+
 // NewContext new server context with user and password
 func NewContext(user, pass string) *Context {
-	return &Context{
-		User: &auth.UserInfo{User: user}, dataMap: make(map[string]any),
-		Pass: pass, started: time.Now()}
+	created := time.Now()
+	return NewContextUserInfo(&auth.UserInfo{User: user, Created: created}, pass)
 }
 
 // Deadline dead line
@@ -60,7 +72,7 @@ func (sc *Context) Value(key any) any {
 
 // UUID UUID interface function
 func (sc *Context) UUID() string {
-	return sc.User.UUID
+	return sc.Auth.Session.(*auth.SessionInfo).UUID
 }
 
 // UserName user interface function

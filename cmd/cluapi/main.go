@@ -18,7 +18,6 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/google/uuid"
 	"github.com/ogen-go/ogen/middleware"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
@@ -56,12 +55,17 @@ func main() {
 		os.Exit(0)
 	}
 
-	auth.PrincipalCreater = func(UUID, user, pass string) auth.PrincipalInterface {
-		log.Log.Debugf("Create principal %s with password", user)
-		m := clu.NewContext(user, pass)
-		m.User.UUID = uuid.New().String()
+	auth.PrincipalCreater = func(s *auth.SessionInfo, user, pass string) auth.PrincipalInterface {
+		log.Log.Debugf("Create principal %s UUID=%s with password", user, s.UUID)
+		u := clu.CheckUserExist(user, s)
+		if u == nil {
+			log.Log.Errorf("User info not found for user %s", user)
+			return nil
+		}
+		m := clu.NewContextUserInfo(u.Info, pass)
 		m.User.LongName = user
 		m.Auth.Roles = []string{"user", "admin"}
+		m.Auth.Session = s
 		log.Log.Debugf("Create OGEN principal: %#v", m)
 		return m
 	}
@@ -76,6 +80,8 @@ func main() {
 	plugins.InitPlugins()
 
 	server.InitDatabases()
+	clu.InitUserInfo()
+	clu.InitStoreInfo()
 
 	server.AdaptConfig(os.Getenv(server.DefaultConfigFileEnv))
 

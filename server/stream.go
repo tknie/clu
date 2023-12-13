@@ -25,11 +25,10 @@ import (
 const blockSize = 65536
 
 type streamRead struct {
-	principal *clu.Context
-	field     string
-	mimetype  string
-	data      []byte
-	send      int
+	field    string
+	mimetype string
+	data     []byte
+	send     int
 }
 
 // initStreamFromTable init streamed read and open connection to database

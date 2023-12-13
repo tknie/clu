@@ -54,7 +54,8 @@ func (g greeting) Stop() {
 }
 
 // LoginAudit login audit info incoming request
-func (g greeting) LoginAudit(method string, status string, user *auth.UserInfo) {
+func (g greeting) LoginAudit(method string, status string,
+	session *auth.SessionInfo, user *auth.UserInfo) {
 }
 
 // ReceiveAudit receive audit info incoming request

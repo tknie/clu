@@ -57,7 +57,7 @@ type Loader interface {
 
 // Audit auditing method to send to plugin
 type Audit interface {
-	LoginAudit(string, string, *auth.UserInfo)
+	LoginAudit(string, string, *auth.SessionInfo, *auth.UserInfo)
 	ReceiveAudit(string, string, *http.Request)
 	SendAudit(time.Duration, string, string, *http.Request)
 	SendAuditError(time.Duration, string, string, *http.Request, error)
@@ -102,9 +102,9 @@ func handleInterrupt(interrupt chan os.Signal) {
 }
 
 func init() {
-	auth.TriggerInvalidUUID = func(a *auth.UserInfo) {
+	auth.TriggerInvalidUUID = func(a *auth.SessionInfo, u *auth.UserInfo) {
 		log.Log.Debugf("Logoff (invalidate UUID) triggered")
-		LoginAudit("LOGIN", "logoff", a)
+		LoginAudit("LOGIN", "logoff", a, u)
 	}
 }
 
@@ -240,9 +240,9 @@ func HasPlugins() bool {
 }
 
 // LoginAudit login audit
-func LoginAudit(method string, status string, user *auth.UserInfo) {
+func LoginAudit(method string, status string, session *auth.SessionInfo, user *auth.UserInfo) {
 	for _, x := range auditPlugins {
-		x.Audit.LoginAudit(method, status, user)
+		x.Audit.LoginAudit(method, status, session, user)
 	}
 }
 

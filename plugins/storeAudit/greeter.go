@@ -245,12 +245,20 @@ func key(uuid string, r *http.Request) string {
 }
 
 // LoginAudit login audit info incoming request
-func (g greeting) LoginAudit(method string, status string, user *auth.UserInfo) {
+func (g greeting) LoginAudit(method string, status string, session *auth.SessionInfo, user *auth.UserInfo) {
 	if disableStore {
 		return
 	}
 	log.Log.Debugf("STORE_AUDIT: login audit %s -> %s", user, status)
-	si := NewSessionInfo(status, user.UUID, user.User, method)
+	log.Log.Debugf("STORE_AUDIT: login session %#v", session)
+	if session == nil {
+		si := NewSessionInfo(status, "PREUUID", user.User, method)
+
+		log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v/%s)", disableStore, si.User)
+		storeChan <- si
+		return
+	}
+	si := NewSessionInfo(status, session.UUID, user.User, method)
 
 	log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v/%s)", disableStore, si.User)
 	storeChan <- si

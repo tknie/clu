@@ -24,7 +24,6 @@ import (
 )
 
 const (
-	defaultConfigFileName = "config"
 	// DefaultConfigFileEnv default environment name to search configuration file at
 	DefaultConfigFileEnv = "SERVER_CONFIG"
 	// InstallationDirName directory name of product installation location
