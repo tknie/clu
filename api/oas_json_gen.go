@@ -390,11 +390,18 @@ func (s *AuthorizationToken) encodeFields(e *jx.Encoder) {
 			s.AdminRole.Encode(e)
 		}
 	}
+	{
+		if s.User.Set {
+			e.FieldStart("User")
+			s.User.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfAuthorizationToken = [2]string{
+var jsonFieldsNameOfAuthorizationToken = [3]string{
 	0: "token",
 	1: "AdminRole",
+	2: "User",
 }
 
 // Decode decodes AuthorizationToken from json.
@@ -424,6 +431,16 @@ func (s *AuthorizationToken) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"AdminRole\"")
+			}
+		case "User":
+			if err := func() error {
+				s.User.Reset()
+				if err := s.User.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"User\"")
 			}
 		default:
 			return d.Skip()
@@ -8565,18 +8582,18 @@ func (s *OptUpdateRecordsByFieldsReq) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes UserUser as json.
-func (o OptUserUser) Encode(e *jx.Encoder) {
+// Encode encodes User as json.
+func (o OptUser) Encode(e *jx.Encoder) {
 	if !o.Set {
 		return
 	}
 	o.Value.Encode(e)
 }
 
-// Decode decodes UserUser from json.
-func (o *OptUserUser) Decode(d *jx.Decoder) error {
+// Decode decodes User from json.
+func (o *OptUser) Decode(d *jx.Decoder) error {
 	if o == nil {
-		return errors.New("invalid: unable to decode OptUserUser to nil")
+		return errors.New("invalid: unable to decode OptUser to nil")
 	}
 	o.Set = true
 	if err := o.Value.Decode(d); err != nil {
@@ -8586,14 +8603,14 @@ func (o *OptUserUser) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s OptUserUser) MarshalJSON() ([]byte, error) {
+func (s OptUser) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptUserUser) UnmarshalJSON(data []byte) error {
+func (s *OptUser) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -10242,69 +10259,6 @@ func (s *User) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *User) encodeFields(e *jx.Encoder) {
 	{
-		if s.User.Set {
-			e.FieldStart("User")
-			s.User.Encode(e)
-		}
-	}
-}
-
-var jsonFieldsNameOfUser = [1]string{
-	0: "User",
-}
-
-// Decode decodes User from json.
-func (s *User) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode User to nil")
-	}
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		case "User":
-			if err := func() error {
-				s.User.Reset()
-				if err := s.User.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"User\"")
-			}
-		default:
-			return d.Skip()
-		}
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode User")
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *User) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *User) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s *UserUser) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *UserUser) encodeFields(e *jx.Encoder) {
-	{
 		if s.Email.Set {
 			e.FieldStart("email")
 			s.Email.Encode(e)
@@ -10323,12 +10277,6 @@ func (s *UserUser) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Thumbnail.Set {
-			e.FieldStart("Thumbnail")
-			s.Thumbnail.Encode(e)
-		}
-	}
-	{
 		if s.LongName.Set {
 			e.FieldStart("LongName")
 			s.LongName.Encode(e)
@@ -10341,6 +10289,12 @@ func (s *UserUser) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.LastLogin.Set {
+			e.FieldStart("LastLogin")
+			s.LastLogin.Encode(e, json.EncodeDateTime)
+		}
+	}
+	{
 		if s.Created.Set {
 			e.FieldStart("Created")
 			s.Created.Encode(e, json.EncodeDateTime)
@@ -10348,20 +10302,20 @@ func (s *UserUser) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfUserUser = [7]string{
+var jsonFieldsNameOfUser = [7]string{
 	0: "email",
 	1: "name",
 	2: "Picture",
-	3: "Thumbnail",
-	4: "LongName",
-	5: "UUID",
+	3: "LongName",
+	4: "UUID",
+	5: "LastLogin",
 	6: "Created",
 }
 
-// Decode decodes UserUser from json.
-func (s *UserUser) Decode(d *jx.Decoder) error {
+// Decode decodes User from json.
+func (s *User) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode UserUser to nil")
+		return errors.New("invalid: unable to decode User to nil")
 	}
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
@@ -10396,16 +10350,6 @@ func (s *UserUser) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"Picture\"")
 			}
-		case "Thumbnail":
-			if err := func() error {
-				s.Thumbnail.Reset()
-				if err := s.Thumbnail.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"Thumbnail\"")
-			}
 		case "LongName":
 			if err := func() error {
 				s.LongName.Reset()
@@ -10426,6 +10370,16 @@ func (s *UserUser) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"UUID\"")
 			}
+		case "LastLogin":
+			if err := func() error {
+				s.LastLogin.Reset()
+				if err := s.LastLogin.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"LastLogin\"")
+			}
 		case "Created":
 			if err := func() error {
 				s.Created.Reset()
@@ -10441,21 +10395,21 @@ func (s *UserUser) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode UserUser")
+		return errors.Wrap(err, "decode User")
 	}
 
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *UserUser) MarshalJSON() ([]byte, error) {
+func (s *User) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *UserUser) UnmarshalJSON(data []byte) error {
+func (s *User) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

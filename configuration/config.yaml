@@ -12,8 +12,8 @@ server:
       certificate: ${CURDIR}/keys/certificate.pem
       key: ${CURDIR}/keys/key.pem
   JWT:
-    issuer: IIII
-    expire: 2880
+    issuer: Private Instance
+    expire: 24h
     encrypt: true
     publicKey: ${CURDIR}/keys/key.pub
     privateKey: ${CURDIR}/keys/key.pem
@@ -50,19 +50,38 @@ database:
         SourceField: ""
         DestinationTable: ""
         DestinationField: ""
-      - Database: DBname
-        SourceTable: xxx
-        SourceField: ""
-        DestinationTable: ""
-        DestinationField: ""
+      - Database: Bitgarten
+        Name: BitgartenTitle
+        SQL: "select Title from Albums"
   access:
     Database:
       - driver: postgres
+        Name: bitgarten
         host: ${POSTGRES_HOST}
         port: ${POSTGRES_PORT}
         user: ${POSTGRES_USER}
         password: ${POSTGRES_PASS}
         database: bitgarten
+  sessionInfo:
+    Database:
+      - driver: postgres
+        Name: bitgarten
+        host: ${POSTGRES_HOST}
+        port: ${POSTGRES_PORT}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASS}
+        database: bitgarten
+        tablename: "session_info"
+  userInfo:
+    Database:
+      - driver: postgres
+        Name: bitgarten
+        host: ${POSTGRES_HOST}
+        port: ${POSTGRES_PORT}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASS}
+        database: bitgarten
+        tablename: "user_info"
 tasks:
   use_role: true
   directory: ${CURDIR}/log
@@ -74,8 +93,8 @@ fileTransfer:
     role: xxx
   directories:
     directory:
-      - name: abc
-        location: ${CURDIR}
+      - name: download
+        location: ${HOME}/Downloads
       - name: abc
         location: ${CURDIR}
 metrics: []

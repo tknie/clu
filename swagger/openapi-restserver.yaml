@@ -3577,6 +3577,8 @@ components:
         AdminRole:
           type: boolean
           x-omitempty: false
+        User:
+          $ref: '#/components/schemas/User'
     principal:
       type: object
       properties:
@@ -3678,26 +3680,24 @@ components:
     User:
       type: object
       properties:
-        User:
-          type: object
-          properties:
-            email:
-              type: string
-              format: email
-            name:
-              type: string
-            Picture:
-              type: string
-            Thumbnail:
-              type: string
-            LongName:
-              type: string
-            UUID:
-              type: string
-              format: uuid            
-            Created:
-              type: string
-              format: date-time
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        Picture:
+          type: string
+        LongName:
+          type: string
+        UUID:
+          type: string
+          format: uuid            
+        LastLogin:
+          type: string
+          format: date-time
+        Created:
+          type: string
+          format: date-time
     DirectoryFiles:
       type: object
       properties:

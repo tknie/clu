@@ -36,7 +36,7 @@ var sessionLock sync.Mutex
 var chanUpdateSessionInfo = make(chan *auth.SessionInfo)
 
 // InitStoreInfo init session info storage
-func InitStoreInfo() {
+func InitStoreInfo(ref *common.Reference) {
 	sessionURL = os.Getenv("REST_SESSION_LOG_URL")
 	sessionTableName = os.Getenv("REST_SESSION_LOG_TABLENAME")
 	if sessionURL == "" || sessionTableName == "" {

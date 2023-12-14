@@ -88,6 +88,8 @@ type Server struct {
 type DatabaseConfig struct {
 	Mapping        Mapping        `yaml:"modelling"`
 	DatabaseAccess DatabaseAccess `yaml:"access"`
+	SessionInfo    *Database      `yaml:"sessionInfo"`
+	UserInfo       *Database      `yaml:"userInfo"`
 }
 
 // StatisticConfig statistics configuration

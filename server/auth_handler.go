@@ -13,8 +13,10 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
@@ -44,7 +46,18 @@ func GenerateJWToken(ctx context.Context) (interface{}, error) {
 		}
 		session.Token = token
 	}
-	t := api.AuthorizationToken{Token: api.NewOptString(session.Token)}
+
+	uuid, err := uuid.Parse(session.UUID())
+	if err != nil {
+		fmt.Println("Error parsing UUID", session.UUID())
+	}
+	t := api.AuthorizationToken{Token: api.NewOptString(session.Token),
+		User: api.NewOptUser(api.User{LongName: api.NewOptString(session.User.LongName),
+			Created:   api.NewOptDateTime(session.User.Created),
+			LastLogin: api.NewOptDateTime(session.User.LastLogin),
+			UUID:      api.NewOptUUID(uuid),
+			Name:      api.NewOptString(session.User.User),
+			Email:     api.NewOptString(session.User.EMail)})}
 	return &api.AuthorizationTokenHeaders{XToken: api.NewOptString(session.Token),
 		Response: t}, nil
 }

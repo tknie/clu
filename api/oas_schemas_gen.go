@@ -404,6 +404,7 @@ func (*AddViewUnauthorized) addViewRes() {}
 type AuthorizationToken struct {
 	Token     OptString `json:"token"`
 	AdminRole OptBool   `json:"AdminRole"`
+	User      OptUser   `json:"User"`
 }
 
 // GetToken returns the value of Token.
@@ -416,6 +417,11 @@ func (s *AuthorizationToken) GetAdminRole() OptBool {
 	return s.AdminRole
 }
 
+// GetUser returns the value of User.
+func (s *AuthorizationToken) GetUser() OptUser {
+	return s.User
+}
+
 // SetToken sets the value of Token.
 func (s *AuthorizationToken) SetToken(val OptString) {
 	s.Token = val
@@ -424,6 +430,11 @@ func (s *AuthorizationToken) SetToken(val OptString) {
 // SetAdminRole sets the value of AdminRole.
 func (s *AuthorizationToken) SetAdminRole(val OptBool) {
 	s.AdminRole = val
+}
+
+// SetUser sets the value of User.
+func (s *AuthorizationToken) SetUser(val OptUser) {
+	s.User = val
 }
 
 // AuthorizationTokenHeaders wraps AuthorizationToken with response headers.
@@ -5679,38 +5690,38 @@ func (o OptUpdateRecordsByFieldsReq) Or(d UpdateRecordsByFieldsReq) UpdateRecord
 	return d
 }
 
-// NewOptUserUser returns new OptUserUser with value set to v.
-func NewOptUserUser(v UserUser) OptUserUser {
-	return OptUserUser{
+// NewOptUser returns new OptUser with value set to v.
+func NewOptUser(v User) OptUser {
+	return OptUser{
 		Value: v,
 		Set:   true,
 	}
 }
 
-// OptUserUser is optional UserUser.
-type OptUserUser struct {
-	Value UserUser
+// OptUser is optional User.
+type OptUser struct {
+	Value User
 	Set   bool
 }
 
-// IsSet returns true if OptUserUser was set.
-func (o OptUserUser) IsSet() bool { return o.Set }
+// IsSet returns true if OptUser was set.
+func (o OptUser) IsSet() bool { return o.Set }
 
 // Reset unsets value.
-func (o *OptUserUser) Reset() {
-	var v UserUser
+func (o *OptUser) Reset() {
+	var v User
 	o.Value = v
 	o.Set = false
 }
 
 // SetTo sets value to v.
-func (o *OptUserUser) SetTo(v UserUser) {
+func (o *OptUser) SetTo(v User) {
 	o.Set = true
 	o.Value = v
 }
 
 // Get returns value and boolean that denotes whether value was set.
-func (o OptUserUser) Get() (v UserUser, ok bool) {
+func (o OptUser) Get() (v User, ok bool) {
 	if !o.Set {
 		return v, false
 	}
@@ -5718,7 +5729,7 @@ func (o OptUserUser) Get() (v UserUser, ok bool) {
 }
 
 // Or returns value if set, or given parameter if does not.
-func (o OptUserUser) Or(d UserUser) UserUser {
+func (o OptUser) Or(d User) User {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -6530,100 +6541,86 @@ func (*UploadFileUnauthorized) uploadFileRes() {}
 
 // Ref: #/components/schemas/User
 type User struct {
-	User OptUserUser `json:"User"`
-}
-
-// GetUser returns the value of User.
-func (s *User) GetUser() OptUserUser {
-	return s.User
-}
-
-// SetUser sets the value of User.
-func (s *User) SetUser(val OptUserUser) {
-	s.User = val
-}
-
-func (*User) getUserInfoRes() {}
-
-type UserUser struct {
 	Email     OptString   `json:"email"`
 	Name      OptString   `json:"name"`
 	Picture   OptString   `json:"Picture"`
-	Thumbnail OptString   `json:"Thumbnail"`
 	LongName  OptString   `json:"LongName"`
 	UUID      OptUUID     `json:"UUID"`
+	LastLogin OptDateTime `json:"LastLogin"`
 	Created   OptDateTime `json:"Created"`
 }
 
 // GetEmail returns the value of Email.
-func (s *UserUser) GetEmail() OptString {
+func (s *User) GetEmail() OptString {
 	return s.Email
 }
 
 // GetName returns the value of Name.
-func (s *UserUser) GetName() OptString {
+func (s *User) GetName() OptString {
 	return s.Name
 }
 
 // GetPicture returns the value of Picture.
-func (s *UserUser) GetPicture() OptString {
+func (s *User) GetPicture() OptString {
 	return s.Picture
 }
 
-// GetThumbnail returns the value of Thumbnail.
-func (s *UserUser) GetThumbnail() OptString {
-	return s.Thumbnail
-}
-
 // GetLongName returns the value of LongName.
-func (s *UserUser) GetLongName() OptString {
+func (s *User) GetLongName() OptString {
 	return s.LongName
 }
 
 // GetUUID returns the value of UUID.
-func (s *UserUser) GetUUID() OptUUID {
+func (s *User) GetUUID() OptUUID {
 	return s.UUID
 }
 
+// GetLastLogin returns the value of LastLogin.
+func (s *User) GetLastLogin() OptDateTime {
+	return s.LastLogin
+}
+
 // GetCreated returns the value of Created.
-func (s *UserUser) GetCreated() OptDateTime {
+func (s *User) GetCreated() OptDateTime {
 	return s.Created
 }
 
 // SetEmail sets the value of Email.
-func (s *UserUser) SetEmail(val OptString) {
+func (s *User) SetEmail(val OptString) {
 	s.Email = val
 }
 
 // SetName sets the value of Name.
-func (s *UserUser) SetName(val OptString) {
+func (s *User) SetName(val OptString) {
 	s.Name = val
 }
 
 // SetPicture sets the value of Picture.
-func (s *UserUser) SetPicture(val OptString) {
+func (s *User) SetPicture(val OptString) {
 	s.Picture = val
 }
 
-// SetThumbnail sets the value of Thumbnail.
-func (s *UserUser) SetThumbnail(val OptString) {
-	s.Thumbnail = val
-}
-
 // SetLongName sets the value of LongName.
-func (s *UserUser) SetLongName(val OptString) {
+func (s *User) SetLongName(val OptString) {
 	s.LongName = val
 }
 
 // SetUUID sets the value of UUID.
-func (s *UserUser) SetUUID(val OptUUID) {
+func (s *User) SetUUID(val OptUUID) {
 	s.UUID = val
 }
 
+// SetLastLogin sets the value of LastLogin.
+func (s *User) SetLastLogin(val OptDateTime) {
+	s.LastLogin = val
+}
+
 // SetCreated sets the value of Created.
-func (s *UserUser) SetCreated(val OptDateTime) {
+func (s *User) SetCreated(val OptDateTime) {
 	s.Created = val
 }
+
+func (*User) getUserInfoRes() {}
 
 // Ref: #/components/schemas/Users
 type Users struct {

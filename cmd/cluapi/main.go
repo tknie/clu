@@ -79,8 +79,14 @@ func main() {
 	plugins.InitPlugins()
 
 	server.InitDatabases()
-	clu.InitUserInfo()
-	clu.InitStoreInfo()
+	r, err := server.Handles(server.Viewer.Database.UserInfo)
+	if err == nil {
+		clu.InitUserInfo(r)
+	}
+	r, err = server.Handles(server.Viewer.Database.SessionInfo)
+	if err == nil {
+		clu.InitStoreInfo(r)
+	}
 
 	server.AdaptConfig(os.Getenv(server.DefaultConfigFileEnv))
 

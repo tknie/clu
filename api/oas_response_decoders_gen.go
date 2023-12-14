@@ -4971,6 +4971,15 @@ func decodeGetLoginSessionResponse(resp *http.Response) (res GetLoginSessionRes,
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			var wrapper AuthorizationTokenHeaders
 			wrapper.Response = response
 			h := uri.NewHeaderDecoder(resp.Header)
@@ -6990,6 +6999,15 @@ func decodeLoginSessionResponse(resp *http.Response) (res LoginSessionRes, _ err
 				}
 				return res, err
 			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
 			var wrapper AuthorizationTokenHeaders
 			wrapper.Response = response
 			h := uri.NewHeaderDecoder(resp.Header)
@@ -7575,6 +7593,15 @@ func decodePushLoginSessionResponse(resp *http.Response) (res PushLoginSessionRe
 					Err:         err,
 				}
 				return res, err
+			}
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
 			}
 			var wrapper AuthorizationTokenHeaders
 			wrapper.Response = response

@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
@@ -47,6 +48,7 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 		plugins.LoginAudit("LOGIN", err.Error(), pm.Auth.Session.(*auth.SessionInfo), pm.User)
 		return nil, err
 	}
+	pm.User.LastLogin = time.Now()
 	err = clu.AddUserInfo(pm.User)
 	if err != nil {
 		services.ServerMessage("User %s cannot be stored in user information", pm.User.User)
