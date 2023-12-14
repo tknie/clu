@@ -79,13 +79,15 @@ func main() {
 	plugins.InitPlugins()
 
 	server.InitDatabases()
-	r, err := server.Handles(server.Viewer.Database.UserInfo)
+	dm := server.Viewer.Database.UserInfo
+	r, err := server.Handles(dm)
 	if err == nil {
-		clu.InitUserInfo(r)
+		clu.InitUserInfo(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
 	}
-	r, err = server.Handles(server.Viewer.Database.SessionInfo)
+	dm = server.Viewer.Database.SessionInfo
+	r, err = server.Handles(dm)
 	if err == nil {
-		clu.InitStoreInfo(r)
+		clu.InitStoreInfo(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
 	}
 
 	server.AdaptConfig(os.Getenv(server.DefaultConfigFileEnv))

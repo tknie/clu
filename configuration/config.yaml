@@ -63,25 +63,23 @@ database:
         password: ${POSTGRES_PASS}
         database: bitgarten
   sessionInfo:
-    Database:
-      - driver: postgres
+        driver: postgres
         Name: bitgarten
         host: ${POSTGRES_HOST}
         port: ${POSTGRES_PORT}
         user: ${POSTGRES_USER}
         password: ${POSTGRES_PASS}
         database: bitgarten
-        tablename: "session_info"
+        table: "session_info"
   userInfo:
-    Database:
-      - driver: postgres
+        driver: postgres
         Name: bitgarten
         host: ${POSTGRES_HOST}
         port: ${POSTGRES_PORT}
         user: ${POSTGRES_USER}
         password: ${POSTGRES_PASS}
         database: bitgarten
-        tablename: "user_info"
+        table: "user_info"
 tasks:
   use_role: true
   directory: ${CURDIR}/log

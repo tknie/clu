@@ -43,26 +43,13 @@ var userInfoMap = make(map[string]*storeUserInfo)
 var userLock sync.Mutex
 
 // InitUserInfo init user info evaluation
-func InitUserInfo(ref *common.Reference) {
-	userURL = os.Getenv("REST_USER_LOG_URL")
-	userTableName = os.Getenv("REST_USER_LOG_TABLENAME")
-	if userURL == "" || userTableName == "" {
-		services.ServerMessage("Log parameter storage disabled...")
-		log.Log.Debugf("USER_AUDIT: Disable due to URL error")
-		disableUser = true
-		return
-	}
-	var err error
-	userDbRef, userDbPassword, err = common.NewReference(userURL)
-	if err != nil {
-		log.Log.Fatal("REST audit URL incorrect: " + userURL)
-	}
+func InitUserInfo(userDbRef *common.Reference, userDbPassword, tablename string) {
 	if userDbPassword == "" {
 		userDbPassword = os.Getenv("REST_USER_LOG_PASS")
 	}
-	userDbRef.User = "admin"
-
+	userTableName = tablename
 	services.ServerMessage("Storing audit data to table '%s'", userTableName)
+	var err error
 	userStoreID, err = flynn.Handler(userDbRef, userDbPassword)
 	if err != nil {
 		services.ServerMessage("Register error log: %v", err)

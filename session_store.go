@@ -36,25 +36,12 @@ var sessionLock sync.Mutex
 var chanUpdateSessionInfo = make(chan *auth.SessionInfo)
 
 // InitStoreInfo init session info storage
-func InitStoreInfo(ref *common.Reference) {
-	sessionURL = os.Getenv("REST_SESSION_LOG_URL")
-	sessionTableName = os.Getenv("REST_SESSION_LOG_TABLENAME")
-	if sessionURL == "" || sessionTableName == "" {
-		services.ServerMessage("Log parameter storage disabled...")
-		log.Log.Debugf("SESSION_STORE: Disable due to URL error")
-		disableStore = true
-		return
-	}
+func InitStoreInfo(userDbRef *common.Reference, userDbPassword, tablename string) {
 	var err error
-	userDbRef, userDbPassword, err = common.NewReference(sessionURL)
-	if err != nil {
-		log.Log.Fatal("REST audit URL incorrect: " + sessionURL)
-	}
 	if userDbPassword == "" {
 		userDbPassword = os.Getenv("REST_SESSION_LOG_PASS")
 	}
-	userDbRef.User = "admin"
-
+	sessionTableName = tablename
 	services.ServerMessage("Storing session data to table '%s'", sessionTableName)
 	sessionStoreID, err = flynn.Handler(userDbRef, userDbPassword)
 	if err != nil {
