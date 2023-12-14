@@ -59,10 +59,9 @@ func main() {
 		log.Log.Debugf("Create principal %s UUID=%s with password", user, s.UUID)
 		u := clu.CheckUserExist(user, s)
 		if u == nil {
-			log.Log.Errorf("User info not found for user %s", user)
-			return nil
+			log.Log.Fatalf("User info not found for user %s", user)
 		}
-		m := clu.NewContextUserInfo(u.Info, pass)
+		m := clu.NewContextUserInfo(u, pass)
 		m.User.LongName = user
 		m.Auth.Roles = []string{"user", "admin"}
 		m.Auth.Session = s

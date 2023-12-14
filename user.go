@@ -12,7 +12,9 @@
 package clu
 
 import (
+	"net/mail"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/tknie/flynn"
@@ -30,12 +32,9 @@ var userDbPassword = ""
 var userStoreID common.RegDbID
 
 var userFieldList = []string{"Name", "Created"}
+var userInfoMap = make(map[string]*auth.UserInfo)
 
-// User user information
-type User struct {
-	Info      *auth.UserInfo
-	Thumbnail []byte
-}
+var userLock sync.Mutex
 
 // InitUserInfo init user info evaluation
 func InitUserInfo() {
@@ -71,7 +70,7 @@ func InitUserInfo() {
 			return
 		}
 	}
-	su := &User{}
+	su := &auth.UserInfo{}
 	err = userStoreID.CreateTable(userTableName, su)
 	if err != nil {
 		services.ServerMessage("Database user store creating failed: %v", err)
@@ -81,20 +80,25 @@ func InitUserInfo() {
 }
 
 // QueryUser query user information
-func QueryUser(user string) *User {
+func QueryUser(user string) *auth.UserInfo {
 	if disableUser {
 		return nil
 	}
-	var userInfo *User
+	if userInfo, ok := userInfoMap[user]; ok {
+		return userInfo
+	}
+	userLock.Lock()
+	defer userLock.Unlock()
+	var userInfo *auth.UserInfo
 	count := 0
 	q := &common.Query{TableName: userTableName,
 		Search:     "name='" + user + "'",
-		DataStruct: &User{},
+		DataStruct: &auth.UserInfo{},
 		Fields:     []string{"*"}}
 	_, err := userStoreID.Query(q, func(search *common.Query, result *common.Result) error {
 		count++
 		if userInfo == nil {
-			userInfo = result.Data.(*User)
+			userInfo = result.Data.(*auth.UserInfo)
 		} else {
 			services.ServerMessage("%s not unique %03d", user, count)
 		}
@@ -104,31 +108,48 @@ func QueryUser(user string) *User {
 		return nil
 	}
 	if userInfo != nil {
+		userInfoMap[userInfo.User] = userInfo
 		return userInfo
 	}
 	return nil
 }
 
 // CheckUserExist check user already exists and create if not available
-func CheckUserExist(user string, session *auth.SessionInfo) *User {
+func CheckUserExist(user string, session *auth.SessionInfo) *auth.UserInfo {
+	userInfo := QueryUser(user)
+	if userInfo == nil {
+		log.Log.Debugf("No user %s in user info found", user)
+
+		userInfo = &auth.UserInfo{User: user, Created: time.Now()}
+		if _, err := mail.ParseAddress(user); err == nil {
+			userInfo.EMail = user
+		}
+		userInfoMap[userInfo.User] = userInfo
+	}
+	return userInfo
+}
+
+// AddUserInfo add user if not already exists and create if not available
+func AddUserInfo(userInfo *auth.UserInfo) error {
 	if disableUser {
 		return nil
 	}
-	userInfo := QueryUser(user)
-	if userInfo == nil {
-		userInfo = &User{Info: &auth.UserInfo{User: user, Created: time.Now()}}
+	services.ServerMessage(">>>>> user info")
+	if QueryUser(userInfo.User) == nil {
+		userLock.Lock()
+		defer userLock.Unlock()
 		insert := &common.Entries{Fields: userFieldList, DataStruct: userInfo}
 		insert.Values = [][]any{{userInfo}}
-		log.Log.Debugf("Insert value %#v", userInfo.Info)
+		log.Log.Debugf("Insert value %#v", userInfo)
 		err := userStoreID.Insert(userTableName, insert)
 		if err != nil {
-			return nil
+			return err
 		}
 		log.Log.Errorf("Error storing user: %v", err)
 		err = userStoreID.Commit()
 		if err != nil {
-			return nil
+			return err
 		}
 	}
-	return userInfo
+	return nil
 }

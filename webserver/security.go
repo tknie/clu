@@ -22,6 +22,7 @@ import (
 	"github.com/tknie/clu/plugins"
 	"github.com/tknie/clu/server"
 	"github.com/tknie/log"
+	"github.com/tknie/services"
 	"github.com/tknie/services/auth"
 )
 
@@ -45,6 +46,10 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 		log.Log.Errorf("Basic auth error... %v", err)
 		plugins.LoginAudit("LOGIN", err.Error(), pm.Auth.Session.(*auth.SessionInfo), pm.User)
 		return nil, err
+	}
+	err = clu.AddUserInfo(pm.User)
+	if err != nil {
+		services.ServerMessage("User %s cannot be stored in user information", pm.User.User)
 	}
 	plugins.LoginAudit("LOGIN", "Authenticated", pm.Auth.Session.(*auth.SessionInfo), pm.User)
 	// plugins.ReceiveAudit(nil, req)

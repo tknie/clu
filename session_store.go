@@ -14,6 +14,7 @@ package clu
 import (
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/tknie/flynn"
@@ -29,6 +30,10 @@ var disableStore = false
 var sessionStoreID common.RegDbID
 
 var sessionExpirerDuration = time.Duration(6) * time.Hour
+var sessionInfoMap = make(map[string]*auth.SessionInfo)
+var sessionLock sync.Mutex
+
+var chanUpdateSessionInfo = make(chan *auth.SessionInfo)
 
 // InitStoreInfo init session info storage
 func InitStoreInfo() {
@@ -72,6 +77,7 @@ func InitStoreInfo() {
 		return
 	}
 	services.ServerMessage("Database session store created successfully")
+	go updaterSessionInfo()
 	auth.JWTOperator = &StoreJWTHandler{}
 }
 
@@ -82,6 +88,11 @@ type StoreJWTHandler struct {
 // UUIDInfo get UUID info User information
 func (st *StoreJWTHandler) UUIDInfo(uuid string) (*auth.SessionInfo, error) {
 	log.Log.Debugf("Search UUID info for %s", uuid)
+	if sessionInfo, ok := sessionInfoMap[uuid]; ok {
+		return sessionInfo, nil
+	}
+	sessionLock.Lock()
+	defer sessionLock.Unlock()
 	q := &common.Query{TableName: sessionTableName,
 		Search:     "uuid='" + uuid + "'",
 		DataStruct: &auth.SessionInfo{},
@@ -121,19 +132,7 @@ func (st *StoreJWTHandler) InvalidateUUID(uuid string, elapsed time.Time) bool {
 	}
 	if si.Invalidated.IsZero() && !si.Invalidated.Before(time.Now()) {
 		si.Invalidated = time.Now()
-		update := &common.Entries{Fields: []string{"Invalidated"}, DataStruct: si}
-		update.Values = [][]any{{si}}
-		log.Log.Debugf("Update value %#v", si.UUID)
-		c, err := userStoreID.Update(sessionTableName, update)
-		if err != nil {
-			log.Log.Errorf("Error storing session: %v", err)
-			return false
-		}
-		log.Log.Errorf("Update storing session: (%d)", c)
-		err = userStoreID.Commit()
-		if err == nil {
-			return true
-		}
+		chanUpdateSessionInfo <- si
 	}
 	return false
 }
@@ -177,4 +176,27 @@ func (st *StoreJWTHandler) ValidateUUID(claims *auth.JWTClaims) (auth.PrincipalI
 	}
 	p := auth.PrincipalCreater(si, si.User, pass)
 	return p, true
+}
+
+func updaterSessionInfo() {
+	for {
+		select {
+		case si := <-chanUpdateSessionInfo:
+			update := &common.Entries{Fields: []string{"Invalidated"}, DataStruct: si}
+			update.Values = [][]any{{si}}
+			log.Log.Debugf("Update value %#v", si.UUID)
+			c, err := userStoreID.Update(sessionTableName, update)
+			if err != nil {
+				log.Log.Errorf("Error storing session: %v", err)
+				continue
+			}
+			log.Log.Errorf("Update storing session: (%d)", c)
+			err = userStoreID.Commit()
+			if err == nil {
+				continue
+			}
+		case <-time.After(30 * time.Second):
+			log.Log.Debugf("Shift working 30 seconds")
+		}
+	}
 }
