@@ -38,7 +38,7 @@ type storeUserInfo struct {
 	userInfo *auth.UserInfo
 }
 
-var userInfoMap = make(map[string]*storeUserInfo)
+var userInfoMap = sync.Map{} // make(map[string]*storeUserInfo)
 
 var userLock sync.Mutex
 
@@ -77,8 +77,8 @@ func QueryUser(user string) *auth.UserInfo {
 	if disableUser {
 		return nil
 	}
-	if u, ok := userInfoMap[user]; ok {
-		return u.userInfo
+	if u, ok := userInfoMap.Load(user); ok {
+		return u.(*storeUserInfo).userInfo
 	}
 	userLock.Lock()
 	defer userLock.Unlock()
@@ -101,7 +101,7 @@ func QueryUser(user string) *auth.UserInfo {
 		return nil
 	}
 	if userInfo != nil {
-		userInfoMap[userInfo.User] = &storeUserInfo{true, userInfo}
+		userInfoMap.Store(userInfo.User, &storeUserInfo{true, userInfo})
 		return userInfo
 	}
 	return nil
@@ -117,7 +117,7 @@ func CheckUserExist(user string, session *auth.SessionInfo) *auth.UserInfo {
 		if _, err := mail.ParseAddress(user); err == nil {
 			userInfo.EMail = user
 		}
-		userInfoMap[userInfo.User] = &storeUserInfo{false, userInfo}
+		userInfoMap.Store(userInfo.User, &storeUserInfo{false, userInfo})
 	}
 	return userInfo
 }
@@ -127,13 +127,14 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 	if disableUser {
 		return nil
 	}
-	if u, ok := userInfoMap[userInfo.User]; ok {
+	if u, ok := userInfoMap.Load(userInfo.User); ok {
 		userLock.Lock()
 		defer userLock.Unlock()
 		insert := &common.Entries{Fields: userFieldList, DataStruct: userInfo}
 		insert.Values = [][]any{{userInfo}}
 		log.Log.Debugf("Insert value %#v", userInfo)
-		if u.stored {
+		sui := u.(*storeUserInfo)
+		if sui.stored {
 			insert.Update = []string{"user='" + userInfo.User + "'"}
 			_, err := userStoreID.Update(userTableName, insert)
 			if err != nil {
@@ -152,7 +153,7 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 			log.Log.Errorf("Error commiting user info: %v", err)
 			return err
 		}
-		u.stored = true
+		sui.stored = true
 	}
 	return nil
 }

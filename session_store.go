@@ -30,10 +30,11 @@ var disableStore = false
 var sessionStoreID common.RegDbID
 
 var sessionExpirerDuration = time.Duration(6) * time.Hour
-var sessionInfoMap = make(map[string]*auth.SessionInfo)
+var sessionInfoMap = sync.Map{} // make(map[string]*auth.SessionInfo)
 var sessionLock sync.Mutex
 
-var chanUpdateSessionInfo = make(chan *auth.SessionInfo)
+var chanUpdateSessionInfo = make(chan *auth.SessionInfo, 10)
+var chanRemoveSessionInfo = make(chan *auth.SessionInfo, 10)
 
 // InitStoreInfo init session info storage
 func InitStoreInfo(userDbRef *common.Reference, userDbPassword, tablename string) {
@@ -53,6 +54,7 @@ func InitStoreInfo(userDbRef *common.Reference, userDbPassword, tablename string
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
 		if d == sessionTableName {
+			go updaterSessionInfo()
 			auth.JWTOperator = &StoreJWTHandler{}
 			return
 		}
@@ -75,8 +77,8 @@ type StoreJWTHandler struct {
 // UUIDInfo get UUID info User information
 func (st *StoreJWTHandler) UUIDInfo(uuid string) (*auth.SessionInfo, error) {
 	log.Log.Debugf("Search UUID info for %s", uuid)
-	if sessionInfo, ok := sessionInfoMap[uuid]; ok {
-		return sessionInfo, nil
+	if sessionInfo, ok := sessionInfoMap.Load(uuid); ok {
+		return sessionInfo.(*auth.SessionInfo), nil
 	}
 	sessionLock.Lock()
 	defer sessionLock.Unlock()
@@ -97,11 +99,12 @@ func (st *StoreJWTHandler) UUIDInfo(uuid string) (*auth.SessionInfo, error) {
 // Range go through all session entries
 func (st *StoreJWTHandler) Range(f func(uuid, value any) bool) error {
 	q := &common.Query{TableName: sessionTableName,
+		Search:     "invalidated  < now()",
 		DataStruct: &auth.SessionInfo{},
 		Fields:     []string{"*"}}
 	_, err := sessionStoreID.Query(q, func(search *common.Query, result *common.Result) error {
 		s := result.Data.(*auth.SessionInfo)
-		elapsed := s.Created.Add(sessionExpirerDuration)
+		elapsed := s.Invalidated
 		if !f(s.UUID, elapsed) {
 			return fmt.Errorf("aborted Range")
 		}
@@ -117,11 +120,9 @@ func (st *StoreJWTHandler) InvalidateUUID(uuid string, elapsed time.Time) bool {
 	if si == nil || err != nil {
 		return false
 	}
-	if si.Invalidated.IsZero() && !si.Invalidated.Before(time.Now()) {
-		si.Invalidated = time.Now()
-		chanUpdateSessionInfo <- si
-	}
-	return false
+	log.Log.Debugf("Trigger remove session info %s", uuid)
+	chanRemoveSessionInfo <- si
+	return true
 }
 
 // Store store entry for given input
@@ -161,16 +162,22 @@ func (st *StoreJWTHandler) ValidateUUID(claims *auth.JWTClaims) (auth.PrincipalI
 	if err != nil {
 		log.Log.Errorf("Error decrypt data %v", err)
 	}
+	si.LastAccess = time.Now()
+	si.Invalidated = si.LastAccess.Add(sessionExpirerDuration)
+	chanUpdateSessionInfo <- si
+	sessionInfoMap.Delete(claims.UUID)
 	p := auth.PrincipalCreater(si, si.User, pass)
 	return p, true
 }
 
 func updaterSessionInfo() {
 	for {
+		log.Log.Debugf("Waiting session info for updates or remove")
 		select {
 		case si := <-chanUpdateSessionInfo:
 			update := &common.Entries{Fields: []string{"Invalidated"}, DataStruct: si}
 			update.Values = [][]any{{si}}
+			update.Update = []string{"UUID='" + si.UUID + "'"}
 			log.Log.Debugf("Update value %#v", si.UUID)
 			c, err := userStoreID.Update(sessionTableName, update)
 			if err != nil {
@@ -178,6 +185,18 @@ func updaterSessionInfo() {
 				continue
 			}
 			log.Log.Errorf("Update storing session: (%d)", c)
+			err = userStoreID.Commit()
+			if err == nil {
+				continue
+			}
+		case si := <-chanRemoveSessionInfo:
+			remove := &common.Entries{Criteria: "uuid = '" + si.UUID + "'"}
+			log.Log.Debugf("Remove UUID %s", si.UUID)
+			_, err := userStoreID.Delete(sessionTableName, remove)
+			if err != nil {
+				log.Log.Errorf("Error deleting session: %v", err)
+				continue
+			}
 			err = userStoreID.Commit()
 			if err == nil {
 				continue

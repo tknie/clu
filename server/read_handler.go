@@ -81,7 +81,7 @@ func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecords
 	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
 		return &api.GetMapRecordsFieldsForbidden{}, nil
 	}
-	log.Log.Debugf("SQL search %s - %v", params.Table, params.Fields)
+	log.Log.Debugf("SQL search %s - %v -> %s", params.Table, params.Fields, params.Search)
 	d, err := ConnectTable(session, params.Table)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
@@ -109,7 +109,7 @@ func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecords
 		return nil, err
 	}
 
-	log.Log.Debugf("Return payload")
+	log.Log.Debugf("Return SQL search payload %d entries", len(data))
 	resp := api.Response{Records: data}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	return respH, nil
@@ -173,14 +173,5 @@ func (Handler) SearchModelling(ctx context.Context, params api.SearchModellingPa
 //
 // GET /rest/map
 func (Handler) ListModelling(ctx context.Context) (r api.ListModellingRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// BatchQuery implements batchQuery operation.
-//
-// Call a SQL query batch command posted in body.
-//
-// POST /rest/batch
-func (Handler) BatchQuery(ctx context.Context, req api.OptSQLQuery) (r api.BatchQueryRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

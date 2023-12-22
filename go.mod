@@ -10,7 +10,7 @@ require (
 	github.com/ogen-go/ogen v0.81.0
 	github.com/rs/cors v1.10.1
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
-	github.com/tknie/services v0.0.0-20231214192543-63a12e5ec393
+	github.com/tknie/services v0.0.0-20231219052039-e16148cfec85
 	go.opentelemetry.io/otel v1.21.0
 	go.opentelemetry.io/otel/metric v1.21.0
 	go.opentelemetry.io/otel/trace v1.21.0
@@ -45,18 +45,18 @@ require (
 	github.com/go-asn1-ber/asn1-ber v1.5.5 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.6 // indirect
-	github.com/go-openapi/errors v0.20.4 // indirect
+	github.com/go-openapi/errors v0.21.0 // indirect
 	github.com/google/uuid v1.5.0
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20231119173834-6ad8a3cefbc0
-	github.com/tknie/flynn v0.0.0-20231212183529-e158921f027d
+	github.com/tknie/flynn v0.0.0-20231219052103-d375a125d96d
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/exp v0.0.0-20231214170342-aacd6d4b4611 // indirect
+	golang.org/x/exp v0.0.0-20231219160207-73b9e39aefca // indirect
 	golang.org/x/net v0.19.0
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
