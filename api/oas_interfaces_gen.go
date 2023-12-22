@@ -21,6 +21,14 @@ type AddViewRes interface {
 	addViewRes()
 }
 
+type BatchParameterQueryRes interface {
+	batchParameterQueryRes()
+}
+
+type BatchQueryReq interface {
+	batchQueryReq()
+}
+
 type BatchQueryRes interface {
 	batchQueryRes()
 }

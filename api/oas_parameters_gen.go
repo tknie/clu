@@ -560,6 +560,72 @@ func decodeAddViewParams(args [0]string, argsEscaped bool, r *http.Request) (par
 	return params, nil
 }
 
+// BatchParameterQueryParams is parameters of batchParameterQuery operation.
+type BatchParameterQueryParams struct {
+	// SQL statement.
+	Query string
+}
+
+func unpackBatchParameterQueryParams(packed middleware.Parameters) (params BatchParameterQueryParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "query",
+			In:   "path",
+		}
+		params.Query = packed[key].(string)
+	}
+	return params
+}
+
+func decodeBatchParameterQueryParams(args [1]string, argsEscaped bool, r *http.Request) (params BatchParameterQueryParams, _ error) {
+	// Decode path: query.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "query",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Query = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "query",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // BrowseLocationParams is parameters of browseLocation operation.
 type BrowseLocationParams struct {
 	// Identifier of the file location.

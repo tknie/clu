@@ -23,7 +23,16 @@ import (
 // Call a SQL query batch command posted in body.
 //
 // POST /rest/batch
-func (Handler) BatchQuery(ctx context.Context, req api.OptSQLQuery) (r api.BatchQueryRes, _ error) {
+func (Handler) BatchQuery(ctx context.Context, req api.BatchQueryReq) (r api.BatchQueryRes, _ error) {
 
+	return r, ht.ErrNotImplemented
+}
+
+// BatchParameterQuery implements batchParameterQuery operation.
+//
+// Call a SQL query batch command posted in query.
+//
+// GET /rest/batch/{query}
+func (Handler) BatchParameterQuery(ctx context.Context, params api.BatchParameterQueryParams) (r api.BatchParameterQueryRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

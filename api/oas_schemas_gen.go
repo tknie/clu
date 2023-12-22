@@ -492,10 +492,40 @@ func (s *BasicAuth) SetPassword(val string) {
 	s.Password = val
 }
 
+// BatchParameterQueryForbidden is response for BatchParameterQuery operation.
+type BatchParameterQueryForbidden struct{}
+
+func (*BatchParameterQueryForbidden) batchParameterQueryRes() {}
+
+// BatchParameterQueryUnauthorized is response for BatchParameterQuery operation.
+type BatchParameterQueryUnauthorized struct{}
+
+func (*BatchParameterQueryUnauthorized) batchParameterQueryRes() {}
+
 // BatchQueryForbidden is response for BatchQuery operation.
 type BatchQueryForbidden struct{}
 
 func (*BatchQueryForbidden) batchQueryRes() {}
+
+type BatchQueryReqEmptyBody struct{}
+
+func (*BatchQueryReqEmptyBody) batchQueryReq() {}
+
+type BatchQueryReqTextPlain struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s BatchQueryReqTextPlain) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*BatchQueryReqTextPlain) batchQueryReq() {}
 
 // BatchQueryUnauthorized is response for BatchQuery operation.
 type BatchQueryUnauthorized struct{}
@@ -1759,6 +1789,7 @@ func (s *Error) SetError(val OptErrorError) {
 func (*Error) adaptPermissionRes()        {}
 func (*Error) addRBACResourceRes()        {}
 func (*Error) addViewRes()                {}
+func (*Error) batchParameterQueryRes()    {}
 func (*Error) batchQueryRes()             {}
 func (*Error) databaseOperationRes()      {}
 func (*Error) databasePostOperationsRes() {}
@@ -5368,52 +5399,6 @@ func (o OptMultipartFile) Or(d ht.MultipartFile) ht.MultipartFile {
 	return d
 }
 
-// NewOptSQLQuery returns new OptSQLQuery with value set to v.
-func NewOptSQLQuery(v SQLQuery) OptSQLQuery {
-	return OptSQLQuery{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptSQLQuery is optional SQLQuery.
-type OptSQLQuery struct {
-	Value SQLQuery
-	Set   bool
-}
-
-// IsSet returns true if OptSQLQuery was set.
-func (o OptSQLQuery) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptSQLQuery) Reset() {
-	var v SQLQuery
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptSQLQuery) SetTo(v SQLQuery) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptSQLQuery) Get() (v SQLQuery, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptSQLQuery) Or(d SQLQuery) SQLQuery {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptSQLQueryBatch returns new OptSQLQueryBatch with value set to v.
 func NewOptSQLQueryBatch(v SQLQueryBatch) OptSQLQueryBatch {
 	return OptSQLQueryBatch{
@@ -5916,6 +5901,7 @@ func (s *ResponseHeaders) SetResponse(val Response) {
 	s.Response = val
 }
 
+func (*ResponseHeaders) batchParameterQueryRes()   {}
 func (*ResponseHeaders) batchQueryRes()            {}
 func (*ResponseHeaders) deleteRecordsSearchedRes() {}
 func (*ResponseHeaders) getMapRecordsFieldsRes()   {}
@@ -5948,6 +5934,8 @@ func (s *SQLQuery) GetBatch() OptSQLQueryBatch {
 func (s *SQLQuery) SetBatch(val OptSQLQueryBatch) {
 	s.Batch = val
 }
+
+func (*SQLQuery) batchQueryReq() {}
 
 type SQLQueryBatch struct {
 	SQL OptString `json:"SQL"`

@@ -415,7 +415,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					if len(elem) == 0 {
-						// Leaf node.
 						switch r.Method {
 						case "POST":
 							s.handleBatchQueryRequest([0]string{}, elemIsEscaped, w, r)
@@ -424,6 +423,33 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						return
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/"
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "query"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleBatchParameterQueryRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
 					}
 				case 'd': // Prefix: "database"
 					if l := len("database"); len(elem) >= l && elem[0:l] == "database" {
@@ -1885,7 +1911,6 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					if len(elem) == 0 {
 						switch method {
 						case "POST":
-							// Leaf: BatchQuery
 							r.name = "BatchQuery"
 							r.summary = ""
 							r.operationID = "batchQuery"
@@ -1895,6 +1920,35 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							return r, true
 						default:
 							return
+						}
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/"
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "query"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: BatchParameterQuery
+								r.name = "BatchParameterQuery"
+								r.summary = ""
+								r.operationID = "batchParameterQuery"
+								r.pathPattern = "/rest/batch/{query}"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
 						}
 					}
 				case 'd': // Prefix: "database"

@@ -16,23 +16,30 @@ import (
 )
 
 func encodeBatchQueryRequest(
-	req OptSQLQuery,
+	req BatchQueryReq,
 	r *http.Request,
 ) error {
-	const contentType = "application/json"
-	if !req.Set {
-		// Keep request with empty body if value is not set.
+	switch req := req.(type) {
+	case *BatchQueryReqEmptyBody:
+		// Empty body case.
 		return nil
-	}
-	e := new(jx.Encoder)
-	{
-		if req.Set {
+	case *SQLQuery:
+		const contentType = "application/json"
+		e := new(jx.Encoder)
+		{
 			req.Encode(e)
 		}
+		encoded := e.Bytes()
+		ht.SetBody(r, bytes.NewReader(encoded), contentType)
+		return nil
+	case *BatchQueryReqTextPlain:
+		const contentType = "text/plain"
+		body := req
+		ht.SetBody(r, body, contentType)
+		return nil
+	default:
+		return errors.Errorf("unexpected request type: %T", req)
 	}
-	encoded := e.Bytes()
-	ht.SetBody(r, bytes.NewReader(encoded), contentType)
-	return nil
 }
 
 func encodeInsertMapFileRecordsRequest(
@@ -46,7 +53,7 @@ func encodeInsertMapFileRecordsRequest(
 	}
 	request := req.Value
 
-	q := uri.NewQueryEncoder()
+	q := uri.NewFormEncoder(map[string]string{})
 	body, boundary := ht.CreateMultipartBody(func(w *multipart.Writer) error {
 		if val, ok := request.Data.Get(); ok {
 			if err := val.WriteMultipart("data", w); err != nil {
@@ -183,7 +190,7 @@ func encodeUpdateLobByMapRequest(
 		const contentType = "multipart/form-data"
 		request := req
 
-		q := uri.NewQueryEncoder()
+		q := uri.NewFormEncoder(map[string]string{})
 		body, boundary := ht.CreateMultipartBody(func(w *multipart.Writer) error {
 			if err := request.UploadLob.WriteMultipart("uploadLob", w); err != nil {
 				return errors.Wrap(err, "write \"uploadLob\"")
@@ -227,7 +234,7 @@ func encodeUploadFileRequest(
 	const contentType = "multipart/form-data"
 	request := req
 
-	q := uri.NewQueryEncoder()
+	q := uri.NewFormEncoder(map[string]string{})
 	body, boundary := ht.CreateMultipartBody(func(w *multipart.Writer) error {
 		if err := request.UploadFile.WriteMultipart("uploadFile", w); err != nil {
 			return errors.Wrap(err, "write \"uploadFile\"")

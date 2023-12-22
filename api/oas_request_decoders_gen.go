@@ -18,7 +18,7 @@ import (
 )
 
 func (s *Server) decodeBatchQueryRequest(r *http.Request) (
-	req OptSQLQuery,
+	req BatchQueryReq,
 	close func() error,
 	rerr error,
 ) {
@@ -37,6 +37,7 @@ func (s *Server) decodeBatchQueryRequest(r *http.Request) (
 			rerr = multierr.Append(rerr, close())
 		}
 	}()
+	req = &BatchQueryReqEmptyBody{}
 	if _, ok := r.Header["Content-Type"]; !ok && r.ContentLength == 0 {
 		return req, close, nil
 	}
@@ -60,9 +61,8 @@ func (s *Server) decodeBatchQueryRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request OptSQLQuery
+		var request SQLQuery
 		if err := func() error {
-			request.Reset()
 			if err := request.Decode(d); err != nil {
 				return err
 			}
@@ -78,7 +78,11 @@ func (s *Server) decodeBatchQueryRequest(r *http.Request) (
 			}
 			return req, close, err
 		}
-		return request, close, nil
+		return &request, close, nil
+	case ct == "text/plain":
+		reader := r.Body
+		request := BatchQueryReqTextPlain{Data: reader}
+		return &request, close, nil
 	default:
 		return req, close, validate.InvalidContentType(ct)
 	}
