@@ -17,7 +17,6 @@ import (
 	"io"
 
 	"github.com/go-faster/jx"
-	ht "github.com/ogen-go/ogen/http"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/flynn/common"
@@ -94,5 +93,41 @@ func (Handler) BatchQuery(ctx context.Context, req api.BatchQueryReq,
 //
 // GET /rest/batch/{table}/{query}
 func (Handler) BatchParameterQuery(ctx context.Context, params api.BatchParameterQueryParams) (r api.BatchParameterQueryRes, _ error) {
-	return r, ht.ErrNotImplemented
+	session := ctx.(*clu.Context)
+	if !auth.ValidUser(auth.UserRole, false, session.User, "/batch") {
+		log.Log.Debugf("SQL statemant forbidden")
+		return &api.BatchParameterQueryForbidden{}, nil
+	}
+	log.Log.Debugf("SQL statement on table %s - %v", params.Table, params.Query)
+	services.ServerMessage("SQL query by user %s: %s", session.User.User, params.Query)
+
+	d, err := ConnectTable(session, params.Table)
+	if err != nil {
+		log.Log.Errorf("Error search table %s:%v", params.Table, err)
+		return nil, err
+	}
+	defer CloseTable(d)
+	batch := &common.Query{Search: params.Query}
+
+	rria := make([]api.ResponseRecordsItem, 0)
+	var fields []string
+	err = d.BatchSelectFct(batch, func(search *common.Query, result *common.Result) error {
+		if fields == nil {
+			fields = result.Fields
+		}
+		rri := api.ResponseRecordsItem{}
+		for d, r := range result.Rows {
+			rri[result.Fields[d]] = jx.Raw(fmt.Sprintf("%v", r))
+		}
+		rria = append(rria, rri)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	resp := api.Response{NrRecords: api.NewOptInt(int(len(rria))),
+		FieldNames: fields,
+		MapName:    api.NewOptString(params.Table), Records: rria}
+	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	return respH, nil
 }
