@@ -1045,12 +1045,12 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 //
 // Call a SQL query batch command posted in query.
 //
-// GET /rest/batch/{query}
-func (s *Server) handleBatchParameterQueryRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// GET /rest/batch/{table}/{query}
+func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchParameterQuery"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/batch/{query}"),
+		semconv.HTTPRouteKey.String("/rest/batch/{table}/{query}"),
 	}
 
 	// Start a span for this request.
@@ -1188,6 +1188,10 @@ func (s *Server) handleBatchParameterQueryRequest(args [1]string, argsEscaped bo
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
+					Name: "table",
+					In:   "path",
+				}: params.Table,
+				{
 					Name: "query",
 					In:   "path",
 				}: params.Query,
@@ -1246,12 +1250,12 @@ func (s *Server) handleBatchParameterQueryRequest(args [1]string, argsEscaped bo
 //
 // Call a SQL query batch command posted in body.
 //
-// POST /rest/batch
-func (s *Server) handleBatchQueryRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// POST /rest/batch/{table}
+func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchQuery"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/rest/batch"),
+		semconv.HTTPRouteKey.String("/rest/batch/{table}"),
 	}
 
 	// Start a span for this request.
@@ -1368,6 +1372,16 @@ func (s *Server) handleBatchQueryRequest(args [0]string, argsEscaped bool, w htt
 			return
 		}
 	}
+	params, err := decodeBatchQueryParams(args, argsEscaped, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
 	request, close, err := s.decodeBatchQueryRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
@@ -1392,13 +1406,18 @@ func (s *Server) handleBatchQueryRequest(args [0]string, argsEscaped bool, w htt
 			OperationSummary: "",
 			OperationID:      "batchQuery",
 			Body:             request,
-			Params:           middleware.Parameters{},
-			Raw:              r,
+			Params: middleware.Parameters{
+				{
+					Name: "table",
+					In:   "path",
+				}: params.Table,
+			},
+			Raw: r,
 		}
 
 		type (
 			Request  = BatchQueryReq
-			Params   = struct{}
+			Params   = BatchQueryParams
 			Response = BatchQueryRes
 		)
 		response, err = middleware.HookMiddleware[
@@ -1408,14 +1427,14 @@ func (s *Server) handleBatchQueryRequest(args [0]string, argsEscaped bool, w htt
 		](
 			m,
 			mreq,
-			nil,
+			unpackBatchQueryParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.BatchQuery(ctx, request)
+				response, err = s.h.BatchQuery(ctx, request, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.BatchQuery(ctx, request)
+		response, err = s.h.BatchQuery(ctx, request, params)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {

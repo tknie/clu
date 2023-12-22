@@ -562,11 +562,20 @@ func decodeAddViewParams(args [0]string, argsEscaped bool, r *http.Request) (par
 
 // BatchParameterQueryParams is parameters of batchParameterQuery operation.
 type BatchParameterQueryParams struct {
+	// Table.
+	Table string
 	// SQL statement.
 	Query string
 }
 
 func unpackBatchParameterQueryParams(packed middleware.Parameters) (params BatchParameterQueryParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "table",
+			In:   "path",
+		}
+		params.Table = packed[key].(string)
+	}
 	{
 		key := middleware.ParameterKey{
 			Name: "query",
@@ -577,12 +586,57 @@ func unpackBatchParameterQueryParams(packed middleware.Parameters) (params Batch
 	return params
 }
 
-func decodeBatchParameterQueryParams(args [1]string, argsEscaped bool, r *http.Request) (params BatchParameterQueryParams, _ error) {
-	// Decode path: query.
+func decodeBatchParameterQueryParams(args [2]string, argsEscaped bool, r *http.Request) (params BatchParameterQueryParams, _ error) {
+	// Decode path: table.
 	if err := func() error {
 		param := args[0]
 		if argsEscaped {
 			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "table",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Table = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "table",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode path: query.
+	if err := func() error {
+		param := args[1]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[1])
 			if err != nil {
 				return errors.Wrap(err, "unescape path")
 			}
@@ -619,6 +673,72 @@ func decodeBatchParameterQueryParams(args [1]string, argsEscaped bool, r *http.R
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "query",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// BatchQueryParams is parameters of batchQuery operation.
+type BatchQueryParams struct {
+	// Table.
+	Table string
+}
+
+func unpackBatchQueryParams(packed middleware.Parameters) (params BatchQueryParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "table",
+			In:   "path",
+		}
+		params.Table = packed[key].(string)
+	}
+	return params
+}
+
+func decodeBatchQueryParams(args [1]string, argsEscaped bool, r *http.Request) (params BatchQueryParams, _ error) {
+	// Decode path: table.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "table",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Table = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "table",
 			In:   "path",
 			Err:  err,
 		}

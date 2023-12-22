@@ -62,7 +62,7 @@ func (UnimplementedHandler) AddView(ctx context.Context, params AddViewParams) (
 //
 // Call a SQL query batch command posted in query.
 //
-// GET /rest/batch/{query}
+// GET /rest/batch/{table}/{query}
 func (UnimplementedHandler) BatchParameterQuery(ctx context.Context, params BatchParameterQueryParams) (r BatchParameterQueryRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -71,8 +71,8 @@ func (UnimplementedHandler) BatchParameterQuery(ctx context.Context, params Batc
 //
 // Call a SQL query batch command posted in body.
 //
-// POST /rest/batch
-func (UnimplementedHandler) BatchQuery(ctx context.Context, req BatchQueryReq) (r BatchQueryRes, _ error) {
+// POST /rest/batch/{table}
+func (UnimplementedHandler) BatchQuery(ctx context.Context, req BatchQueryReq, params BatchQueryParams) (r BatchQueryRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

@@ -407,17 +407,28 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					break
 				}
 				switch elem[0] {
-				case 'b': // Prefix: "batch"
-					if l := len("batch"); len(elem) >= l && elem[0:l] == "batch" {
+				case 'b': // Prefix: "batch/"
+					if l := len("batch/"); len(elem) >= l && elem[0:l] == "batch/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
+					// Param: "table"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
 					if len(elem) == 0 {
 						switch r.Method {
 						case "POST":
-							s.handleBatchQueryRequest([0]string{}, elemIsEscaped, w, r)
+							s.handleBatchQueryRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
 						default:
 							s.notAllowed(w, r, "POST")
 						}
@@ -434,15 +445,16 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 						// Param: "query"
 						// Leaf parameter
-						args[0] = elem
+						args[1] = elem
 						elem = ""
 
 						if len(elem) == 0 {
 							// Leaf node.
 							switch r.Method {
 							case "GET":
-								s.handleBatchParameterQueryRequest([1]string{
+								s.handleBatchParameterQueryRequest([2]string{
 									args[0],
+									args[1],
 								}, elemIsEscaped, w, r)
 							default:
 								s.notAllowed(w, r, "GET")
@@ -1901,12 +1913,21 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					break
 				}
 				switch elem[0] {
-				case 'b': // Prefix: "batch"
-					if l := len("batch"); len(elem) >= l && elem[0:l] == "batch" {
+				case 'b': // Prefix: "batch/"
+					if l := len("batch/"); len(elem) >= l && elem[0:l] == "batch/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
+
+					// Param: "table"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
 
 					if len(elem) == 0 {
 						switch method {
@@ -1914,9 +1935,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "BatchQuery"
 							r.summary = ""
 							r.operationID = "batchQuery"
-							r.pathPattern = "/rest/batch"
+							r.pathPattern = "/rest/batch/{table}"
 							r.args = args
-							r.count = 0
+							r.count = 1
 							return r, true
 						default:
 							return
@@ -1932,7 +1953,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 						// Param: "query"
 						// Leaf parameter
-						args[0] = elem
+						args[1] = elem
 						elem = ""
 
 						if len(elem) == 0 {
@@ -1942,9 +1963,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = "BatchParameterQuery"
 								r.summary = ""
 								r.operationID = "batchParameterQuery"
-								r.pathPattern = "/rest/batch/{query}"
+								r.pathPattern = "/rest/batch/{table}/{query}"
 								r.args = args
-								r.count = 1
+								r.count = 2
 								return r, true
 							default:
 								return

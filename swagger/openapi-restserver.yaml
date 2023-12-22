@@ -659,13 +659,20 @@ paths:
         - BearerAuth:
             - admin
       x-codegen-request-body-name: jobConfig
-  /rest/batch:
+  /rest/batch/{table}:
     post:
       tags:
         - Queries
       description: >-
         Call a SQL query batch command posted in body
       operationId: batchQuery
+      parameters:
+        - name: table
+          in: path
+          description: Table
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -710,7 +717,7 @@ paths:
         - BearerAuth:
             - admin
       x-codegen-request-body-name: database
-  /rest/batch/{query}:
+  /rest/batch/{table}/{query}:
     get:
       tags:
         - Queries
@@ -718,6 +725,12 @@ paths:
         Call a SQL query batch command posted in query
       operationId: batchParameterQuery
       parameters:
+        - name: table
+          in: path
+          description: Table
+          required: true
+          schema:
+            type: string
         - name: query
           in: path
           description: SQL statement

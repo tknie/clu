@@ -42,14 +42,14 @@ type Handler interface {
 	//
 	// Call a SQL query batch command posted in query.
 	//
-	// GET /rest/batch/{query}
+	// GET /rest/batch/{table}/{query}
 	BatchParameterQuery(ctx context.Context, params BatchParameterQueryParams) (BatchParameterQueryRes, error)
 	// BatchQuery implements batchQuery operation.
 	//
 	// Call a SQL query batch command posted in body.
 	//
-	// POST /rest/batch
-	BatchQuery(ctx context.Context, req BatchQueryReq) (BatchQueryRes, error)
+	// POST /rest/batch/{table}
+	BatchQuery(ctx context.Context, req BatchQueryReq, params BatchQueryParams) (BatchQueryRes, error)
 	// BrowseList implements browseList operation.
 	//
 	// Retrieves a list of Browseable locations.

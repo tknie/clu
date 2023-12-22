@@ -58,14 +58,14 @@ type Invoker interface {
 	//
 	// Call a SQL query batch command posted in query.
 	//
-	// GET /rest/batch/{query}
+	// GET /rest/batch/{table}/{query}
 	BatchParameterQuery(ctx context.Context, params BatchParameterQueryParams) (BatchParameterQueryRes, error)
 	// BatchQuery invokes batchQuery operation.
 	//
 	// Call a SQL query batch command posted in body.
 	//
-	// POST /rest/batch
-	BatchQuery(ctx context.Context, request BatchQueryReq) (BatchQueryRes, error)
+	// POST /rest/batch/{table}
+	BatchQuery(ctx context.Context, request BatchQueryReq, params BatchQueryParams) (BatchQueryRes, error)
 	// BrowseList invokes browseList operation.
 	//
 	// Retrieves a list of Browseable locations.
@@ -1299,7 +1299,7 @@ func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res Add
 //
 // Call a SQL query batch command posted in query.
 //
-// GET /rest/batch/{query}
+// GET /rest/batch/{table}/{query}
 func (c *Client) BatchParameterQuery(ctx context.Context, params BatchParameterQueryParams) (BatchParameterQueryRes, error) {
 	res, err := c.sendBatchParameterQuery(ctx, params)
 	return res, err
@@ -1309,7 +1309,7 @@ func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParame
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchParameterQuery"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/batch/{query}"),
+		semconv.HTTPRouteKey.String("/rest/batch/{table}/{query}"),
 	}
 
 	// Run stopwatch.
@@ -1341,8 +1341,27 @@ func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParame
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [2]string
+	var pathParts [4]string
 	pathParts[0] = "/rest/batch/"
+	{
+		// Encode "table" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "table",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.Table))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	pathParts[2] = "/"
 	{
 		// Encode "query" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -1359,7 +1378,7 @@ func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParame
 		if err != nil {
 			return res, errors.Wrap(err, "encode path")
 		}
-		pathParts[1] = encoded
+		pathParts[3] = encoded
 	}
 	uri.AddPathParts(u, pathParts[:]...)
 
@@ -1446,17 +1465,17 @@ func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParame
 //
 // Call a SQL query batch command posted in body.
 //
-// POST /rest/batch
-func (c *Client) BatchQuery(ctx context.Context, request BatchQueryReq) (BatchQueryRes, error) {
-	res, err := c.sendBatchQuery(ctx, request)
+// POST /rest/batch/{table}
+func (c *Client) BatchQuery(ctx context.Context, request BatchQueryReq, params BatchQueryParams) (BatchQueryRes, error) {
+	res, err := c.sendBatchQuery(ctx, request, params)
 	return res, err
 }
 
-func (c *Client) sendBatchQuery(ctx context.Context, request BatchQueryReq) (res BatchQueryRes, err error) {
+func (c *Client) sendBatchQuery(ctx context.Context, request BatchQueryReq, params BatchQueryParams) (res BatchQueryRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchQuery"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/rest/batch"),
+		semconv.HTTPRouteKey.String("/rest/batch/{table}"),
 	}
 
 	// Run stopwatch.
@@ -1488,8 +1507,26 @@ func (c *Client) sendBatchQuery(ctx context.Context, request BatchQueryReq) (res
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [1]string
-	pathParts[0] = "/rest/batch"
+	var pathParts [2]string
+	pathParts[0] = "/rest/batch/"
+	{
+		// Encode "table" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "table",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.Table))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
