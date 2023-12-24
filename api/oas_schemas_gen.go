@@ -2606,6 +2606,11 @@ type InsertMapFileRecordsUnauthorized struct{}
 
 func (*InsertMapFileRecordsUnauthorized) insertMapFileRecordsRes() {}
 
+// InsertRecordBadRequest is response for InsertRecord operation.
+type InsertRecordBadRequest struct{}
+
+func (*InsertRecordBadRequest) insertRecordRes() {}
+
 // InsertRecordForbidden is response for InsertRecord operation.
 type InsertRecordForbidden struct{}
 

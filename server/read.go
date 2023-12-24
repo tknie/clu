@@ -31,31 +31,7 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, er
 			return fmt.Errorf("result empty")
 		}
 		log.Log.Debugf("Rows: %d", len(result.Rows))
-		///var d api.ResponseRecordsItem
-		d := make(api.ResponseRecordsItem)
-		for i, r := range result.Rows {
-			s := strings.ToLower(result.Fields[i])
-			log.Log.Debugf("%d. row is of type %T", i, r)
-			switch t := r.(type) {
-			case *string:
-				log.Log.Debugf("String Pointer %s", *t)
-				raw := jx.Raw([]byte("\"" + *t + "\""))
-				d[s] = raw
-			case string:
-				log.Log.Debugf("String %s", t)
-				raw := jx.Raw([]byte("\"" + t + "\""))
-				d[s] = raw
-			case *time.Time:
-				d[s] = jx.Raw([]byte("\"" + (*t).String() + "\""))
-			case time.Time:
-				d[s] = jx.Raw([]byte("\"" + (t).String() + "\""))
-			default:
-				if r != nil {
-					log.Log.Debugf("using default ---> %v %T", r, t)
-					d[s] = jx.Raw(fmt.Sprintf("%v", r))
-				}
-			}
-		}
+		d := generateItem(result.Fields, result.Rows)
 		data = append(data, d)
 		return nil
 	})
@@ -63,6 +39,35 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, er
 		return nil, err
 	}
 	return data, nil
+}
+
+func generateItem(fields []string, rows []any) api.ResponseRecordsItem {
+	///var d api.ResponseRecordsItem
+	d := make(api.ResponseRecordsItem)
+	for i, r := range rows {
+		s := strings.ToLower(fields[i])
+		log.Log.Debugf("%d. row is of type %T", i, r)
+		switch t := r.(type) {
+		case *string:
+			log.Log.Debugf("String Pointer %s", *t)
+			raw := jx.Raw([]byte("\"" + *t + "\""))
+			d[s] = raw
+		case string:
+			log.Log.Debugf("String %s", t)
+			raw := jx.Raw([]byte("\"" + t + "\""))
+			d[s] = raw
+		case *time.Time:
+			d[s] = jx.Raw([]byte("\"" + (*t).String() + "\""))
+		case time.Time:
+			d[s] = jx.Raw([]byte("\"" + (t).String() + "\""))
+		default:
+			if r != nil {
+				log.Log.Debugf("using default ---> %v %T", r, t)
+				d[s] = jx.Raw(fmt.Sprintf("%v", r))
+			}
+		}
+	}
+	return d
 }
 
 // query query SQL tables

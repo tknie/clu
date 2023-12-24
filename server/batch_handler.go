@@ -13,10 +13,8 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"io"
 
-	"github.com/go-faster/jx"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/flynn/common"
@@ -38,7 +36,7 @@ func (Handler) BatchQuery(ctx context.Context, req api.BatchQueryReq,
 		sqlStatement = sqlQuery.Batch.Value.SQL.Value
 	case *api.BatchQueryReqTextPlain:
 		b := make([]byte, 1024)
-		for k, _ := range b {
+		for k := range b {
 			b[k] = ' '
 		}
 		n, err := sqlQuery.Read(b)
@@ -70,10 +68,7 @@ func (Handler) BatchQuery(ctx context.Context, req api.BatchQueryReq,
 		if fields == nil {
 			fields = result.Fields
 		}
-		rri := api.ResponseRecordsItem{}
-		for d, r := range result.Rows {
-			rri[result.Fields[d]] = jx.Raw(fmt.Sprintf("%v", r))
-		}
+		rri := generateItem(result.Fields, result.Rows)
 		rria = append(rria, rri)
 		return nil
 	})
@@ -115,10 +110,7 @@ func (Handler) BatchParameterQuery(ctx context.Context, params api.BatchParamete
 		if fields == nil {
 			fields = result.Fields
 		}
-		rri := api.ResponseRecordsItem{}
-		for d, r := range result.Rows {
-			rri[result.Fields[d]] = jx.Raw(fmt.Sprintf("%v", r))
-		}
+		rri := generateItem(result.Fields, result.Rows)
 		rria = append(rria, rri)
 		return nil
 	})

@@ -6633,6 +6633,9 @@ func decodeInsertRecordResponse(resp *http.Response) (res InsertRecordRes, _ err
 		default:
 			return res, validate.InvalidContentType(ct)
 		}
+	case 400:
+		// Code 400.
+		return &InsertRecordBadRequest{}, nil
 	case 401:
 		// Code 401.
 		return &InsertRecordUnauthorized{}, nil

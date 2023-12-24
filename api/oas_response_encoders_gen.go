@@ -2494,6 +2494,12 @@ func encodeInsertRecordResponse(response InsertRecordRes, w http.ResponseWriter,
 
 		return nil
 
+	case *InsertRecordBadRequest:
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		return nil
+
 	case *InsertRecordUnauthorized:
 		w.WriteHeader(401)
 		span.SetStatus(codes.Error, http.StatusText(401))

@@ -36,13 +36,18 @@ func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, par
 	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
 		return &api.InsertRecordForbidden{}, nil
 	}
-	log.Log.Debugf("SQL insert%s", params.Table)
+	log.Log.Debugf("SQL insert %s", params.Table)
 	d, err := ConnectTable(session, params.Table)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
 		return nil, err
 	}
 	defer CloseTable(d)
+
+	log.Log.Debugf("Incoming %#v", req.Value)
+	if req.Value.Records == nil {
+		return &api.InsertRecordBadRequest{}, nil
+	}
 
 	records := make([]any, 0)
 	nameMap := make(map[string]bool)
@@ -97,6 +102,9 @@ func parseJx(v jx.Raw) (any, error) {
 	case jx.String:
 		x, err := d.Str()
 		return x, err
+	case jx.Bool:
+		x, err := d.Bool()
+		return x, err
 	case jx.Array:
 		values := make([]any, 0)
 		d.Arr(func(d *jx.Decoder) error {
@@ -123,8 +131,10 @@ func parseJx(v jx.Raw) (any, error) {
 			return nil
 		})
 		return ms, nil
+	case jx.Null:
+		return nil, nil
 	default:
-		fmt.Println("->>", v.Type().String())
+		fmt.Println("Unknown type ->>", v.Type().String())
 	}
 	return nil, fmt.Errorf("json type unknown")
 }
