@@ -92,8 +92,9 @@ func (st *StoreJWTHandler) UUIDInfo(uuid string) (*auth.SessionInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Log.Debugf("Found session %v", result.Data)
-	return result.Data.(*auth.SessionInfo), nil
+	si := result.Data.(*auth.SessionInfo)
+	log.Log.Debugf("Found session %v", si.UUID)
+	return si, nil
 }
 
 // Range go through all session entries

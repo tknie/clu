@@ -1,2 +1,3 @@
 REST00001=Internal error
+RERR00002=field '%s' not found
 RERR01000=Database %v not registered

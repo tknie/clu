@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"github.com/tknie/clu"
+	"github.com/tknie/errorrepo"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
 )
@@ -40,6 +41,8 @@ func initStreamFromTable(srvctx *clu.Context, table,
 		return nil, err
 	}
 	defer CloseTable(d)
+
+	log.Log.Debugf("Init stream for table %s and search %s for field %s", table, search, field)
 
 	fields := []string{strings.ToLower(field)}
 	if mimetypeField != "" {
@@ -69,7 +72,8 @@ func initStreamFromTable(srvctx *clu.Context, table,
 		}
 		return
 	}
-	err = fmt.Errorf("field not in result")
+	err = errorrepo.NewError("RERR00002", table)
+	// err = fmt.Errorf("field '%s' not in result", field)
 	return
 }
 

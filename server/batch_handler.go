@@ -52,7 +52,7 @@ func (Handler) BatchQuery(ctx context.Context, req api.BatchQueryReq,
 		return &api.BatchQueryForbidden{}, nil
 	}
 	log.Log.Debugf("SQL statement on table %s - %v", params.Table, sqlStatement)
-	services.ServerMessage("SQL query by user %s: %s", session.User.User, sqlStatement)
+	// services.ServerMessage("SQL query by user %s: %s", session.User.User, sqlStatement)
 
 	d, err := ConnectTable(session, params.Table)
 	if err != nil {

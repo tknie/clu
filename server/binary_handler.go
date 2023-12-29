@@ -32,7 +32,7 @@ func (Handler) GetImage(ctx context.Context, params api.GetImageParams) (r api.G
 		return &api.GetImageForbidden{}, nil
 	}
 
-	log.Log.Debugf("SQL image search", params.Table, params.Field, params.Search)
+	log.Log.Debugf("SQL image search table=%s field=%s search=%s", params.Table, params.Field, params.Search)
 	read, err := initStreamFromTable(session, params.Table,
 		params.Field, params.Search, "")
 	if err != nil {

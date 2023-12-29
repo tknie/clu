@@ -15,6 +15,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/go-faster/jx"
 	ht "github.com/ogen-go/ogen/http"
@@ -81,14 +82,12 @@ func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, par
 	// list := [][]any{{vId1, "xxxxxx", 1}, {vId2, "yyywqwqwqw", 2}}
 	input := &common.Entries{Fields: fields,
 		Values: list}
-	fmt.Printf("%#v ->>>\n", input)
 	err = d.Insert(params.Table, input)
 	if err != nil {
 		log.Log.Debugf("Error: %v", err)
 		return nil, err
 	}
-	fmt.Println("INSERT:", records)
-	resp := api.Response{NrRecords: api.NewOptInt(1)}
+	resp := api.Response{NrRecords: api.NewOptInt(len(records))}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	return respH, nil
 }
@@ -101,7 +100,15 @@ func parseJx(v jx.Raw) (any, error) {
 		return x, err
 	case jx.String:
 		x, err := d.Str()
-		return x, err
+		if err != nil {
+			return nil, err
+		}
+		layout := "2006-01-02 15:04:05 -0700 MST"
+		t, err := time.Parse(layout, x)
+		if err == nil {
+			return t, err
+		}
+		return x, nil
 	case jx.Bool:
 		x, err := d.Bool()
 		return x, err
