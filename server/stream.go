@@ -58,6 +58,12 @@ func initStreamFromTable(srvctx *clu.Context, table,
 		return nil, err
 	}
 
+	if len(result) == 0 {
+		err = errorrepo.NewError("REST00002", field, table)
+		// err = fmt.Errorf("field '%s' not in result", field)
+		return
+	}
+
 	s := strings.ToLower(field)
 	if d, ok := result[s]; ok {
 		if d == nil {
@@ -72,7 +78,7 @@ func initStreamFromTable(srvctx *clu.Context, table,
 		}
 		return
 	}
-	err = errorrepo.NewError("RERR00002", table)
+	err = errorrepo.NewError("RERR00002", field, table)
 	// err = fmt.Errorf("field '%s' not in result", field)
 	return
 }

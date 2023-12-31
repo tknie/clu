@@ -1,3 +1,4 @@
 REST00001=Internal error
-RERR00002=field '%s' not found
+REST00002=no data record found for query on field %s in table %s
+RERR00002=field '%s' not found in table %s
 RERR01000=Database %v not registered

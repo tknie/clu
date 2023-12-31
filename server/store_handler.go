@@ -228,13 +228,11 @@ func (Handler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecor
 	input := &common.Entries{Fields: fields,
 		Update: updateFields,
 		Values: list}
-	fmt.Printf("%#v ->>>\n", input)
 	uNr, err := d.Update(params.Table, input)
 	if err != nil {
 		log.Log.Debugf("Error: %v", err)
 		return nil, err
 	}
-	fmt.Println("Update:", records)
 	resp := api.Response{NrRecords: api.NewOptInt(int(uNr))}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	return respH, nil
