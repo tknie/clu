@@ -296,7 +296,7 @@ func SendAuditEnded(started time.Time, r *http.Request) {
 		p, err := server.Viewer.Server.WebToken.JWTContainsRoles(reqToken, []string{"admin"})
 		if err != nil {
 			uuid = err.Error()
-			log.Log.Errorf("Audit error %v: %s", err, reqToken)
+			log.Log.Errorf("Audit error: %v", err)
 		} else {
 			c := p.(*clu.Context)
 			uuid = c.UUID()
