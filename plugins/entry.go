@@ -284,8 +284,8 @@ func SendAuditEnded(started time.Time, r *http.Request) {
 		return
 	}
 	log.Log.Debugf("Send auditing plugins request: %v %v %v", r.Method, r.URL, server.RemoteHost(r))
-	user := "Unknown"
-	uuid := "Not defined"
+	user := "<Unknown>"
+	uuid := "<UUID undefined>"
 	reqToken := r.Header.Get("Authorization")
 	splitToken := strings.Split(reqToken, " ")
 	switch strings.ToLower(splitToken[0]) {

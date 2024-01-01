@@ -19,7 +19,6 @@ import (
 	"github.com/tknie/clu/api"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
-	"github.com/tknie/services"
 	"github.com/tknie/services/auth"
 )
 
@@ -94,7 +93,7 @@ func (Handler) BatchParameterQuery(ctx context.Context, params api.BatchParamete
 		return &api.BatchParameterQueryForbidden{}, nil
 	}
 	log.Log.Debugf("SQL statement on table %s - %v", params.Table, params.Query)
-	services.ServerMessage("SQL query by user %s: %s", session.User.User, params.Query)
+	// services.ServerMessage("SQL query by user %s: %s", session.User.User, params.Query)
 
 	d, err := ConnectTable(session, params.Table)
 	if err != nil {
