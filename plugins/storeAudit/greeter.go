@@ -60,7 +60,7 @@ type SessionInfo struct {
 	RemoteHost string
 	UUID       string
 	RequestURI string `flynn:"URI"`
-	Service    string
+	Service    string `flynn:"::2024"`
 	User       string `flynn:"RequestUser"`
 	Host       string
 	TableName  string
