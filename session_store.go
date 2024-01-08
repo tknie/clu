@@ -82,6 +82,7 @@ func (st *StoreJWTHandler) UUIDInfo(uuid string) (*auth.SessionInfo, error) {
 	}
 	sessionLock.Lock()
 	defer sessionLock.Unlock()
+	defer sessionStoreID.Close()
 	q := &common.Query{TableName: sessionTableName,
 		Search:     "uuid='" + uuid + "'",
 		DataStruct: &auth.SessionInfo{},

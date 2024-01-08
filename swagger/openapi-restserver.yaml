@@ -660,6 +660,61 @@ paths:
             - admin
       x-codegen-request-body-name: jobConfig
   /rest/batch/{table}:
+    get:
+      tags:
+        - Queries
+      description: >-
+        Call a SQL query batch command out of the stored query list
+      operationId: batchSelect
+      parameters:
+        - name: table
+          in: path
+          description: Batch name
+          required: true
+          schema:
+            type: string
+        - name: param
+          in: query
+          description: Query parameter
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Successful response, retrieve the field information.
+          headers:
+            X-Token:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '401':
+          description: Authorization error
+          content: {}
+        '403':
+          description: Role access denied
+          content: {}
+        '404':
+          description: Could not read the specified field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Error authorization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuth: []
+        - tokenCheck: []
+        - BearerAuth:
+            - admin
+      x-codegen-request-body-name: database
     post:
       tags:
         - Queries

@@ -33,6 +33,10 @@ type BatchQueryRes interface {
 	batchQueryRes()
 }
 
+type BatchSelectRes interface {
+	batchSelectRes()
+}
+
 type BrowseListRes interface {
 	browseListRes()
 }

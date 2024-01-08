@@ -86,10 +86,11 @@ type Server struct {
 
 // DatabaseConfig database modelling and access
 type DatabaseConfig struct {
-	Mapping        Mapping        `yaml:"modelling"`
-	DatabaseAccess DatabaseAccess `yaml:"access"`
-	SessionInfo    *Database      `yaml:"sessionInfo"`
-	UserInfo       *Database      `yaml:"userInfo"`
+	Mapping         Mapping        `yaml:"modelling"`
+	DatabaseAccess  DatabaseAccess `yaml:"access"`
+	SessionInfo     *Database      `yaml:"sessionInfo"`
+	UserInfo        *Database      `yaml:"userInfo"`
+	BatchRepository *Database      `yaml:"batchRepository"`
 }
 
 // StatisticConfig statistics configuration

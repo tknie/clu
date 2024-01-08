@@ -77,22 +77,8 @@ func main() {
 	// Load XML configuration
 	server.InitConfig(true)
 	plugins.InitPlugins()
-
+	server.InitDatabaseStores()
 	server.InitDatabases()
-	dm := server.Viewer.Database.UserInfo
-	if dm != nil {
-		r, err := server.Handles(dm)
-		if err == nil {
-			clu.InitUserInfo(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
-		}
-	}
-	dm = server.Viewer.Database.SessionInfo
-	if dm != nil {
-		r, err := server.Handles(dm)
-		if err == nil {
-			clu.InitStoreInfo(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
-		}
-	}
 
 	server.AdaptConfig(os.Getenv(server.DefaultConfigFileEnv))
 

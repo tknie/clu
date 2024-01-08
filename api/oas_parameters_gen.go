@@ -746,6 +746,127 @@ func decodeBatchQueryParams(args [1]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
+// BatchSelectParams is parameters of batchSelect operation.
+type BatchSelectParams struct {
+	// Batch name.
+	Table string
+	// Query parameter.
+	Param []string
+}
+
+func unpackBatchSelectParams(packed middleware.Parameters) (params BatchSelectParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "table",
+			In:   "path",
+		}
+		params.Table = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "param",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Param = v.([]string)
+		}
+	}
+	return params
+}
+
+func decodeBatchSelectParams(args [1]string, argsEscaped bool, r *http.Request) (params BatchSelectParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode path: table.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "table",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Table = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "table",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode query: param.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "param",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotParamVal string
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotParamVal = c
+						return nil
+					}(); err != nil {
+						return err
+					}
+					params.Param = append(params.Param, paramsDotParamVal)
+					return nil
+				})
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "param",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // BrowseLocationParams is parameters of browseLocation operation.
 type BrowseLocationParams struct {
 	// Identifier of the file location.

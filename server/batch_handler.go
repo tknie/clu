@@ -14,6 +14,7 @@ package server
 import (
 	"context"
 	"io"
+	"strings"
 
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
@@ -21,6 +22,38 @@ import (
 	"github.com/tknie/log"
 	"github.com/tknie/services/auth"
 )
+
+type batchSelect struct {
+	session   *clu.Context
+	table     string
+	parameter []string
+	query     *clu.BatchEntry
+}
+
+// BatchSelect implements batchSelect operation.
+//
+// Call a SQL query batch command out of the stored query list.
+//
+// GET /rest/batch/{table}
+func (Handler) BatchSelect(ctx context.Context,
+	params api.BatchSelectParams) (r api.BatchSelectRes, _ error) {
+	session := ctx.(*clu.Context)
+	if !auth.ValidUser(auth.UserRole, false, session.User, "/batch") {
+		log.Log.Debugf("SQL statemant forbidden")
+		return &api.BatchSelectForbidden{}, nil
+	}
+	log.Log.Debugf("Query batchname %s -> %#v", params.Table, params.Param)
+	entry, err := clu.BatchSelect(params.Table)
+	if err != nil {
+		return nil, err
+	}
+	respH, err := querySQLstatement(&batchSelect{session: session, table: params.Table,
+		parameter: params.Param, query: entry})
+	if err != nil {
+		return nil, err
+	}
+	return respH, nil
+}
 
 // BatchQuery implements batchQuery operation.
 //
@@ -30,6 +63,7 @@ import (
 func (Handler) BatchQuery(ctx context.Context, req api.BatchQueryReq,
 	params api.BatchQueryParams) (r api.BatchQueryRes, _ error) {
 	sqlStatement := ""
+	var p []string
 	switch sqlQuery := req.(type) {
 	case *api.SQLQuery:
 		sqlStatement = sqlQuery.Batch.Value.SQL.Value
@@ -53,13 +87,25 @@ func (Handler) BatchQuery(ctx context.Context, req api.BatchQueryReq,
 	log.Log.Debugf("SQL statement on table %s - %v", params.Table, sqlStatement)
 	// services.ServerMessage("SQL query by user %s: %s", session.User.User, sqlStatement)
 
-	d, err := ConnectTable(session, params.Table)
+	respH, err := querySQLstatement(&batchSelect{session: session, table: params.Table,
+		parameter: p,
+		query:     &clu.BatchEntry{Query: sqlStatement, Database: params.Table}})
 	if err != nil {
-		log.Log.Errorf("Error search table %s:%v", params.Table, err)
+		return nil, err
+	}
+	return respH, nil
+
+}
+
+func querySQLstatement(query *batchSelect) (*api.ResponseHeaders, error) {
+	log.Log.Debugf("Query/Batch SQL statemant %s: %#v", query.query.Query, query.parameter)
+	d, err := ConnectTable(query.session, query.query.Database)
+	if err != nil {
+		log.Log.Errorf("Error search table %s:%v", query.query.Database, err)
 		return nil, err
 	}
 	defer CloseTable(d)
-	batch := &common.Query{Search: sqlStatement}
+	batch := &common.Query{Search: sqlInParameter(query.query.Query, query.parameter)}
 
 	rria := make([]api.ResponseRecordsItem, 0)
 	var fields []string
@@ -76,8 +122,8 @@ func (Handler) BatchQuery(ctx context.Context, req api.BatchQueryReq,
 	}
 	resp := api.Response{NrRecords: api.NewOptInt(int(len(rria))),
 		FieldNames: fields,
-		MapName:    api.NewOptString(params.Table), Records: rria}
-	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+		MapName:    api.NewOptString(query.table), Records: rria}
+	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(query.session.Token)}
 	return respH, nil
 }
 
@@ -121,4 +167,20 @@ func (Handler) BatchParameterQuery(ctx context.Context, params api.BatchParamete
 		MapName:    api.NewOptString(params.Table), Records: rria}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	return respH, nil
+}
+
+func sqlInParameter(statement string, params []string) string {
+	st := statement
+	for _, p := range params {
+		log.Log.Debugf("Given parameter '%s'", p)
+		np := strings.Trim(p, "\"")
+		if np[0] == '^' {
+			pv := strings.Split(np, ":")
+			log.Log.Debugf("Handle parameter %s : %s", pv[0], pv[1])
+			st = strings.Replace(st, "<"+pv[0][1:]+">", pv[1], -1)
+		}
+	}
+	log.Log.Debugf("SQL in : %s", statement)
+	log.Log.Debugf("SQL out: %s", st)
+	return st
 }

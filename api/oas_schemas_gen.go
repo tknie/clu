@@ -532,6 +532,16 @@ type BatchQueryUnauthorized struct{}
 
 func (*BatchQueryUnauthorized) batchQueryRes() {}
 
+// BatchSelectForbidden is response for BatchSelect operation.
+type BatchSelectForbidden struct{}
+
+func (*BatchSelectForbidden) batchSelectRes() {}
+
+// BatchSelectUnauthorized is response for BatchSelect operation.
+type BatchSelectUnauthorized struct{}
+
+func (*BatchSelectUnauthorized) batchSelectRes() {}
+
 type BearerAuth struct {
 	Token string
 }
@@ -1791,6 +1801,7 @@ func (*Error) addRBACResourceRes()        {}
 func (*Error) addViewRes()                {}
 func (*Error) batchParameterQueryRes()    {}
 func (*Error) batchQueryRes()             {}
+func (*Error) batchSelectRes()            {}
 func (*Error) databaseOperationRes()      {}
 func (*Error) databasePostOperationsRes() {}
 func (*Error) deleteDatabaseRes()         {}
@@ -5908,6 +5919,7 @@ func (s *ResponseHeaders) SetResponse(val Response) {
 
 func (*ResponseHeaders) batchParameterQueryRes()   {}
 func (*ResponseHeaders) batchQueryRes()            {}
+func (*ResponseHeaders) batchSelectRes()           {}
 func (*ResponseHeaders) deleteRecordsSearchedRes() {}
 func (*ResponseHeaders) getMapRecordsFieldsRes()   {}
 func (*ResponseHeaders) insertRecordRes()          {}

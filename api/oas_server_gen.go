@@ -50,6 +50,12 @@ type Handler interface {
 	//
 	// POST /rest/batch/{table}
 	BatchQuery(ctx context.Context, req BatchQueryReq, params BatchQueryParams) (BatchQueryRes, error)
+	// BatchSelect implements batchSelect operation.
+	//
+	// Call a SQL query batch command out of the stored query list.
+	//
+	// GET /rest/batch/{table}
+	BatchSelect(ctx context.Context, params BatchSelectParams) (BatchSelectRes, error)
 	// BrowseList implements browseList operation.
 	//
 	// Retrieves a list of Browseable locations.

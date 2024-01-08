@@ -76,6 +76,15 @@ func (UnimplementedHandler) BatchQuery(ctx context.Context, req BatchQueryReq, p
 	return r, ht.ErrNotImplemented
 }
 
+// BatchSelect implements batchSelect operation.
+//
+// Call a SQL query batch command out of the stored query list.
+//
+// GET /rest/batch/{table}
+func (UnimplementedHandler) BatchSelect(ctx context.Context, params BatchSelectParams) (r BatchSelectRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // BrowseList implements browseList operation.
 //
 // Retrieves a list of Browseable locations.
