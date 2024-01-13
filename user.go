@@ -29,7 +29,8 @@ var userTableName = ""
 var disableUser = false
 var userDbRef *common.Reference
 var userDbPassword = ""
-var userStoreID common.RegDbID
+
+// var userStoreID common.RegDbID
 
 var userFieldList = []string{"Name", "Created", "LastLogin"}
 
@@ -43,19 +44,21 @@ var userInfoMap = sync.Map{} // make(map[string]*storeUserInfo)
 var userLock sync.Mutex
 
 // InitUserInfo init user info evaluation
-func InitUserInfo(userDbRef *common.Reference, userDbPassword, tablename string) {
+func InitUserInfo(ref *common.Reference, password, tablename string) {
+	userDbRef = ref
+	userDbPassword = password
 	if userDbPassword == "" {
 		userDbPassword = os.Getenv("REST_USER_LOG_PASS")
 	}
 	userTableName = tablename
-	services.ServerMessage("Storing audit data to table '%s'", userTableName)
-	var err error
-	userStoreID, err = flynn.Handler(userDbRef, userDbPassword)
+	userStoreID, err := openUserStore()
 	if err != nil {
-		services.ServerMessage("Register error log: %v", err)
+		services.ServerMessage("Storing audit data error: %v", err)
 		return
 	}
+	defer userStoreID.Close()
 	log.Log.Debugf("Receive user store handler %s", userStoreID)
+	services.ServerMessage("Storing audit data to table '%s'", userTableName)
 
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
@@ -72,6 +75,18 @@ func InitUserInfo(userDbRef *common.Reference, userDbPassword, tablename string)
 	services.ServerMessage("Database user store created successfully")
 }
 
+func openUserStore() (common.RegDbID, error) {
+	if userDbPassword == "" {
+		userDbPassword = os.Getenv("REST_USER_LOG_PASS")
+	}
+	userStoreID, err := flynn.Handler(userDbRef, userDbPassword)
+	if err != nil {
+		services.ServerMessage("Register error log: %v", err)
+		return 0, err
+	}
+	return userStoreID, nil
+}
+
 // QueryUser query user information
 func QueryUser(user string) *auth.UserInfo {
 	if disableUser {
@@ -82,13 +97,18 @@ func QueryUser(user string) *auth.UserInfo {
 	}
 	userLock.Lock()
 	defer userLock.Unlock()
+	userStoreID, err := openUserStore()
+	if err != nil {
+		return nil
+	}
+	defer userStoreID.Close()
 	var userInfo *auth.UserInfo
 	count := 0
 	q := &common.Query{TableName: userTableName,
 		Search:     "name='" + user + "'",
 		DataStruct: &auth.UserInfo{},
 		Fields:     []string{"*"}}
-	_, err := userStoreID.Query(q, func(search *common.Query, result *common.Result) error {
+	_, err = userStoreID.Query(q, func(search *common.Query, result *common.Result) error {
 		count++
 		if userInfo == nil {
 			userInfo = result.Data.(*auth.UserInfo)
@@ -130,6 +150,11 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 	if u, ok := userInfoMap.Load(userInfo.User); ok {
 		userLock.Lock()
 		defer userLock.Unlock()
+		userStoreID, err := openUserStore()
+		if err != nil {
+			return nil
+		}
+		defer userStoreID.Close()
 		insert := &common.Entries{Fields: userFieldList, DataStruct: userInfo}
 		insert.Values = [][]any{{userInfo}}
 		log.Log.Debugf("Insert value %#v", userInfo)
@@ -148,7 +173,7 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 				return err
 			}
 		}
-		err := userStoreID.Commit()
+		err = userStoreID.Commit()
 		if err != nil {
 			log.Log.Errorf("Error commiting user info: %v", err)
 			return err

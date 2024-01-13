@@ -27,7 +27,11 @@ import (
 var sessionURL = ""
 var sessionTableName = ""
 var disableStore = false
-var sessionStoreID common.RegDbID
+
+var sessionDbRef *common.Reference
+var sessionDbPassword = ""
+
+// var sessionStoreID common.RegDbID
 
 var sessionExpirerDuration = time.Duration(6) * time.Hour
 var sessionInfoMap = sync.Map{} // make(map[string]*auth.SessionInfo)
@@ -36,37 +40,51 @@ var sessionLock sync.Mutex
 var chanUpdateSessionInfo = make(chan *auth.SessionInfo, 10)
 var chanRemoveSessionInfo = make(chan *auth.SessionInfo, 10)
 
-// InitStoreInfo init session info storage
-func InitStoreInfo(userDbRef *common.Reference, userDbPassword, tablename string) {
+func openSessionStore() (common.RegDbID, error) {
 	var err error
-	if userDbPassword == "" {
-		userDbPassword = os.Getenv("REST_SESSION_LOG_PASS")
+	if sessionDbPassword == "" {
+		sessionDbPassword = os.Getenv("REST_SESSION_LOG_PASS")
 	}
-	sessionTableName = tablename
-	services.ServerMessage("Storing session data to table '%s'", sessionTableName)
-	sessionStoreID, err = flynn.Handler(userDbRef, userDbPassword)
+	sessionStoreID, err := flynn.Handler(sessionDbRef, sessionDbPassword)
 	if err != nil {
 		services.ServerMessage("Register error log: %v", err)
+		return 0, err
+	}
+	return sessionStoreID, nil
+}
+
+// InitStoreInfo init session info storage
+func InitStoreInfo(ref *common.Reference, password, tablename string) {
+	sessionDbRef = ref
+	sessionDbPassword = password
+
+	sessionStoreID, err := openSessionStore()
+	if err != nil {
 		return
 	}
+	defer sessionStoreID.Close()
 	log.Log.Debugf("Receive session store handler %s", sessionStoreID)
 
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
-		if d == sessionTableName {
+		if d == tablename {
 			go updaterSessionInfo()
 			auth.JWTOperator = &StoreJWTHandler{}
+			sessionTableName = tablename
+			services.ServerMessage("Storing session data to table '%s'", sessionTableName)
 			return
 		}
 	}
 	su := &auth.SessionInfo{}
-	err = sessionStoreID.CreateTable(sessionTableName, su)
+	err = sessionStoreID.CreateTable(tablename, su)
 	if err != nil {
 		services.ServerMessage("Database session store creating failed: %v", err)
 		return
 	}
 	services.ServerMessage("Database session store created successfully")
 	go updaterSessionInfo()
+	sessionTableName = tablename
+	services.ServerMessage("Creating and storing session data to table '%s'", sessionTableName)
 	auth.JWTOperator = &StoreJWTHandler{}
 }
 
@@ -82,6 +100,10 @@ func (st *StoreJWTHandler) UUIDInfo(uuid string) (*auth.SessionInfo, error) {
 	}
 	sessionLock.Lock()
 	defer sessionLock.Unlock()
+	sessionStoreID, err := openSessionStore()
+	if err != nil {
+		return nil, err
+	}
 	defer sessionStoreID.Close()
 	q := &common.Query{TableName: sessionTableName,
 		Search:     "uuid='" + uuid + "'",
@@ -100,11 +122,15 @@ func (st *StoreJWTHandler) UUIDInfo(uuid string) (*auth.SessionInfo, error) {
 
 // Range go through all session entries
 func (st *StoreJWTHandler) Range(f func(uuid, value any) bool) error {
+	sessionStoreID, err := openSessionStore()
+	if err != nil {
+		return err
+	}
 	q := &common.Query{TableName: sessionTableName,
 		Search:     "invalidated  < now()",
 		DataStruct: &auth.SessionInfo{},
 		Fields:     []string{"*"}}
-	_, err := sessionStoreID.Query(q, func(search *common.Query, result *common.Result) error {
+	_, err = sessionStoreID.Query(q, func(search *common.Query, result *common.Result) error {
 		s := result.Data.(*auth.SessionInfo)
 		elapsed := s.Invalidated
 		if !f(s.UUID, elapsed) {
@@ -140,14 +166,21 @@ func (st *StoreJWTHandler) Store(principal auth.PrincipalInterface, user, pass s
 	si.Invalidated = si.LastAccess.Add(sessionExpirerDuration)
 	insert := &common.Entries{Fields: []string{"*"}, DataStruct: si}
 	insert.Values = [][]any{{si}}
+	sessionLock.Lock()
+	defer sessionLock.Unlock()
+	sessionStoreID, err := openSessionStore()
+	if err != nil {
+		return err
+	}
+	defer sessionStoreID.Close()
 	log.Log.Debugf("Store session value %#v", si.UUID)
-	err = userStoreID.Insert(sessionTableName, insert)
+	err = sessionStoreID.Insert(sessionTableName, insert)
 	if err != nil {
 		log.Log.Errorf("Error storing user: %v", err)
 		return err
 	}
 	log.Log.Errorf("Insert storing session: %s", si.UUID)
-	err = userStoreID.Commit()
+	err = sessionStoreID.Commit()
 	return err
 }
 
@@ -177,34 +210,57 @@ func updaterSessionInfo() {
 		log.Log.Debugf("Waiting session info for updates or remove")
 		select {
 		case si := <-chanUpdateSessionInfo:
-			update := &common.Entries{Fields: []string{"Invalidated"}, DataStruct: si}
-			update.Values = [][]any{{si}}
-			update.Update = []string{"UUID='" + si.UUID + "'"}
-			log.Log.Debugf("Update value %#v", si.UUID)
-			c, err := userStoreID.Update(sessionTableName, update)
-			if err != nil {
-				log.Log.Errorf("Error storing session: %v", err)
-				continue
-			}
-			log.Log.Errorf("Update storing session: (%d)", c)
-			err = userStoreID.Commit()
-			if err == nil {
-				continue
-			}
+			updateSessionInfo(si)
 		case si := <-chanRemoveSessionInfo:
-			remove := &common.Entries{Criteria: "uuid = '" + si.UUID + "'"}
-			log.Log.Debugf("Remove UUID %s", si.UUID)
-			_, err := userStoreID.Delete(sessionTableName, remove)
-			if err != nil {
-				log.Log.Errorf("Error deleting session: %v", err)
-				continue
-			}
-			err = userStoreID.Commit()
-			if err == nil {
-				continue
-			}
+			deleteUUID(si)
 		case <-time.After(30 * time.Second):
 			log.Log.Debugf("Shift working 30 seconds")
 		}
 	}
+}
+
+func updateSessionInfo(si *auth.SessionInfo) {
+	sessionLock.Lock()
+	defer sessionLock.Unlock()
+	sessionStoreID, err := openSessionStore()
+	if err != nil {
+		return
+	}
+	defer sessionStoreID.Close()
+	update := &common.Entries{Fields: []string{"Invalidated"}, DataStruct: si}
+	update.Values = [][]any{{si}}
+	update.Update = []string{"UUID='" + si.UUID + "'"}
+	log.Log.Debugf("Update value %#v", si.UUID)
+	c, err := sessionStoreID.Update(sessionTableName, update)
+	if err != nil {
+		log.Log.Errorf("Error storing session: %v", err)
+		return
+	}
+	log.Log.Debugf("Commiting session update: (%d)", c)
+	err = sessionStoreID.Commit()
+	if err == nil {
+		return
+	}
+}
+
+func deleteUUID(si *auth.SessionInfo) {
+	sessionLock.Lock()
+	defer sessionLock.Unlock()
+	sessionStoreID, err := openSessionStore()
+	if err != nil {
+		return
+	}
+	defer sessionStoreID.Close()
+	remove := &common.Entries{Criteria: "uuid = '" + si.UUID + "'"}
+	log.Log.Debugf("Remove UUID %s", si.UUID)
+	_, err = sessionStoreID.Delete(sessionTableName, remove)
+	if err != nil {
+		log.Log.Errorf("Error deleting session: %v", err)
+		return
+	}
+	err = sessionStoreID.Commit()
+	if err == nil {
+		return
+	}
+
 }

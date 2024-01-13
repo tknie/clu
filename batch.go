@@ -13,6 +13,8 @@ package clu
 
 import (
 	"fmt"
+	"os"
+	"sync"
 
 	"github.com/tknie/flynn"
 	"github.com/tknie/flynn/common"
@@ -28,29 +30,48 @@ type BatchEntry struct {
 	ParamCount int
 }
 
+var batchDbRef *common.Reference
+var batchDbPassword = ""
+
 var batchtablename = ""
 var batchStoreOnline = false
-var batchStoreID common.RegDbID
+var batchLock sync.Mutex
 
 type batchRepository struct {
 	stored bool
 }
 
+func openBatchRepository() (common.RegDbID, error) {
+	var err error
+	if userDbPassword == "" {
+		userDbPassword = os.Getenv("REST_BATCH_PASS")
+	}
+	sessionStoreID, err := flynn.Handler(batchDbRef, batchDbPassword)
+	if err != nil {
+		services.ServerMessage("Register error log: %v", err)
+		return 0, err
+	}
+	return sessionStoreID, nil
+}
+
 // InitBatchRepository init batch repository
 func InitBatchRepository(dbRef *common.Reference, dbPassword, tablename string) {
-	var err error
-	batchStoreID, err = flynn.Handler(dbRef, dbPassword)
+	batchDbRef = dbRef
+	batchDbPassword = dbPassword
+	batchStoreID, err := openBatchRepository()
 	if err != nil {
 		services.ServerMessage("Register error log: %v", err)
 		return
 	}
 	log.Log.Debugf("Receive batch store handler %s", batchStoreID)
+	defer batchStoreID.Close()
 
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
 		if d == tablename {
 			batchtablename = tablename
 			batchStoreOnline = true
+			services.ServerMessage("Using batch repository on table '%s'", batchtablename)
 			return
 		}
 	}
@@ -62,7 +83,7 @@ func InitBatchRepository(dbRef *common.Reference, dbPassword, tablename string) 
 	}
 	batchtablename = tablename
 	batchStoreOnline = true
-	services.ServerMessage("Database batch store created successfully")
+	services.ServerMessage("Database batch store '%s' created successfully", batchtablename)
 }
 
 // BatchSelect search for batchname in an batch repository
@@ -70,18 +91,28 @@ func BatchSelect(batchname string) (*BatchEntry, error) {
 	if !batchStoreOnline {
 		return nil, fmt.Errorf("error batch repository disabled")
 	}
+	batchLock.Lock()
+	defer batchLock.Unlock()
+	batchStoreID, err := openBatchRepository()
+	if err != nil {
+		services.ServerMessage("Register error log: %v", err)
+		return nil, err
+	}
+	log.Log.Debugf("Receive batch store handler %s", batchStoreID)
+	batchStoreID.Close()
 	var b *BatchEntry
 	q := &common.Query{TableName: batchtablename,
 		Search:     "name='" + batchname + "'",
 		DataStruct: &BatchEntry{},
 		Fields:     []string{"*"}}
-	_, err := userStoreID.Query(q, func(search *common.Query, result *common.Result) error {
+	_, err = batchStoreID.Query(q, func(search *common.Query, result *common.Result) error {
 		if b == nil {
 			b = result.Data.(*BatchEntry)
 		}
 		return nil
 	})
 	if err != nil {
+		log.Log.Errorf("Query batch store failure: %v", err)
 		return nil, err
 	}
 	return b, nil

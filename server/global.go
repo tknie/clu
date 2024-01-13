@@ -216,7 +216,7 @@ func RemoteHost(r *http.Request) string {
 	}
 	n, err := net.LookupAddr(remoteHost)
 	if err != nil {
-		log.Log.Errorf("Error evaluating %s: %v", remoteHost, err)
+		log.Log.Debugf("Error evaluating %s: %v", remoteHost, err)
 	} else {
 		remoteHost = fmt.Sprintf("%s, %v", remoteHost, n)
 	}
