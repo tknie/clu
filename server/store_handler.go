@@ -169,7 +169,7 @@ func (Handler) DeleteRecordsSearched(ctx context.Context, params api.DeleteRecor
 		log.Log.Errorf("Error delete search %s->%s:%v", params.Table, params.Search, err)
 		return nil, err
 	}
-	fmt.Println("DR", dr)
+	log.Log.Errorf("%d Data record deleted from %s: %s", dr, params.Table, params.Search)
 	resp := api.Response{NrRecords: api.NewOptInt(int(dr))}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	return respH, nil
