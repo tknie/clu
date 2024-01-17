@@ -176,8 +176,8 @@ func sqlInParameter(statement string, params []string) string {
 		np := strings.Trim(p, "\"")
 		if np[0] == '^' {
 			pv := strings.Split(np, ":")
-			log.Log.Debugf("Handle parameter %s : %s", pv[0], pv[1])
-			st = strings.Replace(st, "<"+pv[0][1:]+">", pv[1], -1)
+			log.Log.Debugf("Handle parameter %s : %s", pv[0], np[len(pv[0])+1:])
+			st = strings.Replace(st, "<"+pv[0][1:]+">", np[len(pv[0])+1:], -1)
 		}
 	}
 	log.Log.Debugf("SQL in : %s", statement)

@@ -102,6 +102,7 @@ func QueryUser(user string) *auth.UserInfo {
 		return nil
 	}
 	defer userStoreID.Close()
+	defer userStoreID.FreeHandler()
 	var userInfo *auth.UserInfo
 	count := 0
 	q := &common.Query{TableName: userTableName,

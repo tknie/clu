@@ -63,6 +63,7 @@ func InitStoreInfo(ref *common.Reference, password, tablename string) {
 		return
 	}
 	defer sessionStoreID.Close()
+	defer sessionStoreID.FreeHandler()
 	log.Log.Debugf("Receive session store handler %s", sessionStoreID)
 
 	dbTables := flynn.Maps()

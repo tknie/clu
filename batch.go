@@ -65,6 +65,7 @@ func InitBatchRepository(dbRef *common.Reference, dbPassword, tablename string) 
 	}
 	log.Log.Debugf("Receive batch store handler %s", batchStoreID)
 	defer batchStoreID.Close()
+	defer batchStoreID.FreeHandler()
 
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {

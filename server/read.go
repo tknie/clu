@@ -13,10 +13,12 @@ package server
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
 	"github.com/go-faster/jx"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
@@ -60,6 +62,10 @@ func generateItem(fields []string, rows []any) api.ResponseRecordsItem {
 			d[s] = jx.Raw([]byte("\"" + (*t).String() + "\""))
 		case time.Time:
 			d[s] = jx.Raw([]byte("\"" + (t).String() + "\""))
+		case pgtype.Numeric:
+			v := uint64(t.Int.Uint64()) * uint64(math.Pow10(int(t.Exp)))
+			st := fmt.Sprintf("%d", v)
+			d[s] = jx.Raw([]byte("\"" + (st) + "\""))
 		default:
 			if r != nil {
 				log.Log.Debugf("using default ---> %v %T", r, t)
