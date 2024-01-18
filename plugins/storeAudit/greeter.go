@@ -76,7 +76,8 @@ var disableStore = false
 var url string
 var dbRef *common.Reference
 var password string
-var auditStoreID common.RegDbID
+
+// var auditStoreID common.RegDbID
 
 func init() {
 	go startStore()
@@ -100,12 +101,13 @@ func init() {
 	dbRef.User = "admin"
 
 	services.ServerMessage("Storing audit data to table '%s'", tableName)
-	auditStoreID, err = flynn.Handler(dbRef, password)
+	auditStoreID, err := flynn.Handler(dbRef, password)
 	if err != nil {
 		services.ServerMessage("Register error log: %v", err)
 		return
 	}
 	log.Log.Debugf("Receive handler %s", auditStoreID)
+	defer auditStoreID.FreeHandler()
 
 	si := NewSessionInfo("Init", "0000-0000", adminUser, startEventMethod)
 
@@ -149,6 +151,14 @@ func startStore() {
 	defer wg.Done()
 	lock := sync.Mutex{}
 	defer services.ServerMessage("Ending store audit log")
+
+	auditStoreID, err := flynn.Handler(dbRef, password)
+	if err != nil {
+		services.ServerMessage("Register error log: %v", err)
+		return
+	}
+	log.Log.Debugf("Receive handler %s", auditStoreID)
+	defer auditStoreID.FreeHandler()
 
 	log.Log.Debugf("STORE_AUDIT: Start insert audit to database %s", auditStoreID)
 

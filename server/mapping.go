@@ -82,11 +82,13 @@ func Handles(dm *Database) (*common.Reference, error) {
 		Database: os.ExpandEnv(dm.Database),
 	}
 	log.Log.Debugf("Register database handler")
-	_, err = flynn.Handler(ref, os.ExpandEnv(dm.Password))
+	id, err := flynn.Handler(ref, os.ExpandEnv(dm.Password))
 	if err != nil {
 		services.ServerMessage("Error registering database %s:%d...%v", dm.Host, port, err)
 		return nil, fmt.Errorf("error registering database")
 	}
+	// defer id.Close()
+	defer id.FreeHandler()
 	dbList[dHash] = ref
 	services.ServerMessage("Registered database driver=%s to %s:%d/%s",
 		dm.Driver, ref.Host, ref.Port, ref.Database)
@@ -162,12 +164,13 @@ func ConnectTable(ctx *clu.Context, table string) (common.RegDbID, error) {
 			ref.Host, ref.Port, err)
 		return 0, fmt.Errorf("error registering database")
 	}
-	log.Log.Debugf("Got register handle %s", id)
+	log.Log.Debugf("Got register database handle %s", id)
 	return id, nil
 }
 
 // CloseTable close table id
 func CloseTable(id common.RegDbID) {
-	log.Log.Debugf("Close table and free %s", id)
+	log.Log.Debugf("Close table and free database handle %s", id)
+	id.Close()
 	id.FreeHandler()
 }
