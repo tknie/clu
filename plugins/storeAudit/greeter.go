@@ -92,7 +92,7 @@ func init() {
 	}
 	var err error
 	dbRef, password, err = common.NewReference(url)
-	if err != nil {
+	if err != nil || dbRef == nil {
 		log.Log.Fatal("REST audit URL incorrect: " + url)
 	}
 	if password == "" {
