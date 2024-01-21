@@ -108,6 +108,7 @@ func init() {
 	}
 	log.Log.Debugf("Receive handler %s", auditStoreID)
 	defer auditStoreID.FreeHandler()
+	defer auditStoreID.Close()
 
 	si := NewSessionInfo("Init", "0000-0000", adminUser, startEventMethod)
 
@@ -159,6 +160,7 @@ func startStore() {
 	}
 	log.Log.Debugf("Receive handler %s", auditStoreID)
 	defer auditStoreID.FreeHandler()
+	defer auditStoreID.Close()
 
 	log.Log.Debugf("STORE_AUDIT: Start insert audit to database %s", auditStoreID)
 

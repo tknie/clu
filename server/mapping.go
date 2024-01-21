@@ -35,14 +35,16 @@ func init() {
 }
 
 func initRegister() {
+	log.Log.Debugf("Register databases")
+	initTableOfDatabases()
 	// loadTableOfDatabases()
+	log.Log.Debugf("Start table thread for databases")
 	go loadTableThread()
 }
 
 func loadTableThread() {
 	//uptimeTicker := time.NewTicker(5 * time.Second)
 	dateTicker := time.NewTicker(60 * time.Second)
-
 	loadTableOfDatabases()
 	for {
 		<-dateTicker.C
@@ -82,17 +84,21 @@ func Handles(dm *Database) (*common.Reference, error) {
 		Database: os.ExpandEnv(dm.Database),
 	}
 	log.Log.Debugf("Register database handler")
-	id, err := flynn.Handler(ref, os.ExpandEnv(dm.Password))
+	_, err = flynn.Handler(ref, os.ExpandEnv(dm.Password))
 	if err != nil {
 		services.ServerMessage("Error registering database %s:%d...%v", dm.Host, port, err)
 		return nil, fmt.Errorf("error registering database")
 	}
-	// defer id.Close()
-	defer id.FreeHandler()
 	dbList[dHash] = ref
 	services.ServerMessage("Registered database driver=%s to %s:%d/%s",
 		dm.Driver, ref.Host, ref.Port, ref.Database)
 	return ref, nil
+}
+
+func initTableOfDatabases() {
+	for _, dm := range Viewer.Database.DatabaseAccess.Database {
+		Handles(&dm)
+	}
 }
 
 func loadTableOfDatabases() {

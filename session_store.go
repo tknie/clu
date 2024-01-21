@@ -62,8 +62,8 @@ func InitStoreInfo(ref *common.Reference, password, tablename string) {
 	if err != nil {
 		return
 	}
-	defer sessionStoreID.Close()
 	defer sessionStoreID.FreeHandler()
+	defer sessionStoreID.Close()
 	log.Log.Debugf("Receive session store handler %s", sessionStoreID)
 
 	dbTables := flynn.Maps()
@@ -105,7 +105,9 @@ func (st *StoreJWTHandler) UUIDInfo(uuid string) (*auth.SessionInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer sessionStoreID.FreeHandler()
 	defer sessionStoreID.Close()
+
 	q := &common.Query{TableName: sessionTableName,
 		Search:     "uuid='" + uuid + "'",
 		DataStruct: &auth.SessionInfo{},
@@ -127,6 +129,9 @@ func (st *StoreJWTHandler) Range(f func(uuid, value any) bool) error {
 	if err != nil {
 		return err
 	}
+	defer sessionStoreID.FreeHandler()
+	defer sessionStoreID.Close()
+
 	q := &common.Query{TableName: sessionTableName,
 		Search:     "invalidated  < now()",
 		DataStruct: &auth.SessionInfo{},
@@ -173,6 +178,7 @@ func (st *StoreJWTHandler) Store(principal auth.PrincipalInterface, user, pass s
 	if err != nil {
 		return err
 	}
+	defer sessionStoreID.FreeHandler()
 	defer sessionStoreID.Close()
 	log.Log.Debugf("Store session value %#v", si.UUID)
 	err = sessionStoreID.Insert(sessionTableName, insert)
@@ -227,6 +233,7 @@ func updateSessionInfo(si *auth.SessionInfo) {
 	if err != nil {
 		return
 	}
+	defer sessionStoreID.FreeHandler()
 	defer sessionStoreID.Close()
 	update := &common.Entries{Fields: []string{"Invalidated"}, DataStruct: si}
 	update.Values = [][]any{{si}}
@@ -251,6 +258,7 @@ func deleteUUID(si *auth.SessionInfo) {
 	if err != nil {
 		return
 	}
+	defer sessionStoreID.FreeHandler()
 	defer sessionStoreID.Close()
 	remove := &common.Entries{Criteria: "uuid = '" + si.UUID + "'"}
 	log.Log.Debugf("Remove UUID %s", si.UUID)

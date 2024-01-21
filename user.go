@@ -56,6 +56,7 @@ func InitUserInfo(ref *common.Reference, password, tablename string) {
 		services.ServerMessage("Storing audit data error: %v", err)
 		return
 	}
+	defer userStoreID.FreeHandler()
 	defer userStoreID.Close()
 	log.Log.Debugf("Receive user store handler %s", userStoreID)
 	services.ServerMessage("Storing audit data to table '%s'", userTableName)
@@ -101,8 +102,8 @@ func QueryUser(user string) *auth.UserInfo {
 	if err != nil {
 		return nil
 	}
-	defer userStoreID.Close()
 	defer userStoreID.FreeHandler()
+	defer userStoreID.Close()
 	var userInfo *auth.UserInfo
 	count := 0
 	q := &common.Query{TableName: userTableName,
@@ -155,6 +156,7 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 		if err != nil {
 			return nil
 		}
+		defer userStoreID.FreeHandler()
 		defer userStoreID.Close()
 		insert := &common.Entries{Fields: userFieldList, DataStruct: userInfo}
 		insert.Values = [][]any{{userInfo}}

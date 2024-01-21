@@ -64,8 +64,8 @@ func InitBatchRepository(dbRef *common.Reference, dbPassword, tablename string) 
 		return
 	}
 	log.Log.Debugf("Receive batch store handler %s", batchStoreID)
-	defer batchStoreID.Close()
 	defer batchStoreID.FreeHandler()
+	defer batchStoreID.Close()
 
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
@@ -100,7 +100,8 @@ func BatchSelect(batchname string) (*BatchEntry, error) {
 		return nil, err
 	}
 	log.Log.Debugf("Receive batch store handler %s", batchStoreID)
-	batchStoreID.Close()
+	defer batchStoreID.FreeHandler()
+	defer batchStoreID.Close()
 	var b *BatchEntry
 	q := &common.Query{TableName: batchtablename,
 		Search:     "name='" + batchname + "'",
