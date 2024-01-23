@@ -80,8 +80,6 @@ var password string
 // var auditStoreID common.RegDbID
 
 func init() {
-	go startStore()
-
 	url = os.Getenv("REST_AUDIT_LOG_URL")
 	tableName = os.Getenv("REST_AUDIT_LOG_TABLENAME")
 	if url == "" || tableName == "" {
@@ -111,6 +109,8 @@ func init() {
 	defer auditStoreID.Close()
 
 	si := NewSessionInfo("Init", "0000-0000", adminUser, startEventMethod)
+
+	go startStore()
 
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
