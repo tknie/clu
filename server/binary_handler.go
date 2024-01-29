@@ -97,9 +97,13 @@ func (Handler) GetLobByMap(ctx context.Context, params api.GetLobByMapParams) (r
 		return &api.GetLobByMapForbidden{}, nil
 	}
 
+	mimeType := ""
+	if params.Mimetype.Set {
+		mimeType = params.Mimetype.Value
+	}
 	log.Log.Debugf("SQL image search", params.Table, params.Field, params.Search)
 	read, err := initStreamFromTable(session, params.Table,
-		params.Field, params.Search, "")
+		params.Field, params.Search, mimeType)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
 		return nil, err

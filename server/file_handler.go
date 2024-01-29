@@ -52,10 +52,7 @@ func (Handler) BrowseList(ctx context.Context) (r api.BrowseListRes, _ error) {
 // PUT /rest/file/{path}
 func (Handler) CreateDirectory(ctx context.Context, params api.CreateDirectoryParams) (r api.CreateDirectoryRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.AdministratorRole, false, session.User, "") {
-		return &api.CreateDirectoryForbidden{}, nil
-	}
-	if !auth.ValidUser(auth.AdministratorRole, false, session.User, "") {
+	if !auth.ValidUser(auth.AdministratorRole, true, session.User, "") {
 		return &api.CreateDirectoryForbidden{}, nil
 	}
 	d, path, err := extraceLocationPath(params.Path)
@@ -86,7 +83,7 @@ func (Handler) CreateDirectory(ctx context.Context, params api.CreateDirectoryPa
 // DELETE /rest/file/{path}
 func (Handler) DeleteFileLocation(ctx context.Context, params api.DeleteFileLocationParams) (r api.DeleteFileLocationRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.AdministratorRole, false, session.User, "") {
+	if !auth.ValidUser(auth.AdministratorRole, true, session.User, "") {
 		return &api.DeleteFileLocationForbidden{}, nil
 	}
 	d, path, err := extraceLocationPath(params.Path)

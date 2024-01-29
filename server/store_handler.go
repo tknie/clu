@@ -34,7 +34,7 @@ import (
 func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, params api.InsertRecordParams) (r api.InsertRecordRes, _ error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Insert records for fields %s -> %s", session.User, params.Table)
-	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
+	if !auth.ValidUser(auth.UserRole, true, session.User, params.Table) {
 		return &api.InsertRecordForbidden{}, nil
 	}
 	log.Log.Debugf("SQL insert %s", params.Table)
@@ -154,7 +154,7 @@ func parseJx(v jx.Raw) (any, error) {
 func (Handler) DeleteRecordsSearched(ctx context.Context, params api.DeleteRecordsSearchedParams) (r api.DeleteRecordsSearchedRes, _ error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Search records for fields %s -> %s", session.User, params.Table)
-	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
+	if !auth.ValidUser(auth.UserRole, true, session.User, params.Table) {
 		return &api.DeleteRecordsSearchedForbidden{}, nil
 	}
 	log.Log.Debugf("SQL search fields %s - %v", params.Table, params.Search)
@@ -184,7 +184,7 @@ func (Handler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecor
 	params api.UpdateRecordsByFieldsParams) (r api.UpdateRecordsByFieldsRes, _ error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Update records for fields %s -> %s", session.User, params.Table)
-	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
+	if !auth.ValidUser(auth.UserRole, true, session.User, params.Table) {
 		return &api.UpdateRecordsByFieldsForbidden{}, nil
 	}
 	log.Log.Debugf("SQL update %s", params.Table)

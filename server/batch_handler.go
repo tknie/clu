@@ -80,7 +80,7 @@ func (Handler) BatchQuery(ctx context.Context, req api.BatchQueryReq,
 		sqlStatement = string(b[:n])
 	}
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User, "/batch") {
+	if !auth.ValidUser(auth.UserRole, true, session.User, "/batch") {
 		log.Log.Debugf("SQL statemant forbidden")
 		return &api.BatchQueryForbidden{}, nil
 	}

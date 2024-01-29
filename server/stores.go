@@ -18,6 +18,7 @@ import (
 	"github.com/tknie/clu"
 )
 
+// InitDatabaseStores init database session store
 func InitDatabaseStores() error {
 	dm := Viewer.Database.UserInfo
 	if dm != nil {
