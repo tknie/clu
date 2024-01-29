@@ -6,7 +6,8 @@ require (
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
 	github.com/go-openapi/runtime v0.26.2
-	github.com/go-openapi/swag v0.22.7
+	github.com/go-openapi/swag v0.22.9
+	github.com/jackc/pgx/v5 v5.5.2
 	github.com/ogen-go/ogen v0.81.1
 	github.com/rs/cors v1.10.1
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
@@ -28,7 +29,6 @@ require (
 	github.com/godror/knownpb v0.1.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
-	github.com/jackc/pgx/v5 v5.5.2 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
