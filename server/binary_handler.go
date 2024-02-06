@@ -32,14 +32,25 @@ func (Handler) GetImage(ctx context.Context, params api.GetImageParams) (r api.G
 		return &api.GetImageForbidden{}, nil
 	}
 
+	mimeTypeField := ""
+	if params.MimetypeField != "" {
+		mimeTypeField = params.MimetypeField
+	}
+	mimeType := ""
+	if params.Mimetype.Set {
+		mimeType = params.Mimetype.Value
+	}
+
 	log.Log.Debugf("SQL image search table=%s field=%s search=%s", params.Table, params.Field, params.Search)
-	read, err := initStreamFromTable(session, params.Table,
-		params.Field, params.Search, "")
+	read := NewStreamRead(params.Table, params.Field, mimeTypeField)
+	err := read.initStreamFromTable(session, params.Search, mimeType)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
 		return nil, err
 	}
-	read.mimetype = "image/jpeg"
+	if read.mimetype == "" {
+		read.mimetype = "image/jpeg"
+	}
 	read.field = params.Field
 	reader, err := read.streamResponderFunc()
 	if err != nil {
@@ -63,8 +74,8 @@ func (Handler) GetVideo(ctx context.Context, params api.GetVideoParams) (r api.G
 		return &api.GetVideoForbidden{}, nil
 	}
 	log.Log.Debugf("SQL video table=%s field=%s search=%s", params.Table, params.Field, params.Search)
-	read, err := initStreamFromTable(session, params.Table,
-		params.Field, params.Search, params.MimetypeField)
+	read := NewStreamRead(params.Table, params.Field, params.MimetypeField)
+	err := read.initStreamFromTable(session, params.Search, params.Mimetype)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
 		return nil, err
@@ -97,13 +108,17 @@ func (Handler) GetLobByMap(ctx context.Context, params api.GetLobByMapParams) (r
 		return &api.GetLobByMapForbidden{}, nil
 	}
 
+	mimeTypeField := ""
+	if params.MimetypeField != "" {
+		mimeTypeField = params.MimetypeField
+	}
 	mimeType := ""
 	if params.Mimetype.Set {
 		mimeType = params.Mimetype.Value
 	}
 	log.Log.Debugf("SQL image search", params.Table, params.Field, params.Search)
-	read, err := initStreamFromTable(session, params.Table,
-		params.Field, params.Search, mimeType)
+	read := NewStreamRead(params.Table, params.Field, mimeTypeField)
+	err := read.initStreamFromTable(session, params.Search, mimeType)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
 		return nil, err

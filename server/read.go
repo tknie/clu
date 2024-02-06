@@ -75,39 +75,3 @@ func generateItem(fields []string, rows []any) api.ResponseRecordsItem {
 	}
 	return d
 }
-
-// query query SQL tables
-func queryBytes(d common.RegDbID, query *common.Query) (map[string]interface{}, error) {
-	log.Log.Debugf("Query stream in db ID %04d", d)
-	dataMap := make(map[string]interface{})
-	found := false
-	_, err := d.Query(query, func(search *common.Query, result *common.Result) error {
-		if result == nil {
-			return fmt.Errorf("result empty")
-		}
-		if found {
-			return fmt.Errorf("result not unique")
-		}
-		log.Log.Debugf("Rows: %d", len(result.Rows))
-		///var d api.ResponseRecordsItem
-		for i, r := range result.Rows {
-			s := strings.ToLower(result.Fields[i])
-			log.Log.Debugf("%d. row is of type %T", i, r)
-			switch t := r.(type) {
-			case *string:
-				log.Log.Debugf("String %s", *t)
-				dataMap[s] = *t
-			case *time.Time:
-				dataMap[s] = *t
-			default:
-				dataMap[s] = r
-			}
-		}
-		found = true
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return dataMap, nil
-}

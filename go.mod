@@ -1,15 +1,17 @@
 module github.com/tknie/clu
 
-go 1.21
+go 1.21.5
 
 require (
+	github.com/disintegration/imaging v1.6.2
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
-	github.com/go-openapi/runtime v0.26.2
-	github.com/go-openapi/swag v0.22.8
-	github.com/jackc/pgx/v5 v5.5.2
+	github.com/go-openapi/runtime v0.27.1
+	github.com/go-openapi/swag v0.22.9
+	github.com/jackc/pgx/v5 v5.5.3
 	github.com/ogen-go/ogen v0.81.2
 	github.com/rs/cors v1.10.1
+	github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
 	github.com/tknie/services v0.0.0-20240101114435-6c17157c5d59
 	go.opentelemetry.io/otel v1.22.0
@@ -25,7 +27,7 @@ require (
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
-	github.com/godror/godror v0.41.0 // indirect
+	github.com/godror/godror v0.41.1 // indirect
 	github.com/godror/knownpb v0.1.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
@@ -33,6 +35,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/tknie/adabas-go-api v1.7.11-0.20231130200115-0931956e3a9c // indirect
+	golang.org/x/image v0.15.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 )
 
@@ -46,13 +49,14 @@ require (
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.6 // indirect
 	github.com/go-openapi/errors v0.21.0 // indirect
-	github.com/google/uuid v1.5.0
+	github.com/google/uuid v1.6.0
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
+	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20231119173834-6ad8a3cefbc0
-	github.com/tknie/flynn v0.0.0-20240118190953-1416122a5df0
+	github.com/tknie/flynn v0.0.0-20240201182441-e7d3e3ca27af
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.18.0 // indirect

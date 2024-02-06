@@ -1650,6 +1650,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: mimetypeField
+          in: query
+          description: Specific the field containing the mimetype
+          required: true
+          schema:
+            type: string
         - name: mimetype
           in: query
           description: Specific the data MIME type
@@ -2121,6 +2127,17 @@ paths:
           required: true
           schema:
             type: string
+        - name: mimetype
+          in: query
+          description: Specific the data MIME type
+          schema:
+            type: string
+        - name: mimetypeField
+          in: query
+          description: Specific the field containing the mimetype
+          required: true
+          schema:
+            type: string
         - name: field
           in: path
           description: Specific the field to be
@@ -2205,6 +2222,12 @@ paths:
         - name: mimetypeField
           in: query
           description: Specific the field containing the mimetype
+          required: true
+          schema:
+            type: string
+        - name: mimetype
+          in: query
+          description: MIMEType the result should be of (preferred for some image formats only)
           required: true
           schema:
             type: string

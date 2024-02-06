@@ -3090,6 +3090,10 @@ type GetImageParams struct {
 	Reference OptString
 	// Specific search.
 	Search string
+	// Specific the data MIME type.
+	Mimetype OptString
+	// Specific the field containing the mimetype.
+	MimetypeField string
 	// Specific the field to be.
 	Field string
 	// Search criterium.
@@ -3119,6 +3123,22 @@ func unpackGetImageParams(packed middleware.Parameters) (params GetImageParams) 
 			In:   "path",
 		}
 		params.Search = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "mimetype",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Mimetype = v.(OptString)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "mimetypeField",
+			In:   "query",
+		}
+		params.MimetypeField = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -3269,6 +3289,83 @@ func decodeGetImageParams(args [3]string, argsEscaped bool, r *http.Request) (pa
 		return params, &ogenerrors.DecodeParamError{
 			Name: "search",
 			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode query: mimetype.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "mimetype",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMimetypeVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMimetypeVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Mimetype.SetTo(paramsDotMimetypeVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "mimetype",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: mimetypeField.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "mimetypeField",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.MimetypeField = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "mimetypeField",
+			In:   "query",
 			Err:  err,
 		}
 	}
@@ -3789,6 +3886,8 @@ type GetLobByMapParams struct {
 	Search string
 	// Specific the field to be.
 	Field string
+	// Specific the field containing the mimetype.
+	MimetypeField string
 	// Specific the data MIME type.
 	Mimetype OptString
 	// Search criterium.
@@ -3816,6 +3915,13 @@ func unpackGetLobByMapParams(packed middleware.Parameters) (params GetLobByMapPa
 			In:   "path",
 		}
 		params.Field = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "mimetypeField",
+			In:   "query",
+		}
+		params.MimetypeField = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -3972,6 +4078,42 @@ func decodeGetLobByMapParams(args [3]string, argsEscaped bool, r *http.Request) 
 		return params, &ogenerrors.DecodeParamError{
 			Name: "field",
 			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode query: mimetypeField.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "mimetypeField",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.MimetypeField = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "mimetypeField",
+			In:   "query",
 			Err:  err,
 		}
 	}
@@ -4965,6 +5107,8 @@ type GetVideoParams struct {
 	Field string
 	// Specific the field containing the mimetype.
 	MimetypeField string
+	// MIMEType the result should be of (preferred for some image formats only).
+	Mimetype string
 	// Search criterium.
 	Sqlsearch OptString
 }
@@ -5006,6 +5150,13 @@ func unpackGetVideoParams(packed middleware.Parameters) (params GetVideoParams) 
 			In:   "query",
 		}
 		params.MimetypeField = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "mimetype",
+			In:   "query",
+		}
+		params.Mimetype = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -5229,6 +5380,42 @@ func decodeGetVideoParams(args [3]string, argsEscaped bool, r *http.Request) (pa
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "mimetypeField",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: mimetype.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "mimetype",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Mimetype = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "mimetype",
 			In:   "query",
 			Err:  err,
 		}

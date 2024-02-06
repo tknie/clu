@@ -5979,6 +5979,14 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 					In:   "path",
 				}: params.Search,
 				{
+					Name: "mimetype",
+					In:   "query",
+				}: params.Mimetype,
+				{
+					Name: "mimetypeField",
+					In:   "query",
+				}: params.MimetypeField,
+				{
 					Name: "field",
 					In:   "path",
 				}: params.Field,
@@ -7197,6 +7205,10 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 					Name: "field",
 					In:   "path",
 				}: params.Field,
+				{
+					Name: "mimetypeField",
+					In:   "query",
+				}: params.MimetypeField,
 				{
 					Name: "mimetype",
 					In:   "query",
@@ -8622,6 +8634,10 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 					Name: "mimetypeField",
 					In:   "query",
 				}: params.MimetypeField,
+				{
+					Name: "mimetype",
+					In:   "query",
+				}: params.Mimetype,
 				{
 					Name: "sqlsearch",
 					In:   "query",

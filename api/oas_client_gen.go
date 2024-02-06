@@ -5243,6 +5243,37 @@ func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res G
 		}
 	}
 	{
+		// Encode "mimetype" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "mimetype",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Mimetype.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "mimetypeField" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "mimetypeField",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeValue(conv.StringToString(params.MimetypeField))
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
 		// Encode "sqlsearch" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
 			Name:    "sqlsearch",
@@ -6224,6 +6255,20 @@ func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) 
 
 	stage = "EncodeQueryParams"
 	q := uri.NewQueryEncoder()
+	{
+		// Encode "mimetypeField" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "mimetypeField",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeValue(conv.StringToString(params.MimetypeField))
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
 	{
 		// Encode "mimetype" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
@@ -7522,6 +7567,20 @@ func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res G
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			return e.EncodeValue(conv.StringToString(params.MimetypeField))
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "mimetype" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "mimetype",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeValue(conv.StringToString(params.Mimetype))
 		}); err != nil {
 			return res, errors.Wrap(err, "encode query")
 		}
