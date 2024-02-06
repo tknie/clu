@@ -19,7 +19,7 @@ ENV INSTALLDIR /opt/cluapi
 #RUN microdnf update -y && microdnf install -y shadow-utils util-linux && microdnf clean all && \ 
 #    groupadd -g $group_id admin && \
 #    useradd -d $INSTALLDIR -m -s /bin/bash -u $user_id -g admin admin
-RUN apt update && apt install -y util-linux openssl && \
+RUN apt update && apt install -y util-linux openssl libde265-0 && \
     rm -rf /var/lib/apt/lists/* && \
     apt clean && \
     groupadd -g $group_id admin && \
