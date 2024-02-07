@@ -19,7 +19,7 @@ jobs:
     - name: Install libpam dev
       run: |
           sudo apt-get update
-          sudo apt-get install libpam0g-dev
+          sudo apt-get install libpam0g-dev libde265-dev
           
     - name: Set up Go
       uses: actions/setup-go@v4
