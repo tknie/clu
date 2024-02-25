@@ -43,6 +43,8 @@ const (
 	AuditPlugin
 	// AdabasPlugin Adabas plugin type
 	AdabasPlugin
+	// AuthPlugin authorize and authorize
+	AuthPlugin
 )
 
 const suffix = ".so"
@@ -200,6 +202,14 @@ func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 				services.ServerMessage("Adabas plugin: %s Version: %s", loader.Name(), loader.Version())
 				adaSym := symAdabas.(Adabas)
 				adabasPlugins[info.Name()] = &AdabasLoader{loader, adaSym}
+			}
+		case int(AuthPlugin):
+			symCallback, err := plug.Lookup("Callback")
+			if err != nil {
+				services.ServerMessage("Error opening Authenticate/Authorize plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
+			} else {
+				services.ServerMessage("Authenticate/Authorize plugin: %s Version: %s", loader.Name(), loader.Version())
+				fmt.Printf("%#v\n", symCallback)
 			}
 		default:
 			services.ServerMessage("Error opening plugin, unknown type: %v", t)

@@ -36,6 +36,7 @@ var userFieldList = []string{"Name", "Created", "LastLogin"}
 
 type storeUserInfo struct {
 	stored   bool
+	created  time.Time
 	userInfo *auth.UserInfo
 }
 
@@ -61,6 +62,8 @@ func InitUserInfo(ref *common.Reference, password, tablename string) {
 	log.Log.Debugf("Receive user store handler %s", userStoreID)
 	services.ServerMessage("Storing audit data to table '%s'", userTableName)
 
+	go updaterUserInfo()
+
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
 		if d == userTableName {
@@ -74,6 +77,24 @@ func InitUserInfo(ref *common.Reference, password, tablename string) {
 		return
 	}
 	services.ServerMessage("Database user store created successfully")
+}
+
+func updaterUserInfo() {
+	for {
+		log.Log.Debugf("Waiting session info for updates or remove")
+		select {
+		case <-time.After(30 * time.Second):
+			timeRange := time.Now().Add(time.Duration(-2) * time.Hour)
+			log.Log.Debugf("Shift working 30 seconds")
+			userInfoMap.Range(func(key, value any) bool {
+				st := value.(*storeUserInfo)
+				if st.userInfo.LastLogin.Before(timeRange) {
+					userInfoMap.Delete(key)
+				}
+				return true
+			})
+		}
+	}
 }
 
 func openUserStore() (common.RegDbID, error) {
@@ -123,14 +144,14 @@ func QueryUser(user string) *auth.UserInfo {
 		return nil
 	}
 	if userInfo != nil {
-		userInfoMap.Store(userInfo.User, &storeUserInfo{true, userInfo})
+		userInfoMap.Store(userInfo.User, &storeUserInfo{true, time.Now(), userInfo})
 		return userInfo
 	}
 	return nil
 }
 
 // CheckUserExist check user already exists and create if not available
-func CheckUserExist(user string, session *auth.SessionInfo) *auth.UserInfo {
+func CheckUserExist(user string) *auth.UserInfo {
 	userInfo := QueryUser(user)
 	if userInfo == nil {
 		log.Log.Debugf("No user %s in user info found", user)
@@ -139,7 +160,9 @@ func CheckUserExist(user string, session *auth.SessionInfo) *auth.UserInfo {
 		if _, err := mail.ParseAddress(user); err == nil {
 			userInfo.EMail = user
 		}
-		userInfoMap.Store(userInfo.User, &storeUserInfo{false, userInfo})
+		userInfoMap.Store(userInfo.User, &storeUserInfo{false, time.Now(), userInfo})
+	} else {
+		log.Log.Debugf("User info %s found: %#v", user, userInfo)
 	}
 	return userInfo
 }
@@ -173,6 +196,8 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 			err := userStoreID.Insert(userTableName, insert)
 			if err != nil {
 				log.Log.Errorf("Error inserting user info: %v", err)
+				// Could be an outage of database, refresh user information
+				CheckUserExist(userInfo.User)
 				return err
 			}
 		}

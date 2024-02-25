@@ -153,17 +153,6 @@ func startStore() {
 	lock := sync.Mutex{}
 	defer services.ServerMessage("Ending store audit log")
 
-	auditStoreID, err := flynn.Handler(dbRef, password)
-	if err != nil {
-		services.ServerMessage("Register error log: %v", err)
-		return
-	}
-	log.Log.Debugf("Receive handler %s", auditStoreID)
-	defer auditStoreID.FreeHandler()
-	defer auditStoreID.Close()
-
-	log.Log.Debugf("STORE_AUDIT: Start insert audit to database %s", auditStoreID)
-
 	for {
 		// log.Log.Debugf("STORE_AUDIT: Waiting store channel (%v)", disableStore)
 		select {
@@ -171,6 +160,11 @@ func startStore() {
 			log.Log.Debugf("STORE_AUDIT: Receive store channel (%v)", disableStore)
 			if !disableStore {
 				lock.Lock()
+				auditStoreID, err := flynn.Handler(dbRef, password)
+				if err != nil {
+					services.ServerMessage("Register error log: %v", err)
+					return
+				}
 				log.Log.Debugf("STORE_AUDIT: Store channel (%v)", disableStore)
 				x := strings.Index(si.RemoteHost, ",")
 				addr := si.RemoteAddr
@@ -185,7 +179,7 @@ func startStore() {
 					si.Service, si.RequestURI, si.Host, si.Status,
 					si.TableName, si.AlbumID, si.Fields}}
 				log.Log.Debugf("STORE_AUDIT: Insert store channel (%v)", disableStore)
-				err := auditStoreID.Insert(tableName, insert)
+				err = auditStoreID.Insert(tableName, insert)
 				if err != nil {
 					services.ServerMessage("Error store to session %s/%s(%s) : %v",
 						host, addr, tableName, err)
@@ -205,6 +199,8 @@ func startStore() {
 					disableStore = true
 				}
 				log.Log.Debugf("STORE_AUDIT: free handler (%v) %s", disableStore, auditStoreID)
+				auditStoreID.FreeHandler()
+				auditStoreID.Close()
 				lock.Unlock()
 			}
 			log.Log.Debugf("STORE_AUDIT: End store channel (%v)", disableStore)
