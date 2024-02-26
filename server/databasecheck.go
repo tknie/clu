@@ -122,7 +122,7 @@ func (viewer *RestServer) InitSecurityInfrastructure() {
 			}
 		}
 	}
-	viewer.Server.WebToken.InitWebTokenJose2()
+	//viewer.Server.WebToken.InitWebTokenJose2()
 	log.Log.Debugf("Load of configuration finished")
 }
 

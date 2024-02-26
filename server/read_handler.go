@@ -60,13 +60,13 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 		Limit:      limit,
 		Descriptor: descriptor,
 		Order:      checkOrderBy(params.Orderby)}
-	data, err := query(d, q)
+	data, fields, err := query(d, q)
 	if err != nil {
 		log.Log.Errorf("Error during query on %s:%v", params.Table, err)
 		return nil, err
 	}
 
-	resp := api.Response{Records: data}
+	resp := api.Response{Records: data, FieldNames: fields}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	return respH, nil
 }
@@ -103,14 +103,14 @@ func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecords
 		Descriptor: descriptor,
 		Limit:      limit,
 		Order:      checkOrderBy(params.Orderby)}
-	data, err := query(d, q)
+	data, fields, err := query(d, q)
 	if err != nil {
 		log.Log.Errorf("Error during query on %s:%v", params.Table, err)
 		return nil, err
 	}
-
 	log.Log.Debugf("Return SQL search payload %d entries", len(data))
-	resp := api.Response{Records: data}
+
+	resp := api.Response{Records: data, FieldNames: fields}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	return respH, nil
 }

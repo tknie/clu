@@ -25,12 +25,16 @@ import (
 )
 
 // query query SQL tables
-func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, error) {
+func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, []string, error) {
 	log.Log.Debugf("Query in db ID %04d", d)
 	var data []api.ResponseRecordsItem
+	var fields []string
 	_, err := d.Query(query, func(search *common.Query, result *common.Result) error {
 		if result == nil {
 			return fmt.Errorf("result empty")
+		}
+		if fields == nil {
+			fields = result.Fields
 		}
 		log.Log.Debugf("Rows: %d", len(result.Rows))
 		d := generateItem(result.Fields, result.Rows)
@@ -38,9 +42,9 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, er
 		return nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return data, nil
+	return data, fields, nil
 }
 
 func generateItem(fields []string, rows []any) api.ResponseRecordsItem {
