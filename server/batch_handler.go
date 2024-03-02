@@ -124,6 +124,7 @@ func querySQLstatement(query *batchSelect) (*api.ResponseHeaders, error) {
 		FieldNames: fields,
 		MapName:    api.NewOptString(query.table), Records: rria}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(query.session.Token)}
+	log.Log.Debugf("Return Query/Batch SQL statemant %s: %#v", query.query.Query, query.parameter)
 	return respH, nil
 }
 
@@ -166,6 +167,7 @@ func (Handler) BatchParameterQuery(ctx context.Context, params api.BatchParamete
 		FieldNames: fields,
 		MapName:    api.NewOptString(params.Table), Records: rria}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	log.Log.Debugf("Return SQL statement on table %s - %v", params.Table, params.Query)
 	return respH, nil
 }
 

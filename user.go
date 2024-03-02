@@ -33,6 +33,7 @@ var userDbPassword = ""
 // var userStoreID common.RegDbID
 
 var userFieldList = []string{"Name", "Created", "LastLogin"}
+var userFieldListUpdate = []string{"Created", "LastLogin"}
 
 type storeUserInfo struct {
 	stored   bool
@@ -81,7 +82,7 @@ func InitUserInfo(ref *common.Reference, password, tablename string) {
 
 func updaterUserInfo() {
 	for {
-		log.Log.Debugf("Waiting session info for updates or remove")
+		log.Log.Debugf("Waiting user info for updates or remove")
 		select {
 		case <-time.After(30 * time.Second):
 			timeRange := time.Now().Add(time.Duration(-2) * time.Hour)
@@ -144,6 +145,7 @@ func QueryUser(user string) *auth.UserInfo {
 		return nil
 	}
 	if userInfo != nil {
+		log.Log.Debugf("Create user info storage %#v", userInfo)
 		userInfoMap.Store(userInfo.User, &storeUserInfo{true, time.Now(), userInfo})
 		return userInfo
 	}
@@ -160,6 +162,7 @@ func CheckUserExist(user string) *auth.UserInfo {
 		if _, err := mail.ParseAddress(user); err == nil {
 			userInfo.EMail = user
 		}
+		log.Log.Debugf("Create user info new %#v", userInfo)
 		userInfoMap.Store(userInfo.User, &storeUserInfo{false, time.Now(), userInfo})
 	} else {
 		log.Log.Debugf("User info %s found: %#v", user, userInfo)
@@ -183,9 +186,10 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 		defer userStoreID.Close()
 		insert := &common.Entries{Fields: userFieldList, DataStruct: userInfo}
 		insert.Values = [][]any{{userInfo}}
-		log.Log.Debugf("Insert value %#v", userInfo)
 		sui := u.(*storeUserInfo)
 		if sui.stored {
+			insert.Fields = userFieldListUpdate
+			log.Log.Debugf("Update value %#v", userInfo)
 			insert.Update = []string{"user='" + userInfo.User + "'"}
 			_, err := userStoreID.Update(userTableName, insert)
 			if err != nil {
@@ -193,6 +197,7 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 				return err
 			}
 		} else {
+			log.Log.Debugf("Insert value %#v", userInfo)
 			err := userStoreID.Insert(userTableName, insert)
 			if err != nil {
 				log.Log.Errorf("Error inserting user info: %v", err)

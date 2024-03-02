@@ -68,6 +68,7 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 
 	resp := api.Response{Records: data, FieldNames: fields}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	log.Log.Debugf("Return search records for fields %s -> %s", session.User, params.Table)
 	return respH, nil
 }
 
@@ -110,8 +111,11 @@ func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecords
 	}
 	log.Log.Debugf("Return SQL search payload %d entries", len(data))
 
-	resp := api.Response{Records: data, FieldNames: fields}
+	resp := api.Response{Records: data, FieldNames: fields,
+		MapName:   api.NewOptString(params.Table),
+		NrRecords: api.NewOptInt(len(data))}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	log.Log.Debugf("Return SQL search %s - %v -> %s", params.Table, params.Fields, params.Search)
 	return respH, nil
 }
 
@@ -151,7 +155,7 @@ func (Handler) SearchModelling(ctx context.Context, params api.SearchModellingPa
 	if !auth.ValidUser(auth.UserRole, false, session.User, params.Path) {
 		return &api.SearchModellingForbidden{}, nil
 	}
-	log.Log.Debugf("SQL search field of an table %s - %v", params.Path, params.Path)
+	log.Log.Debugf("SQL modelling field of an table %s - %v", params.Path, params.Path)
 	d, err := ConnectTable(session, params.Path)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Path, err)
@@ -164,6 +168,7 @@ func (Handler) SearchModelling(ctx context.Context, params api.SearchModellingPa
 		return nil, err
 	}
 	res := &api.Response{MapName: api.NewOptString(params.Path), FieldNames: fields}
+	log.Log.Debugf("Return SQL modelling field of an table %s - %v", params.Path, params.Path)
 	return res, nil
 }
 

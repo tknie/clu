@@ -183,10 +183,10 @@ func (st *StoreJWTHandler) Store(principal auth.PrincipalInterface, user, pass s
 	log.Log.Debugf("Store session value %#v", si.UUID)
 	err = sessionStoreID.Insert(sessionTableName, insert)
 	if err != nil {
-		log.Log.Errorf("Error storing user: %v", err)
+		log.Log.Errorf("Error storing user %s: %v", si.UUID, err)
 		return err
 	}
-	log.Log.Errorf("Insert storing session: %s", si.UUID)
+	log.Log.Debugf("Commiting storing session: %s", si.UUID)
 	err = sessionStoreID.Commit()
 	return err
 }

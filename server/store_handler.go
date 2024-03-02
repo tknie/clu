@@ -89,6 +89,7 @@ func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, par
 	}
 	resp := api.Response{NrRecords: api.NewOptInt(len(records))}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	log.Log.Debugf("Return SQL insert %s", params.Table)
 	return respH, nil
 }
 
@@ -153,7 +154,7 @@ func parseJx(v jx.Raw) (any, error) {
 // DELETE /rest/view/{table}/{search}
 func (Handler) DeleteRecordsSearched(ctx context.Context, params api.DeleteRecordsSearchedParams) (r api.DeleteRecordsSearchedRes, _ error) {
 	session := ctx.(*clu.Context)
-	log.Log.Debugf("Search records for fields %s -> %s", session.User, params.Table)
+	log.Log.Debugf("Delete records for fields %s -> %s", session.User, params.Table)
 	if !auth.ValidUser(auth.UserRole, true, session.User, params.Table) {
 		return &api.DeleteRecordsSearchedForbidden{}, nil
 	}
@@ -172,6 +173,7 @@ func (Handler) DeleteRecordsSearched(ctx context.Context, params api.DeleteRecor
 	log.Log.Errorf("%d Data record deleted from %s: %s", dr, params.Table, params.Search)
 	resp := api.Response{NrRecords: api.NewOptInt(int(dr))}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	log.Log.Debugf("Delete SQL search fields %s - %v", params.Table, params.Search)
 	return respH, nil
 }
 
@@ -235,6 +237,7 @@ func (Handler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecor
 	}
 	resp := api.Response{NrRecords: api.NewOptInt(int(uNr))}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
+	log.Log.Debugf("Return Update records for fields %s -> %s", session.User, params.Table)
 	return respH, nil
 }
 
