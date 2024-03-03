@@ -221,7 +221,7 @@ func updaterSessionInfo() {
 		case si := <-chanRemoveSessionInfo:
 			deleteUUID(si)
 		case <-time.After(30 * time.Second):
-			log.Log.Debugf("Shift working 30 seconds")
+			log.Log.Debugf("Shift working 30 seconds(session store)")
 		}
 	}
 }

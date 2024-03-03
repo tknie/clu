@@ -86,7 +86,7 @@ func updaterUserInfo() {
 		select {
 		case <-time.After(30 * time.Second):
 			timeRange := time.Now().Add(time.Duration(-2) * time.Hour)
-			log.Log.Debugf("Shift working 30 seconds")
+			log.Log.Debugf("Shift working 30 seconds (user info)")
 			userInfoMap.Range(func(key, value any) bool {
 				st := value.(*storeUserInfo)
 				if st.userInfo.LastLogin.Before(timeRange) {
