@@ -6,7 +6,7 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
-	github.com/go-openapi/runtime v0.27.1
+	github.com/go-openapi/runtime v0.27.2
 	github.com/go-openapi/swag v0.22.10
 	github.com/jackc/pgx/v5 v5.5.3
 	github.com/ogen-go/ogen v0.82.0
