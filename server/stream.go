@@ -28,6 +28,7 @@ import (
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/goheif"
 	"github.com/tknie/log"
+	"github.com/tknie/services"
 )
 
 const blockSize = 65536
@@ -212,7 +213,7 @@ func (read *streamRead) convertMimeType(destMimeType string) error {
 	log.Log.Debugf("Convert %s ->  %s len=%d", read.mimetype, destMimeType, len(read.data))
 	if destMimeType != "" && read.mimetype != "" && destMimeType != read.mimetype {
 		log.Log.Debugf("Check destination mimetype")
-		switch read.mimetype {
+		switch strings.ToLower(read.mimetype) {
 		case "image/heic":
 			r := bytes.NewBuffer(read.data)
 			srcImage, err := goheif.Decode(r)
@@ -259,8 +260,10 @@ func (read *streamRead) convertMimeType(destMimeType string) error {
 				return err
 			}
 			read.data = buf.Bytes()
+		case "image/jpeg", "image/jpg", "image/gif":
 		default:
-			log.Log.Debugf("No convert available")
+			log.Log.Debugf("No convert available -> %s", read.mimetype)
+			services.ServerMessage("No convert available -> %s", read.mimetype)
 		}
 	}
 	return nil

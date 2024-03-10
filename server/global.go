@@ -122,6 +122,8 @@ func InitConfig(watch bool) error {
 // initEnvironmentConfig initialize environment configuration to preset
 // a number of configuration before go-swagger is initialized.
 func initEnvironmentConfig() {
+	os.Setenv("PGAPPNAME", "CLU Rest-Server")
+
 	// Check port configuration to be set via environment
 	if Viewer != nil {
 		host := os.Getenv("HOST")
