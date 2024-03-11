@@ -6,8 +6,8 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
-	github.com/go-openapi/runtime v0.27.2
-	github.com/go-openapi/swag v0.22.10
+	github.com/go-openapi/runtime v0.28.0
+	github.com/go-openapi/swag v0.23.0
 	github.com/jackc/pgx/v5 v5.5.3
 	github.com/ogen-go/ogen v0.82.0
 	github.com/rs/cors v1.10.1
@@ -48,7 +48,7 @@ require (
 	github.com/go-asn1-ber/asn1-ber v1.5.5 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.6 // indirect
-	github.com/go-openapi/errors v0.21.0 // indirect
+	github.com/go-openapi/errors v0.22.0 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
