@@ -51,8 +51,8 @@ github.com/go-openapi/errors v0.21.0 h1:FhChC/duCnfoLj1gZ0BgaBmzhJC2SL/sJr8a2vAo
 github.com/go-openapi/errors v0.21.0/go.mod h1:jxNTMUxRCKj65yb/okJGEtahVd7uvWnuWfj53bse4ho=
 github.com/go-openapi/runtime v0.27.2 h1:AOvytl8s9DzL7B27r6dZ4sqjVOJT6/3LzKeZoDIAh+g=
 github.com/go-openapi/runtime v0.27.2/go.mod h1:a5AkfzISU/Iwq51ZiQLM+oNRDwqC9RtlSt57xUSyZhg=
-github.com/go-openapi/swag v0.22.10 h1:4y86NVn7Z2yYd6pfS4Z+Nyh3aAUL3Nul+LMbhFKy0gA=
-github.com/go-openapi/swag v0.22.10/go.mod h1:Cnn8BYtRlx6BNE3DPN86f/xkapGIcLWzh3CLEb4C1jI=
+github.com/go-openapi/swag v0.23.0 h1:vsEVJDUo2hPJ2tu0/Xc+4noaxyEffXNIs3cOULZ+GrE=
+github.com/go-openapi/swag v0.23.0/go.mod h1:esZ8ITTYEsH1V2trKHjAN8Ai7xHb8RV+YSZ577vPjgQ=
 github.com/go-sql-driver/mysql v1.7.1 h1:lUIinVbN1DY0xBg0eMOzmmtGoHwWBbvnWubQUrtU8EI=
 github.com/go-sql-driver/mysql v1.7.1/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
 github.com/gobwas/httphead v0.1.0/go.mod h1:O/RXo79gxV8G+RqlR/otEwx4Q36zl9rqC5u12GKvMCM=
