@@ -70,6 +70,8 @@ github.com/gobwas/pool v0.2.1/go.mod h1:q8bcK0KcYlCgd9e7WYLm9LpyS+YeLd8JVDW6Wezm
 github.com/gobwas/ws v1.2.1/go.mod h1:hRKAFb8wOxFROYNsT1bqfWnhX+b5MFeJM9r2ZSwg/KY=
 github.com/godror/godror v0.41.1 h1:W4cLk0SOy3PYpzfRkEgdEa1TRZt2fRZTzgMP901SX80=
 github.com/godror/godror v0.41.1/go.mod h1:i8YtVTHUJKfFT3wTat4A9UoqScUtZXiYB9Rf3SVARgc=
+github.com/godror/godror v0.42.0 h1:GH8UlNNq04CWa8uuK1/BG1beLmZF5iOK5xYNSwoXUsE=
+github.com/godror/godror v0.42.0/go.mod h1:i8YtVTHUJKfFT3wTat4A9UoqScUtZXiYB9Rf3SVARgc=
 github.com/godror/knownpb v0.1.1 h1:A4J7jdx7jWBhJm18NntafzSC//iZDHkDi1+juwQ5pTI=
 github.com/godror/knownpb v0.1.1/go.mod h1:4nRFbQo1dDuwKnblRXDxrfCFYeT4hjg3GjMqef58eRE=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
@@ -116,6 +118,10 @@ github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/ogen-go/ogen v0.82.0 h1:Jh4fg63sxpDDBzUT/UrNFWcH7t4wzP9+DAoOq6R4PsU=
 github.com/ogen-go/ogen v0.82.0/go.mod h1:II7WsIh431hU0wl13u/bzyYgzTQQL/rCOWQxq4AWyJM=
+github.com/ogen-go/ogen v0.83.0 h1:YGlYWjRf7ojwJJx+FG01iHf6/0i+0svt49cuvDGPr64=
+github.com/ogen-go/ogen v0.83.0/go.mod h1:NFn616zR+/DPsq8rPoezaHlhKcNQzlYfo5gUieW8utI=
+github.com/ogen-go/ogen v1.0.0 h1:n1hkgOnLtA1Xn369KAzJhqzphQzNo/wAI82NIaFQNXA=
+github.com/ogen-go/ogen v1.0.0/go.mod h1:NFn616zR+/DPsq8rPoezaHlhKcNQzlYfo5gUieW8utI=
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
 github.com/oklog/ulid/v2 v2.0.2 h1:r4fFzBm+bv0wNKNh5eXTwU7i85y5x+uwkxCUTNVQqLc=
 github.com/oklog/ulid/v2 v2.0.2/go.mod h1:mtBL0Qe/0HAx6/a4Z30qxVIAL1eQDweXq5lxOEiwQ68=
@@ -149,6 +155,8 @@ github.com/tknie/errorrepo v0.0.0-20231119173834-6ad8a3cefbc0 h1:Sny2q8i/eEF/2Cp
 github.com/tknie/errorrepo v0.0.0-20231119173834-6ad8a3cefbc0/go.mod h1:lI2i/ZvgnOsoeJnzKbme2Cpa8lIs5ORgKILrtBwZyqk=
 github.com/tknie/flynn v0.0.0-20240303125003-117fa936f5ba h1:oDayuWQV0/vBmNWycZ8R2HoMyuQ8S9+xemQFVf74haw=
 github.com/tknie/flynn v0.0.0-20240303125003-117fa936f5ba/go.mod h1:fCCOlDhy+B0vCGqOU8Gosp7cUV8ZPuUU6J6UYJuCfJY=
+github.com/tknie/flynn v0.0.0-20240315052235-0f71c597ad98 h1:XxYQ3NLVQt1Ne8RrKf4zsCU0cNaPNb0yEGgG7v6TTp8=
+github.com/tknie/flynn v0.0.0-20240315052235-0f71c597ad98/go.mod h1:yWuFwQpTvtmw3OM30BZAQhaacSfHMVJ2eZEE0jyHaGA=
 github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae h1:EY2CEji+jwHG16tP0kOfuw2V8M5naCyWp7VqADAEO/E=
 github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae/go.mod h1:dVvJAEmU8sloNLQh1wq2+GPwxa/9gg3VXuK/FO8eGX4=
 github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e h1:aNgWs7XTC4vcIcmzQT496neJexEvjx0Kv2/ho2xUlgo=
@@ -185,6 +193,8 @@ golang.org/x/crypto v0.21.0 h1:X31++rzVUdKhX5sWmSOFZxx8UW/ldWx55cbf08iNAMA=
 golang.org/x/crypto v0.21.0/go.mod h1:0BP7YvVV9gBbVKyeTG0Gyn+gZm94bibOW5BjDEYAOMs=
 golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 h1:LfspQV/FYTatPTr/3HzIcmiUFH7PGP+OQ6mgDYo3yuQ=
 golang.org/x/exp v0.0.0-20240222234643-814bf88cf225/go.mod h1:CxmFvTBINI24O/j8iY7H1xHzx2i4OsyguNBmN/uPtqc=
+golang.org/x/exp v0.0.0-20240314144324-c7f7c6466f7f h1:3CW0unweImhOzd5FmYuRsD4Y4oQFKZIjAnKbjV4WIrw=
+golang.org/x/exp v0.0.0-20240314144324-c7f7c6466f7f/go.mod h1:CxmFvTBINI24O/j8iY7H1xHzx2i4OsyguNBmN/uPtqc=
 golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
 golang.org/x/image v0.15.0 h1:kOELfmgrmJlw4Cdb7g/QGuB3CvDrXbqEIww/pNtNBm8=
 golang.org/x/image v0.15.0/go.mod h1:HUYqC05R2ZcZ3ejNQsIHQDQiwWM4JBqmm6MKANTp4LE=
