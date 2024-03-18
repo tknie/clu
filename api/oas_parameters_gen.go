@@ -986,6 +986,239 @@ func decodeBrowseLocationParams(args [1]string, argsEscaped bool, r *http.Reques
 	return params, nil
 }
 
+// CallExtendParams is parameters of callExtend operation.
+type CallExtendParams struct {
+	// Identifier of the file location.
+	Path string
+	// Parameters.
+	Param []string
+}
+
+func unpackCallExtendParams(packed middleware.Parameters) (params CallExtendParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "path",
+			In:   "path",
+		}
+		params.Path = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "param",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Param = v.([]string)
+		}
+	}
+	return params
+}
+
+func decodeCallExtendParams(args [1]string, argsEscaped bool, r *http.Request) (params CallExtendParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode path: path.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "path",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Path = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "path",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode query: param.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "param",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotParamVal string
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotParamVal = c
+						return nil
+					}(); err != nil {
+						return err
+					}
+					params.Param = append(params.Param, paramsDotParamVal)
+					return nil
+				})
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "param",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// CallPostExtendParams is parameters of callPostExtend operation.
+type CallPostExtendParams struct {
+	// Identifier of the file location.
+	Path string
+	// Identifier of the file location.
+	File string
+}
+
+func unpackCallPostExtendParams(packed middleware.Parameters) (params CallPostExtendParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "path",
+			In:   "path",
+		}
+		params.Path = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "file",
+			In:   "query",
+		}
+		params.File = packed[key].(string)
+	}
+	return params
+}
+
+func decodeCallPostExtendParams(args [1]string, argsEscaped bool, r *http.Request) (params CallPostExtendParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode path: path.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "path",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Path = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "path",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode query: file.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "file",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.File = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "file",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // CreateDirectoryParams is parameters of createDirectory operation.
 type CreateDirectoryParams struct {
 	// Identifier of the file location.
@@ -1419,6 +1652,118 @@ func decodeDeleteDatabaseParams(args [1]string, argsEscaped bool, r *http.Reques
 		return params, &ogenerrors.DecodeParamError{
 			Name: "table_operation",
 			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// DeleteExtendParams is parameters of deleteExtend operation.
+type DeleteExtendParams struct {
+	// Identifier of the file location.
+	Path string
+	// Identifier of the file location.
+	File string
+}
+
+func unpackDeleteExtendParams(packed middleware.Parameters) (params DeleteExtendParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "path",
+			In:   "path",
+		}
+		params.Path = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "file",
+			In:   "query",
+		}
+		params.File = packed[key].(string)
+	}
+	return params
+}
+
+func decodeDeleteExtendParams(args [1]string, argsEscaped bool, r *http.Request) (params DeleteExtendParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode path: path.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "path",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Path = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "path",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode query: file.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "file",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.File = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "file",
+			In:   "query",
 			Err:  err,
 		}
 	}
@@ -6938,6 +7283,72 @@ func decodeShutdownServerParams(args [1]string, argsEscaped bool, r *http.Reques
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "hash",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// TriggerExtendParams is parameters of triggerExtend operation.
+type TriggerExtendParams struct {
+	// Identifier of the file location.
+	Path string
+}
+
+func unpackTriggerExtendParams(packed middleware.Parameters) (params TriggerExtendParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "path",
+			In:   "path",
+		}
+		params.Path = packed[key].(string)
+	}
+	return params
+}
+
+func decodeTriggerExtendParams(args [1]string, argsEscaped bool, r *http.Request) (params TriggerExtendParams, _ error) {
+	// Decode path: path.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "path",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Path = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "path",
 			In:   "path",
 			Err:  err,
 		}

@@ -45,6 +45,14 @@ type BrowseLocationRes interface {
 	browseLocationRes()
 }
 
+type CallExtendRes interface {
+	callExtendRes()
+}
+
+type CallPostExtendRes interface {
+	callPostExtendRes()
+}
+
 type CreateDirectoryRes interface {
 	createDirectoryRes()
 }
@@ -63,6 +71,10 @@ type DelAccessRes interface {
 
 type DeleteDatabaseRes interface {
 	deleteDatabaseRes()
+}
+
+type DeleteExtendRes interface {
+	deleteExtendRes()
 }
 
 type DeleteFileLocationRes interface {
@@ -271,6 +283,10 @@ type ShutdownServerRes interface {
 
 type StoreConfigRes interface {
 	storeConfigRes()
+}
+
+type TriggerExtendRes interface {
+	triggerExtendRes()
 }
 
 type TriggerJobRes interface {

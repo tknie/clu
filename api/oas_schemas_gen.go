@@ -624,6 +624,89 @@ type BrowseLocationUnauthorized struct{}
 
 func (*BrowseLocationUnauthorized) browseLocationRes() {}
 
+type CallExtendBadRequest Error
+
+func (*CallExtendBadRequest) callExtendRes() {}
+
+// CallExtendForbidden is response for CallExtend operation.
+type CallExtendForbidden struct{}
+
+func (*CallExtendForbidden) callExtendRes() {}
+
+type CallExtendNotFound Error
+
+func (*CallExtendNotFound) callExtendRes() {}
+
+type CallExtendOK struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s CallExtendOK) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*CallExtendOK) callExtendRes() {}
+
+// CallExtendUnauthorized is response for CallExtend operation.
+type CallExtendUnauthorized struct{}
+
+func (*CallExtendUnauthorized) callExtendRes() {}
+
+type CallPostExtendBadRequest Error
+
+func (*CallPostExtendBadRequest) callPostExtendRes() {}
+
+// CallPostExtendForbidden is response for CallPostExtend operation.
+type CallPostExtendForbidden struct{}
+
+func (*CallPostExtendForbidden) callPostExtendRes() {}
+
+type CallPostExtendNotFound Error
+
+func (*CallPostExtendNotFound) callPostExtendRes() {}
+
+type CallPostExtendOKTextPlain struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s CallPostExtendOKTextPlain) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*CallPostExtendOKTextPlain) callPostExtendRes() {}
+
+type CallPostExtendReq struct {
+	// Upload data.
+	UploadFile OptMultipartFile `json:"uploadFile"`
+}
+
+// GetUploadFile returns the value of UploadFile.
+func (s *CallPostExtendReq) GetUploadFile() OptMultipartFile {
+	return s.UploadFile
+}
+
+// SetUploadFile sets the value of UploadFile.
+func (s *CallPostExtendReq) SetUploadFile(val OptMultipartFile) {
+	s.UploadFile = val
+}
+
+// CallPostExtendUnauthorized is response for CallPostExtend operation.
+type CallPostExtendUnauthorized struct{}
+
+func (*CallPostExtendUnauthorized) callPostExtendRes() {}
+
 // Ref: #/components/schemas/ClusterConfig
 type ClusterConfig struct {
 	Nodes []ClusterConfigNodesItem `json:"Nodes"`
@@ -1372,6 +1455,24 @@ func (*DeleteDatabaseForbidden) deleteDatabaseRes() {}
 type DeleteDatabaseUnauthorized struct{}
 
 func (*DeleteDatabaseUnauthorized) deleteDatabaseRes() {}
+
+type DeleteExtendBadRequest Error
+
+func (*DeleteExtendBadRequest) deleteExtendRes() {}
+
+// DeleteExtendForbidden is response for DeleteExtend operation.
+type DeleteExtendForbidden struct{}
+
+func (*DeleteExtendForbidden) deleteExtendRes() {}
+
+type DeleteExtendNotFound Error
+
+func (*DeleteExtendNotFound) deleteExtendRes() {}
+
+// DeleteExtendUnauthorized is response for DeleteExtend operation.
+type DeleteExtendUnauthorized struct{}
+
+func (*DeleteExtendUnauthorized) deleteExtendRes() {}
 
 type DeleteFileLocationBadRequest Error
 
@@ -6132,10 +6233,12 @@ func (s *StatusResponse) SetStatus(val OptStatusResponseStatus) {
 
 func (*StatusResponse) adaptPermissionRes()        {}
 func (*StatusResponse) addRBACResourceRes()        {}
+func (*StatusResponse) callPostExtendRes()         {}
 func (*StatusResponse) createDirectoryRes()        {}
 func (*StatusResponse) databaseOperationRes()      {}
 func (*StatusResponse) databasePostOperationsRes() {}
 func (*StatusResponse) deleteDatabaseRes()         {}
+func (*StatusResponse) deleteExtendRes()           {}
 func (*StatusResponse) deleteFileLocationRes()     {}
 func (*StatusResponse) deleteRBACResourceRes()     {}
 func (*StatusResponse) disconnectTCPRes()          {}
@@ -6144,6 +6247,7 @@ func (*StatusResponse) postJobRes()                {}
 func (*StatusResponse) putDatabaseResourceRes()    {}
 func (*StatusResponse) removePermissionRes()       {}
 func (*StatusResponse) shutdownServerRes()         {}
+func (*StatusResponse) triggerExtendRes()          {}
 func (*StatusResponse) uploadFileRes()             {}
 
 type StatusResponseStatus struct {
@@ -6398,6 +6502,24 @@ func (s *TokenCheck) GetAPIKey() string {
 func (s *TokenCheck) SetAPIKey(val string) {
 	s.APIKey = val
 }
+
+type TriggerExtendBadRequest Error
+
+func (*TriggerExtendBadRequest) triggerExtendRes() {}
+
+// TriggerExtendForbidden is response for TriggerExtend operation.
+type TriggerExtendForbidden struct{}
+
+func (*TriggerExtendForbidden) triggerExtendRes() {}
+
+type TriggerExtendNotFound Error
+
+func (*TriggerExtendNotFound) triggerExtendRes() {}
+
+// TriggerExtendUnauthorized is response for TriggerExtend operation.
+type TriggerExtendUnauthorized struct{}
+
+func (*TriggerExtendUnauthorized) triggerExtendRes() {}
 
 type TriggerJobBadRequest Error
 

@@ -797,24 +797,79 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					elem = origElem
-				case 'e': // Prefix: "env"
+				case 'e': // Prefix: "e"
 					origElem := elem
-					if l := len("env"); len(elem) >= l && elem[0:l] == "env" {
+					if l := len("e"); len(elem) >= l && elem[0:l] == "e" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "GET":
-							s.handleGetEnvironmentsRequest([0]string{}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "GET")
+						break
+					}
+					switch elem[0] {
+					case 'n': // Prefix: "nv"
+						origElem := elem
+						if l := len("nv"); len(elem) >= l && elem[0:l] == "nv" {
+							elem = elem[l:]
+						} else {
+							break
 						}
 
-						return
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleGetEnvironmentsRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+
+						elem = origElem
+					case 'x': // Prefix: "xtend/"
+						origElem := elem
+						if l := len("xtend/"); len(elem) >= l && elem[0:l] == "xtend/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "path"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "DELETE":
+								s.handleDeleteExtendRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							case "GET":
+								s.handleCallExtendRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							case "POST":
+								s.handleCallPostExtendRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							case "PUT":
+								s.handleTriggerExtendRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "DELETE,GET,POST,PUT")
+							}
+
+							return
+						}
+
+						elem = origElem
 					}
 
 					elem = origElem
@@ -2540,28 +2595,100 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 
 					elem = origElem
-				case 'e': // Prefix: "env"
+				case 'e': // Prefix: "e"
 					origElem := elem
-					if l := len("env"); len(elem) >= l && elem[0:l] == "env" {
+					if l := len("e"); len(elem) >= l && elem[0:l] == "e" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						switch method {
-						case "GET":
-							// Leaf: GetEnvironments
-							r.name = "GetEnvironments"
-							r.summary = ""
-							r.operationID = "getEnvironments"
-							r.pathPattern = "/rest/env"
-							r.args = args
-							r.count = 0
-							return r, true
-						default:
-							return
+						break
+					}
+					switch elem[0] {
+					case 'n': // Prefix: "nv"
+						origElem := elem
+						if l := len("nv"); len(elem) >= l && elem[0:l] == "nv" {
+							elem = elem[l:]
+						} else {
+							break
 						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: GetEnvironments
+								r.name = "GetEnvironments"
+								r.summary = ""
+								r.operationID = "getEnvironments"
+								r.pathPattern = "/rest/env"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
+					case 'x': // Prefix: "xtend/"
+						origElem := elem
+						if l := len("xtend/"); len(elem) >= l && elem[0:l] == "xtend/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "path"
+						// Leaf parameter
+						args[0] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							switch method {
+							case "DELETE":
+								// Leaf: DeleteExtend
+								r.name = "DeleteExtend"
+								r.summary = ""
+								r.operationID = "deleteExtend"
+								r.pathPattern = "/rest/extend/{path}"
+								r.args = args
+								r.count = 1
+								return r, true
+							case "GET":
+								// Leaf: CallExtend
+								r.name = "CallExtend"
+								r.summary = ""
+								r.operationID = "callExtend"
+								r.pathPattern = "/rest/extend/{path}"
+								r.args = args
+								r.count = 1
+								return r, true
+							case "POST":
+								// Leaf: CallPostExtend
+								r.name = "CallPostExtend"
+								r.summary = ""
+								r.operationID = "callPostExtend"
+								r.pathPattern = "/rest/extend/{path}"
+								r.args = args
+								r.count = 1
+								return r, true
+							case "PUT":
+								// Leaf: TriggerExtend
+								r.name = "TriggerExtend"
+								r.summary = ""
+								r.operationID = "triggerExtend"
+								r.pathPattern = "/rest/extend/{path}"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
 					}
 
 					elem = origElem

@@ -103,6 +103,24 @@ func (UnimplementedHandler) BrowseLocation(ctx context.Context, params BrowseLoc
 	return r, ht.ErrNotImplemented
 }
 
+// CallExtend implements callExtend operation.
+//
+// Call plugin extend.
+//
+// GET /rest/extend/{path}
+func (UnimplementedHandler) CallExtend(ctx context.Context, params CallExtendParams) (r CallExtendRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// CallPostExtend implements callPostExtend operation.
+//
+// Post extend/plugin.
+//
+// POST /rest/extend/{path}
+func (UnimplementedHandler) CallPostExtend(ctx context.Context, req *CallPostExtendReq, params CallPostExtendParams) (r CallPostExtendRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // CreateDirectory implements createDirectory operation.
 //
 // Create a new directory.
@@ -145,6 +163,15 @@ func (UnimplementedHandler) DelAccess(ctx context.Context, params DelAccessParam
 //
 // DELETE /rest/database/{table_operation}
 func (UnimplementedHandler) DeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (r DeleteDatabaseRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// DeleteExtend implements deleteExtend operation.
+//
+// Delete extend/plugin data.
+//
+// DELETE /rest/extend/{path}
+func (UnimplementedHandler) DeleteExtend(ctx context.Context, params DeleteExtendParams) (r DeleteExtendRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -596,6 +623,15 @@ func (UnimplementedHandler) ShutdownServer(ctx context.Context, params ShutdownS
 //
 // POST /config
 func (UnimplementedHandler) StoreConfig(ctx context.Context) (r StoreConfigRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// TriggerExtend implements triggerExtend operation.
+//
+// Put extend/plugin request.
+//
+// PUT /rest/extend/{path}
+func (UnimplementedHandler) TriggerExtend(ctx context.Context, params TriggerExtendParams) (r TriggerExtendRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

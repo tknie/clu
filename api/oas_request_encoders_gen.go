@@ -42,6 +42,29 @@ func encodeBatchQueryRequest(
 	}
 }
 
+func encodeCallPostExtendRequest(
+	req *CallPostExtendReq,
+	r *http.Request,
+) error {
+	const contentType = "multipart/form-data"
+	request := req
+
+	q := uri.NewFormEncoder(map[string]string{})
+	body, boundary := ht.CreateMultipartBody(func(w *multipart.Writer) error {
+		if val, ok := request.UploadFile.Get(); ok {
+			if err := val.WriteMultipart("uploadFile", w); err != nil {
+				return errors.Wrap(err, "write \"uploadFile\"")
+			}
+		}
+		if err := q.WriteMultipart(w); err != nil {
+			return errors.Wrap(err, "write multipart")
+		}
+		return nil
+	})
+	ht.SetCloserBody(r, body, mime.FormatMediaType(contentType, map[string]string{"boundary": boundary}))
+	return nil
+}
+
 func encodeInsertMapFileRecordsRequest(
 	req OptInsertMapFileRecordsReq,
 	r *http.Request,

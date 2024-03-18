@@ -68,6 +68,18 @@ type Handler interface {
 	//
 	// GET /rest/file/browse/{path}
 	BrowseLocation(ctx context.Context, params BrowseLocationParams) (BrowseLocationRes, error)
+	// CallExtend implements callExtend operation.
+	//
+	// Call plugin extend.
+	//
+	// GET /rest/extend/{path}
+	CallExtend(ctx context.Context, params CallExtendParams) (CallExtendRes, error)
+	// CallPostExtend implements callPostExtend operation.
+	//
+	// Post extend/plugin.
+	//
+	// POST /rest/extend/{path}
+	CallPostExtend(ctx context.Context, req *CallPostExtendReq, params CallPostExtendParams) (CallPostExtendRes, error)
 	// CreateDirectory implements createDirectory operation.
 	//
 	// Create a new directory.
@@ -98,6 +110,12 @@ type Handler interface {
 	//
 	// DELETE /rest/database/{table_operation}
 	DeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (DeleteDatabaseRes, error)
+	// DeleteExtend implements deleteExtend operation.
+	//
+	// Delete extend/plugin data.
+	//
+	// DELETE /rest/extend/{path}
+	DeleteExtend(ctx context.Context, params DeleteExtendParams) (DeleteExtendRes, error)
 	// DeleteFileLocation implements deleteFileLocation operation.
 	//
 	// Delete the file on the given location.
@@ -399,6 +417,12 @@ type Handler interface {
 	//
 	// POST /config
 	StoreConfig(ctx context.Context) (StoreConfigRes, error)
+	// TriggerExtend implements triggerExtend operation.
+	//
+	// Put extend/plugin request.
+	//
+	// PUT /rest/extend/{path}
+	TriggerExtend(ctx context.Context, params TriggerExtendParams) (TriggerExtendRes, error)
 	// TriggerJob implements triggerJob operation.
 	//
 	// Trigger a job.

@@ -45,6 +45,8 @@ const (
 	AdabasPlugin
 	// AuthPlugin authorize and authorize
 	AuthPlugin
+	// ExtendPlugin extend entry point "/rest/extend"
+	ExtendPlugin
 )
 
 const suffix = ".so"
@@ -82,8 +84,16 @@ type AdabasLoader struct {
 	Adabas Adabas
 }
 
+// AdabasLoader adabas plugin loader structure
+type ExtendLoader struct {
+	Loader Loader
+	Extend server.RestExtend
+}
+
 var auditPlugins = make(map[string]*AuditLoader)
 var adabasPlugins = make(map[string]*AdabasLoader)
+var extendPlugins = make(map[string]*ExtendLoader)
+
 var pluginsFound = false
 var disablePlugin = false
 
@@ -210,6 +220,16 @@ func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 			} else {
 				services.ServerMessage("Authenticate/Authorize plugin: %s Version: %s", loader.Name(), loader.Version())
 				fmt.Printf("%#v\n", symCallback)
+			}
+		case int(ExtendPlugin):
+			symExtend, err := plug.Lookup("EntryPoint")
+			if err != nil {
+				services.ServerMessage("Error opening Extend plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
+			} else {
+				services.ServerMessage("Extend plugin: %s Version: %s", loader.Name(), loader.Version())
+				extendSym := symExtend.(server.RestExtend)
+				extendPlugins[info.Name()] = &ExtendLoader{loader, extendSym}
+				server.RegisterExtend(extendSym)
 			}
 		default:
 			services.ServerMessage("Error opening plugin, unknown type: %v", t)

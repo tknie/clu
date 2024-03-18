@@ -61,7 +61,7 @@ func (g greeting) LoginAudit(method string, status string,
 // ReceiveAudit receive audit info incoming request
 func (g greeting) ReceiveAudit(user string, uuid string, r *http.Request) {
 	sessionMap.Store(fmt.Sprintf("%p", r), &session{start: time.Now()})
-	log.Log.Infof("Incoming Token %s User: %s Method: %s %s %s Host: %s",
+	log.Log.Debugf("Incoming Token %s User: %s Method: %s %s %s Host: %s",
 		uuid, user, r.Method, r.RequestURI, r.RemoteAddr, r.Host)
 }
 
