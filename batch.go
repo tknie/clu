@@ -117,5 +117,8 @@ func BatchSelect(batchname string) (*BatchEntry, error) {
 		log.Log.Errorf("Query batch store failure: %v", err)
 		return nil, err
 	}
+	if b == nil {
+		return nil, fmt.Errorf("error batch entry not found")
+	}
 	return b, nil
 }

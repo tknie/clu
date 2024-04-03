@@ -38,7 +38,8 @@ type batchSelect struct {
 func (Handler) BatchSelect(ctx context.Context,
 	params api.BatchSelectParams) (r api.BatchSelectRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User, "/batch") {
+
+	if !auth.ValidUser(auth.UserRole, false, session.User, "^"+params.Table) {
 		log.Log.Debugf("SQL statemant forbidden")
 		return &api.BatchSelectForbidden{}, nil
 	}
@@ -46,6 +47,9 @@ func (Handler) BatchSelect(ctx context.Context,
 	entry, err := clu.BatchSelect(params.Table)
 	if err != nil {
 		return nil, err
+	}
+	if entry == nil {
+		log.Log.Fatal("Query entry empty")
 	}
 	respH, err := querySQLstatement(&batchSelect{session: session, table: params.Table,
 		parameter: params.Param, query: entry})
@@ -178,8 +182,10 @@ func sqlInParameter(statement string, params []string) string {
 		np := strings.Trim(p, "\"")
 		if np[0] == '^' {
 			pv := strings.Split(np, ":")
-			log.Log.Debugf("Handle parameter %s : %s", pv[0], np[len(pv[0])+1:])
-			st = strings.Replace(st, "<"+pv[0][1:]+">", np[len(pv[0])+1:], -1)
+			if len(np) > len(pv[0]) {
+				log.Log.Debugf("Handle parameter %s : %s", pv[0], np[len(pv[0])+1:])
+				st = strings.Replace(st, "<"+pv[0][1:]+">", np[len(pv[0])+1:], -1)
+			}
 		}
 	}
 	log.Log.Debugf("SQL in : %s", statement)

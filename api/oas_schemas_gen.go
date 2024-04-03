@@ -6668,13 +6668,14 @@ func (*UploadFileUnauthorized) uploadFileRes() {}
 
 // Ref: #/components/schemas/User
 type User struct {
-	Email     OptString   `json:"email"`
-	Name      OptString   `json:"name"`
-	Picture   OptString   `json:"Picture"`
-	LongName  OptString   `json:"LongName"`
-	UUID      OptUUID     `json:"UUID"`
-	LastLogin OptDateTime `json:"LastLogin"`
-	Created   OptDateTime `json:"Created"`
+	Email      OptString   `json:"email"`
+	Name       OptString   `json:"name"`
+	Picture    OptString   `json:"Picture"`
+	LongName   OptString   `json:"LongName"`
+	UUID       OptUUID     `json:"UUID"`
+	LastLogin  OptDateTime `json:"LastLogin"`
+	Created    OptDateTime `json:"Created"`
+	Permission OptString   `json:"Permission"`
 }
 
 // GetEmail returns the value of Email.
@@ -6712,6 +6713,11 @@ func (s *User) GetCreated() OptDateTime {
 	return s.Created
 }
 
+// GetPermission returns the value of Permission.
+func (s *User) GetPermission() OptString {
+	return s.Permission
+}
+
 // SetEmail sets the value of Email.
 func (s *User) SetEmail(val OptString) {
 	s.Email = val
@@ -6745,6 +6751,11 @@ func (s *User) SetLastLogin(val OptDateTime) {
 // SetCreated sets the value of Created.
 func (s *User) SetCreated(val OptDateTime) {
 	s.Created = val
+}
+
+// SetPermission sets the value of Permission.
+func (s *User) SetPermission(val OptString) {
+	s.Permission = val
 }
 
 func (*User) getUserInfoRes() {}

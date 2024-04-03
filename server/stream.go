@@ -26,7 +26,6 @@ import (
 	"github.com/tknie/clu"
 	"github.com/tknie/errorrepo"
 	"github.com/tknie/flynn/common"
-	"github.com/tknie/goheif"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
 )
@@ -216,13 +215,13 @@ func (read *streamRead) convertMimeType(destMimeType string) error {
 		switch strings.ToLower(read.mimetype) {
 		case "image/heic":
 			r := bytes.NewBuffer(read.data)
-			srcImage, err := goheif.Decode(r)
+			srcImage, err := heifdecoder(r)
 			if err != nil {
 				log.Log.Debugf("Decode image for conversion error %v", err)
 				return err
 			}
 			ra := bytes.NewReader(read.data)
-			exifData, err := goheif.ExtractExif(ra)
+			exifData, err := heifextractor(ra)
 			if err != nil {
 				log.Log.Debugf("Extract exif error %v", err)
 				return err

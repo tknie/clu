@@ -10571,9 +10571,15 @@ func (s *User) encodeFields(e *jx.Encoder) {
 			s.Created.Encode(e, json.EncodeDateTime)
 		}
 	}
+	{
+		if s.Permission.Set {
+			e.FieldStart("Permission")
+			s.Permission.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfUser = [7]string{
+var jsonFieldsNameOfUser = [8]string{
 	0: "email",
 	1: "name",
 	2: "Picture",
@@ -10581,6 +10587,7 @@ var jsonFieldsNameOfUser = [7]string{
 	4: "UUID",
 	5: "LastLogin",
 	6: "Created",
+	7: "Permission",
 }
 
 // Decode decodes User from json.
@@ -10660,6 +10667,16 @@ func (s *User) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"Created\"")
+			}
+		case "Permission":
+			if err := func() error {
+				s.Permission.Reset()
+				if err := s.Permission.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"Permission\"")
 			}
 		default:
 			return d.Skip()

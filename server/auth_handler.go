@@ -53,11 +53,12 @@ func GenerateJWToken(ctx context.Context) (interface{}, error) {
 	}
 	t := api.AuthorizationToken{Token: api.NewOptString(session.Token),
 		User: api.NewOptUser(api.User{LongName: api.NewOptString(session.User.LongName),
-			Created:   api.NewOptDateTime(session.User.Created),
-			LastLogin: api.NewOptDateTime(session.User.LastLogin),
-			UUID:      api.NewOptUUID(uuid),
-			Name:      api.NewOptString(session.User.User),
-			Email:     api.NewOptString(session.User.EMail)})}
+			Created:    api.NewOptDateTime(session.User.Created),
+			LastLogin:  api.NewOptDateTime(session.User.LastLogin),
+			UUID:       api.NewOptUUID(uuid),
+			Name:       api.NewOptString(session.User.User),
+			Permission: api.NewOptString(session.User.Permission),
+			Email:      api.NewOptString(session.User.EMail)})}
 	return &api.AuthorizationTokenHeaders{XToken: api.NewOptString(session.Token),
 		Response: t}, nil
 }

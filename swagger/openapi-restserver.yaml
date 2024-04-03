@@ -4073,6 +4073,8 @@ components:
         Created:
           type: string
           format: date-time
+        Permission:
+          type: string
     DirectoryFiles:
       type: object
       properties:
