@@ -24,7 +24,7 @@ ENV INSTALLDIR /opt/cluapi
 #    apt clean && \
 #    groupadd -g $group_id admin && \
 #    useradd -d $INSTALLDIR -m -s /bin/bash -u $user_id -g admin admin
-RUN apk update && apk upgrade && apk add shadow openssl gcompat && \
+RUN apk update && apk upgrade && apk add shadow openssl gcompat de265 && \
      groupadd -g $group_id admin && \
      useradd -d $INSTALLDIR -m -s /bin/bash -u $user_id -g admin admin
 COPY startDocker stopDocker functions.sh $INSTALLDIR/docker/
