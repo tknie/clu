@@ -181,7 +181,7 @@ func (st *StoreJWTHandler) Store(principal auth.PrincipalInterface, user, pass s
 	defer sessionStoreID.FreeHandler()
 	defer sessionStoreID.Close()
 	log.Log.Debugf("Store session value %#v", si.UUID)
-	err = sessionStoreID.Insert(sessionTableName, insert)
+	_, err = sessionStoreID.Insert(sessionTableName, insert)
 	if err != nil {
 		log.Log.Errorf("Error storing user %s: %v", si.UUID, err)
 		return err
@@ -239,7 +239,7 @@ func updateSessionInfo(si *auth.SessionInfo) {
 	update.Values = [][]any{{si}}
 	update.Update = []string{"UUID='" + si.UUID + "'"}
 	log.Log.Debugf("Update value %#v", si.UUID)
-	c, err := sessionStoreID.Update(sessionTableName, update)
+	_, c, err := sessionStoreID.Update(sessionTableName, update)
 	if err != nil {
 		log.Log.Errorf("Error storing session: %v", err)
 		return

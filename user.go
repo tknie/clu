@@ -191,14 +191,14 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 			insert.Fields = userFieldListUpdate
 			log.Log.Debugf("Update value %#v", userInfo)
 			insert.Update = []string{"user='" + userInfo.User + "'"}
-			_, err := userStoreID.Update(userTableName, insert)
+			_, _, err := userStoreID.Update(userTableName, insert)
 			if err != nil {
 				log.Log.Errorf("Error updating user info: %v", err)
 				return err
 			}
 		} else {
 			log.Log.Debugf("Insert value %#v", userInfo)
-			err := userStoreID.Insert(userTableName, insert)
+			_, err := userStoreID.Insert(userTableName, insert)
 			if err != nil {
 				log.Log.Errorf("Error inserting user info: %v", err)
 				// Could be an outage of database, refresh user information

@@ -179,7 +179,7 @@ func startStore() {
 					si.Service, si.RequestURI, si.Host, si.Status,
 					si.TableName, si.AlbumID, si.Fields}}
 				log.Log.Debugf("STORE_AUDIT: Insert store channel (%v)", disableStore)
-				err = auditStoreID.Insert(tableName, insert)
+				_, err = auditStoreID.Insert(tableName, insert)
 				if err != nil {
 					services.ServerMessage("Error store to session %s/%s(%s) : %v",
 						host, addr, tableName, err)

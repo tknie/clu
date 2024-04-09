@@ -82,7 +82,7 @@ func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, par
 	// list := [][]any{{vId1, "xxxxxx", 1}, {vId2, "yyywqwqwqw", 2}}
 	input := &common.Entries{Fields: fields,
 		Values: list}
-	err = d.Insert(params.Table, input)
+	_, err = d.Insert(params.Table, input)
 	if err != nil {
 		log.Log.Debugf("Error: %v", err)
 		return nil, err
@@ -230,7 +230,7 @@ func (Handler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecor
 	input := &common.Entries{Fields: fields,
 		Update: updateFields,
 		Values: list}
-	uNr, err := d.Update(params.Table, input)
+	_, uNr, err := d.Update(params.Table, input)
 	if err != nil {
 		log.Log.Debugf("Error: %v", err)
 		return nil, err
