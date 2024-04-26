@@ -88,9 +88,14 @@ type Server struct {
 type DatabaseConfig struct {
 	Mapping         Mapping        `yaml:"modelling"`
 	DatabaseAccess  DatabaseAccess `yaml:"access"`
-	SessionInfo     *Database      `yaml:"sessionInfo"`
+	SessionInfo     *SessionConfig `yaml:"sessionInfo"`
 	UserInfo        *Database      `yaml:"userInfo"`
 	BatchRepository *Database      `yaml:"batchRepository"`
+}
+
+type SessionConfig struct {
+	DeleteUUID bool      `yaml:"deleteUUID"`
+	Database   *Database `yaml:"database"`
 }
 
 // StatisticConfig statistics configuration
@@ -170,7 +175,7 @@ type Admin struct {
 // DatabaseAccess database access
 type DatabaseAccess struct {
 	Global   bool       `yaml:"global,omitempty"`
-	Database []Database `yaml:"Database,omitempty"`
+	Database []Database `yaml:"Databases,omitempty"`
 }
 
 // Location location attribute

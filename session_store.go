@@ -24,21 +24,19 @@ import (
 	"github.com/tknie/services/auth"
 )
 
-var sessionURL = ""
 var sessionTableName = ""
-var disableStore = false
 
 var sessionDbRef *common.Reference
 var sessionDbPassword = ""
 
-// var sessionStoreID common.RegDbID
-
 var sessionExpirerDuration = time.Duration(6) * time.Hour
-var sessionInfoMap = sync.Map{} // make(map[string]*auth.SessionInfo)
+var sessionInfoMap = sync.Map{}
 var sessionLock sync.Mutex
 
 var chanUpdateSessionInfo = make(chan *auth.SessionInfo, 10)
 var chanRemoveSessionInfo = make(chan *auth.SessionInfo, 10)
+
+var DeleteUUID = false
 
 func openSessionStore() (common.RegDbID, error) {
 	var err error
@@ -155,6 +153,7 @@ func (st *StoreJWTHandler) InvalidateUUID(uuid string, elapsed time.Time) bool {
 		return false
 	}
 	log.Log.Debugf("Trigger remove session info %s", uuid)
+	si.Invalidated = time.Now()
 	chanRemoveSessionInfo <- si
 	return true
 }
@@ -219,7 +218,11 @@ func updaterSessionInfo() {
 		case si := <-chanUpdateSessionInfo:
 			updateSessionInfo(si)
 		case si := <-chanRemoveSessionInfo:
-			deleteUUID(si)
+			if DeleteUUID {
+				deleteUUID(si)
+			} else {
+				updateSessionInfo(si)
+			}
 		case <-time.After(30 * time.Second):
 			log.Log.Debugf("Shift working 30 seconds(session store)")
 		}

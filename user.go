@@ -24,7 +24,6 @@ import (
 	"github.com/tknie/services/auth"
 )
 
-var userURL = ""
 var userTableName = ""
 var disableUser = false
 var userDbRef *common.Reference

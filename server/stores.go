@@ -29,13 +29,16 @@ func InitDatabaseStores() error {
 			log.Fatal("user information store not being able to start:", err)
 		}
 	}
-	dm = Viewer.Database.SessionInfo
-	if dm != nil {
-		r, err := Handles(dm)
-		if err == nil {
-			clu.InitStoreInfo(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
-		} else {
-			log.Fatal("session information store not being able to start:", err)
+	if Viewer.Database.SessionInfo != nil {
+		dm = Viewer.Database.SessionInfo.Database
+		if dm != nil {
+			clu.DeleteUUID = Viewer.Database.SessionInfo.DeleteUUID
+			r, err := Handles(dm)
+			if err == nil {
+				clu.InitStoreInfo(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
+			} else {
+				log.Fatal("session information store not being able to start:", err)
+			}
 		}
 	}
 	dm = Viewer.Database.BatchRepository
