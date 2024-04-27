@@ -10,13 +10,13 @@ require (
 	github.com/go-openapi/swag v0.23.0
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/ogen-go/ogen v1.1.0
-	github.com/rs/cors v1.10.1
+	github.com/rs/cors v1.11.0
 	github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
-	github.com/tknie/services v0.0.0-20240315210504-c83707d3c158
-	go.opentelemetry.io/otel v1.25.0
-	go.opentelemetry.io/otel/metric v1.25.0
-	go.opentelemetry.io/otel/trace v1.25.0
+	github.com/tknie/services v0.0.0-20240427174324-10f35ca530b7
+	go.opentelemetry.io/otel v1.26.0
+	go.opentelemetry.io/otel/metric v1.26.0
+	go.opentelemetry.io/otel/trace v1.26.0
 	go.uber.org/multierr v1.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -28,7 +28,7 @@ require (
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
-	github.com/godror/godror v0.42.1 // indirect
+	github.com/godror/godror v0.42.2 // indirect
 	github.com/godror/knownpb v0.1.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
@@ -46,7 +46,7 @@ require (
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-asn1-ber/asn1-ber v1.5.5 // indirect
+	github.com/go-asn1-ber/asn1-ber v1.5.6 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.8 // indirect
 	github.com/go-openapi/errors v0.22.0 // indirect
@@ -56,8 +56,8 @@ require (
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/segmentio/asm v1.2.0 // indirect
-	github.com/tknie/errorrepo v0.0.0-20231119173834-6ad8a3cefbc0
-	github.com/tknie/flynn v0.0.0-20240420180827-9491bd92b091
+	github.com/tknie/errorrepo v0.0.0-20240427174202-a8626661af5b
+	github.com/tknie/flynn v0.0.0-20240427192754-aa3072836be1
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.22.0 // indirect

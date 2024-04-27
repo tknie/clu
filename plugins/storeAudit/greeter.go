@@ -200,7 +200,7 @@ func startStore() {
 				}
 				log.Log.Debugf("STORE_AUDIT: free handler (%v) %s", disableStore, auditStoreID)
 				auditStoreID.FreeHandler()
-				auditStoreID.Close()
+				// auditStoreID.Close()
 				lock.Unlock()
 			}
 			log.Log.Debugf("STORE_AUDIT: End store channel (%v)", disableStore)
