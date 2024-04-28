@@ -175,7 +175,7 @@ type Admin struct {
 // DatabaseAccess database access
 type DatabaseAccess struct {
 	Global   bool       `yaml:"global,omitempty"`
-	Database []Database `yaml:"Databases,omitempty"`
+	Database []Database `yaml:"databases,omitempty"`
 }
 
 // Location location attribute
