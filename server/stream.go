@@ -32,7 +32,7 @@ import (
 
 const blockSize = 65536
 
-type streamRead struct {
+type StreamRead struct {
 	table         string
 	field         string
 	mimetypeField string
@@ -42,14 +42,14 @@ type streamRead struct {
 }
 
 // NewStreamRead new stream read instance
-func NewStreamRead(table, field, mimetypeField string) *streamRead {
-	return &streamRead{table: table,
+func NewStreamRead(table, field, mimetypeField string) *StreamRead {
+	return &StreamRead{table: table,
 		field:         field,
 		mimetypeField: mimetypeField}
 }
 
 // initStreamFromTable init streamed read and open connection to database
-func (read *streamRead) initStreamFromTable(srvctx *clu.Context, search, destMimeType string) (err error) {
+func (read *StreamRead) initStreamFromTable(srvctx *clu.Context, search, destMimeType string) (err error) {
 	d, err := ConnectTable(srvctx, read.table)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", read.table, err)
@@ -99,19 +99,19 @@ func (read *streamRead) initStreamFromTable(srvctx *clu.Context, search, destMim
 }
 
 // initStreamFromFile init streamed read and open file
-func initStreamFromFile(file *os.File) (read *streamRead, err error) {
+func initStreamFromFile(file *os.File) (read *StreamRead, err error) {
 	data, err := io.ReadAll(file)
 	if err != nil {
 		return nil, err
 	}
-	read = &streamRead{data: data}
+	read = &StreamRead{data: data}
 	read.mimetype = "application/octet-stream"
 
 	return
 }
 
 // nextDataBlock read partial large object segment
-func (read *streamRead) nextDataBlock() (data []byte, err error) {
+func (read *StreamRead) nextDataBlock() (data []byte, err error) {
 	if read.send >= len(read.data) {
 		return nil, io.EOF
 	}
@@ -129,7 +129,7 @@ func (read *streamRead) nextDataBlock() (data []byte, err error) {
 }
 
 // streamResponderFunc function to response and send read data
-func (read *streamRead) streamResponderFunc() (io.Reader, error) {
+func (read *StreamRead) streamResponderFunc() (io.Reader, error) {
 	reader, writer := io.Pipe()
 	errChan := make(chan error)
 	go func() {
@@ -208,7 +208,7 @@ func queryBytes(d common.RegDbID, query *common.Query) (map[string]interface{}, 
 }
 
 // convertMimeType convert mime type
-func (read *streamRead) convertMimeType(destMimeType string) error {
+func (read *StreamRead) convertMimeType(destMimeType string) error {
 	log.Log.Debugf("Convert %s ->  %s len=%d", read.mimetype, destMimeType, len(read.data))
 	if destMimeType != "" && read.mimetype != "" && destMimeType != read.mimetype {
 		log.Log.Debugf("Check destination mimetype")
