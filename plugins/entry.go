@@ -84,7 +84,7 @@ type AdabasLoader struct {
 	Adabas Adabas
 }
 
-// AdabasLoader adabas plugin loader structure
+// ExtendLoader extend loader plugin structure
 type ExtendLoader struct {
 	Loader Loader
 	Extend server.RestExtend

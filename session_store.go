@@ -36,6 +36,7 @@ var sessionLock sync.Mutex
 var chanUpdateSessionInfo = make(chan *auth.SessionInfo, 10)
 var chanRemoveSessionInfo = make(chan *auth.SessionInfo, 10)
 
+// DeleteUUID delete UUID after regular time frame
 var DeleteUUID = false
 
 func openSessionStore() (common.RegDbID, error) {

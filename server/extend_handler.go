@@ -29,6 +29,7 @@ type RestExtend interface {
 	Call(path string) (r api.CallExtendRes, _ error)
 }
 
+// RegisterExtend register the extend handler
 func RegisterExtend(extend RestExtend) {
 	entryMap.Store(extend.EntryPoint(), extend)
 }

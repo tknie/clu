@@ -93,6 +93,7 @@ type DatabaseConfig struct {
 	BatchRepository *Database      `yaml:"batchRepository"`
 }
 
+// SessionConfig session configuration
 type SessionConfig struct {
 	DeleteUUID bool      `yaml:"deleteUUID"`
 	Database   *Database `yaml:"database"`
