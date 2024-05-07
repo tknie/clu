@@ -6,6 +6,7 @@ vendor/
 tmp_gopath~/
 test/
 tmp/
+logs/
 app2/
 
 mem.pprof
