@@ -31,7 +31,7 @@ var userDbPassword = ""
 
 // var userStoreID common.RegDbID
 
-var userFieldList = []string{"Name", "Created", "LastLogin"}
+var userFieldList = []string{"Name", "Created", "LastLogin", "Permission"}
 var userFieldListUpdate = []string{"Created", "LastLogin"}
 
 type storeUserInfo struct {
@@ -84,7 +84,7 @@ func updaterUserInfo() {
 		log.Log.Debugf("Waiting user info for updates or remove")
 		select {
 		case <-time.After(30 * time.Second):
-			timeRange := time.Now().Add(time.Duration(-2) * time.Hour)
+			timeRange := time.Now().Add(time.Duration(-2) * time.Minute)
 			log.Log.Debugf("Shift working 30 seconds (user info)")
 			userInfoMap.Range(func(key, value any) bool {
 				st := value.(*storeUserInfo)
@@ -157,14 +157,15 @@ func CheckUserExist(user string) *auth.UserInfo {
 	if userInfo == nil {
 		log.Log.Debugf("No user %s in user info found", user)
 
-		userInfo = &auth.UserInfo{User: user, Created: time.Now()}
+		userInfo = &auth.UserInfo{User: user, Created: time.Now(), LastLogin: time.Now(),
+			Permission: &auth.User{Name: "User", Read: "*", Write: ""}}
 		if _, err := mail.ParseAddress(user); err == nil {
 			userInfo.EMail = user
 		}
 		log.Log.Debugf("Create user info new %#v", userInfo)
 		userInfoMap.Store(userInfo.User, &storeUserInfo{false, time.Now(), userInfo})
 	} else {
-		log.Log.Debugf("User info %s found: %#v", user, userInfo)
+		log.Log.Debugf("User info %s found: %#v / %#v", user, userInfo, userInfo.Permission)
 	}
 	return userInfo
 }
@@ -183,7 +184,7 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 		}
 		defer userStoreID.FreeHandler()
 		defer userStoreID.Close()
-		insert := &common.Entries{Fields: userFieldList, DataStruct: userInfo}
+		insert := &common.Entries{Fields: userFieldListUpdate, DataStruct: userInfo}
 		insert.Values = [][]any{{userInfo}}
 		sui := u.(*storeUserInfo)
 		if sui.stored {
@@ -196,6 +197,7 @@ func AddUserInfo(userInfo *auth.UserInfo) error {
 				return err
 			}
 		} else {
+			insert.Fields = userFieldList
 			log.Log.Debugf("Insert value %#v", userInfo)
 			_, err := userStoreID.Insert(userTableName, insert)
 			if err != nil {

@@ -49,6 +49,10 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 		return nil, err
 	}
 	pm.User.LastLogin = time.Now()
+	if pm.User.Permission.Name == "" {
+		pm.User.Permission.Name = "User"
+		pm.User.Permission.Read = "*"
+	}
 	err = clu.AddUserInfo(pm.User)
 	if err != nil {
 		services.ServerMessage("User %s cannot be stored in user information", pm.User.User)

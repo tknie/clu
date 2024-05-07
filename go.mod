@@ -37,7 +37,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/tknie/adabas-go-api v1.7.11-0.20231130200115-0931956e3a9c // indirect
 	golang.org/x/image v0.16.0 // indirect
-	google.golang.org/protobuf v1.34.0 // indirect
+	google.golang.org/protobuf v1.34.1 // indirect
 )
 
 require (
@@ -60,9 +60,9 @@ require (
 	github.com/tknie/flynn v0.0.0-20240505193942-96c3624b7199
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.22.0 // indirect
-	golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f // indirect
-	golang.org/x/net v0.24.0
+	golang.org/x/crypto v0.23.0 // indirect
+	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
+	golang.org/x/net v0.25.0
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect

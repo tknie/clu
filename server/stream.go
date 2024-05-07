@@ -120,10 +120,6 @@ func (read *StreamRead) nextDataBlock() (data []byte, err error) {
 		sz = len(read.data)
 	}
 	data = read.data[read.send:sz]
-	if err != nil {
-		log.Log.Errorf("Error read LOB segment", err)
-		return
-	}
 	read.send += blockSize
 	return
 }
