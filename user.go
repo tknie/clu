@@ -29,6 +29,8 @@ var disableUser = false
 var userDbRef *common.Reference
 var userDbPassword = ""
 
+const DefaultRole = "Reader"
+
 // var userStoreID common.RegDbID
 
 var userFieldList = []string{"Name", "Created", "LastLogin", "Permission"}
@@ -158,7 +160,7 @@ func CheckUserExist(user string) *auth.UserInfo {
 		log.Log.Debugf("No user %s in user info found", user)
 
 		userInfo = &auth.UserInfo{User: user, Created: time.Now(), LastLogin: time.Now(),
-			Permission: &auth.User{Name: "User", Read: "*", Write: ""}}
+			Permission: &auth.User{Name: DefaultRole, Read: "*", Write: ""}}
 		if _, err := mail.ParseAddress(user); err == nil {
 			userInfo.EMail = user
 		}

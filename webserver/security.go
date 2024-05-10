@@ -50,7 +50,7 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 	}
 	pm.User.LastLogin = time.Now()
 	if pm.User.Permission.Name == "" {
-		pm.User.Permission.Name = "User"
+		pm.User.Permission.Name = clu.DefaultRole
 		pm.User.Permission.Read = "*"
 	}
 	err = clu.AddUserInfo(pm.User)
