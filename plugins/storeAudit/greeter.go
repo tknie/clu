@@ -42,6 +42,10 @@ type session struct {
 	start time.Time
 }
 
+const startSessionInfo = "Init"
+const endSessionInfo = "End"
+const TriggerSessionInfo = "Trigger"
+
 var sessionMap sync.Map
 var fieldList = []string{"Triggered", "Elapsed",
 	"RequestUser", "UUID", "ServerHost",
@@ -108,7 +112,8 @@ func init() {
 	defer auditStoreID.FreeHandler()
 	defer auditStoreID.Close()
 
-	si := NewSessionInfo("Init", "0000-0000", adminUser, startEventMethod)
+	v := services.BuildVersion
+	si := NewSessionInfo(startSessionInfo, v, adminUser, startEventMethod)
 
 	go startStore()
 
@@ -130,7 +135,7 @@ func init() {
 	storeChan <- si
 }
 
-// NewSessionInfo new session info
+// NewSessionInfo new session info creation
 func NewSessionInfo(status, uuid, user, method string) *SessionInfo {
 	hostname, _ := os.Hostname()
 	return &SessionInfo{Status: status, UUID: uuid,
@@ -243,7 +248,7 @@ func (g greeting) Stop() {
 	if disableStore {
 		return
 	}
-	si := NewSessionInfo("End", "0000-0000", adminUser, stopEventMethod)
+	si := NewSessionInfo(endSessionInfo, services.BuildVersion, adminUser, stopEventMethod)
 	storeChan <- si
 	wg.Wait()
 }
@@ -284,7 +289,7 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 		return
 	}
 	log.Log.Debugf("STORE_AUDIT: send audit %s/%s", user, uuid)
-	si := NewSessionInfo("Ended", uuid, user, w.Method)
+	si := NewSessionInfo(TriggerSessionInfo, uuid, user, w.Method)
 	si.adapt(w)
 	si.extractURI(w)
 	if e, ok := sessionMap.Load(key(uuid, w)); ok {
