@@ -29,6 +29,7 @@ var disableUser = false
 var userDbRef *common.Reference
 var userDbPassword = ""
 
+// DefaultRole default role for automatic added user
 const DefaultRole = "Reader"
 
 // var userStoreID common.RegDbID

@@ -32,6 +32,8 @@ import (
 
 const blockSize = 65536
 
+// StreamRead stream control structure to handle data streams
+// Video or big pictures
 type StreamRead struct {
 	table         string
 	field         string

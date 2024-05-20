@@ -44,7 +44,7 @@ type session struct {
 
 const startSessionInfo = "Init"
 const endSessionInfo = "End"
-const TriggerSessionInfo = "Trigger"
+const triggerSessionInfo = "Trigger"
 
 var sessionMap sync.Map
 var fieldList = []string{"Triggered", "Elapsed",
@@ -289,7 +289,7 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 		return
 	}
 	log.Log.Debugf("STORE_AUDIT: send audit %s/%s", user, uuid)
-	si := NewSessionInfo(TriggerSessionInfo, uuid, user, w.Method)
+	si := NewSessionInfo(triggerSessionInfo, uuid, user, w.Method)
 	si.adapt(w)
 	si.extractURI(w)
 	if e, ok := sessionMap.Load(key(uuid, w)); ok {
