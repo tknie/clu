@@ -637,21 +637,21 @@ type CallExtendNotFound Error
 
 func (*CallExtendNotFound) callExtendRes() {}
 
-type CallExtendOK struct {
+type CallExtendOKApplicationOctetStream struct {
 	Data io.Reader
 }
 
 // Read reads data from the Data reader.
 //
 // Kept to satisfy the io.Reader interface.
-func (s CallExtendOK) Read(p []byte) (n int, err error) {
+func (s CallExtendOKApplicationOctetStream) Read(p []byte) (n int, err error) {
 	if s.Data == nil {
 		return 0, io.EOF
 	}
 	return s.Data.Read(p)
 }
 
-func (*CallExtendOK) callExtendRes() {}
+func (*CallExtendOKApplicationOctetStream) callExtendRes() {}
 
 // CallExtendUnauthorized is response for CallExtend operation.
 type CallExtendUnauthorized struct{}
@@ -6153,6 +6153,7 @@ func (s *Response) SetRecords(val []ResponseRecordsItem) {
 	s.Records = val
 }
 
+func (*Response) callExtendRes()      {}
 func (*Response) searchModellingRes() {}
 func (*Response) searchTableRes()     {}
 func (*Response) triggerJobRes()      {}

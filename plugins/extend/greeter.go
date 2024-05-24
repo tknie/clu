@@ -15,8 +15,7 @@ import (
 	"fmt"
 	"net/http"
 
-	ht "github.com/ogen-go/ogen/http"
-
+	"github.com/go-faster/jx"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/clu/plugins"
 )
@@ -48,7 +47,16 @@ func (g greeting) EntryPoint() string {
 
 func (g greeting) Call(path string, req *http.Request) (r api.CallExtendRes, _ error) {
 	fmt.Println("Extend plugin call received:" + path)
-	return r, ht.ErrNotImplemented
+	var data []api.ResponseRecordsItem
+	d := make(api.ResponseRecordsItem)
+	t := "XXX"
+	s := "FFFF"
+	raw := jx.Raw([]byte("\"" + t + "\""))
+	d[s] = raw
+	data = append(data, d)
+	resp := &api.Response{Records: data, FieldNames: []string{s}}
+	return resp, nil
+
 }
 
 // exported
