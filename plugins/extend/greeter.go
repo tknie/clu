@@ -47,15 +47,37 @@ func (g greeting) EntryPoint() string {
 
 func (g greeting) Call(path string, req *http.Request) (r api.CallExtendRes, _ error) {
 	fmt.Println("Extend plugin call received:" + path)
-	var data []api.ResponseRecordsItem
-	d := make(api.ResponseRecordsItem)
+	d := make(api.ResponseRaw)
 	t := "XXX"
 	s := "FFFF"
 	raw := jx.Raw([]byte("\"" + t + "\""))
 	d[s] = raw
-	data = append(data, d)
-	resp := &api.Response{Records: data, FieldNames: []string{s}}
-	return resp, nil
+	var e1 jx.Encoder
+	e1.SetIdent(0)
+	e1.ObjStart()           // {
+	e1.FieldStart("arrval") // "values":
+	e1.ArrStart()           // [
+	for _, v := range []int{4, 8, 15, 16, 23, 42} {
+		e1.Int(v)
+	}
+	e1.ArrEnd() // ]
+	e1.ObjEnd() // }
+	d["l"] = e1.Bytes()
+	var e2 jx.Encoder
+	e2.Reset()
+	e2.ObjStart()             // {
+	e2.FieldStart("fieldval") // "values":
+	e2.Str("XXXX")
+	e2.ObjEnd()
+	d["a"] = e2.Bytes()
+	var e3 jx.Encoder
+	e3.ArrStart() // [
+	for _, v := range []int{4, 8, 15, 16, 23, 42} {
+		e3.Int(v)
+	}
+	e3.ArrEnd() // ]
+	d["x"] = e3.Bytes()
+	return &d, nil
 
 }
 

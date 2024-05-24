@@ -6153,7 +6153,6 @@ func (s *Response) SetRecords(val []ResponseRecordsItem) {
 	s.Records = val
 }
 
-func (*Response) callExtendRes()      {}
 func (*Response) searchModellingRes() {}
 func (*Response) searchTableRes()     {}
 func (*Response) triggerJobRes()      {}
@@ -6192,6 +6191,20 @@ func (*ResponseHeaders) getMapRecordsFieldsRes()   {}
 func (*ResponseHeaders) insertRecordRes()          {}
 func (*ResponseHeaders) searchRecordsFieldsRes()   {}
 func (*ResponseHeaders) updateRecordsByFieldsRes() {}
+
+// Ref: #/components/schemas/ResponseRaw
+type ResponseRaw map[string]jx.Raw
+
+func (s *ResponseRaw) init() ResponseRaw {
+	m := *s
+	if m == nil {
+		m = map[string]jx.Raw{}
+		*s = m
+	}
+	return m
+}
+
+func (*ResponseRaw) callExtendRes() {}
 
 type ResponseRecordsItem map[string]jx.Raw
 

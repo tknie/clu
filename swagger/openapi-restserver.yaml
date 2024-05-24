@@ -3654,6 +3654,9 @@ paths:
         '200':
           description: Successful response, with download binary file.
           content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseRaw'
             application/octet-stream:
               schema:
                 type: string
@@ -4475,6 +4478,9 @@ components:
           items:
             type: object
             properties: {}
+    ResponseRaw:
+      type: object
+      additionalProperties: true
     Response:
       type: object
       properties:

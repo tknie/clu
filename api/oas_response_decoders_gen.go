@@ -1505,7 +1505,7 @@ func decodeCallExtendResponse(resp *http.Response) (res CallExtendRes, _ error) 
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response Response
+			var response ResponseRaw
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err

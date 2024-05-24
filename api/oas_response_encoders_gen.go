@@ -575,7 +575,7 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 
 func encodeCallExtendResponse(response CallExtendRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *Response:
+	case *ResponseRaw:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
