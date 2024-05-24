@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/tknie/clu/plugins"
 	"github.com/tknie/services/auth"
 )
 
@@ -13,9 +14,6 @@ type testCallback struct {
 
 type testPrincipal struct {
 	testUUID string
-	token    string
-	user     string
-	pass     string
 }
 
 func (tp *testPrincipal) UUID() string {
@@ -71,8 +69,8 @@ func initAuthCallback() {
 type greeting string
 
 // Types type of plugin working with
-func (g greeting) Types() []int {
-	return []int{3}
+func (g greeting) Types() []plugins.PluginTypes {
+	return []plugins.PluginTypes{plugins.AuthPlugin}
 }
 
 // Name name of the plugin

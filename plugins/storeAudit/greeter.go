@@ -20,6 +20,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/tknie/clu/plugins"
 	"github.com/tknie/clu/server"
 	"github.com/tknie/flynn"
 	"github.com/tknie/flynn/common"
@@ -229,8 +230,8 @@ func startStore() {
 }
 
 // Types type of plugin working with
-func (g greeting) Types() []int {
-	return []int{1}
+func (g greeting) Types() []plugins.PluginTypes {
+	return []plugins.PluginTypes{plugins.AuditPlugin}
 }
 
 // Name name of the plugin

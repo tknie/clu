@@ -15,7 +15,6 @@ import (
 	"crypto/md5"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -53,7 +52,7 @@ func loadTableThread() {
 }
 
 func databaseHash(dm *Database) string {
-	return fmt.Sprintf("%X", md5.Sum([]byte(dm.User+"@"+dm.Host+":"+dm.Port)))
+	return fmt.Sprintf("%X", md5.Sum([]byte(dm.String())))
 }
 
 // Handles handle database
@@ -64,29 +63,15 @@ func Handles(dm *Database) (*common.Reference, error) {
 		return ref, nil
 	}
 	log.Log.Infof("Add database hash %s -> %s", dHash, os.ExpandEnv(dm.String()))
-
-	p := os.ExpandEnv(dm.Port)
-	if p == "" {
-		log.Log.Infof("Database Port value is empty: '" + dm.Port + "'")
-		services.ServerMessage("Database Port value is empty: '" + dm.Port + "'")
-		return nil, fmt.Errorf("database Port value is empty")
-	}
-	port, err := strconv.Atoi(p)
+	target := os.ExpandEnv(dm.Target)
+	ref, _, err := common.NewReference(target)
 	if err != nil {
-		log.Log.Infof("Database Port value is not valid: '" + dm.Port + "'")
-		services.ServerMessage("Database Port value is not valid: '" + dm.Port + "'")
-		return nil, fmt.Errorf("database Port value is not valid")
-	}
-	ref := &common.Reference{Driver: common.ParseTypeName(dm.Driver),
-		Host:     os.ExpandEnv(dm.Host),
-		Port:     port,
-		User:     os.ExpandEnv(dm.User),
-		Database: os.ExpandEnv(dm.Database),
+		return nil, fmt.Errorf("error parsing target <%s>: %s", dm.Target, err)
 	}
 	log.Log.Debugf("Register database handler")
 	_, err = flynn.Handler(ref, os.ExpandEnv(dm.Password))
 	if err != nil {
-		services.ServerMessage("Error registering database %s:%d...%v", dm.Host, port, err)
+		services.ServerMessage("Error registering database <%s>: %v", dm.Target, err)
 		return nil, fmt.Errorf("error registering database")
 	}
 	dbList[dHash] = ref

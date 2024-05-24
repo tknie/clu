@@ -46,7 +46,7 @@ database:
   access:
     Database:
       - driver: postgres
-        url: postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/Bitgarten
+        target: postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/Bitgarten
         table: xxx
 #     - driver: mysql
 #       url: admin:Testtkn1+@tcp(lion.fritz.box:3306)/Bitgarten

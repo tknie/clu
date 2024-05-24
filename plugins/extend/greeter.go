@@ -17,13 +17,14 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 
 	"github.com/tknie/clu/api"
+	"github.com/tknie/clu/plugins"
 )
 
 type greeting string
 
 // Types type of plugin working with
-func (g greeting) Types() []int {
-	return []int{4}
+func (g greeting) Types() []plugins.PluginTypes {
+	return []plugins.PluginTypes{plugins.ExtendPlugin}
 }
 
 // Name name of the plugin

@@ -49,19 +49,13 @@ database:
   access:
     Database:
       - driver: postgres
-        url: postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
-        host: ${POSTGRES_HOST}
-        port: ${POSTGRES_PORT}
+        target: postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
         user: ${POSTGRES_USER}
         password: ${POSTGRES_PASS}
-        database: ${POSTGRES_DATABASE}
       - driver: mysql
-        url: ${MYSQL_USER}:${MYSQL_PASS}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}
-        host: ${MYSQL_HOST}
-        port: ${POSTGRES_PORT}
+        target: ${MYSQL_USER}:${MYSQL_PASS}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}
         user: ${MYSQL_PORT}
         password: ${MYSQL_PASS}
-        database: ${MYSQL_DATABASE}
 tasks:
   use_role: true
   directory: ${DATADIR}/log

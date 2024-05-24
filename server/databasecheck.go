@@ -140,8 +140,3 @@ func (viewer *RestServer) CloseConfig() {
 	// done <- true
 	services.CloseConfig()
 }
-
-// String representation of Database instance
-func (db *Database) String() string {
-	return db.User + ":***@" + db.Host + ":" + db.Port
-}

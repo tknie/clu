@@ -196,7 +196,7 @@ func (Handler) BrowseLocation(ctx context.Context, params api.BrowseLocationPara
 	if fileInfo.IsDir() {
 		return returnDirectoryInfo(d, path, params.Filter.Value, f)
 	}
-	return returnFileStream(d, path, f)
+	return returnFileStream(d, f)
 }
 
 // returnDirectoryInfo generate directory information list
@@ -238,7 +238,7 @@ func returnDirectoryInfo(d *Directory, path, pattern string, f *os.File) (api.Br
 }
 
 // returnFileStream return stream from a file to the corresponding HTTP response
-func returnFileStream(d *Directory, path string, f *os.File) (api.BrowseLocationRes, error) {
+func returnFileStream(d *Directory, f *os.File) (api.BrowseLocationRes, error) {
 	read, err := initStreamFromFile(f)
 	if err != nil {
 		log.Log.Errorf("Error download file %s:%v", d.Location, err)

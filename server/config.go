@@ -13,10 +13,12 @@ package server
 
 import (
 	"embed"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/go-openapi/runtime/flagext"
+	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
 	"github.com/tknie/services/auth"
@@ -192,13 +194,10 @@ type Directory struct {
 
 // Database database
 type Database struct {
-	Driver string `yaml:"driver"`
-	// URL      string `yaml:"url,omitempty"`
-	Host     string `yaml:"host,omitempty"`
-	Port     string `yaml:"port,omitempty"`
+	Driver   string `yaml:"driver"`
 	User     string `yaml:"user,omitempty"`
 	Password string `yaml:"password,omitempty"`
-	Database string `yaml:"database,omitempty"`
+	Target   string `yaml:"target,omitempty"`
 	Table    string `yaml:"table,omitempty"`
 	Enabled  bool   `yaml:"enabled,omitempty"`
 }
@@ -230,4 +229,17 @@ func LoadedConfig() {
 		f()
 	}
 	services.ServerMessage("Configuration loading completed")
+}
+
+// String representation of Database instance
+func (db *Database) String() string {
+	ref, p, err := common.NewReference(db.Target)
+	if err != nil {
+		return "<Error: " + err.Error() + ">"
+	}
+	if db.Password == "" {
+		db.Password = p
+	}
+	port := strconv.Itoa(ref.Port)
+	return db.User + ":***@" + ref.Host + ":" + port
 }

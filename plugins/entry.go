@@ -55,7 +55,7 @@ const suffix = ".so"
 type Loader interface {
 	Name() string
 	Version() string
-	Types() []int
+	Types() []PluginTypes
 	Stop()
 }
 
@@ -194,8 +194,8 @@ func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 	pt := loader.Types()
 	for _, t := range pt {
 		switch t {
-		case int(NoPlugin):
-		case int(AuditPlugin):
+		case NoPlugin:
+		case AuditPlugin:
 			symAudit, err := plug.Lookup("Audit")
 			if err != nil {
 				services.ServerMessage("Error opening Audit plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
@@ -204,7 +204,7 @@ func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 				audit := symAudit.(Audit)
 				auditPlugins[info.Name()] = &AuditLoader{loader, audit}
 			}
-		case int(AdabasPlugin):
+		case AdabasPlugin:
 			symAdabas, err := plug.Lookup("Adabas")
 			if err != nil {
 				services.ServerMessage("Error opening Adabas plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
@@ -213,7 +213,7 @@ func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 				adaSym := symAdabas.(Adabas)
 				adabasPlugins[info.Name()] = &AdabasLoader{loader, adaSym}
 			}
-		case int(AuthPlugin):
+		case AuthPlugin:
 			symCallback, err := plug.Lookup("Callback")
 			if err != nil {
 				services.ServerMessage("Error opening Authenticate/Authorize plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
@@ -221,7 +221,7 @@ func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 				services.ServerMessage("Authenticate/Authorize plugin: %s Version: %s", loader.Name(), loader.Version())
 				fmt.Printf("%#v\n", symCallback)
 			}
-		case int(ExtendPlugin):
+		case ExtendPlugin:
 			symExtend, err := plug.Lookup("EntryPoint")
 			if err != nil {
 				services.ServerMessage("Error opening Extend plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
