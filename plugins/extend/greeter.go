@@ -1,5 +1,5 @@
 /*
-* Copyright 2022-2023 Thorsten A. Knieling
+* Copyright 2022-2024 Thorsten A. Knieling
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	ht "github.com/ogen-go/ogen/http"
 
@@ -45,7 +46,7 @@ func (g greeting) EntryPoint() string {
 	return "test"
 }
 
-func (g greeting) Call(path string) (r api.CallExtendRes, _ error) {
+func (g greeting) Call(path string, req *http.Request) (r api.CallExtendRes, _ error) {
 	fmt.Println("Extend plugin call received:" + path)
 	return r, ht.ErrNotImplemented
 }

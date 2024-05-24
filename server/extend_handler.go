@@ -1,5 +1,5 @@
 /*
-* Copyright 2022-2023 Thorsten A. Knieling
+* Copyright 2022-2024 Thorsten A. Knieling
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -13,12 +13,16 @@ package server
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"path/filepath"
 	"strings"
 	"sync"
 
 	ht "github.com/ogen-go/ogen/http"
+	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
+	"github.com/tknie/log"
 )
 
 var entryMap = sync.Map{}
@@ -26,7 +30,7 @@ var entryMap = sync.Map{}
 // RestExtend Adabas method to send to plugin
 type RestExtend interface {
 	EntryPoint() string
-	Call(path string) (r api.CallExtendRes, _ error)
+	Call(path string, req *http.Request) (r api.CallExtendRes, _ error)
 }
 
 // RegisterExtend register the extend handler
@@ -40,11 +44,16 @@ func RegisterExtend(extend RestExtend) {
 //
 // GET /rest/extend/{path}
 func (Handler) CallExtend(ctx context.Context, params api.CallExtendParams) (r api.CallExtendRes, _ error) {
+	session := ctx.(*clu.Context)
+	log.Log.Debugf("Generate JWT token")
+	fmt.Printf("Call extend: %s,%#v\n", params.Path, params.Param)
+	fmt.Printf("             %#v\n", session.CurrentRequest.UserAgent())
+	fmt.Printf("             %#v\n", session.CurrentRequest.FormValue("xx"))
 	e := filepath.Clean(params.Path)
 	parts := strings.Split(e, "/")
 
 	if entryPoint, ok := entryMap.Load(parts[0]); ok {
-		return entryPoint.(RestExtend).Call(e)
+		return entryPoint.(RestExtend).Call(e, session.CurrentRequest)
 	}
 	return r, ht.ErrNotImplemented
 }
