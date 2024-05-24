@@ -360,7 +360,7 @@ type Invoker interface {
 	// be used.
 	//
 	// POST /rest/database
-	PostDatabase(ctx context.Context, request *Database) (PostDatabaseRes, error)
+	PostDatabase(ctx context.Context, request OptDatabase) (PostDatabaseRes, error)
 	// PostJob invokes postJob operation.
 	//
 	// Create a new Job database.
@@ -1720,16 +1720,19 @@ func (c *Client) sendBatchSelect(ctx context.Context, params BatchSelectParams) 
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeArray(func(e uri.Encoder) error {
-				for i, item := range params.Param {
-					if err := func() error {
-						return e.EncodeValue(conv.StringToString(item))
-					}(); err != nil {
-						return errors.Wrapf(err, "[%d]", i)
+			if params.Param != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Param {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
 					}
-				}
-				return nil
-			})
+					return nil
+				})
+			}
+			return nil
 		}); err != nil {
 			return res, errors.Wrap(err, "encode query")
 		}
@@ -2191,16 +2194,19 @@ func (c *Client) sendCallExtend(ctx context.Context, params CallExtendParams) (r
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeArray(func(e uri.Encoder) error {
-				for i, item := range params.Param {
-					if err := func() error {
-						return e.EncodeValue(conv.StringToString(item))
-					}(); err != nil {
-						return errors.Wrapf(err, "[%d]", i)
+			if params.Param != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Param {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
 					}
-				}
-				return nil
-			})
+					return nil
+				})
+			}
+			return nil
 		}); err != nil {
 			return res, errors.Wrap(err, "encode query")
 		}
@@ -9301,12 +9307,12 @@ func (c *Client) sendLogoutSessionCompat(ctx context.Context) (res LogoutSession
 // be used.
 //
 // POST /rest/database
-func (c *Client) PostDatabase(ctx context.Context, request *Database) (PostDatabaseRes, error) {
+func (c *Client) PostDatabase(ctx context.Context, request OptDatabase) (PostDatabaseRes, error) {
 	res, err := c.sendPostDatabase(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res PostDatabaseRes, err error) {
+func (c *Client) sendPostDatabase(ctx context.Context, request OptDatabase) (res PostDatabaseRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postDatabase"),
 		semconv.HTTPMethodKey.String("POST"),

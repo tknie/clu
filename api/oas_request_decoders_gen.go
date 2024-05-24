@@ -146,6 +146,7 @@ func (s *Server) decodeCallPostExtendRequest(r *http.Request) (
 				request.UploadFile.SetTo(ht.MultipartFile{
 					Name:   fh.Filename,
 					File:   f,
+					Size:   fh.Size,
 					Header: fh.Header,
 				})
 				return nil
@@ -222,6 +223,7 @@ func (s *Server) decodeInsertMapFileRecordsRequest(r *http.Request) (
 					optForm.Data.SetTo(ht.MultipartFile{
 						Name:   fh.Filename,
 						File:   f,
+						Size:   fh.Size,
 						Header: fh.Header,
 					})
 					return nil
@@ -308,7 +310,7 @@ func (s *Server) decodeInsertRecordRequest(r *http.Request) (
 }
 
 func (s *Server) decodePostDatabaseRequest(r *http.Request) (
-	req *Database,
+	req OptDatabase,
 	close func() error,
 	rerr error,
 ) {
@@ -350,14 +352,12 @@ func (s *Server) decodePostDatabaseRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request *Database
+		var request OptDatabase
 		if err := func() error {
-			request = nil
-			var elem Database
-			if err := elem.Decode(d); err != nil {
+			request.Reset()
+			if err := request.Decode(d); err != nil {
 				return err
 			}
-			request = &elem
 			if err := d.Skip(); err != io.EOF {
 				return errors.New("unexpected trailing data")
 			}
@@ -666,6 +666,7 @@ func (s *Server) decodeUpdateLobByMapRequest(r *http.Request) (
 				request.UploadLob = ht.MultipartFile{
 					Name:   fh.Filename,
 					File:   f,
+					Size:   fh.Size,
 					Header: fh.Header,
 				}
 				return nil
@@ -804,6 +805,7 @@ func (s *Server) decodeUploadFileRequest(r *http.Request) (
 				request.UploadFile = ht.MultipartFile{
 					Name:   fh.Filename,
 					File:   f,
+					Size:   fh.Size,
 					Header: fh.Header,
 				}
 				return nil

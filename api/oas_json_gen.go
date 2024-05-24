@@ -2054,29 +2054,43 @@ func (s *CreateDirectoryNotFound) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *Database) Encode(e *jx.Encoder) {
+func (s Database) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
-// encodeFields encodes fields.
-func (s *Database) encodeFields(e *jx.Encoder) {
-}
+// encodeFields implements json.Marshaler.
+func (s Database) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
 
-var jsonFieldsNameOfDatabase = [0]string{}
+		if len(elem) != 0 {
+			e.Raw(elem)
+		}
+	}
+}
 
 // Decode decodes Database from json.
 func (s *Database) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode Database to nil")
 	}
-
+	m := s.init()
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		default:
-			return d.Skip()
+		var elem jx.Raw
+		if err := func() error {
+			v, err := d.RawAppend(nil)
+			elem = jx.Raw(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
 		}
+		m[string(k)] = elem
+		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode Database")
 	}
@@ -2085,7 +2099,7 @@ func (s *Database) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *Database) MarshalJSON() ([]byte, error) {
+func (s Database) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
@@ -3280,7 +3294,7 @@ func (s *Environments) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *Environments) encodeFields(e *jx.Encoder) {
 	{
-		if s.Environment != nil {
+		if s.Environment.Set {
 			e.FieldStart("Environment")
 			s.Environment.Encode(e)
 		}
@@ -3301,12 +3315,10 @@ func (s *Environments) Decode(d *jx.Decoder) error {
 		switch string(k) {
 		case "Environment":
 			if err := func() error {
-				s.Environment = nil
-				var elem EnvironmentsEnvironment
-				if err := elem.Decode(d); err != nil {
+				s.Environment.Reset()
+				if err := s.Environment.Decode(d); err != nil {
 					return err
 				}
-				s.Environment = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"Environment\"")
@@ -3336,29 +3348,43 @@ func (s *Environments) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *EnvironmentsEnvironment) Encode(e *jx.Encoder) {
+func (s EnvironmentsEnvironment) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
-// encodeFields encodes fields.
-func (s *EnvironmentsEnvironment) encodeFields(e *jx.Encoder) {
-}
+// encodeFields implements json.Marshaler.
+func (s EnvironmentsEnvironment) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
 
-var jsonFieldsNameOfEnvironmentsEnvironment = [0]string{}
+		if len(elem) != 0 {
+			e.Raw(elem)
+		}
+	}
+}
 
 // Decode decodes EnvironmentsEnvironment from json.
 func (s *EnvironmentsEnvironment) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode EnvironmentsEnvironment to nil")
 	}
-
+	m := s.init()
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		default:
-			return d.Skip()
+		var elem jx.Raw
+		if err := func() error {
+			v, err := d.RawAppend(nil)
+			elem = jx.Raw(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
 		}
+		m[string(k)] = elem
+		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode EnvironmentsEnvironment")
 	}
@@ -3367,7 +3393,7 @@ func (s *EnvironmentsEnvironment) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *EnvironmentsEnvironment) MarshalJSON() ([]byte, error) {
+func (s EnvironmentsEnvironment) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
@@ -7053,7 +7079,7 @@ func (s *Mapping) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Format != nil {
+		if s.Format.Set {
 			e.FieldStart("format")
 			s.Format.Encode(e)
 		}
@@ -7085,12 +7111,10 @@ func (s *Mapping) Decode(d *jx.Decoder) error {
 			}
 		case "format":
 			if err := func() error {
-				s.Format = nil
-				var elem MappingFormat
-				if err := elem.Decode(d); err != nil {
+				s.Format.Reset()
+				if err := s.Format.Decode(d); err != nil {
 					return err
 				}
-				s.Format = &elem
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"format\"")
@@ -7120,29 +7144,43 @@ func (s *Mapping) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *MappingFormat) Encode(e *jx.Encoder) {
+func (s MappingFormat) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
-// encodeFields encodes fields.
-func (s *MappingFormat) encodeFields(e *jx.Encoder) {
-}
+// encodeFields implements json.Marshaler.
+func (s MappingFormat) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
 
-var jsonFieldsNameOfMappingFormat = [0]string{}
+		if len(elem) != 0 {
+			e.Raw(elem)
+		}
+	}
+}
 
 // Decode decodes MappingFormat from json.
 func (s *MappingFormat) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode MappingFormat to nil")
 	}
-
+	m := s.init()
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		default:
-			return d.Skip()
+		var elem jx.Raw
+		if err := func() error {
+			v, err := d.RawAppend(nil)
+			elem = jx.Raw(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
 		}
+		m[string(k)] = elem
+		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode MappingFormat")
 	}
@@ -7151,7 +7189,7 @@ func (s *MappingFormat) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *MappingFormat) MarshalJSON() ([]byte, error) {
+func (s MappingFormat) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
@@ -7775,6 +7813,40 @@ func (s *OptConfigServerLogLocation) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes Database as json.
+func (o OptDatabase) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes Database from json.
+func (o *OptDatabase) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptDatabase to nil")
+	}
+	o.Set = true
+	o.Value = make(Database)
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptDatabase) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptDatabase) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes DatabaseConfig as json.
 func (o OptDatabaseConfig) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -7874,6 +7946,40 @@ func (s OptDateTime) MarshalJSON() ([]byte, error) {
 func (s *OptDateTime) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d, json.DecodeDateTime)
+}
+
+// Encode encodes EnvironmentsEnvironment as json.
+func (o OptEnvironmentsEnvironment) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes EnvironmentsEnvironment from json.
+func (o *OptEnvironmentsEnvironment) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptEnvironmentsEnvironment to nil")
+	}
+	o.Set = true
+	o.Value = make(EnvironmentsEnvironment)
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptEnvironmentsEnvironment) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptEnvironmentsEnvironment) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
 }
 
 // Encode encodes ErrorError as json.
@@ -8505,6 +8611,40 @@ func (s OptMapFieldShortName) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptMapFieldShortName) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes MappingFormat as json.
+func (o OptMappingFormat) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes MappingFormat from json.
+func (o *OptMappingFormat) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptMappingFormat to nil")
+	}
+	o.Set = true
+	o.Value = make(MappingFormat)
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptMappingFormat) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptMappingFormat) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -9591,29 +9731,43 @@ func (s *SessionsSession) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *SessionsSessionUserQueueEntryItem) Encode(e *jx.Encoder) {
+func (s SessionsSessionUserQueueEntryItem) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
-// encodeFields encodes fields.
-func (s *SessionsSessionUserQueueEntryItem) encodeFields(e *jx.Encoder) {
-}
+// encodeFields implements json.Marshaler.
+func (s SessionsSessionUserQueueEntryItem) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
 
-var jsonFieldsNameOfSessionsSessionUserQueueEntryItem = [0]string{}
+		if len(elem) != 0 {
+			e.Raw(elem)
+		}
+	}
+}
 
 // Decode decodes SessionsSessionUserQueueEntryItem from json.
 func (s *SessionsSessionUserQueueEntryItem) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode SessionsSessionUserQueueEntryItem to nil")
 	}
-
+	m := s.init()
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		default:
-			return d.Skip()
+		var elem jx.Raw
+		if err := func() error {
+			v, err := d.RawAppend(nil)
+			elem = jx.Raw(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
 		}
+		m[string(k)] = elem
+		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode SessionsSessionUserQueueEntryItem")
 	}
@@ -9622,7 +9776,7 @@ func (s *SessionsSessionUserQueueEntryItem) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *SessionsSessionUserQueueEntryItem) MarshalJSON() ([]byte, error) {
+func (s SessionsSessionUserQueueEntryItem) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil

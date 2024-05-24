@@ -9,14 +9,14 @@ require (
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.0
 	github.com/jackc/pgx/v5 v5.5.5
-	github.com/ogen-go/ogen v1.1.0
+	github.com/ogen-go/ogen v1.2.0
 	github.com/rs/cors v1.11.0
 	github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
 	github.com/tknie/services v0.0.0-20240427174324-10f35ca530b7
-	go.opentelemetry.io/otel v1.26.0
-	go.opentelemetry.io/otel/metric v1.26.0
-	go.opentelemetry.io/otel/trace v1.26.0
+	go.opentelemetry.io/otel v1.27.0
+	go.opentelemetry.io/otel/metric v1.27.0
+	go.opentelemetry.io/otel/trace v1.27.0
 	go.uber.org/multierr v1.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -25,7 +25,7 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
-	github.com/go-logr/logr v1.4.1 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/godror/godror v0.44.0 // indirect

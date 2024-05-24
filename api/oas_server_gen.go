@@ -344,7 +344,7 @@ type Handler interface {
 	// be used.
 	//
 	// POST /rest/database
-	PostDatabase(ctx context.Context, req *Database) (PostDatabaseRes, error)
+	PostDatabase(ctx context.Context, req OptDatabase) (PostDatabaseRes, error)
 	// PostJob implements postJob operation.
 	//
 	// Create a new Job database.

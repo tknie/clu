@@ -1141,7 +1141,16 @@ type CreateDirectoryUnauthorized struct{}
 func (*CreateDirectoryUnauthorized) createDirectoryRes() {}
 
 // Ref: #/components/schemas/Database
-type Database struct{}
+type Database map[string]jx.Raw
+
+func (s *Database) init() Database {
+	m := *s
+	if m == nil {
+		m = map[string]jx.Raw{}
+		*s = m
+	}
+	return m
+}
 
 // Ref: #/components/schemas/DatabaseConfig
 type DatabaseConfig struct {
@@ -1806,20 +1815,29 @@ func (*DownloadFileUnauthorized) downloadFileRes() {}
 
 // Ref: #/components/schemas/Environments
 type Environments struct {
-	Environment *EnvironmentsEnvironment `json:"Environment"`
+	Environment OptEnvironmentsEnvironment `json:"Environment"`
 }
 
 // GetEnvironment returns the value of Environment.
-func (s *Environments) GetEnvironment() *EnvironmentsEnvironment {
+func (s *Environments) GetEnvironment() OptEnvironmentsEnvironment {
 	return s.Environment
 }
 
 // SetEnvironment sets the value of Environment.
-func (s *Environments) SetEnvironment(val *EnvironmentsEnvironment) {
+func (s *Environments) SetEnvironment(val OptEnvironmentsEnvironment) {
 	s.Environment = val
 }
 
-type EnvironmentsEnvironment struct{}
+type EnvironmentsEnvironment map[string]jx.Raw
+
+func (s *EnvironmentsEnvironment) init() EnvironmentsEnvironment {
+	m := *s
+	if m == nil {
+		m = map[string]jx.Raw{}
+		*s = m
+	}
+	return m
+}
 
 // EnvironmentsHeaders wraps Environments with response headers.
 type EnvironmentsHeaders struct {
@@ -3691,8 +3709,8 @@ func (s *MapFieldShortName) SetFormat(val OptString) {
 
 // Ref: #/components/schemas/mapping
 type Mapping struct {
-	Map    OptMappingMap  `json:"Map"`
-	Format *MappingFormat `json:"format"`
+	Map    OptMappingMap    `json:"Map"`
+	Format OptMappingFormat `json:"format"`
 }
 
 // GetMap returns the value of Map.
@@ -3701,7 +3719,7 @@ func (s *Mapping) GetMap() OptMappingMap {
 }
 
 // GetFormat returns the value of Format.
-func (s *Mapping) GetFormat() *MappingFormat {
+func (s *Mapping) GetFormat() OptMappingFormat {
 	return s.Format
 }
 
@@ -3711,11 +3729,20 @@ func (s *Mapping) SetMap(val OptMappingMap) {
 }
 
 // SetFormat sets the value of Format.
-func (s *Mapping) SetFormat(val *MappingFormat) {
+func (s *Mapping) SetFormat(val OptMappingFormat) {
 	s.Format = val
 }
 
-type MappingFormat struct{}
+type MappingFormat map[string]jx.Raw
+
+func (s *MappingFormat) init() MappingFormat {
+	m := *s
+	if m == nil {
+		m = map[string]jx.Raw{}
+		*s = m
+	}
+	return m
+}
 
 // MappingHeaders wraps Mapping with response headers.
 type MappingHeaders struct {
@@ -4274,6 +4301,52 @@ func (o OptConfigServerLogLocation) Or(d ConfigServerLogLocation) ConfigServerLo
 	return d
 }
 
+// NewOptDatabase returns new OptDatabase with value set to v.
+func NewOptDatabase(v Database) OptDatabase {
+	return OptDatabase{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDatabase is optional Database.
+type OptDatabase struct {
+	Value Database
+	Set   bool
+}
+
+// IsSet returns true if OptDatabase was set.
+func (o OptDatabase) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDatabase) Reset() {
+	var v Database
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDatabase) SetTo(v Database) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDatabase) Get() (v Database, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDatabase) Or(d Database) Database {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptDatabaseConfig returns new OptDatabaseConfig with value set to v.
 func NewOptDatabaseConfig(v DatabaseConfig) OptDatabaseConfig {
 	return OptDatabaseConfig{
@@ -4406,6 +4479,52 @@ func (o OptDateTime) Get() (v time.Time, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptDateTime) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptEnvironmentsEnvironment returns new OptEnvironmentsEnvironment with value set to v.
+func NewOptEnvironmentsEnvironment(v EnvironmentsEnvironment) OptEnvironmentsEnvironment {
+	return OptEnvironmentsEnvironment{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptEnvironmentsEnvironment is optional EnvironmentsEnvironment.
+type OptEnvironmentsEnvironment struct {
+	Value EnvironmentsEnvironment
+	Set   bool
+}
+
+// IsSet returns true if OptEnvironmentsEnvironment was set.
+func (o OptEnvironmentsEnvironment) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptEnvironmentsEnvironment) Reset() {
+	var v EnvironmentsEnvironment
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptEnvironmentsEnvironment) SetTo(v EnvironmentsEnvironment) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptEnvironmentsEnvironment) Get() (v EnvironmentsEnvironment, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptEnvironmentsEnvironment) Or(d EnvironmentsEnvironment) EnvironmentsEnvironment {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -5378,6 +5497,52 @@ func (o OptMapFieldShortName) Or(d MapFieldShortName) MapFieldShortName {
 	return d
 }
 
+// NewOptMappingFormat returns new OptMappingFormat with value set to v.
+func NewOptMappingFormat(v MappingFormat) OptMappingFormat {
+	return OptMappingFormat{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptMappingFormat is optional MappingFormat.
+type OptMappingFormat struct {
+	Value MappingFormat
+	Set   bool
+}
+
+// IsSet returns true if OptMappingFormat was set.
+func (o OptMappingFormat) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptMappingFormat) Reset() {
+	var v MappingFormat
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptMappingFormat) SetTo(v MappingFormat) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptMappingFormat) Get() (v MappingFormat, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptMappingFormat) Or(d MappingFormat) MappingFormat {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptMappingLocation returns new OptMappingLocation with value set to v.
 func NewOptMappingLocation(v MappingLocation) OptMappingLocation {
 	return OptMappingLocation{
@@ -6146,7 +6311,16 @@ func (s *SessionsSession) SetUserQueueEntry(val []SessionsSessionUserQueueEntryI
 	s.UserQueueEntry = val
 }
 
-type SessionsSessionUserQueueEntryItem struct{}
+type SessionsSessionUserQueueEntryItem map[string]jx.Raw
+
+func (s *SessionsSessionUserQueueEntryItem) init() SessionsSessionUserQueueEntryItem {
+	m := *s
+	if m == nil {
+		m = map[string]jx.Raw{}
+		*s = m
+	}
+	return m
+}
 
 // SetConfigForbidden is response for SetConfig operation.
 type SetConfigForbidden struct{}

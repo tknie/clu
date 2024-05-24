@@ -39,22 +39,28 @@ func (s *Server) handleAccessRequest(args [1]string, argsEscaped bool, w http.Re
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -74,7 +80,7 @@ func (s *Server) handleAccessRequest(args [1]string, argsEscaped bool, w http.Re
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -92,7 +98,7 @@ func (s *Server) handleAccessRequest(args [1]string, argsEscaped bool, w http.Re
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -110,7 +116,7 @@ func (s *Server) handleAccessRequest(args [1]string, argsEscaped bool, w http.Re
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -141,7 +147,7 @@ func (s *Server) handleAccessRequest(args [1]string, argsEscaped bool, w http.Re
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -152,7 +158,7 @@ func (s *Server) handleAccessRequest(args [1]string, argsEscaped bool, w http.Re
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -198,7 +204,7 @@ func (s *Server) handleAccessRequest(args [1]string, argsEscaped bool, w http.Re
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -207,13 +213,13 @@ func (s *Server) handleAccessRequest(args [1]string, argsEscaped bool, w http.Re
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeAccessResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -240,22 +246,28 @@ func (s *Server) handleAdaptPermissionRequest(args [1]string, argsEscaped bool, 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -275,7 +287,7 @@ func (s *Server) handleAdaptPermissionRequest(args [1]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -293,7 +305,7 @@ func (s *Server) handleAdaptPermissionRequest(args [1]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -311,7 +323,7 @@ func (s *Server) handleAdaptPermissionRequest(args [1]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -342,7 +354,7 @@ func (s *Server) handleAdaptPermissionRequest(args [1]string, argsEscaped bool, 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -353,7 +365,7 @@ func (s *Server) handleAdaptPermissionRequest(args [1]string, argsEscaped bool, 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -399,7 +411,7 @@ func (s *Server) handleAdaptPermissionRequest(args [1]string, argsEscaped bool, 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -408,13 +420,13 @@ func (s *Server) handleAdaptPermissionRequest(args [1]string, argsEscaped bool, 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeAdaptPermissionResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -441,22 +453,28 @@ func (s *Server) handleAddAccessRequest(args [1]string, argsEscaped bool, w http
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -476,7 +494,7 @@ func (s *Server) handleAddAccessRequest(args [1]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -494,7 +512,7 @@ func (s *Server) handleAddAccessRequest(args [1]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -512,7 +530,7 @@ func (s *Server) handleAddAccessRequest(args [1]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -543,7 +561,7 @@ func (s *Server) handleAddAccessRequest(args [1]string, argsEscaped bool, w http
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -554,7 +572,7 @@ func (s *Server) handleAddAccessRequest(args [1]string, argsEscaped bool, w http
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -604,7 +622,7 @@ func (s *Server) handleAddAccessRequest(args [1]string, argsEscaped bool, w http
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -613,13 +631,13 @@ func (s *Server) handleAddAccessRequest(args [1]string, argsEscaped bool, w http
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeAddAccessResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -646,22 +664,28 @@ func (s *Server) handleAddRBACResourceRequest(args [3]string, argsEscaped bool, 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -681,7 +705,7 @@ func (s *Server) handleAddRBACResourceRequest(args [3]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -699,7 +723,7 @@ func (s *Server) handleAddRBACResourceRequest(args [3]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -717,7 +741,7 @@ func (s *Server) handleAddRBACResourceRequest(args [3]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -748,7 +772,7 @@ func (s *Server) handleAddRBACResourceRequest(args [3]string, argsEscaped bool, 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -759,7 +783,7 @@ func (s *Server) handleAddRBACResourceRequest(args [3]string, argsEscaped bool, 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -813,7 +837,7 @@ func (s *Server) handleAddRBACResourceRequest(args [3]string, argsEscaped bool, 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -822,13 +846,13 @@ func (s *Server) handleAddRBACResourceRequest(args [3]string, argsEscaped bool, 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeAddRBACResourceResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -855,22 +879,28 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -890,7 +920,7 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -908,7 +938,7 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -926,7 +956,7 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -957,7 +987,7 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -968,7 +998,7 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -1018,7 +1048,7 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -1027,13 +1057,13 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeAddViewResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -1060,22 +1090,28 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -1095,7 +1131,7 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -1113,7 +1149,7 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -1131,7 +1167,7 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -1162,7 +1198,7 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -1173,7 +1209,7 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -1223,7 +1259,7 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -1232,13 +1268,13 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeBatchParameterQueryResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -1265,22 +1301,28 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -1300,7 +1342,7 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -1318,7 +1360,7 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -1336,7 +1378,7 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -1367,7 +1409,7 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -1378,7 +1420,7 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -1388,7 +1430,7 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -1439,7 +1481,7 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -1448,13 +1490,13 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeBatchQueryResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -1481,22 +1523,28 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -1516,7 +1564,7 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -1534,7 +1582,7 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -1552,7 +1600,7 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -1583,7 +1631,7 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -1594,7 +1642,7 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -1644,7 +1692,7 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -1653,13 +1701,13 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeBatchSelectResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -1686,22 +1734,28 @@ func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w htt
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -1721,7 +1775,7 @@ func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -1739,7 +1793,7 @@ func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -1757,7 +1811,7 @@ func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -1788,7 +1842,7 @@ func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w htt
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -1830,7 +1884,7 @@ func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w htt
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -1839,13 +1893,13 @@ func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w htt
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeBrowseListResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -1872,22 +1926,28 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -1907,7 +1967,7 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -1925,7 +1985,7 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -1943,7 +2003,7 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -1974,7 +2034,7 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -1985,7 +2045,7 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -2035,7 +2095,7 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -2044,13 +2104,13 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeBrowseLocationResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -2077,22 +2137,28 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -2112,7 +2178,7 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -2130,7 +2196,7 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -2148,7 +2214,7 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -2179,7 +2245,7 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -2190,7 +2256,7 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -2240,7 +2306,7 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -2249,13 +2315,13 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeCallExtendResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -2282,22 +2348,28 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -2317,7 +2389,7 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -2335,7 +2407,7 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -2353,7 +2425,7 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -2384,7 +2456,7 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -2395,7 +2467,7 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -2405,7 +2477,7 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -2460,7 +2532,7 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -2469,13 +2541,13 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeCallPostExtendResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -2502,22 +2574,28 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -2537,7 +2615,7 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -2555,7 +2633,7 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -2573,7 +2651,7 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -2604,7 +2682,7 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -2615,7 +2693,7 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -2661,7 +2739,7 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -2670,13 +2748,13 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeCreateDirectoryResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -2703,22 +2781,28 @@ func (s *Server) handleDatabaseOperationRequest(args [1]string, argsEscaped bool
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -2738,7 +2822,7 @@ func (s *Server) handleDatabaseOperationRequest(args [1]string, argsEscaped bool
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -2756,7 +2840,7 @@ func (s *Server) handleDatabaseOperationRequest(args [1]string, argsEscaped bool
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -2774,7 +2858,7 @@ func (s *Server) handleDatabaseOperationRequest(args [1]string, argsEscaped bool
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -2805,7 +2889,7 @@ func (s *Server) handleDatabaseOperationRequest(args [1]string, argsEscaped bool
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -2816,7 +2900,7 @@ func (s *Server) handleDatabaseOperationRequest(args [1]string, argsEscaped bool
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -2862,7 +2946,7 @@ func (s *Server) handleDatabaseOperationRequest(args [1]string, argsEscaped bool
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -2871,13 +2955,13 @@ func (s *Server) handleDatabaseOperationRequest(args [1]string, argsEscaped bool
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDatabaseOperationResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -2904,22 +2988,28 @@ func (s *Server) handleDatabasePostOperationsRequest(args [1]string, argsEscaped
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -2939,7 +3029,7 @@ func (s *Server) handleDatabasePostOperationsRequest(args [1]string, argsEscaped
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -2957,7 +3047,7 @@ func (s *Server) handleDatabasePostOperationsRequest(args [1]string, argsEscaped
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -2975,7 +3065,7 @@ func (s *Server) handleDatabasePostOperationsRequest(args [1]string, argsEscaped
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -3006,7 +3096,7 @@ func (s *Server) handleDatabasePostOperationsRequest(args [1]string, argsEscaped
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -3017,7 +3107,7 @@ func (s *Server) handleDatabasePostOperationsRequest(args [1]string, argsEscaped
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -3067,7 +3157,7 @@ func (s *Server) handleDatabasePostOperationsRequest(args [1]string, argsEscaped
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -3076,13 +3166,13 @@ func (s *Server) handleDatabasePostOperationsRequest(args [1]string, argsEscaped
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDatabasePostOperationsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -3109,22 +3199,28 @@ func (s *Server) handleDelAccessRequest(args [1]string, argsEscaped bool, w http
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -3144,7 +3240,7 @@ func (s *Server) handleDelAccessRequest(args [1]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -3162,7 +3258,7 @@ func (s *Server) handleDelAccessRequest(args [1]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -3180,7 +3276,7 @@ func (s *Server) handleDelAccessRequest(args [1]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -3211,7 +3307,7 @@ func (s *Server) handleDelAccessRequest(args [1]string, argsEscaped bool, w http
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -3222,7 +3318,7 @@ func (s *Server) handleDelAccessRequest(args [1]string, argsEscaped bool, w http
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -3272,7 +3368,7 @@ func (s *Server) handleDelAccessRequest(args [1]string, argsEscaped bool, w http
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -3281,13 +3377,13 @@ func (s *Server) handleDelAccessRequest(args [1]string, argsEscaped bool, w http
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDelAccessResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -3314,22 +3410,28 @@ func (s *Server) handleDeleteDatabaseRequest(args [1]string, argsEscaped bool, w
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -3349,7 +3451,7 @@ func (s *Server) handleDeleteDatabaseRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -3367,7 +3469,7 @@ func (s *Server) handleDeleteDatabaseRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -3385,7 +3487,7 @@ func (s *Server) handleDeleteDatabaseRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -3416,7 +3518,7 @@ func (s *Server) handleDeleteDatabaseRequest(args [1]string, argsEscaped bool, w
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -3427,7 +3529,7 @@ func (s *Server) handleDeleteDatabaseRequest(args [1]string, argsEscaped bool, w
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -3473,7 +3575,7 @@ func (s *Server) handleDeleteDatabaseRequest(args [1]string, argsEscaped bool, w
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -3482,13 +3584,13 @@ func (s *Server) handleDeleteDatabaseRequest(args [1]string, argsEscaped bool, w
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDeleteDatabaseResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -3515,22 +3617,28 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -3550,7 +3658,7 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -3568,7 +3676,7 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -3586,7 +3694,7 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -3617,7 +3725,7 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -3628,7 +3736,7 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -3678,7 +3786,7 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -3687,13 +3795,13 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDeleteExtendResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -3720,22 +3828,28 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -3755,7 +3869,7 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -3773,7 +3887,7 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -3791,7 +3905,7 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -3822,7 +3936,7 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -3833,7 +3947,7 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -3883,7 +3997,7 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -3892,13 +4006,13 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDeleteFileLocationResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -3925,22 +4039,28 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -3960,7 +4080,7 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -3978,7 +4098,7 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -3996,7 +4116,7 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -4027,7 +4147,7 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -4038,7 +4158,7 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -4088,7 +4208,7 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -4097,13 +4217,13 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDeleteJobResultResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -4130,22 +4250,28 @@ func (s *Server) handleDeleteRBACResourceRequest(args [3]string, argsEscaped boo
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -4165,7 +4291,7 @@ func (s *Server) handleDeleteRBACResourceRequest(args [3]string, argsEscaped boo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -4183,7 +4309,7 @@ func (s *Server) handleDeleteRBACResourceRequest(args [3]string, argsEscaped boo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -4201,7 +4327,7 @@ func (s *Server) handleDeleteRBACResourceRequest(args [3]string, argsEscaped boo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -4232,7 +4358,7 @@ func (s *Server) handleDeleteRBACResourceRequest(args [3]string, argsEscaped boo
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -4243,7 +4369,7 @@ func (s *Server) handleDeleteRBACResourceRequest(args [3]string, argsEscaped boo
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -4297,7 +4423,7 @@ func (s *Server) handleDeleteRBACResourceRequest(args [3]string, argsEscaped boo
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -4306,13 +4432,13 @@ func (s *Server) handleDeleteRBACResourceRequest(args [3]string, argsEscaped boo
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDeleteRBACResourceResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -4339,22 +4465,28 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -4374,7 +4506,7 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -4392,7 +4524,7 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -4410,7 +4542,7 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -4441,7 +4573,7 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -4452,7 +4584,7 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -4538,7 +4670,7 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -4547,13 +4679,13 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDeleteRecordsSearchedResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -4580,22 +4712,28 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -4615,7 +4753,7 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -4633,7 +4771,7 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -4651,7 +4789,7 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -4682,7 +4820,7 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -4693,7 +4831,7 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -4743,7 +4881,7 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -4752,13 +4890,13 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDeleteViewResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -4785,22 +4923,28 @@ func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -4820,7 +4964,7 @@ func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -4838,7 +4982,7 @@ func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -4856,7 +5000,7 @@ func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -4887,7 +5031,7 @@ func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -4898,7 +5042,7 @@ func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -4952,7 +5096,7 @@ func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -4961,13 +5105,13 @@ func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDisconnectTCPResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -4994,22 +5138,28 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -5029,7 +5179,7 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -5047,7 +5197,7 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -5065,7 +5215,7 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -5096,7 +5246,7 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -5107,7 +5257,7 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -5153,7 +5303,7 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -5162,13 +5312,13 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeDownloadFileResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -5195,22 +5345,28 @@ func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -5230,7 +5386,7 @@ func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -5248,7 +5404,7 @@ func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -5266,7 +5422,7 @@ func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -5297,7 +5453,7 @@ func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -5339,7 +5495,7 @@ func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -5348,13 +5504,13 @@ func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetConfigResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -5381,22 +5537,28 @@ func (s *Server) handleGetConnectionsRequest(args [1]string, argsEscaped bool, w
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -5416,7 +5578,7 @@ func (s *Server) handleGetConnectionsRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -5434,7 +5596,7 @@ func (s *Server) handleGetConnectionsRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -5452,7 +5614,7 @@ func (s *Server) handleGetConnectionsRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -5483,7 +5645,7 @@ func (s *Server) handleGetConnectionsRequest(args [1]string, argsEscaped bool, w
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -5494,7 +5656,7 @@ func (s *Server) handleGetConnectionsRequest(args [1]string, argsEscaped bool, w
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -5540,7 +5702,7 @@ func (s *Server) handleGetConnectionsRequest(args [1]string, argsEscaped bool, w
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -5549,13 +5711,13 @@ func (s *Server) handleGetConnectionsRequest(args [1]string, argsEscaped bool, w
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetConnectionsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -5582,22 +5744,28 @@ func (s *Server) handleGetDatabaseSessionsRequest(args [1]string, argsEscaped bo
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -5617,7 +5785,7 @@ func (s *Server) handleGetDatabaseSessionsRequest(args [1]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -5635,7 +5803,7 @@ func (s *Server) handleGetDatabaseSessionsRequest(args [1]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -5653,7 +5821,7 @@ func (s *Server) handleGetDatabaseSessionsRequest(args [1]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -5684,7 +5852,7 @@ func (s *Server) handleGetDatabaseSessionsRequest(args [1]string, argsEscaped bo
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -5695,7 +5863,7 @@ func (s *Server) handleGetDatabaseSessionsRequest(args [1]string, argsEscaped bo
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -5741,7 +5909,7 @@ func (s *Server) handleGetDatabaseSessionsRequest(args [1]string, argsEscaped bo
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -5750,13 +5918,13 @@ func (s *Server) handleGetDatabaseSessionsRequest(args [1]string, argsEscaped bo
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetDatabaseSessionsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -5783,22 +5951,28 @@ func (s *Server) handleGetDatabaseStatsRequest(args [1]string, argsEscaped bool,
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -5818,7 +5992,7 @@ func (s *Server) handleGetDatabaseStatsRequest(args [1]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -5836,7 +6010,7 @@ func (s *Server) handleGetDatabaseStatsRequest(args [1]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -5854,7 +6028,7 @@ func (s *Server) handleGetDatabaseStatsRequest(args [1]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -5885,7 +6059,7 @@ func (s *Server) handleGetDatabaseStatsRequest(args [1]string, argsEscaped bool,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -5896,7 +6070,7 @@ func (s *Server) handleGetDatabaseStatsRequest(args [1]string, argsEscaped bool,
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -5942,7 +6116,7 @@ func (s *Server) handleGetDatabaseStatsRequest(args [1]string, argsEscaped bool,
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -5951,13 +6125,13 @@ func (s *Server) handleGetDatabaseStatsRequest(args [1]string, argsEscaped bool,
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetDatabaseStatsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -5984,22 +6158,28 @@ func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w h
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -6019,7 +6199,7 @@ func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -6037,7 +6217,7 @@ func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -6055,7 +6235,7 @@ func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -6086,7 +6266,7 @@ func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w h
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -6128,7 +6308,7 @@ func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w h
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -6137,13 +6317,13 @@ func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w h
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetDatabasesResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -6170,22 +6350,28 @@ func (s *Server) handleGetEnvironmentsRequest(args [0]string, argsEscaped bool, 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err error
 	)
@@ -6226,7 +6412,7 @@ func (s *Server) handleGetEnvironmentsRequest(args [0]string, argsEscaped bool, 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -6235,13 +6421,13 @@ func (s *Server) handleGetEnvironmentsRequest(args [0]string, argsEscaped bool, 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetEnvironmentsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -6268,22 +6454,28 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -6303,7 +6495,7 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -6321,7 +6513,7 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -6339,7 +6531,7 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -6370,7 +6562,7 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -6381,7 +6573,7 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -6427,7 +6619,7 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -6436,13 +6628,13 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetFieldsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -6469,22 +6661,28 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -6504,7 +6702,7 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -6522,7 +6720,7 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -6540,7 +6738,7 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -6571,7 +6769,7 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -6582,7 +6780,7 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -6652,7 +6850,7 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -6661,13 +6859,13 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetImageResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -6694,22 +6892,28 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -6729,7 +6933,7 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -6747,7 +6951,7 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -6765,7 +6969,7 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -6796,7 +7000,7 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -6807,7 +7011,7 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -6857,7 +7061,7 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -6866,13 +7070,13 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetJobExecutionResultResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -6899,22 +7103,28 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -6934,7 +7144,7 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -6952,7 +7162,7 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -6970,7 +7180,7 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -7001,7 +7211,7 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -7012,7 +7222,7 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -7058,7 +7268,7 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -7067,13 +7277,13 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetJobFullInfoResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -7100,22 +7310,28 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -7135,7 +7351,7 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -7153,7 +7369,7 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -7171,7 +7387,7 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -7202,7 +7418,7 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -7213,7 +7429,7 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -7263,7 +7479,7 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -7272,13 +7488,13 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetJobResultResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -7305,22 +7521,28 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -7340,7 +7562,7 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -7358,7 +7580,7 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -7376,7 +7598,7 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -7407,7 +7629,7 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -7418,7 +7640,7 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -7468,7 +7690,7 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -7477,13 +7699,13 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetJobsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -7510,22 +7732,28 @@ func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -7545,7 +7773,7 @@ func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -7563,7 +7791,7 @@ func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -7581,7 +7809,7 @@ func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -7612,7 +7840,7 @@ func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -7654,7 +7882,7 @@ func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -7663,13 +7891,13 @@ func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetJobsConfigResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -7696,22 +7924,28 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -7731,7 +7965,7 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -7749,7 +7983,7 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -7767,7 +8001,7 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -7798,7 +8032,7 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -7809,7 +8043,7 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -7875,7 +8109,7 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -7884,13 +8118,13 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetLobByMapResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -7917,22 +8151,28 @@ func (s *Server) handleGetLoginSessionRequest(args [0]string, argsEscaped bool, 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -7952,7 +8192,7 @@ func (s *Server) handleGetLoginSessionRequest(args [0]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -7970,7 +8210,7 @@ func (s *Server) handleGetLoginSessionRequest(args [0]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -8000,7 +8240,7 @@ func (s *Server) handleGetLoginSessionRequest(args [0]string, argsEscaped bool, 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -8042,7 +8282,7 @@ func (s *Server) handleGetLoginSessionRequest(args [0]string, argsEscaped bool, 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -8051,13 +8291,13 @@ func (s *Server) handleGetLoginSessionRequest(args [0]string, argsEscaped bool, 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetLoginSessionResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -8084,22 +8324,28 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -8119,7 +8365,7 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -8137,7 +8383,7 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -8155,7 +8401,7 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -8186,7 +8432,7 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -8197,7 +8443,7 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -8243,7 +8489,7 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -8252,13 +8498,13 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetMapMetadataResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -8285,22 +8531,28 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -8320,7 +8572,7 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -8338,7 +8590,7 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -8356,7 +8608,7 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -8387,7 +8639,7 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -8398,7 +8650,7 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -8488,7 +8740,7 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -8497,13 +8749,13 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetMapRecordsFieldsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -8530,22 +8782,28 @@ func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.R
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -8565,7 +8823,7 @@ func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -8583,7 +8841,7 @@ func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -8601,7 +8859,7 @@ func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -8632,7 +8890,7 @@ func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.R
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -8674,7 +8932,7 @@ func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.R
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -8683,13 +8941,13 @@ func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.R
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetMapsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -8716,22 +8974,28 @@ func (s *Server) handleGetPermissionRequest(args [1]string, argsEscaped bool, w 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -8751,7 +9015,7 @@ func (s *Server) handleGetPermissionRequest(args [1]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -8769,7 +9033,7 @@ func (s *Server) handleGetPermissionRequest(args [1]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -8787,7 +9051,7 @@ func (s *Server) handleGetPermissionRequest(args [1]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -8818,7 +9082,7 @@ func (s *Server) handleGetPermissionRequest(args [1]string, argsEscaped bool, w 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -8829,7 +9093,7 @@ func (s *Server) handleGetPermissionRequest(args [1]string, argsEscaped bool, w 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -8879,7 +9143,7 @@ func (s *Server) handleGetPermissionRequest(args [1]string, argsEscaped bool, w 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -8888,13 +9152,13 @@ func (s *Server) handleGetPermissionRequest(args [1]string, argsEscaped bool, w 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetPermissionResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -8921,22 +9185,28 @@ func (s *Server) handleGetUserInfoRequest(args [0]string, argsEscaped bool, w ht
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err error
 	)
@@ -8977,7 +9247,7 @@ func (s *Server) handleGetUserInfoRequest(args [0]string, argsEscaped bool, w ht
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -8986,13 +9256,13 @@ func (s *Server) handleGetUserInfoRequest(args [0]string, argsEscaped bool, w ht
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetUserInfoResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -9019,22 +9289,28 @@ func (s *Server) handleGetVersionRequest(args [0]string, argsEscaped bool, w htt
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err error
 	)
@@ -9075,7 +9351,7 @@ func (s *Server) handleGetVersionRequest(args [0]string, argsEscaped bool, w htt
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -9084,13 +9360,13 @@ func (s *Server) handleGetVersionRequest(args [0]string, argsEscaped bool, w htt
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetVersionResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -9117,22 +9393,28 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -9152,7 +9434,7 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -9170,7 +9452,7 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -9188,7 +9470,7 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -9219,7 +9501,7 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -9230,7 +9512,7 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -9300,7 +9582,7 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -9309,13 +9591,13 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetVideoResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -9342,22 +9624,28 @@ func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -9377,7 +9665,7 @@ func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -9395,7 +9683,7 @@ func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -9413,7 +9701,7 @@ func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -9444,7 +9732,7 @@ func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -9486,7 +9774,7 @@ func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -9495,13 +9783,13 @@ func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeGetViewsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -9528,22 +9816,28 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -9563,7 +9857,7 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -9581,7 +9875,7 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -9599,7 +9893,7 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -9630,7 +9924,7 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -9641,7 +9935,7 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -9687,7 +9981,7 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -9696,13 +9990,13 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeInsertMapFileRecordsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -9729,22 +10023,28 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -9764,7 +10064,7 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -9782,7 +10082,7 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -9800,7 +10100,7 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -9831,7 +10131,7 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -9842,7 +10142,7 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -9852,7 +10152,7 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -9903,7 +10203,7 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -9912,13 +10212,13 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeInsertRecordResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -9945,22 +10245,28 @@ func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -9980,7 +10286,7 @@ func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -9998,7 +10304,7 @@ func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -10016,7 +10322,7 @@ func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -10047,7 +10353,7 @@ func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -10089,7 +10395,7 @@ func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -10098,13 +10404,13 @@ func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeListModellingResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -10131,22 +10437,28 @@ func (s *Server) handleListRBACResourceRequest(args [2]string, argsEscaped bool,
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -10166,7 +10478,7 @@ func (s *Server) handleListRBACResourceRequest(args [2]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -10184,7 +10496,7 @@ func (s *Server) handleListRBACResourceRequest(args [2]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -10202,7 +10514,7 @@ func (s *Server) handleListRBACResourceRequest(args [2]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -10233,7 +10545,7 @@ func (s *Server) handleListRBACResourceRequest(args [2]string, argsEscaped bool,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -10244,7 +10556,7 @@ func (s *Server) handleListRBACResourceRequest(args [2]string, argsEscaped bool,
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -10294,7 +10606,7 @@ func (s *Server) handleListRBACResourceRequest(args [2]string, argsEscaped bool,
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -10303,13 +10615,13 @@ func (s *Server) handleListRBACResourceRequest(args [2]string, argsEscaped bool,
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeListRBACResourceResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -10336,22 +10648,28 @@ func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w htt
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -10371,7 +10689,7 @@ func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -10389,7 +10707,7 @@ func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -10407,7 +10725,7 @@ func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -10438,7 +10756,7 @@ func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w htt
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -10480,7 +10798,7 @@ func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w htt
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -10489,13 +10807,13 @@ func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w htt
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeListTablesResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -10522,22 +10840,28 @@ func (s *Server) handleLoginSessionRequest(args [0]string, argsEscaped bool, w h
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -10557,7 +10881,7 @@ func (s *Server) handleLoginSessionRequest(args [0]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -10575,7 +10899,7 @@ func (s *Server) handleLoginSessionRequest(args [0]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -10605,7 +10929,7 @@ func (s *Server) handleLoginSessionRequest(args [0]string, argsEscaped bool, w h
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -10647,7 +10971,7 @@ func (s *Server) handleLoginSessionRequest(args [0]string, argsEscaped bool, w h
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -10656,13 +10980,13 @@ func (s *Server) handleLoginSessionRequest(args [0]string, argsEscaped bool, w h
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeLoginSessionResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -10689,22 +11013,28 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -10724,7 +11054,7 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -10742,7 +11072,7 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -10760,7 +11090,7 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -10791,7 +11121,7 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -10833,7 +11163,7 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -10842,13 +11172,13 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeLogoutSessionCompatResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -10876,22 +11206,28 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -10911,7 +11247,7 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -10929,7 +11265,7 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -10947,7 +11283,7 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -10978,7 +11314,7 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -10989,7 +11325,7 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -11012,7 +11348,7 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 		}
 
 		type (
-			Request  = *Database
+			Request  = OptDatabase
 			Params   = struct{}
 			Response = PostDatabaseRes
 		)
@@ -11035,7 +11371,7 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -11044,13 +11380,13 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodePostDatabaseResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -11077,22 +11413,28 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -11112,7 +11454,7 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -11130,7 +11472,7 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -11148,7 +11490,7 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -11179,7 +11521,7 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -11190,7 +11532,7 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -11236,7 +11578,7 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -11245,13 +11587,13 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodePostJobResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -11278,22 +11620,28 @@ func (s *Server) handlePushLoginSessionRequest(args [0]string, argsEscaped bool,
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -11313,7 +11661,7 @@ func (s *Server) handlePushLoginSessionRequest(args [0]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -11331,7 +11679,7 @@ func (s *Server) handlePushLoginSessionRequest(args [0]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -11361,7 +11709,7 @@ func (s *Server) handlePushLoginSessionRequest(args [0]string, argsEscaped bool,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -11403,7 +11751,7 @@ func (s *Server) handlePushLoginSessionRequest(args [0]string, argsEscaped bool,
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -11412,13 +11760,13 @@ func (s *Server) handlePushLoginSessionRequest(args [0]string, argsEscaped bool,
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodePushLoginSessionResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -11445,22 +11793,28 @@ func (s *Server) handlePutDatabaseResourceRequest(args [1]string, argsEscaped bo
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -11480,7 +11834,7 @@ func (s *Server) handlePutDatabaseResourceRequest(args [1]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -11498,7 +11852,7 @@ func (s *Server) handlePutDatabaseResourceRequest(args [1]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -11516,7 +11870,7 @@ func (s *Server) handlePutDatabaseResourceRequest(args [1]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -11547,7 +11901,7 @@ func (s *Server) handlePutDatabaseResourceRequest(args [1]string, argsEscaped bo
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -11558,7 +11912,7 @@ func (s *Server) handlePutDatabaseResourceRequest(args [1]string, argsEscaped bo
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -11616,7 +11970,7 @@ func (s *Server) handlePutDatabaseResourceRequest(args [1]string, argsEscaped bo
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -11625,13 +11979,13 @@ func (s *Server) handlePutDatabaseResourceRequest(args [1]string, argsEscaped bo
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodePutDatabaseResourceResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -11658,22 +12012,28 @@ func (s *Server) handleRemovePermissionRequest(args [1]string, argsEscaped bool,
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -11693,7 +12053,7 @@ func (s *Server) handleRemovePermissionRequest(args [1]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -11711,7 +12071,7 @@ func (s *Server) handleRemovePermissionRequest(args [1]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -11729,7 +12089,7 @@ func (s *Server) handleRemovePermissionRequest(args [1]string, argsEscaped bool,
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -11760,7 +12120,7 @@ func (s *Server) handleRemovePermissionRequest(args [1]string, argsEscaped bool,
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -11771,7 +12131,7 @@ func (s *Server) handleRemovePermissionRequest(args [1]string, argsEscaped bool,
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -11817,7 +12177,7 @@ func (s *Server) handleRemovePermissionRequest(args [1]string, argsEscaped bool,
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -11826,13 +12186,13 @@ func (s *Server) handleRemovePermissionRequest(args [1]string, argsEscaped bool,
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeRemovePermissionResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -11859,22 +12219,28 @@ func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bo
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -11894,7 +12260,7 @@ func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -11912,7 +12278,7 @@ func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -11930,7 +12296,7 @@ func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -11961,7 +12327,7 @@ func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bo
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -12003,7 +12369,7 @@ func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bo
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -12012,13 +12378,13 @@ func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bo
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeRemoveSessionCompatResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -12045,22 +12411,28 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -12080,7 +12452,7 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -12098,7 +12470,7 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -12116,7 +12488,7 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -12147,7 +12519,7 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -12158,7 +12530,7 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -12204,7 +12576,7 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -12213,13 +12585,13 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeSearchModellingResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -12246,22 +12618,28 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -12281,7 +12659,7 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -12299,7 +12677,7 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -12317,7 +12695,7 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -12348,7 +12726,7 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -12359,7 +12737,7 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -12445,7 +12823,7 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -12454,13 +12832,13 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeSearchRecordsFieldsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -12487,22 +12865,28 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -12522,7 +12906,7 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -12540,7 +12924,7 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -12558,7 +12942,7 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -12589,7 +12973,7 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -12600,7 +12984,7 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -12658,7 +13042,7 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -12667,13 +13051,13 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeSearchTableResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -12700,22 +13084,28 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -12735,7 +13125,7 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -12753,7 +13143,7 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -12771,7 +13161,7 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -12802,7 +13192,7 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -12813,7 +13203,7 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -12859,7 +13249,7 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -12868,13 +13258,13 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeSetConfigResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -12901,22 +13291,28 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -12936,7 +13332,7 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -12954,7 +13350,7 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -12972,7 +13368,7 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -13003,7 +13399,7 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -13014,7 +13410,7 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -13060,7 +13456,7 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -13069,13 +13465,13 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeSetJobsConfigResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -13102,22 +13498,28 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -13137,7 +13539,7 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -13155,7 +13557,7 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -13173,7 +13575,7 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -13204,7 +13606,7 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -13215,7 +13617,7 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -13261,7 +13663,7 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -13270,13 +13672,13 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeShutdownServerResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -13303,22 +13705,28 @@ func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w ht
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -13338,7 +13746,7 @@ func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -13356,7 +13764,7 @@ func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -13374,7 +13782,7 @@ func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w ht
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -13405,7 +13813,7 @@ func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w ht
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -13447,7 +13855,7 @@ func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w ht
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -13456,13 +13864,13 @@ func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w ht
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeStoreConfigResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -13489,22 +13897,28 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -13524,7 +13938,7 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -13542,7 +13956,7 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -13560,7 +13974,7 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -13591,7 +14005,7 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -13602,7 +14016,7 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -13648,7 +14062,7 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -13657,13 +14071,13 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeTriggerExtendResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -13690,22 +14104,28 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -13725,7 +14145,7 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -13743,7 +14163,7 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -13761,7 +14181,7 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -13792,7 +14212,7 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -13803,7 +14223,7 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -13849,7 +14269,7 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -13858,13 +14278,13 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeTriggerJobResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -13891,22 +14311,28 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -13926,7 +14352,7 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -13944,7 +14370,7 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -13962,7 +14388,7 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -13993,7 +14419,7 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -14004,7 +14430,7 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -14014,7 +14440,7 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -14073,7 +14499,7 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -14082,13 +14508,13 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeUpdateLobByMapResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -14115,22 +14541,28 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -14150,7 +14582,7 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -14168,7 +14600,7 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -14186,7 +14618,7 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -14217,7 +14649,7 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -14228,7 +14660,7 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -14238,7 +14670,7 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -14293,7 +14725,7 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -14302,13 +14734,13 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeUpdateRecordsByFieldsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
@@ -14335,22 +14767,28 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 	)
 	defer span.End()
 
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
 	// Run stopwatch.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
+		attrOpt := metric.WithAttributeSet(labeler.AttributeSet())
 
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), attrOpt)
+	}()
 
 	var (
 		recordError = func(stage string, err error) {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+			s.errors.Add(ctx, 1, metric.WithAttributeSet(labeler.AttributeSet()))
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
@@ -14370,7 +14808,7 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BasicAuth", err)
+					defer recordError("Security:BasicAuth", err)
 				}
 				return
 			}
@@ -14388,7 +14826,7 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:TokenCheck", err)
+					defer recordError("Security:TokenCheck", err)
 				}
 				return
 			}
@@ -14406,7 +14844,7 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-					recordError("Security:BearerAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}
@@ -14437,7 +14875,7 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
 			}
 			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
-				recordError("Security", err)
+				defer recordError("Security", err)
 			}
 			return
 		}
@@ -14448,7 +14886,7 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeParams", err)
+		defer recordError("DecodeParams", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -14458,7 +14896,7 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 			OperationContext: opErrContext,
 			Err:              err,
 		}
-		recordError("DecodeRequest", err)
+		defer recordError("DecodeRequest", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
@@ -14513,7 +14951,7 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
-				recordError("Internal", err)
+				defer recordError("Internal", err)
 			}
 			return
 		}
@@ -14522,13 +14960,13 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 			return
 		}
 		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
-			recordError("Internal", err)
+			defer recordError("Internal", err)
 		}
 		return
 	}
 
 	if err := encodeUploadFileResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
+		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
 		}
