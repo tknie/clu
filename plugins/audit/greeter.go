@@ -28,8 +28,6 @@ import (
 type greeting string
 
 type session struct {
-	user  string
-	uuid  string
 	start time.Time
 }
 

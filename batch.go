@@ -37,10 +37,6 @@ var batchtablename = ""
 var batchStoreOnline = false
 var batchLock sync.Mutex
 
-type batchRepository struct {
-	stored bool
-}
-
 func openBatchRepository() (common.RegDbID, error) {
 	var err error
 	if userDbPassword == "" {

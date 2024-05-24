@@ -44,7 +44,7 @@ func (tp *testPrincipal) SetSession(interface{}) {
 }
 
 func (tc *testCallback) GetName() string { return "testCallback" }
-func (tc *testCallback) Init() error     { return nil }
+func (tc *testCallback) Init() error     { initAuthCallback(); return nil }
 func (tc *testCallback) Authenticate(principal auth.PrincipalInterface, userName, passwd string) error {
 	return nil
 }
