@@ -21,6 +21,21 @@ In advance real main database functionality should be contained like:
 
 For details have a look at the API documentation. It can be referenced here: <https://godoc.org/github.com/tknie/flynn>
 
+## Authentication
+
+There are several possibilities to use authentication
+
+* Create a realm file containing user and password
+* Using LDAP or system password authentication
+* Using a SQL query to authenticate to SQL database
+
+All these configuration are located in <https://github.com/tknie/services>.
+
+## Authorization
+
+You can use SQL authorization limits if you use SQL users.
+CLU provides a query entry role management to obmit user specific queries for read- or write-access.
+
 ## Example of Clu usage
 
 ### Query records in database
@@ -65,9 +80,9 @@ Feature | Ready-State | Description
  Delete record | :heavy_check_mark: | Draft
  Load images out of database | :heavy_check_mark: | Draft
  Load videos out of database | :heavy_check_mark: | Draft
- Load binaries out of database | | Draft
- Insert Large Object (Image, binary or others) |  | Draft
+ Load binaries out of database |:heavy_check_mark: | Draft
+ Insert Large Object (Image, binary or others) | :heavy_check_mark: | Draft(not recommended if images is to big)
  Create table |  | Draft
  Insert database |  | Draft
- Work with batch queries |  | planned
+ Work with batch queries | :heavy_check_mark: | draft
  Complex search queries (common to SQL or NonSQL databases) |  | planned

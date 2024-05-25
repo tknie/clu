@@ -5453,7 +5453,7 @@ type GetVideoParams struct {
 	// Specific the field containing the mimetype.
 	MimetypeField string
 	// MIMEType the result should be of (preferred for some image formats only).
-	Mimetype string
+	Mimetype OptString
 	// Search criterium.
 	Sqlsearch OptString
 }
@@ -5501,7 +5501,9 @@ func unpackGetVideoParams(packed middleware.Parameters) (params GetVideoParams) 
 			Name: "mimetype",
 			In:   "query",
 		}
-		params.Mimetype = packed[key].(string)
+		if v, ok := packed[key]; ok {
+			params.Mimetype = v.(OptString)
+		}
 	}
 	{
 		key := middleware.ParameterKey{
@@ -5739,23 +5741,28 @@ func decodeGetVideoParams(args [3]string, argsEscaped bool, r *http.Request) (pa
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
+				var paramsDotMimetypeVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMimetypeVal = c
+					return nil
+				}(); err != nil {
 					return err
 				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Mimetype = c
+				params.Mimetype.SetTo(paramsDotMimetypeVal)
 				return nil
 			}); err != nil {
 				return err
 			}
-		} else {
-			return validate.ErrFieldRequired
 		}
 		return nil
 	}(); err != nil {

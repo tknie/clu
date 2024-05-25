@@ -2228,7 +2228,7 @@ paths:
         - name: mimetype
           in: query
           description: MIMEType the result should be of (preferred for some image formats only)
-          required: true
+          required: false
           schema:
             type: string
         - name: sqlsearch

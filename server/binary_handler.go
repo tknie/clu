@@ -75,7 +75,7 @@ func (Handler) GetVideo(ctx context.Context, params api.GetVideoParams) (r api.G
 	}
 	log.Log.Debugf("SQL video table=%s field=%s search=%s", params.Table, params.Field, params.Search)
 	read := NewStreamRead(params.Table, params.Field, params.MimetypeField)
-	err := read.initStreamFromTable(session, params.Search, params.Mimetype)
+	err := read.initStreamFromTable(session, params.Search, params.Mimetype.Value)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
 		return nil, err

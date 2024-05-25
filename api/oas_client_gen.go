@@ -8117,7 +8117,10 @@ func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res G
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.StringToString(params.Mimetype))
+			if val, ok := params.Mimetype.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
 		}); err != nil {
 			return res, errors.Wrap(err, "encode query")
 		}
