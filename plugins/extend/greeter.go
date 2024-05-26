@@ -15,6 +15,8 @@ import (
 	"fmt"
 	"net/http"
 
+	ht "github.com/ogen-go/ogen/http"
+
 	"github.com/go-faster/jx"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/clu/plugins"
@@ -45,7 +47,7 @@ func (g greeting) EntryPoint() string {
 	return "test"
 }
 
-func (g greeting) Call(path string, req *http.Request) (r api.CallExtendRes, _ error) {
+func (g greeting) CallGet(path string, req *http.Request) (r api.CallExtendRes, _ error) {
 	fmt.Println("Extend plugin call received:" + path)
 	d := make(api.ResponseRaw)
 	t := "XXX"
@@ -79,6 +81,13 @@ func (g greeting) Call(path string, req *http.Request) (r api.CallExtendRes, _ e
 	d["x"] = e3.Bytes()
 	return &d, nil
 
+}
+
+func (g greeting) CallPut(path string, req *http.Request) (r api.TriggerExtendRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+func (g greeting) CallPost(path string, req *http.Request) (r api.CallPostExtendRes, _ error) {
+	return r, ht.ErrNotImplemented
 }
 
 // exported

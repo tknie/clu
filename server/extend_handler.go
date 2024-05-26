@@ -30,7 +30,9 @@ var entryMap = sync.Map{}
 // RestExtend Adabas method to send to plugin
 type RestExtend interface {
 	EntryPoint() string
-	Call(path string, req *http.Request) (r api.CallExtendRes, _ error)
+	CallGet(path string, req *http.Request) (r api.CallExtendRes, _ error)
+	CallPut(path string, req *http.Request) (r api.TriggerExtendRes, _ error)
+	CallPost(path string, req *http.Request) (r api.CallPostExtendRes, _ error)
 }
 
 // RegisterExtend register the extend handler
@@ -53,7 +55,7 @@ func (Handler) CallExtend(ctx context.Context, params api.CallExtendParams) (r a
 	parts := strings.Split(e, "/")
 
 	if entryPoint, ok := entryMap.Load(parts[0]); ok {
-		return entryPoint.(RestExtend).Call(e, session.CurrentRequest)
+		return entryPoint.(RestExtend).CallGet(e, session.CurrentRequest)
 	}
 	return r, ht.ErrNotImplemented
 }
@@ -64,6 +66,17 @@ func (Handler) CallExtend(ctx context.Context, params api.CallExtendParams) (r a
 //
 // POST /rest/extend/{path}
 func (Handler) CallPostExtend(ctx context.Context, req *api.CallPostExtendReq, params api.CallPostExtendParams) (r api.CallPostExtendRes, _ error) {
+	session := ctx.(*clu.Context)
+	log.Log.Debugf("Generate JWT token")
+	fmt.Printf("Call extend: %s\n", params.Path)
+	fmt.Printf("             %#v\n", session.CurrentRequest.UserAgent())
+	fmt.Printf("             %#v\n", session.CurrentRequest.FormValue("xx"))
+	e := filepath.Clean(params.Path)
+	parts := strings.Split(e, "/")
+
+	if entryPoint, ok := entryMap.Load(parts[0]); ok {
+		return entryPoint.(RestExtend).CallPost(e, session.CurrentRequest)
+	}
 	return r, ht.ErrNotImplemented
 }
 
@@ -73,6 +86,17 @@ func (Handler) CallPostExtend(ctx context.Context, req *api.CallPostExtendReq, p
 //
 // PUT /rest/extend/{path}
 func (Handler) TriggerExtend(ctx context.Context, params api.TriggerExtendParams) (r api.TriggerExtendRes, _ error) {
+	session := ctx.(*clu.Context)
+	log.Log.Debugf("Generate JWT token")
+	fmt.Printf("Call extend: %s\n", params.Path)
+	fmt.Printf("             %#v\n", session.CurrentRequest.UserAgent())
+	fmt.Printf("             %#v\n", session.CurrentRequest.FormValue("xx"))
+	e := filepath.Clean(params.Path)
+	parts := strings.Split(e, "/")
+
+	if entryPoint, ok := entryMap.Load(parts[0]); ok {
+		return entryPoint.(RestExtend).CallPut(e, session.CurrentRequest)
+	}
 	return r, ht.ErrNotImplemented
 }
 
