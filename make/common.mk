@@ -59,9 +59,9 @@ $(EXECS): $(OBJECTS) ; $(info $(M) building executable $(@:$(BIN)/%=%)…) @ ## 
 	    CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" $(GO) build $(GO_FLAGS) \
 		-ldflags '-X $(COPACKAGE).Version=$(RESTVERSION) -X $(COPACKAGE).BuildVersion=$(VERSION) -X github.com/tknie/services.BuildDate=$(DATE)' \
 		-o $@$(GOEXE) ./$(@:$(BIN)/%=%)
-ifdef UPX
-		upx $@$(GOEXE)
-endif
+#ifdef UPX
+#		upx $@$(GOEXE)
+#endif
 
 $(PLUGINS): ; $(info $(M) building plugins…) @ ## Build program binary
 	$Q cd $(CURDIR) && \
