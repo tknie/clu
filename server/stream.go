@@ -59,15 +59,12 @@ func (read *StreamRead) initStreamFromTable(srvctx *clu.Context, search, destMim
 	}
 	defer CloseTable(d)
 
-	log.Log.Debugf("Init stream for table %s and search %s for field %s", read.table, search, read.field)
+	log.Log.Debugf("Init stream for table %s and search %s for field %s dest mimetype=%s", read.table, search, read.field, destMimeType)
 
 	fields := []string{strings.ToLower(read.field)}
 	if read.mimetypeField != "" {
 		fields = []string{strings.ToLower(read.field), read.mimetypeField}
-	} else {
-		read.mimetype = destMimeType
 	}
-
 	q := &common.Query{TableName: read.table,
 		Fields: fields,
 		Search: search}
@@ -95,7 +92,8 @@ func (read *StreamRead) initStreamFromTable(srvctx *clu.Context, search, destMim
 				read.mimetype = d.(string)
 			}
 		}
-		return read.convertMimeType(read.mimetype)
+		log.Log.Debugf("Convert from mimetype %s to mimetype=%s", read.mimetype, destMimeType)
+		return read.convertMimeType(destMimeType)
 	}
 	err = errorrepo.NewError("RERR00002", read.field, read.table)
 	// err = fmt.Errorf("field '%s' not in result", field)

@@ -8,8 +8,8 @@ require (
 	github.com/go-faster/jx v1.1.0
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.0
-	github.com/jackc/pgx/v5 v5.5.5
-	github.com/ogen-go/ogen v1.2.0
+	github.com/jackc/pgx/v5 v5.6.0
+	github.com/ogen-go/ogen v1.2.1
 	github.com/rs/cors v1.11.0
 	github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
@@ -57,11 +57,11 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20240427174202-a8626661af5b
-	github.com/tknie/flynn v0.0.0-20240520181422-cbc69a60ba70
+	github.com/tknie/flynn v0.0.0-20240525194417-3e7f799d71f3
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.23.0 // indirect
-	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
+	golang.org/x/exp v0.0.0-20240531132922-fd00a4e0eefc // indirect
 	golang.org/x/net v0.25.0
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
