@@ -93,7 +93,11 @@ func (read *StreamRead) initStreamFromTable(srvctx *clu.Context, search, destMim
 			}
 		}
 		log.Log.Debugf("Convert from mimetype %s to mimetype=%s", read.mimetype, destMimeType)
-		return read.convertMimeType(destMimeType)
+		err = read.convertMimeType(destMimeType)
+		if err != nil {
+			services.ServerMessage("Conversion error mimetype: %v", err)
+		}
+		return nil
 	}
 	err = errorrepo.NewError("RERR00002", read.field, read.table)
 	// err = fmt.Errorf("field '%s' not in result", field)
