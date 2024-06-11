@@ -42,6 +42,7 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, []
 		return nil
 	})
 	if err != nil {
+		log.Log.Debugf("SQL query error: %v", err)
 		return nil, nil, err
 	}
 	return data, fields, nil

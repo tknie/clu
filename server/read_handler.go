@@ -68,7 +68,7 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 
 	resp := api.Response{Records: data, FieldNames: fields}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
-	log.Log.Debugf("Return search records for fields %s -> %s", session.User, params.Table)
+	log.Log.Debugf("DONE SQL search fields %s - %v", params.Table, params.Search)
 	return respH, nil
 }
 
