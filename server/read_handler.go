@@ -66,6 +66,9 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 		return nil, err
 	}
 
+	if len(fields) == 0 {
+		fields = extractFieldList(params.Search)
+	}
 	resp := api.Response{Records: data, FieldNames: fields}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	log.Log.Debugf("DONE SQL search fields %s - %v", params.Table, params.Search)

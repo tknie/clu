@@ -27,7 +27,7 @@ import (
 // query query SQL tables
 func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, []string, error) {
 	log.Log.Debugf("Query in db ID %04d", d)
-	var data []api.ResponseRecordsItem
+	data := make([]api.ResponseRecordsItem, 0)
 	var fields []string
 	_, err := d.Query(query, func(search *common.Query, result *common.Result) error {
 		if result == nil {
