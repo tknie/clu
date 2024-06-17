@@ -61,7 +61,8 @@ func generateItem(fields []string, rows []any) api.ResponseRecordsItem {
 			d[s] = raw
 		case string:
 			log.Log.Debugf("String %s", t)
-			raw := jx.Raw([]byte("\"" + t + "\""))
+			str := strings.Replace(t, "\"", "\\\"", -1)
+			raw := jx.Raw([]byte("\"" + str + "\""))
 			d[s] = raw
 		case *time.Time:
 			d[s] = jx.Raw([]byte("\"" + (*t).String() + "\""))
