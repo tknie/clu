@@ -360,7 +360,7 @@ type Invoker interface {
 	// be used.
 	//
 	// POST /rest/database
-	PostDatabase(ctx context.Context, request OptDatabase) (PostDatabaseRes, error)
+	PostDatabase(ctx context.Context, request *Database) (PostDatabaseRes, error)
 	// PostJob invokes postJob operation.
 	//
 	// Create a new Job database.
@@ -2186,25 +2186,16 @@ func (c *Client) sendCallExtend(ctx context.Context, params CallExtendParams) (r
 	stage = "EncodeQueryParams"
 	q := uri.NewQueryEncoder()
 	{
-		// Encode "param" parameter.
+		// Encode "params" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "param",
+			Name:    "params",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if params.Param != nil {
-				return e.EncodeArray(func(e uri.Encoder) error {
-					for i, item := range params.Param {
-						if err := func() error {
-							return e.EncodeValue(conv.StringToString(item))
-						}(); err != nil {
-							return errors.Wrapf(err, "[%d]", i)
-						}
-					}
-					return nil
-				})
+			if v := params.Params; v != nil {
+				return (*v).EncodeURI(e)
 			}
 			return nil
 		}); err != nil {
@@ -9310,12 +9301,12 @@ func (c *Client) sendLogoutSessionCompat(ctx context.Context) (res LogoutSession
 // be used.
 //
 // POST /rest/database
-func (c *Client) PostDatabase(ctx context.Context, request OptDatabase) (PostDatabaseRes, error) {
+func (c *Client) PostDatabase(ctx context.Context, request *Database) (PostDatabaseRes, error) {
 	res, err := c.sendPostDatabase(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendPostDatabase(ctx context.Context, request OptDatabase) (res PostDatabaseRes, err error) {
+func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res PostDatabaseRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postDatabase"),
 		semconv.HTTPMethodKey.String("POST"),

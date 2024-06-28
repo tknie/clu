@@ -989,9 +989,8 @@ func decodeBrowseLocationParams(args [1]string, argsEscaped bool, r *http.Reques
 // CallExtendParams is parameters of callExtend operation.
 type CallExtendParams struct {
 	// Identifier of the file location.
-	Path string
-	// Parameters.
-	Param []string
+	Path   string
+	Params *CallExtendParams
 }
 
 func unpackCallExtendParams(packed middleware.Parameters) (params CallExtendParams) {
@@ -1004,11 +1003,11 @@ func unpackCallExtendParams(packed middleware.Parameters) (params CallExtendPara
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "param",
+			Name: "params",
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.Param = v.([]string)
+			params.Params = v.(*CallExtendParams)
 		}
 	}
 	return params
@@ -1061,37 +1060,24 @@ func decodeCallExtendParams(args [1]string, argsEscaped bool, r *http.Request) (
 			Err:  err,
 		}
 	}
-	// Decode query: param.
+	// Decode query: params.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "param",
+			Name:    "params",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				return d.DecodeArray(func(d uri.Decoder) error {
-					var paramsDotParamVal string
-					if err := func() error {
-						val, err := d.DecodeValue()
-						if err != nil {
-							return err
-						}
-
-						c, err := conv.ToString(val)
-						if err != nil {
-							return err
-						}
-
-						paramsDotParamVal = c
-						return nil
-					}(); err != nil {
-						return err
-					}
-					params.Param = append(params.Param, paramsDotParamVal)
-					return nil
-				})
+				var paramsDotParamsVal CallExtendParams
+				if err := func() error {
+					return paramsDotParamsVal.DecodeURI(d)
+				}(); err != nil {
+					return err
+				}
+				params.Params = &paramsDotParamsVal
+				return nil
 			}); err != nil {
 				return err
 			}
@@ -1099,7 +1085,7 @@ func decodeCallExtendParams(args [1]string, argsEscaped bool, r *http.Request) (
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "param",
+			Name: "params",
 			In:   "query",
 			Err:  err,
 		}

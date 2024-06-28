@@ -48,7 +48,7 @@ func (g greeting) EntryPoint() string {
 }
 
 func (g greeting) CallGet(path string, req *http.Request) (r api.CallExtendRes, _ error) {
-	fmt.Println("Extend plugin call received:" + path)
+	fmt.Println("Extend plugin call received: " + path + " " + req.RequestURI)
 	d := make(api.ResponseRaw)
 	t := "XXX"
 	s := "FFFF"

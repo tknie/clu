@@ -48,7 +48,7 @@ func RegisterExtend(extend RestExtend) {
 func (Handler) CallExtend(ctx context.Context, params api.CallExtendParams) (r api.CallExtendRes, _ error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Generate JWT token")
-	fmt.Printf("Call extend: %s,%#v\n", params.Path, params.Param)
+	fmt.Printf("Call extend: %s,%#v\n", params.Path, params.Params)
 	fmt.Printf("             %#v\n", session.CurrentRequest.UserAgent())
 	fmt.Printf("             %#v\n", session.CurrentRequest.FormValue("xx"))
 	e := filepath.Clean(params.Path)

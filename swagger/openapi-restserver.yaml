@@ -3643,13 +3643,12 @@ paths:
           required: true
           schema:
             type: string
-        - name: param
+        - name: params
           in: query
-          description: Parameters
+          style: form
+          explode: true
           schema:
-            type: array
-            items:
-              type: string
+            type: object
       responses:
         '200':
           description: Successful response, with download binary file.

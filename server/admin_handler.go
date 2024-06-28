@@ -159,7 +159,7 @@ func (Handler) ListRBACResource(ctx context.Context, params api.ListRBACResource
 // be used.
 //
 // POST /admin/database
-func (Handler) PostDatabase(ctx context.Context, req api.OptDatabase) (r api.PostDatabaseRes, _ error) {
+func (Handler) PostDatabase(ctx context.Context, req *api.Database) (r api.PostDatabaseRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

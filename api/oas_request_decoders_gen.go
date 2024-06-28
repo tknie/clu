@@ -310,7 +310,7 @@ func (s *Server) decodeInsertRecordRequest(r *http.Request) (
 }
 
 func (s *Server) decodePostDatabaseRequest(r *http.Request) (
-	req OptDatabase,
+	req *Database,
 	close func() error,
 	rerr error,
 ) {
@@ -352,12 +352,14 @@ func (s *Server) decodePostDatabaseRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request OptDatabase
+		var request *Database
 		if err := func() error {
-			request.Reset()
-			if err := request.Decode(d); err != nil {
+			request = nil
+			var elem Database
+			if err := elem.Decode(d); err != nil {
 				return err
 			}
+			request = &elem
 			if err := d.Skip(); err != io.EOF {
 				return errors.New("unexpected trailing data")
 			}

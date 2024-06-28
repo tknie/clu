@@ -2275,9 +2275,9 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 					In:   "path",
 				}: params.Path,
 				{
-					Name: "param",
+					Name: "params",
 					In:   "query",
-				}: params.Param,
+				}: params.Params,
 			},
 			Raw: r,
 		}
@@ -11348,7 +11348,7 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 		}
 
 		type (
-			Request  = OptDatabase
+			Request  = *Database
 			Params   = struct{}
 			Response = PostDatabaseRes
 		)

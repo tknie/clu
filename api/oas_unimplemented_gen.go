@@ -514,7 +514,7 @@ func (UnimplementedHandler) LogoutSessionCompat(ctx context.Context) (r LogoutSe
 // be used.
 //
 // POST /rest/database
-func (UnimplementedHandler) PostDatabase(ctx context.Context, req OptDatabase) (r PostDatabaseRes, _ error) {
+func (UnimplementedHandler) PostDatabase(ctx context.Context, req *Database) (r PostDatabaseRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
