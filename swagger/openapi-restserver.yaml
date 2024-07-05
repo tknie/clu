@@ -3703,11 +3703,15 @@ paths:
             type: string
       responses:
         '200':
-          description: Successful response, if the directory is created.
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StatusResponse'
+                $ref: '#/components/schemas/ResponseRaw'
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
         '400':
           description: Environment evaluation error
           content:
@@ -3770,14 +3774,15 @@ paths:
         required: true
       responses:
         '200':
-          description: Successful response, with download binary file.
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StatusResponse'
-            text/plain:
+                $ref: '#/components/schemas/ResponseRaw'
+            application/octet-stream:
               schema:
                 type: string
+                format: binary
         '400':
           description: Environment evaluation error
           content:
@@ -3827,11 +3832,15 @@ paths:
             type: string
       responses:
         '200':
-          description: Successful response, if delete of file done.
+          description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StatusResponse'
+                $ref: '#/components/schemas/ResponseRaw'
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
         '400':
           description: Environment evaluation error
           content:

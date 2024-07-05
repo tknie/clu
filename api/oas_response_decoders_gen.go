@@ -1673,7 +1673,7 @@ func decodeCallPostExtendResponse(resp *http.Response) (res CallPostExtendRes, _
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response StatusResponse
+			var response ResponseRaw
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -1690,24 +1690,15 @@ func decodeCallPostExtendResponse(resp *http.Response) (res CallPostExtendRes, _
 				}
 				return res, err
 			}
-			// Validate response.
-			if err := func() error {
-				if err := response.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return res, errors.Wrap(err, "validate")
-			}
 			return &response, nil
-		case ct == "text/plain":
+		case ct == "application/octet-stream":
 			reader := resp.Body
 			b, err := io.ReadAll(reader)
 			if err != nil {
 				return res, err
 			}
 
-			response := CallPostExtendOKTextPlain{Data: bytes.NewReader(b)}
+			response := CallPostExtendOKApplicationOctetStream{Data: bytes.NewReader(b)}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -2614,7 +2605,7 @@ func decodeDeleteExtendResponse(resp *http.Response) (res DeleteExtendRes, _ err
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response StatusResponse
+			var response ResponseRaw
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -2631,15 +2622,15 @@ func decodeDeleteExtendResponse(resp *http.Response) (res DeleteExtendRes, _ err
 				}
 				return res, err
 			}
-			// Validate response.
-			if err := func() error {
-				if err := response.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return res, errors.Wrap(err, "validate")
+			return &response, nil
+		case ct == "application/octet-stream":
+			reader := resp.Body
+			b, err := io.ReadAll(reader)
+			if err != nil {
+				return res, err
 			}
+
+			response := DeleteExtendOKApplicationOctetStream{Data: bytes.NewReader(b)}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -9985,7 +9976,7 @@ func decodeTriggerExtendResponse(resp *http.Response) (res TriggerExtendRes, _ e
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response StatusResponse
+			var response ResponseRaw
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -10002,15 +9993,15 @@ func decodeTriggerExtendResponse(resp *http.Response) (res TriggerExtendRes, _ e
 				}
 				return res, err
 			}
-			// Validate response.
-			if err := func() error {
-				if err := response.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return res, errors.Wrap(err, "validate")
+			return &response, nil
+		case ct == "application/octet-stream":
+			reader := resp.Body
+			b, err := io.ReadAll(reader)
+			if err != nil {
+				return res, err
 			}
+
+			response := TriggerExtendOKApplicationOctetStream{Data: bytes.NewReader(b)}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)

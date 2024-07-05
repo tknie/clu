@@ -671,21 +671,21 @@ type CallPostExtendNotFound Error
 
 func (*CallPostExtendNotFound) callPostExtendRes() {}
 
-type CallPostExtendOKTextPlain struct {
+type CallPostExtendOKApplicationOctetStream struct {
 	Data io.Reader
 }
 
 // Read reads data from the Data reader.
 //
 // Kept to satisfy the io.Reader interface.
-func (s CallPostExtendOKTextPlain) Read(p []byte) (n int, err error) {
+func (s CallPostExtendOKApplicationOctetStream) Read(p []byte) (n int, err error) {
 	if s.Data == nil {
 		return 0, io.EOF
 	}
 	return s.Data.Read(p)
 }
 
-func (*CallPostExtendOKTextPlain) callPostExtendRes() {}
+func (*CallPostExtendOKApplicationOctetStream) callPostExtendRes() {}
 
 type CallPostExtendReq struct {
 	// Upload data.
@@ -1468,6 +1468,22 @@ func (*DeleteExtendForbidden) deleteExtendRes() {}
 type DeleteExtendNotFound Error
 
 func (*DeleteExtendNotFound) deleteExtendRes() {}
+
+type DeleteExtendOKApplicationOctetStream struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s DeleteExtendOKApplicationOctetStream) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*DeleteExtendOKApplicationOctetStream) deleteExtendRes() {}
 
 // DeleteExtendUnauthorized is response for DeleteExtend operation.
 type DeleteExtendUnauthorized struct{}
@@ -6039,7 +6055,10 @@ func (s *ResponseRaw) init() ResponseRaw {
 	return m
 }
 
-func (*ResponseRaw) callExtendRes() {}
+func (*ResponseRaw) callExtendRes()     {}
+func (*ResponseRaw) callPostExtendRes() {}
+func (*ResponseRaw) deleteExtendRes()   {}
+func (*ResponseRaw) triggerExtendRes()  {}
 
 type ResponseRecordsItem map[string]jx.Raw
 
@@ -6247,12 +6266,10 @@ func (s *StatusResponse) SetStatus(val OptStatusResponseStatus) {
 
 func (*StatusResponse) adaptPermissionRes()        {}
 func (*StatusResponse) addRBACResourceRes()        {}
-func (*StatusResponse) callPostExtendRes()         {}
 func (*StatusResponse) createDirectoryRes()        {}
 func (*StatusResponse) databaseOperationRes()      {}
 func (*StatusResponse) databasePostOperationsRes() {}
 func (*StatusResponse) deleteDatabaseRes()         {}
-func (*StatusResponse) deleteExtendRes()           {}
 func (*StatusResponse) deleteFileLocationRes()     {}
 func (*StatusResponse) deleteRBACResourceRes()     {}
 func (*StatusResponse) disconnectTCPRes()          {}
@@ -6261,7 +6278,6 @@ func (*StatusResponse) postJobRes()                {}
 func (*StatusResponse) putDatabaseResourceRes()    {}
 func (*StatusResponse) removePermissionRes()       {}
 func (*StatusResponse) shutdownServerRes()         {}
-func (*StatusResponse) triggerExtendRes()          {}
 func (*StatusResponse) uploadFileRes()             {}
 
 type StatusResponseStatus struct {
@@ -6529,6 +6545,22 @@ func (*TriggerExtendForbidden) triggerExtendRes() {}
 type TriggerExtendNotFound Error
 
 func (*TriggerExtendNotFound) triggerExtendRes() {}
+
+type TriggerExtendOKApplicationOctetStream struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s TriggerExtendOKApplicationOctetStream) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*TriggerExtendOKApplicationOctetStream) triggerExtendRes() {}
 
 // TriggerExtendUnauthorized is response for TriggerExtend operation.
 type TriggerExtendUnauthorized struct{}

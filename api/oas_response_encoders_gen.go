@@ -645,7 +645,7 @@ func encodeCallExtendResponse(response CallExtendRes, w http.ResponseWriter, spa
 
 func encodeCallPostExtendResponse(response CallPostExtendRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *StatusResponse:
+	case *ResponseRaw:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
@@ -658,8 +658,8 @@ func encodeCallPostExtendResponse(response CallPostExtendRes, w http.ResponseWri
 
 		return nil
 
-	case *CallPostExtendOKTextPlain:
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	case *CallPostExtendOKApplicationOctetStream:
+		w.Header().Set("Content-Type", "application/octet-stream")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
@@ -985,7 +985,7 @@ func encodeDeleteDatabaseResponse(response DeleteDatabaseRes, w http.ResponseWri
 
 func encodeDeleteExtendResponse(response DeleteExtendRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *StatusResponse:
+	case *ResponseRaw:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
@@ -993,6 +993,18 @@ func encodeDeleteExtendResponse(response DeleteExtendRes, w http.ResponseWriter,
 		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *DeleteExtendOKApplicationOctetStream:
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		writer := w
+		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
 
@@ -3737,7 +3749,7 @@ func encodeStoreConfigResponse(response StoreConfigRes, w http.ResponseWriter, s
 
 func encodeTriggerExtendResponse(response TriggerExtendRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *StatusResponse:
+	case *ResponseRaw:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
@@ -3745,6 +3757,18 @@ func encodeTriggerExtendResponse(response TriggerExtendRes, w http.ResponseWrite
 		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *TriggerExtendOKApplicationOctetStream:
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		writer := w
+		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
 
