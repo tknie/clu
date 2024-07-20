@@ -587,37 +587,71 @@ type BrowseLocationNotFound Error
 
 func (*BrowseLocationNotFound) browseLocationRes() {}
 
-type BrowseLocationOKApplicationOctetStream struct {
-	Data io.Reader
+// BrowseLocationOK represents sum type.
+type BrowseLocationOK struct {
+	Type           BrowseLocationOKType // switch on this field
+	DirectoryFiles DirectoryFiles
+	File           File
 }
 
-// Read reads data from the Data reader.
-//
-// Kept to satisfy the io.Reader interface.
-func (s BrowseLocationOKApplicationOctetStream) Read(p []byte) (n int, err error) {
-	if s.Data == nil {
-		return 0, io.EOF
+// BrowseLocationOKType is oneOf type of BrowseLocationOK.
+type BrowseLocationOKType string
+
+// Possible values for BrowseLocationOKType.
+const (
+	DirectoryFilesBrowseLocationOK BrowseLocationOKType = "DirectoryFiles"
+	FileBrowseLocationOK           BrowseLocationOKType = "File"
+)
+
+// IsDirectoryFiles reports whether BrowseLocationOK is DirectoryFiles.
+func (s BrowseLocationOK) IsDirectoryFiles() bool { return s.Type == DirectoryFilesBrowseLocationOK }
+
+// IsFile reports whether BrowseLocationOK is File.
+func (s BrowseLocationOK) IsFile() bool { return s.Type == FileBrowseLocationOK }
+
+// SetDirectoryFiles sets BrowseLocationOK to DirectoryFiles.
+func (s *BrowseLocationOK) SetDirectoryFiles(v DirectoryFiles) {
+	s.Type = DirectoryFilesBrowseLocationOK
+	s.DirectoryFiles = v
+}
+
+// GetDirectoryFiles returns DirectoryFiles and true boolean if BrowseLocationOK is DirectoryFiles.
+func (s BrowseLocationOK) GetDirectoryFiles() (v DirectoryFiles, ok bool) {
+	if !s.IsDirectoryFiles() {
+		return v, false
 	}
-	return s.Data.Read(p)
+	return s.DirectoryFiles, true
 }
 
-func (*BrowseLocationOKApplicationOctetStream) browseLocationRes() {}
-
-type BrowseLocationOKMultipartFormData struct {
-	File ht.MultipartFile `json:"file"`
+// NewDirectoryFilesBrowseLocationOK returns new BrowseLocationOK from DirectoryFiles.
+func NewDirectoryFilesBrowseLocationOK(v DirectoryFiles) BrowseLocationOK {
+	var s BrowseLocationOK
+	s.SetDirectoryFiles(v)
+	return s
 }
 
-func (*BrowseLocationOKMultipartFormData) browseLocationRes() {}
-
-// GetFile returns the value of File.
-func (s *BrowseLocationOKMultipartFormData) GetFile() ht.MultipartFile {
-	return s.File
+// SetFile sets BrowseLocationOK to File.
+func (s *BrowseLocationOK) SetFile(v File) {
+	s.Type = FileBrowseLocationOK
+	s.File = v
 }
 
-// SetFile sets the value of File.
-func (s *BrowseLocationOKMultipartFormData) SetFile(val ht.MultipartFile) {
-	s.File = val
+// GetFile returns File and true boolean if BrowseLocationOK is File.
+func (s BrowseLocationOK) GetFile() (v File, ok bool) {
+	if !s.IsFile() {
+		return v, false
+	}
+	return s.File, true
 }
+
+// NewFileBrowseLocationOK returns new BrowseLocationOK from File.
+func NewFileBrowseLocationOK(v File) BrowseLocationOK {
+	var s BrowseLocationOK
+	s.SetFile(v)
+	return s
+}
+
+func (*BrowseLocationOK) browseLocationRes() {}
 
 // BrowseLocationUnauthorized is response for BrowseLocation operation.
 type BrowseLocationUnauthorized struct{}

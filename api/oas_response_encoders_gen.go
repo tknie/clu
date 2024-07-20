@@ -505,7 +505,7 @@ func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, spa
 
 func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *DirectoryFiles:
+	case *BrowseLocationOK:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
@@ -513,18 +513,6 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-
-		return nil
-
-	case *BrowseLocationOKApplicationOctetStream:
-		w.Header().Set("Content-Type", "application/octet-stream")
-		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
-
-		writer := w
-		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
 

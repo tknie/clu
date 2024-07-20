@@ -3469,7 +3469,10 @@ func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLo
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.StringToString(params.File))
+			if val, ok := params.File.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
 		}); err != nil {
 			return res, errors.Wrap(err, "encode query")
 		}
@@ -12102,7 +12105,10 @@ func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileReq, par
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.StringToString(params.File))
+			if val, ok := params.File.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
 		}); err != nil {
 			return res, errors.Wrap(err, "encode query")
 		}

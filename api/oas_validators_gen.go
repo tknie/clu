@@ -192,6 +192,23 @@ func (s *AuthorizationTokenHeaders) Validate() error {
 	return nil
 }
 
+func (s BrowseLocationOK) Validate() error {
+	switch s.Type {
+	case DirectoryFilesBrowseLocationOK:
+		if err := s.DirectoryFiles.Validate(); err != nil {
+			return err
+		}
+		return nil
+	case FileBrowseLocationOK:
+		if err := s.File.Validate(); err != nil {
+			return err
+		}
+		return nil
+	default:
+		return errors.Errorf("invalid type %q", s.Type)
+	}
+}
+
 func (s *Config) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer

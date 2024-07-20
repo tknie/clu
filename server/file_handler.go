@@ -13,13 +13,14 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 
-	ht "github.com/ogen-go/ogen/http"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/log"
@@ -33,13 +34,13 @@ import (
 // GET /rest/file/browse
 func (Handler) BrowseList(ctx context.Context) (r api.BrowseListRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.AdministratorRole, false, session.User, "") {
-		return &api.BrowseListForbidden{}, nil
-	}
 	d := &api.Directories{}
 	for _, bd := range Viewer.FileTransfer.Directories.Directory {
 		dbd := api.Directory{Location: api.NewOptString(bd.Location),
 			Name: api.NewOptString(bd.Name)}
+		if !auth.ValidUser(auth.UserRole, false, session.User, "<"+dbd.Name.Value) {
+			return &api.BrowseListForbidden{}, nil
+		}
 		d.Directories = append(d.Directories, dbd)
 	}
 	return d, nil
@@ -51,15 +52,15 @@ func (Handler) BrowseList(ctx context.Context) (r api.BrowseListRes, _ error) {
 //
 // PUT /rest/file/{path}
 func (Handler) CreateDirectory(ctx context.Context, params api.CreateDirectoryParams) (r api.CreateDirectoryRes, _ error) {
-	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.AdministratorRole, true, session.User, "") {
-		return &api.CreateDirectoryForbidden{}, nil
-	}
 	d, path, err := extraceLocationPath(params.Path)
 	if err != nil {
 		err := fmt.Errorf("location reference missing")
 		return &api.CreateDirectoryNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 
+	}
+	session := ctx.(*clu.Context)
+	if !auth.ValidUser(auth.UserRole, true, session.User, ">"+d.Name) {
+		return &api.CreateDirectoryForbidden{}, nil
 	}
 	fileName := os.ExpandEnv(d.Location + "/" + path)
 	log.Log.Debugf("FileName %s", fileName)
@@ -82,19 +83,42 @@ func (Handler) CreateDirectory(ctx context.Context, params api.CreateDirectoryPa
 //
 // DELETE /rest/file/{path}
 func (Handler) DeleteFileLocation(ctx context.Context, params api.DeleteFileLocationParams) (r api.DeleteFileLocationRes, _ error) {
-	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.AdministratorRole, true, session.User, "") {
-		return &api.DeleteFileLocationForbidden{}, nil
-	}
 	d, path, err := extraceLocationPath(params.Path)
 	if err != nil {
 		err := fmt.Errorf("location reference missing")
 		return &api.DeleteFileLocationNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 
 	}
-	fmt.Printf("Try deleting location=%s path=%s\n", d.Location, path)
+	session := ctx.(*clu.Context)
+	if !auth.ValidUser(auth.UserRole, true, session.User, ">"+d.Name) {
+		return &api.DeleteFileLocationForbidden{}, nil
+	}
+	fileName := os.ExpandEnv(d.Location + "/" + path)
+	if params.File.IsSet() {
+		fileName += params.File.Value
+	}
+	fileName = filepath.Clean(fileName)
 
-	return r, ht.ErrNotImplemented
+	_, err = os.Stat(fileName)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			err := fmt.Errorf("file not exist")
+			return &api.DeleteFileLocationNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+		}
+		err := fmt.Errorf("file stat evaluating")
+		return &api.DeleteFileLocationNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+	}
+	log.Log.Debugf("Try deleting location=%s file=%s\n", d.Location, fileName)
+
+	err = os.Remove(fileName)
+	if err != nil {
+		err := fmt.Errorf("file delete error")
+		return &api.DeleteFileLocationNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+	}
+
+	v := api.StatusResponseStatus{Message: api.NewOptString("deleted")}
+	status := &api.StatusResponse{Status: api.NewOptStatusResponseStatus(v)}
+	return status, nil
 }
 
 // DownloadFile implements downloadFile operation.
@@ -103,17 +127,17 @@ func (Handler) DeleteFileLocation(ctx context.Context, params api.DeleteFileLoca
 //
 // GET /rest/file/{path}
 func (Handler) DownloadFile(ctx context.Context, params api.DownloadFileParams) (r api.DownloadFileRes, _ error) {
-	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.AdministratorRole, false, session.User, "") {
-		return &api.DownloadFileForbidden{}, nil
-	}
 	d, path, err := extraceLocationPath(params.Path)
 	if err != nil {
 		err := fmt.Errorf("location reference missing")
 		return &api.DownloadFileNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 
 	}
-	fmt.Printf("Try download location=%s path=%s\n", d.Location, path)
+	session := ctx.(*clu.Context)
+	if !auth.ValidUser(auth.UserRole, false, session.User, "<"+d.Name) {
+		return &api.DownloadFileForbidden{}, nil
+	}
+	log.Log.Debugf("Try download location=%s path=%s", d.Location, path)
 	fileName := os.ExpandEnv(d.Location + "/" + path)
 	log.Log.Debugf("FileName %s", fileName)
 	f, ferr := os.Open(fileName)
@@ -173,19 +197,20 @@ func extraceLocationPath(paramsPath string) (*Directory, string, error) {
 //
 // GET /rest/file/browse/{path}
 func (Handler) BrowseLocation(ctx context.Context, params api.BrowseLocationParams) (r api.BrowseLocationRes, _ error) {
-	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.AdministratorRole, false, session.User, "") {
-		return &api.BrowseLocationForbidden{}, nil
-	}
 	d, path, err := extraceLocationPath(params.Path)
 	if err != nil {
 		return &api.BrowseLocationNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+	}
+	session := ctx.(*clu.Context)
+	if !auth.ValidUser(auth.UserRole, false, session.User, "<"+d.Name) {
+		return &api.BrowseLocationForbidden{}, nil
 	}
 	fileName := os.ExpandEnv(d.Location + "/" + path)
 	log.Log.Debugf("FileName %s Filter %s", fileName, params.Filter.Value)
 	f, ferr := os.Open(fileName)
 	if ferr != nil {
 		err := fmt.Errorf("error opening location %s", d.Name)
+		log.Log.Errorf("Error browsing file %v", err)
 		return &api.BrowseLocationNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 	}
 	fileInfo, fierr := f.Stat()
@@ -196,7 +221,23 @@ func (Handler) BrowseLocation(ctx context.Context, params api.BrowseLocationPara
 	if fileInfo.IsDir() {
 		return returnDirectoryInfo(d, path, params.Filter.Value, f)
 	}
-	return returnFileStream(d, f)
+	return returnFileInfo(f)
+}
+
+func returnFileInfo(f *os.File) (r api.BrowseLocationRes, _ error) {
+	fl := api.File{}
+	fi, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	fl.Name = api.NewOptString(f.Name())
+	fl.Type = api.NewOptString("File")
+	fl.Modified = api.NewOptDateTime(fi.ModTime())
+	fl.Size = api.NewOptInt64(fi.Size())
+	ok := &api.BrowseLocationOK{Type: api.FileBrowseLocationOK,
+		File: fl}
+	return ok, nil
+
 }
 
 // returnDirectoryInfo generate directory information list
@@ -237,25 +278,25 @@ func returnDirectoryInfo(d *Directory, path, pattern string, f *os.File) (api.Br
 	return fl, nil
 }
 
-// returnFileStream return stream from a file to the corresponding HTTP response
-func returnFileStream(d *Directory, f *os.File) (api.BrowseLocationRes, error) {
-	read, err := initStreamFromFile(f)
-	if err != nil {
-		log.Log.Errorf("Error download file %s:%v", d.Location, err)
-		return &api.BrowseLocationBadRequest{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
-	}
-	read.mimetype = "application/octet-stream"
-	reader, err := read.streamResponderFunc()
-	if err != nil {
-		log.Log.Errorf("Error init stream for file %s:%v", d.Location, err)
-		return &api.BrowseLocationBadRequest{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
-	}
-	//ok := &api.BrowseLocationOKApplicationOctetStream{Data: reader}
-	//reader.Read()
-	ok2 := &api.BrowseLocationOKMultipartFormData{File: ht.MultipartFile{Name: f.Name(), File: reader}}
-	fmt.Println("ok2", ok2.File.Name)
-	return ok2, nil
-}
+// // returnFileStream return stream from a file to the corresponding HTTP response
+// func returnFileStream(d *Directory, f *os.File) (api.BrowseLocationRes, error) {
+// 	read, err := initStreamFromFile(f)
+// 	if err != nil {
+// 		log.Log.Errorf("Error download file %s:%v", d.Location, err)
+// 		return &api.BrowseLocationBadRequest{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+// 	}
+// 	read.mimetype = "application/octet-stream"
+// 	reader, err := read.streamResponderFunc()
+// 	if err != nil {
+// 		log.Log.Errorf("Error init stream for file %s:%v", d.Location, err)
+// 		return &api.BrowseLocationBadRequest{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+// 	}
+// 	//ok := &api.BrowseLocationOKApplicationOctetStream{Data: reader}
+// 	//reader.Read()
+// 	ok2 := &api.BrowseLocationOKMultipartFormData{File: ht.MultipartFile{Name: f.Name(), File: reader}}
+// 	log.Log.Debugf("ok2 -> %s", ok2.File.Name)
+// 	return ok2, nil
+// }
 
 // UploadFile implements uploadFile operation.
 //
@@ -263,5 +304,33 @@ func returnFileStream(d *Directory, f *os.File) (api.BrowseLocationRes, error) {
 //
 // POST /rest/file/{location}
 func (Handler) UploadFile(ctx context.Context, req *api.UploadFileReq, params api.UploadFileParams) (r api.UploadFileRes, _ error) {
-	return r, ht.ErrNotImplemented
+	d, path, err := extraceLocationPath(params.Path)
+	if err != nil {
+		log.Log.Errorf("Error extracting location path: %v (original=%v)", err, params.Path)
+		return &api.UploadFileNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+	}
+	session := ctx.(*clu.Context)
+	if !auth.ValidUser(auth.UserRole, true, session.User, ">"+d.Name) {
+		return &api.UploadFileForbidden{}, nil
+	}
+
+	fileName := os.ExpandEnv(d.Location + "/" + path)
+	if params.File.IsSet() {
+		fileName += params.File.Value
+	}
+	fileName = filepath.Clean(fileName)
+	log.Log.Debugf("Final file name: " + fileName)
+	//	f, err := os.Create(fileName)
+	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0644)
+	if err != nil {
+		return &api.UploadFileBadRequest{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+	}
+	n, err := io.Copy(f, req.UploadFile.File)
+	if err != nil {
+		return &api.UploadFileBadRequest{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
+	}
+	log.Log.Debugf("Read/Write bytes %d", n)
+	v := api.StatusResponseStatus{Message: api.NewOptString("Wrote")}
+	status := &api.StatusResponse{Status: api.NewOptStatusResponseStatus(v)}
+	return status, nil
 }

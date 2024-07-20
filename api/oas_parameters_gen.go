@@ -1761,7 +1761,7 @@ type DeleteFileLocationParams struct {
 	// Identifier of the file location.
 	Path string
 	// Identifier of the file location.
-	File string
+	File OptString
 }
 
 func unpackDeleteFileLocationParams(packed middleware.Parameters) (params DeleteFileLocationParams) {
@@ -1777,7 +1777,9 @@ func unpackDeleteFileLocationParams(packed middleware.Parameters) (params Delete
 			Name: "file",
 			In:   "query",
 		}
-		params.File = packed[key].(string)
+		if v, ok := packed[key]; ok {
+			params.File = v.(OptString)
+		}
 	}
 	return params
 }
@@ -1839,23 +1841,28 @@ func decodeDeleteFileLocationParams(args [1]string, argsEscaped bool, r *http.Re
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
+				var paramsDotFileVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotFileVal = c
+					return nil
+				}(); err != nil {
 					return err
 				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.File = c
+				params.File.SetTo(paramsDotFileVal)
 				return nil
 			}); err != nil {
 				return err
 			}
-		} else {
-			return validate.ErrFieldRequired
 		}
 		return nil
 	}(); err != nil {
@@ -7714,7 +7721,7 @@ type UploadFileParams struct {
 	// Identifier of the file location.
 	Path string
 	// Identifier of the file location.
-	File string
+	File OptString
 }
 
 func unpackUploadFileParams(packed middleware.Parameters) (params UploadFileParams) {
@@ -7730,7 +7737,9 @@ func unpackUploadFileParams(packed middleware.Parameters) (params UploadFilePara
 			Name: "file",
 			In:   "query",
 		}
-		params.File = packed[key].(string)
+		if v, ok := packed[key]; ok {
+			params.File = v.(OptString)
+		}
 	}
 	return params
 }
@@ -7792,23 +7801,28 @@ func decodeUploadFileParams(args [1]string, argsEscaped bool, r *http.Request) (
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
+				var paramsDotFileVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotFileVal = c
+					return nil
+				}(); err != nil {
 					return err
 				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.File = c
+				params.File.SetTo(paramsDotFileVal)
 				return nil
 			}); err != nil {
 				return err
 			}
-		} else {
-			return validate.ErrFieldRequired
 		}
 		return nil
 	}(); err != nil {

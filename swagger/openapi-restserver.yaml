@@ -1885,7 +1885,7 @@ paths:
         - name: file
           in: query
           description: Identifier of the file location
-          required: true
+          required: false
           schema:
             type: string
       requestBody:
@@ -1955,7 +1955,7 @@ paths:
         - name: file
           in: query
           description: Identifier of the file location
-          required: true
+          required: false
           schema:
             type: string
       responses:
@@ -2060,20 +2060,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DirectoryFiles'
-            application/octet-stream:
-              schema:
-                type: string
-                format: binary
-            multipart/form-data:
-              schema:
-                type: object
-                required:
-                - file
-                properties:
-                  file:
-                    type: string
-                    format: binary
+                oneOf:
+                  - $ref: '#/components/schemas/DirectoryFiles'
+                  - $ref: '#/components/schemas/File'
         '400':
           description: Environment evaluation error
           content:

@@ -1328,7 +1328,7 @@ func decodeBrowseLocationResponse(resp *http.Response) (res BrowseLocationRes, _
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response DirectoryFiles
+			var response BrowseLocationOK
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -1354,15 +1354,6 @@ func decodeBrowseLocationResponse(resp *http.Response) (res BrowseLocationRes, _
 			}(); err != nil {
 				return res, errors.Wrap(err, "validate")
 			}
-			return &response, nil
-		case ct == "application/octet-stream":
-			reader := resp.Body
-			b, err := io.ReadAll(reader)
-			if err != nil {
-				return res, err
-			}
-
-			response := BrowseLocationOKApplicationOctetStream{Data: bytes.NewReader(b)}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)

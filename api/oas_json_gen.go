@@ -618,6 +618,140 @@ func (s *BrowseLocationNotFound) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes BrowseLocationOK as json.
+func (s BrowseLocationOK) Encode(e *jx.Encoder) {
+	switch s.Type {
+	case DirectoryFilesBrowseLocationOK:
+		s.DirectoryFiles.Encode(e)
+	case FileBrowseLocationOK:
+		s.File.Encode(e)
+	}
+}
+
+func (s BrowseLocationOK) encodeFields(e *jx.Encoder) {
+	switch s.Type {
+	case DirectoryFilesBrowseLocationOK:
+		s.DirectoryFiles.encodeFields(e)
+	case FileBrowseLocationOK:
+		s.File.encodeFields(e)
+	}
+}
+
+// Decode decodes BrowseLocationOK from json.
+func (s *BrowseLocationOK) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode BrowseLocationOK to nil")
+	}
+	// Sum type fields.
+	if typ := d.Next(); typ != jx.Object {
+		return errors.Errorf("unexpected json type %q", typ)
+	}
+
+	var found bool
+	if err := d.Capture(func(d *jx.Decoder) error {
+		return d.ObjBytes(func(d *jx.Decoder, key []byte) error {
+			switch string(key) {
+			case "Location":
+				match := DirectoryFilesBrowseLocationOK
+				if found && s.Type != match {
+					s.Type = ""
+					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+				}
+				found = true
+				s.Type = match
+			case "Path":
+				match := DirectoryFilesBrowseLocationOK
+				if found && s.Type != match {
+					s.Type = ""
+					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+				}
+				found = true
+				s.Type = match
+			case "Files":
+				match := DirectoryFilesBrowseLocationOK
+				if found && s.Type != match {
+					s.Type = ""
+					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+				}
+				found = true
+				s.Type = match
+			case "system":
+				match := DirectoryFilesBrowseLocationOK
+				if found && s.Type != match {
+					s.Type = ""
+					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+				}
+				found = true
+				s.Type = match
+			case "Name":
+				match := FileBrowseLocationOK
+				if found && s.Type != match {
+					s.Type = ""
+					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+				}
+				found = true
+				s.Type = match
+			case "Type":
+				match := FileBrowseLocationOK
+				if found && s.Type != match {
+					s.Type = ""
+					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+				}
+				found = true
+				s.Type = match
+			case "Modified":
+				match := FileBrowseLocationOK
+				if found && s.Type != match {
+					s.Type = ""
+					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+				}
+				found = true
+				s.Type = match
+			case "Size":
+				match := FileBrowseLocationOK
+				if found && s.Type != match {
+					s.Type = ""
+					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+				}
+				found = true
+				s.Type = match
+			}
+			return d.Skip()
+		})
+	}); err != nil {
+		return errors.Wrap(err, "capture")
+	}
+	if !found {
+		return errors.New("unable to detect sum type variant")
+	}
+	switch s.Type {
+	case DirectoryFilesBrowseLocationOK:
+		if err := s.DirectoryFiles.Decode(d); err != nil {
+			return err
+		}
+	case FileBrowseLocationOK:
+		if err := s.File.Decode(d); err != nil {
+			return err
+		}
+	default:
+		return errors.Errorf("inferred invalid type: %s", s.Type)
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s BrowseLocationOK) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *BrowseLocationOK) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes CallExtendBadRequest as json.
 func (s *CallExtendBadRequest) Encode(e *jx.Encoder) {
 	unwrapped := (*Error)(s)
