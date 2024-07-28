@@ -29,7 +29,12 @@ var InitDirectAccess func(*RestServer)
 var InitAdmin func(*RestServer)
 
 // AddLocation add location, only needed in active server
-var AddLocation func(name, location string) error
+var AddLocation = func(name, location string) error {
+	if name != "" && os.ExpandEnv(location) != "" {
+		services.ServerMessage("Add location %s at %s", name, location)
+	}
+	return nil
+}
 
 // Loader config loader structure calling static configurations
 type Loader struct {
@@ -114,7 +119,7 @@ func (viewer *RestServer) InitSecurityInfrastructure() {
 
 	// Add File transfer locations
 	if len(viewer.FileTransfer.Directories.Directory) == 0 {
-		services.ServerMessage("No File location defined, file transfer not possible\n")
+		services.ServerMessage("No File location defined, file transfer not possible")
 	} else {
 		for _, d := range viewer.FileTransfer.Directories.Directory {
 			if AddLocation != nil {

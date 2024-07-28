@@ -184,7 +184,7 @@ func extraceLocationPath(paramsPath string) (*Directory, string, error) {
 	}
 	log.Log.Debugf("location=%s path=%s", location, path)
 	for _, d := range Viewer.FileTransfer.Directories.Directory {
-		if d.Name == location {
+		if d.Name == location && d.Location != "" {
 			return &d, path, nil
 		}
 	}
