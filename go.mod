@@ -37,7 +37,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/tknie/adabas-go-api v1.7.11-0.20231130200115-0931956e3a9c // indirect
-	golang.org/x/image v0.17.0 // indirect
+	golang.org/x/image v0.18.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
 
