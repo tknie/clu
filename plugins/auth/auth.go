@@ -48,6 +48,9 @@ func (tc *testCallback) Init() error     { initAuthCallback(); return nil }
 func (tc *testCallback) Authenticate(principal auth.PrincipalInterface, userName, passwd string) error {
 	return nil
 }
+func (tc *testCallback) Authorize(principal auth.PrincipalInterface, userName, passwd string) error {
+	return nil
+}
 func (tc *testCallback) CheckToken(token string, scopes []string) (auth.PrincipalInterface, error) {
 	if tc.checkTokenErr != nil {
 		return nil, tc.checkTokenErr

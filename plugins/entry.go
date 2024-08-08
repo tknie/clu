@@ -59,6 +59,20 @@ type Loader interface {
 	Stop()
 }
 
+// Auth authenticate and authorize
+type Auth interface {
+	Init() error
+	Authenticate(principal auth.PrincipalInterface, userName, passwd string) error
+	Authorize(principal auth.PrincipalInterface, userName, passwd string) error
+	CheckToken(token string, scopes []string) (auth.PrincipalInterface, error)
+}
+
+// AuditLoader auditing loader structure
+type AuthLoader struct {
+	Loader Loader
+	Auth   Auth
+}
+
 // Audit auditing method to send to plugin
 type Audit interface {
 	LoginAudit(string, string, *auth.SessionInfo, *auth.UserInfo)
@@ -93,6 +107,7 @@ type ExtendLoader struct {
 var auditPlugins = make(map[string]*AuditLoader)
 var adabasPlugins = make(map[string]*AdabasLoader)
 var extendPlugins = make(map[string]*ExtendLoader)
+var authPlugins = make(map[string]*AuthLoader)
 
 var pluginsFound = false
 var disablePlugin = false
@@ -219,7 +234,8 @@ func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 				services.ServerMessage("Error opening Authenticate/Authorize plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
 			} else {
 				services.ServerMessage("Authenticate/Authorize plugin: %s Version: %s", loader.Name(), loader.Version())
-				fmt.Printf("%#v\n", symCallback)
+				symAuth := symCallback.(Auth)
+				authPlugins[info.Name()] = &AuthLoader{loader, symAuth}
 			}
 		case ExtendPlugin:
 			symExtend, err := plug.Lookup("EntryPoint")
