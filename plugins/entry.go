@@ -67,7 +67,7 @@ type Auth interface {
 	CheckToken(token string, scopes []string) (auth.PrincipalInterface, error)
 }
 
-// AuditLoader auditing loader structure
+// AuthLoader auth loader structure
 type AuthLoader struct {
 	Loader Loader
 	Auth   Auth

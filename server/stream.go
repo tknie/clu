@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/disintegration/imaging"
+	"github.com/kovidgoyal/imaging"
 	"github.com/rwcarlsen/goexif/exif"
 	"github.com/rwcarlsen/goexif/tiff"
 	"github.com/tknie/clu"

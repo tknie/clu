@@ -74,6 +74,8 @@ type SessionInfo struct {
 	Status     string
 }
 
+const pluginName = "Audit Log Store"
+
 // var id common.RegDbID
 var storeChan = make(chan *SessionInfo, 1000)
 var tableName = ""
@@ -82,13 +84,17 @@ var url string
 var dbRef *common.Reference
 var password string
 
+func pluginMessage(msg string, argv ...interface{}) {
+	services.ServerMessage(pluginName+": "+msg, argv)
+}
+
 // var auditStoreID common.RegDbID
 
 func init() {
 	url = os.Getenv("REST_AUDIT_LOG_URL")
 	tableName = os.Getenv("REST_AUDIT_LOG_TABLENAME")
 	if url == "" || tableName == "" {
-		services.ServerMessage("Log parameter storage disabled...")
+		pluginMessage("Log parameter storage disabled...")
 		log.Log.Debugf("STORE_AUDIT: Disable due to URL error")
 		disableStore = true
 		return
@@ -103,10 +109,10 @@ func init() {
 	}
 	dbRef.User = "admin"
 
-	services.ServerMessage("Storing audit data to table '%s'", tableName)
+	pluginMessage("Storing audit data to table '%s'", tableName)
 	auditStoreID, err := flynn.Handler(dbRef, password)
 	if err != nil {
-		services.ServerMessage("Register error log: %v", err)
+		pluginMessage("Register error log: %v", err)
 		return
 	}
 	log.Log.Debugf("Receive handler %s", auditStoreID)
@@ -121,17 +127,17 @@ func init() {
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
 		if d == tableName {
-			// services.ServerMessage("Database log found")
+			// pluginMessage("Database log found")
 			storeChan <- si
 			return
 		}
 	}
 	err = auditStoreID.CreateTable(tableName, si)
 	if err != nil {
-		services.ServerMessage("Databaase log creating failed: %v", err)
+		pluginMessage("Databaase log creating failed: %v", err)
 		return
 	}
-	services.ServerMessage("Databaase log creating succeed")
+	pluginMessage("Databaase log creating succeed")
 
 	storeChan <- si
 }
@@ -157,7 +163,7 @@ func startStore() {
 	wg.Add(1)
 	defer wg.Done()
 	lock := sync.Mutex{}
-	defer services.ServerMessage("Ending store audit log")
+	defer pluginMessage("Ending store audit log")
 
 	for {
 		// log.Log.Debugf("STORE_AUDIT: Waiting store channel (%v)", disableStore)
@@ -168,7 +174,7 @@ func startStore() {
 				lock.Lock()
 				auditStoreID, err := flynn.Handler(dbRef, password)
 				if err != nil {
-					services.ServerMessage("Register error log: %v", err)
+					pluginMessage("Register error log: %v", err)
 					return
 				}
 				log.Log.Debugf("STORE_AUDIT: Store channel (%v)", disableStore)
@@ -187,7 +193,7 @@ func startStore() {
 				log.Log.Debugf("STORE_AUDIT: Insert store channel (%v)", disableStore)
 				_, err = auditStoreID.Insert(tableName, insert)
 				if err != nil {
-					services.ServerMessage("Error store to session %s/%s(%s) : %v",
+					pluginMessage("Error store to session %s/%s(%s) : %v",
 						host, addr, tableName, err)
 					log.Log.Debugf("STORE_AUDIT: Disable due to INSERT error")
 					disableStore = true
@@ -195,7 +201,7 @@ func startStore() {
 				log.Log.Debugf("STORE_AUDIT: Commit store channel (%v)", disableStore)
 				err = auditStoreID.Commit()
 				if err != nil {
-					services.ServerMessage("Error commiting to session %s/%s(%s) : %v",
+					pluginMessage("Error commiting to session %s/%s(%s) : %v",
 						host, addr, tableName, err)
 					log.Log.Debugf("STORE_AUDIT: Disable due to COMMIT error")
 					disableStore = true
@@ -236,7 +242,7 @@ func (g greeting) Types() []plugins.PluginTypes {
 
 // Name name of the plugin
 func (g greeting) Name() string {
-	return "Audit Log Store"
+	return pluginName
 }
 
 // Version version of the number
@@ -343,7 +349,7 @@ func removePrefix(uri, prefix string) string {
 
 // SendAuditError audit of http trigger
 func (g greeting) SendAuditError(elapsed time.Duration, user string, uuid string, w *http.Request, err error) {
-	services.ServerMessage("Failed: %v User: %s Error: %v",
+	pluginMessage("Failed: %v User: %s Error: %v",
 		elapsed, user, err)
 	si := NewSessionInfo(err.Error(), uuid, user, w.Method)
 	si.adapt(w)
