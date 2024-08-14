@@ -85,7 +85,7 @@ var dbRef *common.Reference
 var password string
 
 func pluginMessage(msg string, argv ...interface{}) {
-	services.ServerMessage(pluginName+": "+msg, argv)
+	services.ServerMessage(pluginName+": "+msg, argv...)
 }
 
 // var auditStoreID common.RegDbID
