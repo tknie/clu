@@ -1774,37 +1774,28 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 
 func encodeGetImageResponse(response GetImageRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *GetImageOKImageGIF:
-		w.Header().Set("Content-Type", "image/gif")
-		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
-
-		writer := w
-		if _, err := io.Copy(writer, response); err != nil {
-			return errors.Wrap(err, "write")
+	case *GetImageOKHeaders:
+		// Encoding response headers.
+		{
+			h := uri.NewHeaderEncoder(w.Header())
+			// Encode "Content-Type" header.
+			{
+				cfg := uri.HeaderParameterEncodingConfig{
+					Name:    "Content-Type",
+					Explode: false,
+				}
+				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+					return e.EncodeValue(conv.StringToString(response.ContentType))
+				}); err != nil {
+					return errors.Wrap(err, "encode Content-Type header")
+				}
+			}
 		}
-
-		return nil
-
-	case *GetImageOKImageJpeg:
-		w.Header().Set("Content-Type", "image/jpeg")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
-		if _, err := io.Copy(writer, response); err != nil {
-			return errors.Wrap(err, "write")
-		}
-
-		return nil
-
-	case *GetImageOKImagePNG:
-		w.Header().Set("Content-Type", "image/png")
-		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
-
-		writer := w
-		if _, err := io.Copy(writer, response); err != nil {
+		if _, err := io.Copy(writer, response.Response); err != nil {
 			return errors.Wrap(err, "write")
 		}
 
@@ -2515,25 +2506,28 @@ func encodeGetVersionResponse(response GetVersionRes, w http.ResponseWriter, spa
 
 func encodeGetVideoResponse(response GetVideoRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *GetVideoOKVideoMov:
-		w.Header().Set("Content-Type", "video/mov")
-		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
-
-		writer := w
-		if _, err := io.Copy(writer, response); err != nil {
-			return errors.Wrap(err, "write")
+	case *GetVideoOKHeaders:
+		// Encoding response headers.
+		{
+			h := uri.NewHeaderEncoder(w.Header())
+			// Encode "Content-Type" header.
+			{
+				cfg := uri.HeaderParameterEncodingConfig{
+					Name:    "Content-Type",
+					Explode: false,
+				}
+				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+					return e.EncodeValue(conv.StringToString(response.ContentType))
+				}); err != nil {
+					return errors.Wrap(err, "encode Content-Type header")
+				}
+			}
 		}
-
-		return nil
-
-	case *GetVideoOKVideoMP4:
-		w.Header().Set("Content-Type", "video/mp4")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
-		if _, err := io.Copy(writer, response); err != nil {
+		if _, err := io.Copy(writer, response.Response); err != nil {
 			return errors.Wrap(err, "write")
 		}
 

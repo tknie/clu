@@ -2142,15 +2142,15 @@ paths:
         '200':
           description: Successful response, retrieve the field information.
           content:
-            image/jpeg:
+            image/*:
               schema:
                 format: binary
-            image/gif:
-              schema:
-                format: binary
-            image/png:
-              schema:
-                format: binary
+            # image/gif:
+            #   schema:
+            #     format: binary
+            # image/png:
+            #   schema:
+            #     format: binary
         '401':
           description: Unauthorized access
           headers:
@@ -2229,12 +2229,15 @@ paths:
         '200':
           description: Successful response, retrieve the field information.
           content:
-            video/mp4:
+            video/*:
               schema:
                 format: binary
-            video/mov:
-              schema:
-                format: binary
+            # video/mp4:
+            #   schema:
+            #     format: binary
+            # video/mov:
+            #   schema:
+            #     format: binary
         '401':
           description: Unauthorized access
           headers:

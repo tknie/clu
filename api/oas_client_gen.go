@@ -12,7 +12,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/metric"
-	semconv "go.opentelemetry.io/otel/semconv/v1.19.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/ogen-go/ogen/conv"
@@ -532,7 +532,7 @@ func (c *Client) Access(ctx context.Context, params AccessParams) (AccessRes, er
 func (c *Client) sendAccess(ctx context.Context, params AccessParams) (res AccessRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("access"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/admin/access/{role}"),
 	}
 
@@ -679,7 +679,7 @@ func (c *Client) AdaptPermission(ctx context.Context, params AdaptPermissionPara
 func (c *Client) sendAdaptPermission(ctx context.Context, params AdaptPermissionParams) (res AdaptPermissionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("adaptPermission"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission"),
 	}
 
@@ -827,7 +827,7 @@ func (c *Client) AddAccess(ctx context.Context, params AddAccessParams) (AddAcce
 func (c *Client) sendAddAccess(ctx context.Context, params AddAccessParams) (res AddAccessRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addAccess"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/admin/access/{role}"),
 	}
 
@@ -992,7 +992,7 @@ func (c *Client) AddRBACResource(ctx context.Context, params AddRBACResourcePara
 func (c *Client) sendAddRBACResource(ctx context.Context, params AddRBACResourceParams) (res AddRBACResourceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addRBACResource"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}/{name}"),
 	}
 
@@ -1177,7 +1177,7 @@ func (c *Client) AddView(ctx context.Context, params AddViewParams) (AddViewRes,
 func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res AddViewRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addView"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/config/views"),
 	}
 
@@ -1338,7 +1338,7 @@ func (c *Client) BatchParameterQuery(ctx context.Context, params BatchParameterQ
 func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParameterQueryParams) (res BatchParameterQueryRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchParameterQuery"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/batch/{table}/{query}"),
 	}
 
@@ -1504,7 +1504,7 @@ func (c *Client) BatchQuery(ctx context.Context, request BatchQueryReq, params B
 func (c *Client) sendBatchQuery(ctx context.Context, request BatchQueryReq, params BatchQueryParams) (res BatchQueryRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchQuery"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/batch/{table}"),
 	}
 
@@ -1654,7 +1654,7 @@ func (c *Client) BatchSelect(ctx context.Context, params BatchSelectParams) (Bat
 func (c *Client) sendBatchSelect(ctx context.Context, params BatchSelectParams) (res BatchSelectRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchSelect"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/batch/{table}"),
 	}
 
@@ -1831,7 +1831,7 @@ func (c *Client) BrowseList(ctx context.Context) (BrowseListRes, error) {
 func (c *Client) sendBrowseList(ctx context.Context) (res BrowseListRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("browseList"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/file/browse"),
 	}
 
@@ -1960,7 +1960,7 @@ func (c *Client) BrowseLocation(ctx context.Context, params BrowseLocationParams
 func (c *Client) sendBrowseLocation(ctx context.Context, params BrowseLocationParams) (res BrowseLocationRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("browseLocation"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/file/browse/{path}"),
 	}
 
@@ -2128,7 +2128,7 @@ func (c *Client) CallExtend(ctx context.Context, params CallExtendParams) (CallE
 func (c *Client) sendCallExtend(ctx context.Context, params CallExtendParams) (res CallExtendRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("callExtend"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
 
@@ -2296,7 +2296,7 @@ func (c *Client) CallPostExtend(ctx context.Context, request *CallPostExtendReq,
 func (c *Client) sendCallPostExtend(ctx context.Context, request *CallPostExtendReq, params CallPostExtendParams) (res CallPostExtendRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("callPostExtend"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
 
@@ -2464,7 +2464,7 @@ func (c *Client) CreateDirectory(ctx context.Context, params CreateDirectoryPara
 func (c *Client) sendCreateDirectory(ctx context.Context, params CreateDirectoryParams) (res CreateDirectoryRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createDirectory"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 
@@ -2611,7 +2611,7 @@ func (c *Client) DatabaseOperation(ctx context.Context, params DatabaseOperation
 func (c *Client) sendDatabaseOperation(ctx context.Context, params DatabaseOperationParams) (res DatabaseOperationRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("databaseOperation"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
@@ -2758,7 +2758,7 @@ func (c *Client) DatabasePostOperations(ctx context.Context, params DatabasePost
 func (c *Client) sendDatabasePostOperations(ctx context.Context, params DatabasePostOperationsParams) (res DatabasePostOperationsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("databasePostOperations"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
@@ -2926,7 +2926,7 @@ func (c *Client) DelAccess(ctx context.Context, params DelAccessParams) (DelAcce
 func (c *Client) sendDelAccess(ctx context.Context, params DelAccessParams) (res DelAccessRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("delAccess"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/admin/access/{role}"),
 	}
 
@@ -3091,7 +3091,7 @@ func (c *Client) DeleteDatabase(ctx context.Context, params DeleteDatabaseParams
 func (c *Client) sendDeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (res DeleteDatabaseRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteDatabase"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
@@ -3238,7 +3238,7 @@ func (c *Client) DeleteExtend(ctx context.Context, params DeleteExtendParams) (D
 func (c *Client) sendDeleteExtend(ctx context.Context, params DeleteExtendParams) (res DeleteExtendRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteExtend"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
 
@@ -3403,7 +3403,7 @@ func (c *Client) DeleteFileLocation(ctx context.Context, params DeleteFileLocati
 func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLocationParams) (res DeleteFileLocationRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteFileLocation"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 
@@ -3571,7 +3571,7 @@ func (c *Client) DeleteJobResult(ctx context.Context, params DeleteJobResultPara
 func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResultParams) (res DeleteJobResultRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteJobResult"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}/{jobId}"),
 	}
 
@@ -3737,7 +3737,7 @@ func (c *Client) DeleteRBACResource(ctx context.Context, params DeleteRBACResour
 func (c *Client) sendDeleteRBACResource(ctx context.Context, params DeleteRBACResourceParams) (res DeleteRBACResourceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteRBACResource"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}/{name}"),
 	}
 
@@ -3922,7 +3922,7 @@ func (c *Client) DeleteRecordsSearched(ctx context.Context, params DeleteRecords
 func (c *Client) sendDeleteRecordsSearched(ctx context.Context, params DeleteRecordsSearchedParams) (res DeleteRecordsSearchedRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteRecordsSearched"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
 
@@ -4245,7 +4245,7 @@ func (c *Client) DeleteView(ctx context.Context, params DeleteViewParams) (Delet
 func (c *Client) sendDeleteView(ctx context.Context, params DeleteViewParams) (res DeleteViewRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteView"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/config/views"),
 	}
 
@@ -4406,7 +4406,7 @@ func (c *Client) DisconnectTCP(ctx context.Context, params DisconnectTCPParams) 
 func (c *Client) sendDisconnectTCP(ctx context.Context, params DisconnectTCPParams) (res DisconnectTCPRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("disconnectTCP"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/connection"),
 	}
 
@@ -4592,7 +4592,7 @@ func (c *Client) DownloadFile(ctx context.Context, params DownloadFileParams) (D
 func (c *Client) sendDownloadFile(ctx context.Context, params DownloadFileParams) (res DownloadFileRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("downloadFile"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 
@@ -4739,7 +4739,7 @@ func (c *Client) GetConfig(ctx context.Context) (GetConfigRes, error) {
 func (c *Client) sendGetConfig(ctx context.Context) (res GetConfigRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getConfig"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/config"),
 	}
 
@@ -4868,7 +4868,7 @@ func (c *Client) GetConnections(ctx context.Context, params GetConnectionsParams
 func (c *Client) sendGetConnections(ctx context.Context, params GetConnectionsParams) (res GetConnectionsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getConnections"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/connection"),
 	}
 
@@ -5016,7 +5016,7 @@ func (c *Client) GetDatabaseSessions(ctx context.Context, params GetDatabaseSess
 func (c *Client) sendGetDatabaseSessions(ctx context.Context, params GetDatabaseSessionsParams) (res GetDatabaseSessionsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getDatabaseSessions"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/sessions"),
 	}
 
@@ -5164,7 +5164,7 @@ func (c *Client) GetDatabaseStats(ctx context.Context, params GetDatabaseStatsPa
 func (c *Client) sendGetDatabaseStats(ctx context.Context, params GetDatabaseStatsParams) (res GetDatabaseStatsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getDatabaseStats"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/stats"),
 	}
 
@@ -5312,7 +5312,7 @@ func (c *Client) GetDatabases(ctx context.Context) (GetDatabasesRes, error) {
 func (c *Client) sendGetDatabases(ctx context.Context) (res GetDatabasesRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getDatabases"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database"),
 	}
 
@@ -5441,7 +5441,7 @@ func (c *Client) GetEnvironments(ctx context.Context) (GetEnvironmentsRes, error
 func (c *Client) sendGetEnvironments(ctx context.Context) (res GetEnvironmentsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getEnvironments"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/env"),
 	}
 
@@ -5513,7 +5513,7 @@ func (c *Client) GetFields(ctx context.Context, params GetFieldsParams) (GetFiel
 func (c *Client) sendGetFields(ctx context.Context, params GetFieldsParams) (res GetFieldsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getFields"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tables/{table}/fields"),
 	}
 
@@ -5661,7 +5661,7 @@ func (c *Client) GetImage(ctx context.Context, params GetImageParams) (GetImageR
 func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res GetImageRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getImage"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/image/{table}/{field}/{search}"),
 	}
 
@@ -5915,7 +5915,7 @@ func (c *Client) GetJobExecutionResult(ctx context.Context, params GetJobExecuti
 func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExecutionResultParams) (res GetJobExecutionResultRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobExecutionResult"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tasks/results"),
 	}
 
@@ -6082,7 +6082,7 @@ func (c *Client) GetJobFullInfo(ctx context.Context, params GetJobFullInfoParams
 func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (res GetJobFullInfoRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobFullInfo"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}"),
 	}
 
@@ -6229,7 +6229,7 @@ func (c *Client) GetJobResult(ctx context.Context, params GetJobResultParams) (G
 func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams) (res GetJobResultRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobResult"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}/{jobId}"),
 	}
 
@@ -6395,7 +6395,7 @@ func (c *Client) GetJobs(ctx context.Context, params GetJobsParams) (GetJobsRes,
 func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res GetJobsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobs"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tasks"),
 	}
 
@@ -6562,7 +6562,7 @@ func (c *Client) GetJobsConfig(ctx context.Context) (GetJobsConfigRes, error) {
 func (c *Client) sendGetJobsConfig(ctx context.Context) (res GetJobsConfigRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobsConfig"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/config/jobs"),
 	}
 
@@ -6691,7 +6691,7 @@ func (c *Client) GetLobByMap(ctx context.Context, params GetLobByMapParams) (Get
 func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) (res GetLobByMapRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLobByMap"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
 	}
 
@@ -6928,7 +6928,7 @@ func (c *Client) GetLoginSession(ctx context.Context) (GetLoginSessionRes, error
 func (c *Client) sendGetLoginSession(ctx context.Context) (res GetLoginSessionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLoginSession"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/login"),
 	}
 
@@ -7045,7 +7045,7 @@ func (c *Client) GetMapMetadata(ctx context.Context, params GetMapMetadataParams
 func (c *Client) sendGetMapMetadata(ctx context.Context, params GetMapMetadataParams) (res GetMapMetadataRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMapMetadata"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/metadata/view/{table}"),
 	}
 
@@ -7192,7 +7192,7 @@ func (c *Client) GetMapRecordsFields(ctx context.Context, params GetMapRecordsFi
 func (c *Client) sendGetMapRecordsFields(ctx context.Context, params GetMapRecordsFieldsParams) (res GetMapRecordsFieldsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMapRecordsFields"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{fields}/{search}"),
 	}
 
@@ -7534,7 +7534,7 @@ func (c *Client) GetMaps(ctx context.Context) (GetMapsRes, error) {
 func (c *Client) sendGetMaps(ctx context.Context) (res GetMapsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMaps"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/view"),
 	}
 
@@ -7663,7 +7663,7 @@ func (c *Client) GetPermission(ctx context.Context, params GetPermissionParams) 
 func (c *Client) sendGetPermission(ctx context.Context, params GetPermissionParams) (res GetPermissionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getPermission"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission"),
 	}
 
@@ -7832,7 +7832,7 @@ func (c *Client) GetUserInfo(ctx context.Context) (GetUserInfoRes, error) {
 func (c *Client) sendGetUserInfo(ctx context.Context) (res GetUserInfoRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getUserInfo"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/user"),
 	}
 
@@ -7904,7 +7904,7 @@ func (c *Client) GetVersion(ctx context.Context) (GetVersionRes, error) {
 func (c *Client) sendGetVersion(ctx context.Context) (res GetVersionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getVersion"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/version"),
 	}
 
@@ -7976,7 +7976,7 @@ func (c *Client) GetVideo(ctx context.Context, params GetVideoParams) (GetVideoR
 func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res GetVideoRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getVideo"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/video/{table}/{field}/{search}"),
 	}
 
@@ -8230,7 +8230,7 @@ func (c *Client) GetViews(ctx context.Context) (GetViewsRes, error) {
 func (c *Client) sendGetViews(ctx context.Context) (res GetViewsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getViews"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/config/views"),
 	}
 
@@ -8359,7 +8359,7 @@ func (c *Client) InsertMapFileRecords(ctx context.Context, request OptInsertMapF
 func (c *Client) sendInsertMapFileRecords(ctx context.Context, request OptInsertMapFileRecordsReq) (res InsertMapFileRecordsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("insertMapFileRecords"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/view"),
 	}
 
@@ -8491,7 +8491,7 @@ func (c *Client) InsertRecord(ctx context.Context, request OptInsertRecordReq, p
 func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordReq, params InsertRecordParams) (res InsertRecordRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("insertRecord"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}"),
 	}
 
@@ -8641,7 +8641,7 @@ func (c *Client) ListModelling(ctx context.Context) (ListModellingRes, error) {
 func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listModelling"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/map"),
 	}
 
@@ -8770,7 +8770,7 @@ func (c *Client) ListRBACResource(ctx context.Context, params ListRBACResourcePa
 func (c *Client) sendListRBACResource(ctx context.Context, params ListRBACResourceParams) (res ListRBACResourceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listRBACResource"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}"),
 	}
 
@@ -8936,7 +8936,7 @@ func (c *Client) ListTables(ctx context.Context) (ListTablesRes, error) {
 func (c *Client) sendListTables(ctx context.Context) (res ListTablesRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listTables"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tables"),
 	}
 
@@ -9065,7 +9065,7 @@ func (c *Client) LoginSession(ctx context.Context) (LoginSessionRes, error) {
 func (c *Client) sendLoginSession(ctx context.Context) (res LoginSessionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("loginSession"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/login"),
 	}
 
@@ -9182,7 +9182,7 @@ func (c *Client) LogoutSessionCompat(ctx context.Context) (LogoutSessionCompatRe
 func (c *Client) sendLogoutSessionCompat(ctx context.Context) (res LogoutSessionCompatRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("logoutSessionCompat"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/logout"),
 	}
 
@@ -9312,7 +9312,7 @@ func (c *Client) PostDatabase(ctx context.Context, request *Database) (PostDatab
 func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res PostDatabaseRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postDatabase"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/database"),
 	}
 
@@ -9444,7 +9444,7 @@ func (c *Client) PostJob(ctx context.Context, request PostJobReq) (PostJobRes, e
 func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJobRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postJob"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/tasks"),
 	}
 
@@ -9576,7 +9576,7 @@ func (c *Client) PushLoginSession(ctx context.Context) (PushLoginSessionRes, err
 func (c *Client) sendPushLoginSession(ctx context.Context) (res PushLoginSessionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("pushLoginSession"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/login"),
 	}
 
@@ -9693,7 +9693,7 @@ func (c *Client) PutDatabaseResource(ctx context.Context, params PutDatabaseReso
 func (c *Client) sendPutDatabaseResource(ctx context.Context, params PutDatabaseResourceParams) (res PutDatabaseResourceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("putDatabaseResource"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
@@ -9895,7 +9895,7 @@ func (c *Client) RemovePermission(ctx context.Context, params RemovePermissionPa
 func (c *Client) sendRemovePermission(ctx context.Context, params RemovePermissionParams) (res RemovePermissionRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("removePermission"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission"),
 	}
 
@@ -10043,7 +10043,7 @@ func (c *Client) RemoveSessionCompat(ctx context.Context) (RemoveSessionCompatRe
 func (c *Client) sendRemoveSessionCompat(ctx context.Context) (res RemoveSessionCompatRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("removeSessionCompat"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/logoff"),
 	}
 
@@ -10172,7 +10172,7 @@ func (c *Client) SearchModelling(ctx context.Context, params SearchModellingPara
 func (c *Client) sendSearchModelling(ctx context.Context, params SearchModellingParams) (res SearchModellingRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchModelling"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/map/{path}"),
 	}
 
@@ -10319,7 +10319,7 @@ func (c *Client) SearchRecordsFields(ctx context.Context, params SearchRecordsFi
 func (c *Client) sendSearchRecordsFields(ctx context.Context, params SearchRecordsFieldsParams) (res SearchRecordsFieldsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchRecordsFields"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
 
@@ -10642,7 +10642,7 @@ func (c *Client) SearchTable(ctx context.Context, params SearchTableParams) (Sea
 func (c *Client) sendSearchTable(ctx context.Context, params SearchTableParams) (res SearchTableRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchTable"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tables/{table}/{fields}/{search}"),
 	}
 
@@ -10848,7 +10848,7 @@ func (c *Client) SetConfig(ctx context.Context, request SetConfigReq) (SetConfig
 func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res SetConfigRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("setConfig"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/config"),
 	}
 
@@ -10980,7 +10980,7 @@ func (c *Client) SetJobsConfig(ctx context.Context, request OptJobStore) (SetJob
 func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (res SetJobsConfigRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("setJobsConfig"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/config/jobs"),
 	}
 
@@ -11112,7 +11112,7 @@ func (c *Client) ShutdownServer(ctx context.Context, params ShutdownServerParams
 func (c *Client) sendShutdownServer(ctx context.Context, params ShutdownServerParams) (res ShutdownServerRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("shutdownServer"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/shutdown/{hash}"),
 	}
 
@@ -11259,7 +11259,7 @@ func (c *Client) StoreConfig(ctx context.Context) (StoreConfigRes, error) {
 func (c *Client) sendStoreConfig(ctx context.Context) (res StoreConfigRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("storeConfig"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/config"),
 	}
 
@@ -11388,7 +11388,7 @@ func (c *Client) TriggerExtend(ctx context.Context, params TriggerExtendParams) 
 func (c *Client) sendTriggerExtend(ctx context.Context, params TriggerExtendParams) (res TriggerExtendRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("triggerExtend"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
 
@@ -11535,7 +11535,7 @@ func (c *Client) TriggerJob(ctx context.Context, params TriggerJobParams) (Trigg
 func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (res TriggerJobRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("triggerJob"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}"),
 	}
 
@@ -11682,7 +11682,7 @@ func (c *Client) UpdateLobByMap(ctx context.Context, request UpdateLobByMapReq, 
 func (c *Client) sendUpdateLobByMap(ctx context.Context, request UpdateLobByMapReq, params UpdateLobByMapParams) (res UpdateLobByMapRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateLobByMap"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
 	}
 
@@ -11870,7 +11870,7 @@ func (c *Client) UpdateRecordsByFields(ctx context.Context, request OptUpdateRec
 func (c *Client) sendUpdateRecordsByFields(ctx context.Context, request OptUpdateRecordsByFieldsReq, params UpdateRecordsByFieldsParams) (res UpdateRecordsByFieldsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateRecordsByFields"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
 
@@ -12039,7 +12039,7 @@ func (c *Client) UploadFile(ctx context.Context, request *UploadFileReq, params 
 func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileReq, params UploadFileParams) (res UploadFileRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("uploadFile"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 

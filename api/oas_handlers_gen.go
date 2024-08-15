@@ -11,7 +11,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/metric"
-	semconv "go.opentelemetry.io/otel/semconv/v1.19.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 
 	ht "github.com/ogen-go/ogen/http"
@@ -28,7 +28,7 @@ import (
 func (s *Server) handleAccessRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("access"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/admin/access/{role}"),
 	}
 
@@ -235,7 +235,7 @@ func (s *Server) handleAccessRequest(args [1]string, argsEscaped bool, w http.Re
 func (s *Server) handleAdaptPermissionRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("adaptPermission"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission"),
 	}
 
@@ -442,7 +442,7 @@ func (s *Server) handleAdaptPermissionRequest(args [1]string, argsEscaped bool, 
 func (s *Server) handleAddAccessRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addAccess"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/admin/access/{role}"),
 	}
 
@@ -653,7 +653,7 @@ func (s *Server) handleAddAccessRequest(args [1]string, argsEscaped bool, w http
 func (s *Server) handleAddRBACResourceRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addRBACResource"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}/{name}"),
 	}
 
@@ -868,7 +868,7 @@ func (s *Server) handleAddRBACResourceRequest(args [3]string, argsEscaped bool, 
 func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addView"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/config/views"),
 	}
 
@@ -1079,7 +1079,7 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchParameterQuery"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/batch/{table}/{query}"),
 	}
 
@@ -1290,7 +1290,7 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchQuery"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/batch/{table}"),
 	}
 
@@ -1512,7 +1512,7 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchSelect"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/batch/{table}"),
 	}
 
@@ -1723,7 +1723,7 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("browseList"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/file/browse"),
 	}
 
@@ -1915,7 +1915,7 @@ func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w htt
 func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("browseLocation"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/file/browse/{path}"),
 	}
 
@@ -2126,7 +2126,7 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("callExtend"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
 
@@ -2337,7 +2337,7 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("callPostExtend"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
 
@@ -2563,7 +2563,7 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createDirectory"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 
@@ -2770,7 +2770,7 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 func (s *Server) handleDatabaseOperationRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("databaseOperation"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
@@ -2977,7 +2977,7 @@ func (s *Server) handleDatabaseOperationRequest(args [1]string, argsEscaped bool
 func (s *Server) handleDatabasePostOperationsRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("databasePostOperations"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
@@ -3188,7 +3188,7 @@ func (s *Server) handleDatabasePostOperationsRequest(args [1]string, argsEscaped
 func (s *Server) handleDelAccessRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("delAccess"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/admin/access/{role}"),
 	}
 
@@ -3399,7 +3399,7 @@ func (s *Server) handleDelAccessRequest(args [1]string, argsEscaped bool, w http
 func (s *Server) handleDeleteDatabaseRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteDatabase"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
@@ -3606,7 +3606,7 @@ func (s *Server) handleDeleteDatabaseRequest(args [1]string, argsEscaped bool, w
 func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteExtend"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
 
@@ -3817,7 +3817,7 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteFileLocation"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 
@@ -4028,7 +4028,7 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteJobResult"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}/{jobId}"),
 	}
 
@@ -4239,7 +4239,7 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 func (s *Server) handleDeleteRBACResourceRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteRBACResource"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}/{name}"),
 	}
 
@@ -4454,7 +4454,7 @@ func (s *Server) handleDeleteRBACResourceRequest(args [3]string, argsEscaped boo
 func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteRecordsSearched"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
 
@@ -4701,7 +4701,7 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteView"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/config/views"),
 	}
 
@@ -4912,7 +4912,7 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("disconnectTCP"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/connection"),
 	}
 
@@ -5127,7 +5127,7 @@ func (s *Server) handleDisconnectTCPRequest(args [1]string, argsEscaped bool, w 
 func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("downloadFile"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 
@@ -5334,7 +5334,7 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getConfig"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/config"),
 	}
 
@@ -5526,7 +5526,7 @@ func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http
 func (s *Server) handleGetConnectionsRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getConnections"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/connection"),
 	}
 
@@ -5733,7 +5733,7 @@ func (s *Server) handleGetConnectionsRequest(args [1]string, argsEscaped bool, w
 func (s *Server) handleGetDatabaseSessionsRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getDatabaseSessions"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/sessions"),
 	}
 
@@ -5940,7 +5940,7 @@ func (s *Server) handleGetDatabaseSessionsRequest(args [1]string, argsEscaped bo
 func (s *Server) handleGetDatabaseStatsRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getDatabaseStats"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/stats"),
 	}
 
@@ -6147,7 +6147,7 @@ func (s *Server) handleGetDatabaseStatsRequest(args [1]string, argsEscaped bool,
 func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getDatabases"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database"),
 	}
 
@@ -6339,7 +6339,7 @@ func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w h
 func (s *Server) handleGetEnvironmentsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getEnvironments"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/env"),
 	}
 
@@ -6443,7 +6443,7 @@ func (s *Server) handleGetEnvironmentsRequest(args [0]string, argsEscaped bool, 
 func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getFields"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tables/{table}/fields"),
 	}
 
@@ -6650,7 +6650,7 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getImage"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/image/{table}/{field}/{search}"),
 	}
 
@@ -6881,7 +6881,7 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobExecutionResult"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tasks/results"),
 	}
 
@@ -7092,7 +7092,7 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobFullInfo"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}"),
 	}
 
@@ -7299,7 +7299,7 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobResult"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}/{jobId}"),
 	}
 
@@ -7510,7 +7510,7 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobs"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tasks"),
 	}
 
@@ -7721,7 +7721,7 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobsConfig"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/config/jobs"),
 	}
 
@@ -7913,7 +7913,7 @@ func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLobByMap"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
 	}
 
@@ -8140,7 +8140,7 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 func (s *Server) handleGetLoginSessionRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLoginSession"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/login"),
 	}
 
@@ -8313,7 +8313,7 @@ func (s *Server) handleGetLoginSessionRequest(args [0]string, argsEscaped bool, 
 func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMapMetadata"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/metadata/view/{table}"),
 	}
 
@@ -8520,7 +8520,7 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMapRecordsFields"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{fields}/{search}"),
 	}
 
@@ -8771,7 +8771,7 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMaps"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/view"),
 	}
 
@@ -8963,7 +8963,7 @@ func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.R
 func (s *Server) handleGetPermissionRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getPermission"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission"),
 	}
 
@@ -9174,7 +9174,7 @@ func (s *Server) handleGetPermissionRequest(args [1]string, argsEscaped bool, w 
 func (s *Server) handleGetUserInfoRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getUserInfo"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/user"),
 	}
 
@@ -9278,7 +9278,7 @@ func (s *Server) handleGetUserInfoRequest(args [0]string, argsEscaped bool, w ht
 func (s *Server) handleGetVersionRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getVersion"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/version"),
 	}
 
@@ -9382,7 +9382,7 @@ func (s *Server) handleGetVersionRequest(args [0]string, argsEscaped bool, w htt
 func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getVideo"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/video/{table}/{field}/{search}"),
 	}
 
@@ -9613,7 +9613,7 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getViews"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/config/views"),
 	}
 
@@ -9805,7 +9805,7 @@ func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.
 func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("insertMapFileRecords"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/view"),
 	}
 
@@ -10012,7 +10012,7 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("insertRecord"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}"),
 	}
 
@@ -10234,7 +10234,7 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listModelling"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/map"),
 	}
 
@@ -10426,7 +10426,7 @@ func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w 
 func (s *Server) handleListRBACResourceRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listRBACResource"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}"),
 	}
 
@@ -10637,7 +10637,7 @@ func (s *Server) handleListRBACResourceRequest(args [2]string, argsEscaped bool,
 func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listTables"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tables"),
 	}
 
@@ -10829,7 +10829,7 @@ func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w htt
 func (s *Server) handleLoginSessionRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("loginSession"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/login"),
 	}
 
@@ -11002,7 +11002,7 @@ func (s *Server) handleLoginSessionRequest(args [0]string, argsEscaped bool, w h
 func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("logoutSessionCompat"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/logout"),
 	}
 
@@ -11195,7 +11195,7 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postDatabase"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/database"),
 	}
 
@@ -11402,7 +11402,7 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postJob"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/tasks"),
 	}
 
@@ -11609,7 +11609,7 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 func (s *Server) handlePushLoginSessionRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("pushLoginSession"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/login"),
 	}
 
@@ -11782,7 +11782,7 @@ func (s *Server) handlePushLoginSessionRequest(args [0]string, argsEscaped bool,
 func (s *Server) handlePutDatabaseResourceRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("putDatabaseResource"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
 	}
 
@@ -12001,7 +12001,7 @@ func (s *Server) handlePutDatabaseResourceRequest(args [1]string, argsEscaped bo
 func (s *Server) handleRemovePermissionRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("removePermission"),
-		semconv.HTTPMethodKey.String("DELETE"),
+		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/database/{table}/permission"),
 	}
 
@@ -12208,7 +12208,7 @@ func (s *Server) handleRemovePermissionRequest(args [1]string, argsEscaped bool,
 func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("removeSessionCompat"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/logoff"),
 	}
 
@@ -12400,7 +12400,7 @@ func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bo
 func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchModelling"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/map/{path}"),
 	}
 
@@ -12607,7 +12607,7 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchRecordsFields"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
 
@@ -12854,7 +12854,7 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchTable"),
-		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tables/{table}/{fields}/{search}"),
 	}
 
@@ -13073,7 +13073,7 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("setConfig"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/config"),
 	}
 
@@ -13280,7 +13280,7 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("setJobsConfig"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/config/jobs"),
 	}
 
@@ -13487,7 +13487,7 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("shutdownServer"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/shutdown/{hash}"),
 	}
 
@@ -13694,7 +13694,7 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("storeConfig"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/config"),
 	}
 
@@ -13886,7 +13886,7 @@ func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w ht
 func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("triggerExtend"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
 
@@ -14093,7 +14093,7 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("triggerJob"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}"),
 	}
 
@@ -14300,7 +14300,7 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateLobByMap"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
 	}
 
@@ -14530,7 +14530,7 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateRecordsByFields"),
-		semconv.HTTPMethodKey.String("PUT"),
+		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
 
@@ -14756,7 +14756,7 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("uploadFile"),
-		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
 

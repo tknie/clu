@@ -57,7 +57,8 @@ func (Handler) GetImage(ctx context.Context, params api.GetImageParams) (r api.G
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
 		return nil, err
 	}
-	r = &api.GetImageOKImageGIF{Data: reader}
+	r = &api.GetImageOKHeaders{ContentType: read.mimetype,
+		Response: api.GetImageOK{Data: reader}}
 	log.Log.Debugf("Return IMAGE: %#v\n", r)
 	return r, nil
 }
@@ -87,11 +88,8 @@ func (Handler) GetVideo(ctx context.Context, params api.GetVideoParams) (r api.G
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
 		return nil, err
 	}
-	if read.mimetype == "video/mp3" || read.mimetype == "" {
-		r = &api.GetVideoOKVideoMP4{Data: reader}
-	} else {
-		r = &api.GetVideoOKVideoMov{Data: reader}
-	}
+	vOk := api.GetVideoOK{Data: reader}
+	r = &api.GetVideoOKHeaders{ContentType: read.mimetype, Response: vOk}
 	log.Log.Debugf("Return VIDEO: %#v\n", r)
 	return r, nil
 }

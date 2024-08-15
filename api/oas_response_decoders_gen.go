@@ -12,6 +12,7 @@ import (
 	"github.com/go-faster/jx"
 
 	"github.com/ogen-go/ogen/conv"
+	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/ogenerrors"
 	"github.com/ogen-go/ogen/uri"
 	"github.com/ogen-go/ogen/validate"
@@ -4759,33 +4760,50 @@ func decodeGetImageResponse(resp *http.Response) (res GetImageRes, _ error) {
 			return res, errors.Wrap(err, "parse media type")
 		}
 		switch {
-		case ct == "image/gif":
+		case ht.MatchContentType("image/*", ct):
 			reader := resp.Body
 			b, err := io.ReadAll(reader)
 			if err != nil {
 				return res, err
 			}
 
-			response := GetImageOKImageGIF{Data: bytes.NewReader(b)}
-			return &response, nil
-		case ct == "image/jpeg":
-			reader := resp.Body
-			b, err := io.ReadAll(reader)
-			if err != nil {
-				return res, err
-			}
+			response := GetImageOK{Data: bytes.NewReader(b)}
+			var wrapper GetImageOKHeaders
+			wrapper.Response = response
+			h := uri.NewHeaderDecoder(resp.Header)
+			// Parse "Content-Type" header.
+			{
+				cfg := uri.HeaderParameterDecodingConfig{
+					Name:    "Content-Type",
+					Explode: false,
+				}
+				if err := func() error {
+					if err := h.HasParam(cfg); err == nil {
+						if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
+							val, err := d.DecodeValue()
+							if err != nil {
+								return err
+							}
 
-			response := GetImageOKImageJpeg{Data: bytes.NewReader(b)}
-			return &response, nil
-		case ct == "image/png":
-			reader := resp.Body
-			b, err := io.ReadAll(reader)
-			if err != nil {
-				return res, err
-			}
+							c, err := conv.ToString(val)
+							if err != nil {
+								return err
+							}
 
-			response := GetImageOKImagePNG{Data: bytes.NewReader(b)}
-			return &response, nil
+							wrapper.ContentType = c
+							return nil
+						}); err != nil {
+							return err
+						}
+					} else {
+						return validate.ErrFieldRequired
+					}
+					return nil
+				}(); err != nil {
+					return res, errors.Wrap(err, "parse Content-Type header")
+				}
+			}
+			return &wrapper, nil
 		default:
 			return res, validate.InvalidContentType(ct)
 		}
@@ -6738,24 +6756,50 @@ func decodeGetVideoResponse(resp *http.Response) (res GetVideoRes, _ error) {
 			return res, errors.Wrap(err, "parse media type")
 		}
 		switch {
-		case ct == "video/mov":
+		case ht.MatchContentType("video/*", ct):
 			reader := resp.Body
 			b, err := io.ReadAll(reader)
 			if err != nil {
 				return res, err
 			}
 
-			response := GetVideoOKVideoMov{Data: bytes.NewReader(b)}
-			return &response, nil
-		case ct == "video/mp4":
-			reader := resp.Body
-			b, err := io.ReadAll(reader)
-			if err != nil {
-				return res, err
-			}
+			response := GetVideoOK{Data: bytes.NewReader(b)}
+			var wrapper GetVideoOKHeaders
+			wrapper.Response = response
+			h := uri.NewHeaderDecoder(resp.Header)
+			// Parse "Content-Type" header.
+			{
+				cfg := uri.HeaderParameterDecodingConfig{
+					Name:    "Content-Type",
+					Explode: false,
+				}
+				if err := func() error {
+					if err := h.HasParam(cfg); err == nil {
+						if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
+							val, err := d.DecodeValue()
+							if err != nil {
+								return err
+							}
 
-			response := GetVideoOKVideoMP4{Data: bytes.NewReader(b)}
-			return &response, nil
+							c, err := conv.ToString(val)
+							if err != nil {
+								return err
+							}
+
+							wrapper.ContentType = c
+							return nil
+						}); err != nil {
+							return err
+						}
+					} else {
+						return validate.ErrFieldRequired
+					}
+					return nil
+				}(); err != nil {
+					return res, errors.Wrap(err, "parse Content-Type header")
+				}
+			}
+			return &wrapper, nil
 		default:
 			return res, validate.InvalidContentType(ct)
 		}

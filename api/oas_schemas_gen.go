@@ -2378,53 +2378,47 @@ type GetImageForbidden struct{}
 
 func (*GetImageForbidden) getImageRes() {}
 
-type GetImageOKImageGIF struct {
+type GetImageOK struct {
 	Data io.Reader
 }
 
 // Read reads data from the Data reader.
 //
 // Kept to satisfy the io.Reader interface.
-func (s GetImageOKImageGIF) Read(p []byte) (n int, err error) {
+func (s GetImageOK) Read(p []byte) (n int, err error) {
 	if s.Data == nil {
 		return 0, io.EOF
 	}
 	return s.Data.Read(p)
 }
 
-func (*GetImageOKImageGIF) getImageRes() {}
-
-type GetImageOKImageJpeg struct {
-	Data io.Reader
+// GetImageOKHeaders wraps GetImageOK with response headers.
+type GetImageOKHeaders struct {
+	ContentType string
+	Response    GetImageOK
 }
 
-// Read reads data from the Data reader.
-//
-// Kept to satisfy the io.Reader interface.
-func (s GetImageOKImageJpeg) Read(p []byte) (n int, err error) {
-	if s.Data == nil {
-		return 0, io.EOF
-	}
-	return s.Data.Read(p)
+// GetContentType returns the value of ContentType.
+func (s *GetImageOKHeaders) GetContentType() string {
+	return s.ContentType
 }
 
-func (*GetImageOKImageJpeg) getImageRes() {}
-
-type GetImageOKImagePNG struct {
-	Data io.Reader
+// GetResponse returns the value of Response.
+func (s *GetImageOKHeaders) GetResponse() GetImageOK {
+	return s.Response
 }
 
-// Read reads data from the Data reader.
-//
-// Kept to satisfy the io.Reader interface.
-func (s GetImageOKImagePNG) Read(p []byte) (n int, err error) {
-	if s.Data == nil {
-		return 0, io.EOF
-	}
-	return s.Data.Read(p)
+// SetContentType sets the value of ContentType.
+func (s *GetImageOKHeaders) SetContentType(val string) {
+	s.ContentType = val
 }
 
-func (*GetImageOKImagePNG) getImageRes() {}
+// SetResponse sets the value of Response.
+func (s *GetImageOKHeaders) SetResponse(val GetImageOK) {
+	s.Response = val
+}
+
+func (*GetImageOKHeaders) getImageRes() {}
 
 // GetImageUnauthorized is response for GetImage operation.
 type GetImageUnauthorized struct {
@@ -2659,37 +2653,47 @@ type GetVideoForbidden struct{}
 
 func (*GetVideoForbidden) getVideoRes() {}
 
-type GetVideoOKVideoMP4 struct {
+type GetVideoOK struct {
 	Data io.Reader
 }
 
 // Read reads data from the Data reader.
 //
 // Kept to satisfy the io.Reader interface.
-func (s GetVideoOKVideoMP4) Read(p []byte) (n int, err error) {
+func (s GetVideoOK) Read(p []byte) (n int, err error) {
 	if s.Data == nil {
 		return 0, io.EOF
 	}
 	return s.Data.Read(p)
 }
 
-func (*GetVideoOKVideoMP4) getVideoRes() {}
-
-type GetVideoOKVideoMov struct {
-	Data io.Reader
+// GetVideoOKHeaders wraps GetVideoOK with response headers.
+type GetVideoOKHeaders struct {
+	ContentType string
+	Response    GetVideoOK
 }
 
-// Read reads data from the Data reader.
-//
-// Kept to satisfy the io.Reader interface.
-func (s GetVideoOKVideoMov) Read(p []byte) (n int, err error) {
-	if s.Data == nil {
-		return 0, io.EOF
-	}
-	return s.Data.Read(p)
+// GetContentType returns the value of ContentType.
+func (s *GetVideoOKHeaders) GetContentType() string {
+	return s.ContentType
 }
 
-func (*GetVideoOKVideoMov) getVideoRes() {}
+// GetResponse returns the value of Response.
+func (s *GetVideoOKHeaders) GetResponse() GetVideoOK {
+	return s.Response
+}
+
+// SetContentType sets the value of ContentType.
+func (s *GetVideoOKHeaders) SetContentType(val string) {
+	s.ContentType = val
+}
+
+// SetResponse sets the value of Response.
+func (s *GetVideoOKHeaders) SetResponse(val GetVideoOK) {
+	s.Response = val
+}
+
+func (*GetVideoOKHeaders) getVideoRes() {}
 
 // GetVideoUnauthorized is response for GetVideo operation.
 type GetVideoUnauthorized struct {
