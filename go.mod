@@ -8,11 +8,11 @@ require (
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.0
 	github.com/jackc/pgx/v5 v5.6.0
-	github.com/ogen-go/ogen v1.2.2
+	github.com/ogen-go/ogen v1.3.0
 	github.com/rs/cors v1.11.0
 	github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
-	github.com/tknie/services v0.0.0-20240808185810-72509906231d
+	github.com/tknie/services v0.0.0-20240808190428-96aac0a033f3
 	go.opentelemetry.io/otel v1.28.0
 	go.opentelemetry.io/otel/metric v1.28.0
 	go.opentelemetry.io/otel/trace v1.28.0
