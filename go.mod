@@ -9,7 +9,7 @@ require (
 	github.com/go-openapi/swag v0.23.0
 	github.com/jackc/pgx/v5 v5.6.0
 	github.com/ogen-go/ogen v1.3.0
-	github.com/rs/cors v1.11.0
+	github.com/rs/cors v1.11.1
 	github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
 	github.com/tknie/services v0.0.0-20240808190428-96aac0a033f3
