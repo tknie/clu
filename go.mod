@@ -9,7 +9,7 @@ require (
 	github.com/go-faster/jx v1.1.0
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.0
-	github.com/jackc/pgx/v5 v5.6.0
+	github.com/jackc/pgx/v5 v5.7.0
 	github.com/ogen-go/ogen v1.3.0
 	github.com/rs/cors v1.11.1
 	github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae
