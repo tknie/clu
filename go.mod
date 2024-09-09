@@ -10,7 +10,7 @@ require (
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.0
 	github.com/jackc/pgx/v5 v5.6.0
-	github.com/ogen-go/ogen v1.3.0
+	github.com/ogen-go/ogen v1.4.0
 	github.com/rs/cors v1.11.1
 	github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
@@ -69,7 +69,7 @@ require (
 	golang.org/x/net v0.28.0
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.24.0 // indirect
-	golang.org/x/text v0.17.0 // indirect
+	golang.org/x/text v0.18.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
