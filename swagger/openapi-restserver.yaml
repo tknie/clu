@@ -2369,6 +2369,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: returning
+          in: query
+          description: return field result
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -2455,8 +2460,8 @@ paths:
           in: query
           description: Maximal number of records retrieved
           schema:
-            type: number
-            default: 15
+            type: string
+            default: "100"
         - name: sorted_by
           in: query
           description: sort criterium
@@ -2557,8 +2562,8 @@ paths:
           in: query
           description: Maximal number of records retrieved
           schema:
-            type: number
-            default: 15
+            type: string
+            default: "15"
         - name: sorted_by
           in: query
           description: sort criterium
@@ -2721,8 +2726,8 @@ paths:
           in: query
           description: Maximal number of records retrieved
           schema:
-            type: number
-            default: 15
+            type: string
+            default: "15"
         - name: sorted_by
           in: query
           description: sort criterium
@@ -4861,8 +4866,8 @@ components:
       in: query
       description: Maximal number of records retrieved
       schema:
-        type: number
-        default: 15
+        type: string
+        default: "15"
     sortParam:
       name: sorted_by
       in: query

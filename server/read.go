@@ -54,30 +54,34 @@ func generateItem(fields []string, rows []any) api.ResponseRecordsItem {
 	for i, r := range rows {
 		s := strings.ToLower(fields[i])
 		log.Log.Debugf("%d. row is of type %T", i, r)
-		switch t := r.(type) {
-		case *string:
-			log.Log.Debugf("String Pointer %s", *t)
-			raw := jx.Raw([]byte("\"" + *t + "\""))
-			d[s] = raw
-		case string:
-			log.Log.Debugf("String %s", t)
-			str := strings.Replace(t, "\"", "\\\"", -1)
-			raw := jx.Raw([]byte("\"" + str + "\""))
-			d[s] = raw
-		case *time.Time:
-			d[s] = jx.Raw([]byte("\"" + (*t).String() + "\""))
-		case time.Time:
-			d[s] = jx.Raw([]byte("\"" + (t).String() + "\""))
-		case pgtype.Numeric:
-			v := uint64(t.Int.Uint64()) * uint64(math.Pow10(int(t.Exp)))
-			st := fmt.Sprintf("%d", v)
-			d[s] = jx.Raw([]byte("\"" + (st) + "\""))
-		default:
-			if r != nil {
-				log.Log.Debugf("using default ---> %v %T", r, t)
-				d[s] = jx.Raw(fmt.Sprintf("%v", r))
-			}
-		}
+		convertTypeToRaw(d, s, r)
 	}
 	return d
+}
+
+func convertTypeToRaw(d api.ResponseRecordsItem, s string, r interface{}) {
+	switch t := r.(type) {
+	case *string:
+		log.Log.Debugf("String Pointer %s", *t)
+		raw := jx.Raw([]byte("\"" + *t + "\""))
+		d[s] = raw
+	case string:
+		log.Log.Debugf("String %s", t)
+		str := strings.Replace(t, "\"", "\\\"", -1)
+		raw := jx.Raw([]byte("\"" + str + "\""))
+		d[s] = raw
+	case *time.Time:
+		d[s] = jx.Raw([]byte("\"" + (*t).String() + "\""))
+	case time.Time:
+		d[s] = jx.Raw([]byte("\"" + (t).String() + "\""))
+	case pgtype.Numeric:
+		v := uint64(t.Int.Uint64()) * uint64(math.Pow10(int(t.Exp)))
+		st := fmt.Sprintf("%d", v)
+		d[s] = jx.Raw([]byte("\"" + (st) + "\""))
+	default:
+		if r != nil {
+			log.Log.Debugf("using default ---> %v %T", r, t)
+			d[s] = jx.Raw(fmt.Sprintf("%v", r))
+		}
+	}
 }

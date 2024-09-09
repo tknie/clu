@@ -82,12 +82,28 @@ func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, par
 	// list := [][]any{{vId1, "xxxxxx", 1}, {vId2, "yyywqwqwqw", 2}}
 	input := &common.Entries{Fields: fields,
 		Values: list}
-	_, err = d.Insert(params.Table, input)
+	if params.Returning.Set {
+		input.Returning = strings.Split(params.Returning.Value, ",")
+	}
+	retValue, err := d.Insert(params.Table, input)
 	if err != nil {
 		log.Log.Debugf("Error: %v", err)
 		return nil, err
 	}
+
 	resp := api.Response{NrRecords: api.NewOptInt(len(records))}
+	if len(input.Returning) > 0 {
+		log.Log.Debugf("Returning value: %v", retValue)
+		data := make([]api.ResponseRecordsItem, 0)
+		for _, r := range retValue {
+			d := make(api.ResponseRecordsItem)
+			for x, field := range input.Returning {
+				convertTypeToRaw(d, field, r[x])
+			}
+			data = append(data, d)
+		}
+		resp.Records = data
+	}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	log.Log.Debugf("Return SQL insert %s", params.Table)
 	return respH, nil

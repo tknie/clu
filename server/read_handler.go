@@ -50,9 +50,9 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 	if params.Descriptor.Value {
 		descriptor = true
 	}
-	limit := uint32(0)
+	limit := "ALL"
 	if params.Limit.Set {
-		limit = uint32(params.Limit.Value)
+		limit = params.Limit.Value
 	}
 	q := &common.Query{TableName: params.Table,
 		Fields:     extractFieldList(params.Search),
@@ -97,9 +97,9 @@ func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecords
 	if params.Descriptor.Set && params.Descriptor.Value {
 		descriptor = true
 	}
-	limit := uint32(0)
+	limit := "ALL"
 	if params.Limit.Set {
-		limit = uint32(params.Limit.Value)
+		limit = params.Limit.Value
 	}
 	q := &common.Query{TableName: params.Table,
 		Fields:     extractFieldList(params.Fields),

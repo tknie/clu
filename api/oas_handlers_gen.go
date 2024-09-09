@@ -10175,6 +10175,10 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 					Name: "table",
 					In:   "path",
 				}: params.Table,
+				{
+					Name: "returning",
+					In:   "query",
+				}: params.Returning,
 			},
 			Raw: r,
 		}

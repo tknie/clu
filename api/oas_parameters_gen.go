@@ -2186,7 +2186,7 @@ type DeleteRecordsSearchedParams struct {
 	// Start offset where the read will start from.
 	Start OptFloat64
 	// Maximal number of records retrieved.
-	Limit OptFloat64
+	Limit OptString
 	// Sort criterium.
 	SortedBy OptString
 	// Search criterium.
@@ -2233,7 +2233,7 @@ func unpackDeleteRecordsSearchedParams(packed middleware.Parameters) (params Del
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.Limit = v.(OptFloat64)
+			params.Limit = v.(OptString)
 		}
 	}
 	{
@@ -2457,7 +2457,7 @@ func decodeDeleteRecordsSearchedParams(args [2]string, argsEscaped bool, r *http
 	}
 	// Set default value for query: limit.
 	{
-		val := float64(15)
+		val := string("15")
 		params.Limit.SetTo(val)
 	}
 	// Decode query: limit.
@@ -2470,14 +2470,14 @@ func decodeDeleteRecordsSearchedParams(args [2]string, argsEscaped bool, r *http
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotLimitVal float64
+				var paramsDotLimitVal string
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
 						return err
 					}
 
-					c, err := conv.ToFloat64(val)
+					c, err := conv.ToString(val)
 					if err != nil {
 						return err
 					}
@@ -2490,21 +2490,6 @@ func decodeDeleteRecordsSearchedParams(args [2]string, argsEscaped bool, r *http
 				params.Limit.SetTo(paramsDotLimitVal)
 				return nil
 			}); err != nil {
-				return err
-			}
-			if err := func() error {
-				if value, ok := params.Limit.Get(); ok {
-					if err := func() error {
-						if err := (validate.Float{}).Validate(float64(value)); err != nil {
-							return errors.Wrap(err, "float")
-						}
-						return nil
-					}(); err != nil {
-						return err
-					}
-				}
-				return nil
-			}(); err != nil {
 				return err
 			}
 		}
@@ -4617,7 +4602,7 @@ type GetMapRecordsFieldsParams struct {
 	// Start offset where the read will start from.
 	Start OptFloat64
 	// Maximal number of records retrieved.
-	Limit OptFloat64
+	Limit OptString
 	// Sort criterium.
 	SortedBy OptString
 	// Search criterium.
@@ -4671,7 +4656,7 @@ func unpackGetMapRecordsFieldsParams(packed middleware.Parameters) (params GetMa
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.Limit = v.(OptFloat64)
+			params.Limit = v.(OptString)
 		}
 	}
 	{
@@ -4940,7 +4925,7 @@ func decodeGetMapRecordsFieldsParams(args [3]string, argsEscaped bool, r *http.R
 	}
 	// Set default value for query: limit.
 	{
-		val := float64(15)
+		val := string("100")
 		params.Limit.SetTo(val)
 	}
 	// Decode query: limit.
@@ -4953,14 +4938,14 @@ func decodeGetMapRecordsFieldsParams(args [3]string, argsEscaped bool, r *http.R
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotLimitVal float64
+				var paramsDotLimitVal string
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
 						return err
 					}
 
-					c, err := conv.ToFloat64(val)
+					c, err := conv.ToString(val)
 					if err != nil {
 						return err
 					}
@@ -4973,21 +4958,6 @@ func decodeGetMapRecordsFieldsParams(args [3]string, argsEscaped bool, r *http.R
 				params.Limit.SetTo(paramsDotLimitVal)
 				return nil
 			}); err != nil {
-				return err
-			}
-			if err := func() error {
-				if value, ok := params.Limit.Get(); ok {
-					if err := func() error {
-						if err := (validate.Float{}).Validate(float64(value)); err != nil {
-							return errors.Wrap(err, "float")
-						}
-						return nil
-					}(); err != nil {
-						return err
-					}
-				}
-				return nil
-			}(); err != nil {
 				return err
 			}
 		}
@@ -5813,6 +5783,8 @@ func decodeGetVideoParams(args [3]string, argsEscaped bool, r *http.Request) (pa
 type InsertRecordParams struct {
 	// SQL table.
 	Table string
+	// Return field result.
+	Returning OptString
 }
 
 func unpackInsertRecordParams(packed middleware.Parameters) (params InsertRecordParams) {
@@ -5823,10 +5795,20 @@ func unpackInsertRecordParams(packed middleware.Parameters) (params InsertRecord
 		}
 		params.Table = packed[key].(string)
 	}
+	{
+		key := middleware.ParameterKey{
+			Name: "returning",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Returning = v.(OptString)
+		}
+	}
 	return params
 }
 
 func decodeInsertRecordParams(args [1]string, argsEscaped bool, r *http.Request) (params InsertRecordParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
 	// Decode path: table.
 	if err := func() error {
 		param := args[0]
@@ -5869,6 +5851,47 @@ func decodeInsertRecordParams(args [1]string, argsEscaped bool, r *http.Request)
 		return params, &ogenerrors.DecodeParamError{
 			Name: "table",
 			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode query: returning.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "returning",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotReturningVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotReturningVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Returning.SetTo(paramsDotReturningVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "returning",
+			In:   "query",
 			Err:  err,
 		}
 	}
@@ -6367,7 +6390,7 @@ type SearchRecordsFieldsParams struct {
 	// Start offset where the read will start from.
 	Start OptFloat64
 	// Maximal number of records retrieved.
-	Limit OptFloat64
+	Limit OptString
 	// Sort criterium.
 	SortedBy OptString
 	// Search criterium.
@@ -6414,7 +6437,7 @@ func unpackSearchRecordsFieldsParams(packed middleware.Parameters) (params Searc
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.Limit = v.(OptFloat64)
+			params.Limit = v.(OptString)
 		}
 	}
 	{
@@ -6638,7 +6661,7 @@ func decodeSearchRecordsFieldsParams(args [2]string, argsEscaped bool, r *http.R
 	}
 	// Set default value for query: limit.
 	{
-		val := float64(15)
+		val := string("15")
 		params.Limit.SetTo(val)
 	}
 	// Decode query: limit.
@@ -6651,14 +6674,14 @@ func decodeSearchRecordsFieldsParams(args [2]string, argsEscaped bool, r *http.R
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotLimitVal float64
+				var paramsDotLimitVal string
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
 						return err
 					}
 
-					c, err := conv.ToFloat64(val)
+					c, err := conv.ToString(val)
 					if err != nil {
 						return err
 					}
@@ -6671,21 +6694,6 @@ func decodeSearchRecordsFieldsParams(args [2]string, argsEscaped bool, r *http.R
 				params.Limit.SetTo(paramsDotLimitVal)
 				return nil
 			}); err != nil {
-				return err
-			}
-			if err := func() error {
-				if value, ok := params.Limit.Get(); ok {
-					if err := func() error {
-						if err := (validate.Float{}).Validate(float64(value)); err != nil {
-							return errors.Wrap(err, "float")
-						}
-						return nil
-					}(); err != nil {
-						return err
-					}
-				}
-				return nil
-			}(); err != nil {
 				return err
 			}
 		}
