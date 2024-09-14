@@ -18,8 +18,8 @@ PACKAGE            = github.com/tknie/restdb
 TESTPKGSDIR        = server
 INSTALL_DEST       = .
 DATE               = $(shell date +%d-%m-%Y'_'%H:%M:%S)
-VERSION           ?= v0.9.1.0
-MAJORVERS          = v091
+VERSION           ?= v0.9.3.0
+MAJORVERS          = v093
 RESTVERSION       ?= $(VERSION).$(shell date +%d%m%Y)
 #$(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
 #			cat $(CURDIR)/.version 2> /dev/null || echo v0)
