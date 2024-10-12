@@ -235,11 +235,13 @@ func LoadedConfig() {
 
 // String representation of Database instance
 func (db *Database) String() string {
+	log.Log.Debugf("Datbase target %s", db.Target)
 	ref, p, err := common.NewReference(os.ExpandEnv(db.Target))
 	if err != nil {
 		log.Log.Debugf("Parse error target: %v", db.Target)
 		return "<Error: " + err.Error() + ">"
 	}
+
 	if db.Password == "" {
 		db.Password = p
 	}

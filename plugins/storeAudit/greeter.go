@@ -100,6 +100,7 @@ func init() {
 		return
 	}
 	var err error
+	log.Log.Debugf("Datbase target %s", url)
 	dbRef, password, err = common.NewReference(url)
 	if err != nil || dbRef == nil {
 		log.Log.Fatal("REST audit URL incorrect: " + url)

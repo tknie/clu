@@ -15,6 +15,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	"time"
@@ -65,6 +66,7 @@ func Handles(dm *Database) (*common.Reference, error) {
 	}
 	log.Log.Infof("Add database hash %s -> %s", dHash, os.ExpandEnv(dm.String()))
 	target := os.ExpandEnv(dm.Target)
+	log.Log.Debugf("Handles %s", target)
 	ref, _, err := common.NewReference(target)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing target <%s>: %s -> %s", dm.Target, err, target)
@@ -90,6 +92,21 @@ func initTableOfDatabases() {
 	}
 }
 
+// checkFilter checks the filters array if it match to the given table
+func checkFilter(filters []string, table string) bool {
+	log.Log.Debugf("Check filters: %v search %s", filters, table)
+	if len(filters) == 0 {
+		return true
+	}
+	checkTable := strings.ToLower(table)
+	for _, filter := range filters {
+		if ok, _ := filepath.Match(strings.ToLower(filter), checkTable); ok {
+			return true
+		}
+	}
+	return slices.Contains(filters, strings.ToLower(table))
+}
+
 func loadTableOfDatabases() {
 	log.Log.Debugf("Refreshing database list")
 	for _, dm := range Viewer.Database.DatabaseAccess.Database {
@@ -111,9 +128,12 @@ func loadTableOfDatabases() {
 					services.ServerMessage("Found table on different databases: [%s]", s)
 				}
 			} else {
-				if len(dm.Tables) == 0 || slices.Contains(dm.Tables, strings.ToLower(table)) {
+				if checkFilter(dm.Tables, table) {
+					log.Log.Debugf("Append table: %s", table)
 					newDatabases = append(newDatabases, s)
 					dbDictionary[s] = id
+				} else {
+					log.Log.Debugf("Ignore table: %s", table)
 				}
 			}
 		}
@@ -155,7 +175,7 @@ func ConnectTable(ctx *clu.Context, table string) (common.RegDbID, error) {
 	}
 	refCopy := *ref
 	refCopy.User = ctx.User.User
-	log.Log.Debugf("Connect table (register handle)")
+	log.Log.Debugf("Connect table (register handle) %#v -> %#v", ref, refCopy)
 	id, err := flynn.Handler(&refCopy, ctx.Pass)
 	if err != nil {
 		services.ServerMessage("Error registering database %s:%d...%v",
