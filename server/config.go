@@ -13,6 +13,7 @@ package server
 
 import (
 	"embed"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -194,12 +195,13 @@ type Directory struct {
 
 // Database database
 type Database struct {
-	Driver   string `yaml:"driver"`
-	User     string `yaml:"user,omitempty"`
-	Password string `yaml:"password,omitempty"`
-	Target   string `yaml:"target,omitempty"`
-	Table    string `yaml:"table,omitempty"`
-	Enabled  bool   `yaml:"enabled,omitempty"`
+	Driver   string   `yaml:"driver"`
+	User     string   `yaml:"user,omitempty"`
+	Password string   `yaml:"password,omitempty"`
+	Target   string   `yaml:"target,omitempty"`
+	Table    string   `yaml:"table,omitempty"`
+	Tables   []string `yaml:"tables,omitempty"`
+	Enabled  bool     `yaml:"enabled,omitempty"`
 }
 
 // Viewer containing server config
@@ -233,8 +235,9 @@ func LoadedConfig() {
 
 // String representation of Database instance
 func (db *Database) String() string {
-	ref, p, err := common.NewReference(db.Target)
+	ref, p, err := common.NewReference(os.ExpandEnv(db.Target))
 	if err != nil {
+		log.Log.Debugf("Parse error target: %v", db.Target)
 		return "<Error: " + err.Error() + ">"
 	}
 	if db.Password == "" {

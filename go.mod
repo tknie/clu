@@ -15,9 +15,9 @@ require (
 	github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
 	github.com/tknie/services v0.0.0-20240921190600-dfa536a8eb7c
-	go.opentelemetry.io/otel v1.30.0
-	go.opentelemetry.io/otel/metric v1.30.0
-	go.opentelemetry.io/otel/trace v1.30.0
+	go.opentelemetry.io/otel v1.31.0
+	go.opentelemetry.io/otel/metric v1.31.0
+	go.opentelemetry.io/otel/trace v1.31.0
 	go.uber.org/multierr v1.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -61,7 +61,7 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20240912184714-682ebdc389d9
-	github.com/tknie/flynn v0.0.0-20241010184746-cc22d3c76b7b
+	github.com/tknie/flynn v0.0.0-20241012080150-14eaf0a66048
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.28.0 // indirect

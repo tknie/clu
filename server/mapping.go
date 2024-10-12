@@ -15,6 +15,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 	"time"
 
@@ -66,15 +67,18 @@ func Handles(dm *Database) (*common.Reference, error) {
 	target := os.ExpandEnv(dm.Target)
 	ref, _, err := common.NewReference(target)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing target <%s>: %s", dm.Target, err)
+		return nil, fmt.Errorf("error parsing target <%s>: %s -> %s", dm.Target, err, target)
 	}
-	log.Log.Debugf("Register database handler")
+	log.Log.Debugf("Register database handler %#v", dm)
 	_, err = flynn.Handler(ref, os.ExpandEnv(dm.Password))
 	if err != nil {
 		services.ServerMessage("Error registering database <%s>: %v", dm.Target, err)
 		return nil, fmt.Errorf("error registering database")
 	}
 	dbList[dHash] = ref
+	for i := 0; i < len(dm.Tables); i++ {
+		dm.Tables[i] = strings.ToLower(dm.Tables[i])
+	}
 	services.ServerMessage("Registered database driver=%s to %s:%d/%s",
 		dm.Driver, ref.Host, ref.Port, ref.Database)
 	return ref, nil
@@ -89,6 +93,7 @@ func initTableOfDatabases() {
 func loadTableOfDatabases() {
 	log.Log.Debugf("Refreshing database list")
 	for _, dm := range Viewer.Database.DatabaseAccess.Database {
+		log.Log.Debugf("Access database %#v", dm)
 		//u := dm.URL
 		//m := regexp.MustCompile(`(?m):[^:]*@`)
 		//m := regexp.MustCompile(`(?m)\${[^{]*PASS[^}]*}`)
@@ -106,8 +111,10 @@ func loadTableOfDatabases() {
 					services.ServerMessage("Found table on different databases: [%s]", s)
 				}
 			} else {
-				newDatabases = append(newDatabases, s)
-				dbDictionary[s] = id
+				if len(dm.Tables) == 0 || slices.Contains(dm.Tables, strings.ToLower(table)) {
+					newDatabases = append(newDatabases, s)
+					dbDictionary[s] = id
+				}
 			}
 		}
 		if len(newDatabases) > 0 {
