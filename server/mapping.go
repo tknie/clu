@@ -33,6 +33,7 @@ import (
 type databaseRegister struct {
 	readCount uint64
 	reference *common.Reference
+	database  *Database
 }
 
 // dbDictionary map of hash to database registry entry
@@ -89,7 +90,8 @@ func Handles(dm *Database) (*common.Reference, error) {
 		services.ServerMessage("Error registering database <%s>: %v", dm.Target, err)
 		return nil, fmt.Errorf("error registering database")
 	}
-	dbDictionary.Store(dHash, &databaseRegister{reference: ref, readCount: 1})
+	dbDictionary.Store(dHash,
+		&databaseRegister{reference: ref, readCount: 1, database: dm})
 	for i := 0; i < len(dm.Tables); i++ {
 		dm.Tables[i] = strings.ToLower(dm.Tables[i])
 	}
@@ -143,7 +145,7 @@ func loadTableOfDatabases() {
 				if checkFilter(dm.Tables, table) {
 					log.Log.Debugf("Append table: %s", table)
 					newDatabases = append(newDatabases, s)
-					dbTableMap.Store(s, &databaseRegister{reference: id})
+					dbTableMap.Store(s, &databaseRegister{reference: id, database: &dm})
 				} else {
 					log.Log.Debugf("Ignore table: %s", table)
 				}
@@ -177,32 +179,38 @@ func GetAllViews() []string {
 }
 
 // SearchTable search table ref ID
-func SearchTable(table string) (*common.Reference, error) {
+func searchTable(table string) (*databaseRegister, error) {
 	name := strings.ToLower(table)
 	if d, ok := dbTableMap.Load(name); ok {
 		dicEntry := d.(*databaseRegister)
 		atomic.AddUint64(&dicEntry.readCount, 1)
-		return dicEntry.reference, nil
+		return dicEntry, nil
 	}
 	return nil, errorrepo.NewError("RERR01000", table)
 }
 
 // ConnectTable connect table id
 func ConnectTable(ctx *clu.Context, table string) (common.RegDbID, error) {
-	ref, err := SearchTable(table)
+	databaseTableEntry, err := searchTable(table)
 	if err != nil {
 		return 0, err
 	}
-	refCopy := *ref
-	refCopy.User = ctx.User.User
-	log.Log.Debugf("Connect table (register handle) %#v -> %#v", ref, refCopy)
-	id, err := flynn.Handler(&refCopy, ctx.Pass)
-	if err != nil {
-		services.ServerMessage("Error registering database %s:%d...%v",
-			ref.Host, ref.Port, err)
-		return 0, fmt.Errorf("error registering database")
+	refCopy := *databaseTableEntry.reference
+	password := databaseTableEntry.database.Password
+	if !databaseTableEntry.database.AuthenticationGlobal {
+		log.Log.Debugf("Using user authentication")
+		refCopy.User = ctx.User.User
+		password = ctx.Pass
 	}
-	log.Log.Debugf("Got register database handle %s", id)
+	log.Log.Debugf("User: %s Password: %s", refCopy.User, password)
+	log.Log.Debugf("Connect table (register handle) %#v \n-> %#v", databaseTableEntry.reference, refCopy)
+	id, err := flynn.Handler(&refCopy, password)
+	if err != nil {
+		services.ServerMessage("Error connecting database %s:%d...%v",
+			refCopy.Host, refCopy.Port, err)
+		return 0, fmt.Errorf("error connecting database")
+	}
+	log.Log.Debugf("Got connectiion to database handle %s", id)
 	return id, nil
 }
 

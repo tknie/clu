@@ -195,13 +195,14 @@ type Directory struct {
 
 // Database database
 type Database struct {
-	Driver   string   `yaml:"driver"`
-	User     string   `yaml:"user,omitempty"`
-	Password string   `yaml:"password,omitempty"`
-	Target   string   `yaml:"target,omitempty"`
-	Table    string   `yaml:"table,omitempty"`
-	Tables   []string `yaml:"tables,omitempty"`
-	Enabled  bool     `yaml:"enabled,omitempty"`
+	Driver               string   `yaml:"driver"`
+	User                 string   `yaml:"user,omitempty"`
+	Password             string   `yaml:"password,omitempty"`
+	Target               string   `yaml:"target,omitempty"`
+	Table                string   `yaml:"table,omitempty"`
+	Tables               []string `yaml:"tables,omitempty"`
+	Enabled              bool     `yaml:"enabled,omitempty"`
+	AuthenticationGlobal bool     `yaml:"global_authentication,omitempty"`
 }
 
 // Viewer containing server config
