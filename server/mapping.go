@@ -73,18 +73,18 @@ func Handles(dm *Database) (*common.Reference, error) {
 	dHash := databaseHash(dm)
 	if e, ok := dbDictionary.Load(dHash); ok {
 		regEntry := e.(*databaseRegister)
-		log.Log.Debugf("Found database hash %s -> %s", dHash, os.ExpandEnv(dm.String()))
+		log.Log.Debugf("Found database hash %s", dHash)
 		atomic.AddUint64(&regEntry.readCount, 1)
 		return regEntry.reference, nil
 	}
-	log.Log.Infof("Add database hash %s -> %s", dHash, os.ExpandEnv(dm.String()))
+	log.Log.Infof("Add database hash %s", dHash)
 	target := os.ExpandEnv(dm.Target)
 	log.Log.Debugf("Handles %s", target)
 	ref, _, err := common.NewReference(target)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing target <%s>: %s -> %s", dm.Target, err, target)
 	}
-	log.Log.Debugf("Register database handler %#v", dm)
+	log.Log.Debugf("Register database handler for target %s", dm.Target)
 	_, err = flynn.Handler(ref, os.ExpandEnv(dm.Password))
 	if err != nil {
 		services.ServerMessage("Error registering database <%s>: %v", dm.Target, err)
@@ -124,7 +124,7 @@ func checkFilter(filters []string, table string) bool {
 func loadTableOfDatabases() {
 	log.Log.Debugf("Refreshing database list")
 	for _, dm := range Viewer.Database.DatabaseAccess.Database {
-		log.Log.Debugf("Access database %#v", dm)
+		log.Log.Debugf("Access database %s with user %s", dm.Target, dm.User)
 		//u := dm.URL
 		//m := regexp.MustCompile(`(?m):[^:]*@`)
 		//m := regexp.MustCompile(`(?m)\${[^{]*PASS[^}]*}`)
