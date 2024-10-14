@@ -83,7 +83,7 @@ func Handles(dm *Database) (*common.Reference, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error parsing target <%s>: %s -> %s", dm.Target, err, target)
 	}
-	log.Log.Debugf("Register database handler %#v", dm)
+	log.Log.Debugf("Register database handler for target %s", dm.Target)
 	_, err = flynn.Handler(ref, os.ExpandEnv(dm.Password))
 	if err != nil {
 		services.ServerMessage("Error registering database <%s>: %v", dm.Target, err)
