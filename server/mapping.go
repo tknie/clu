@@ -122,7 +122,7 @@ func checkFilter(filters []string, table string) bool {
 func loadTableOfDatabases() {
 	log.Log.Debugf("Refreshing database list")
 	for _, dm := range Viewer.Database.DatabaseAccess.Database {
-		log.Log.Debugf("Access database %#v", dm)
+		log.Log.Debugf("Access database %s with user %s", dm.Target, dm.User)
 		//u := dm.URL
 		//m := regexp.MustCompile(`(?m):[^:]*@`)
 		//m := regexp.MustCompile(`(?m)\${[^{]*PASS[^}]*}`)
