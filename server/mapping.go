@@ -202,7 +202,6 @@ func ConnectTable(ctx *clu.Context, table string) (common.RegDbID, error) {
 		refCopy.User = ctx.User.User
 		password = ctx.Pass
 	}
-	log.Log.Debugf("User: %s Password: %s", refCopy.User, password)
 	log.Log.Debugf("Connect table (register handle) %#v \n-> %#v", databaseTableEntry.reference, refCopy)
 	id, err := flynn.Handler(&refCopy, password)
 	if err != nil {
