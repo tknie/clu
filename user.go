@@ -25,7 +25,7 @@ import (
 )
 
 var userTableName = ""
-var disableUser = false
+var disableUser = true
 var userDbRef *common.Reference
 var userDbPassword = ""
 
@@ -49,6 +49,10 @@ var userLock sync.Mutex
 
 // InitUserInfo init user info evaluation
 func InitUserInfo(ref *common.Reference, password, tablename string) {
+	if ref == nil {
+		disableUser = true
+		return
+	}
 	userDbRef = ref
 	userDbPassword = password
 	if userDbPassword == "" {
@@ -63,6 +67,7 @@ func InitUserInfo(ref *common.Reference, password, tablename string) {
 	defer userStoreID.FreeHandler()
 	defer userStoreID.Close()
 	log.Log.Debugf("Receive user store handler %s", userStoreID)
+	disableUser = false
 	services.ServerMessage("Storing audit data to table '%s'", userTableName)
 
 	go updaterUserInfo()

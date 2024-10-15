@@ -175,6 +175,8 @@ github.com/tknie/flynn v0.0.0-20241010184746-cc22d3c76b7b h1:GM5W9oUnncCPn7+CL26
 github.com/tknie/flynn v0.0.0-20241010184746-cc22d3c76b7b/go.mod h1:PT0KLQe23svgmu9JcuBqVCpY2Gq77vL/nGztgmyT7/Y=
 github.com/tknie/flynn v0.0.0-20241012080150-14eaf0a66048 h1:dEG16Gb4vFQocfwLYURotHNOcplCkNGF6khWUB5vL0o=
 github.com/tknie/flynn v0.0.0-20241012080150-14eaf0a66048/go.mod h1:PT0KLQe23svgmu9JcuBqVCpY2Gq77vL/nGztgmyT7/Y=
+github.com/tknie/flynn v0.0.0-20241015181640-84b07abdd49a h1:RfAgLGqt3yTZBPRhMfsAimvIM9w3L3RUB8YYWI2QkTk=
+github.com/tknie/flynn v0.0.0-20241015181640-84b07abdd49a/go.mod h1:PT0KLQe23svgmu9JcuBqVCpY2Gq77vL/nGztgmyT7/Y=
 github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae h1:EY2CEji+jwHG16tP0kOfuw2V8M5naCyWp7VqADAEO/E=
 github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae/go.mod h1:dVvJAEmU8sloNLQh1wq2+GPwxa/9gg3VXuK/FO8eGX4=
 github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e h1:aNgWs7XTC4vcIcmzQT496neJexEvjx0Kv2/ho2xUlgo=
@@ -187,6 +189,8 @@ github.com/tknie/services v0.0.0-20240912185825-783539ef08cd h1:U3zqPMNYfR0TRbBg
 github.com/tknie/services v0.0.0-20240912185825-783539ef08cd/go.mod h1:8SIMPQlVgYTPv8TAih7S9dOguALLhm5zbYX+39nlAKo=
 github.com/tknie/services v0.0.0-20240921190600-dfa536a8eb7c h1:8G1kOqWM82M9BxCWeE8u3b2q0FGHp8s/0+7rv9V3FGw=
 github.com/tknie/services v0.0.0-20240921190600-dfa536a8eb7c/go.mod h1:+mo/ozVDZG8k2b6iUrFySnqe1VsFpN8SuKztDt9Lf2Y=
+github.com/tknie/services v0.0.0-20241014201404-b3670d1a0383 h1:BInmTcVkz+uFyMdET/T7uRgupu/vN7Aqy4/cQ/mCIQ0=
+github.com/tknie/services v0.0.0-20241014201404-b3670d1a0383/go.mod h1:prpmiWymnHWE8JUx3lmSKOkKba3aMwBfZcx2Aem/UJk=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 go.opentelemetry.io/otel v1.30.0 h1:F2t8sK4qf1fAmY9ua4ohFS/K+FUuOPemHUIXHtktrts=
