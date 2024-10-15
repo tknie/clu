@@ -48,7 +48,7 @@ func (Handler) GetUserInfo(ctx context.Context) (r api.GetUserInfoRes, _ error) 
 // GET /rest/view
 func (Handler) GetMaps(ctx context.Context) (r api.GetMapsRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User, "*Maps") {
+	if !auth.ValidUser(auth.UserRole, false, session.User(), "*Maps") {
 		return &api.GetMapsForbidden{}, nil
 	}
 
@@ -121,7 +121,7 @@ func (Handler) DeleteDatabase(ctx context.Context, params api.DeleteDatabasePara
 // PUT /shutdown/{hash}
 func (Handler) ShutdownServer(ctx context.Context, params api.ShutdownServerParams) (r api.ShutdownServerRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.AdministratorRole, true, session.User, "") {
+	if !auth.ValidUser(auth.AdministratorRole, true, session.User(), "") {
 		return &api.ShutdownServerForbidden{}, nil
 	}
 

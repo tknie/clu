@@ -28,7 +28,7 @@ import (
 func (Handler) GetImage(ctx context.Context, params api.GetImageParams) (r api.GetImageRes, _ error) {
 	log.Log.Debugf("GET IMAGE ...")
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
+	if !auth.ValidUser(auth.UserRole, false, session.User(), params.Table) {
 		return &api.GetImageForbidden{}, nil
 	}
 
@@ -71,7 +71,7 @@ func (Handler) GetImage(ctx context.Context, params api.GetImageParams) (r api.G
 func (Handler) GetVideo(ctx context.Context, params api.GetVideoParams) (r api.GetVideoRes, _ error) {
 	log.Log.Debugf("GET Video ...")
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
+	if !auth.ValidUser(auth.UserRole, false, session.User(), params.Table) {
 		return &api.GetVideoForbidden{}, nil
 	}
 	log.Log.Debugf("SQL video table=%s field=%s search=%s", params.Table, params.Field, params.Search)
@@ -102,7 +102,7 @@ func (Handler) GetVideo(ctx context.Context, params api.GetVideoParams) (r api.G
 func (Handler) GetLobByMap(ctx context.Context, params api.GetLobByMapParams) (r api.GetLobByMapRes, _ error) {
 	log.Log.Debugf("GET LOB ...")
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
+	if !auth.ValidUser(auth.UserRole, false, session.User(), params.Table) {
 		return &api.GetLobByMapForbidden{}, nil
 	}
 

@@ -35,7 +35,7 @@ type Handler struct {
 func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecordsFieldsParams) (r api.SearchRecordsFieldsRes, _ error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Search records for fields %s -> %s", session.User, params.Table)
-	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
+	if !auth.ValidUser(auth.UserRole, false, session.User(), params.Table) {
 		return &api.SearchRecordsFieldsForbidden{}, nil
 	}
 	log.Log.Debugf("SQL search fields %s - %v", params.Table, params.Search)
@@ -82,7 +82,7 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 // GET /rest/view/{table}/{fields}/{search}
 func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecordsFieldsParams) (r api.GetMapRecordsFieldsRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User, params.Table) {
+	if !auth.ValidUser(auth.UserRole, false, session.User(), params.Table) {
 		return &api.GetMapRecordsFieldsForbidden{}, nil
 	}
 	log.Log.Debugf("SQL search %s - %v -> %s", params.Table, params.Fields, params.Search)
@@ -155,7 +155,7 @@ func (Handler) SearchTable(ctx context.Context, params api.SearchTableParams) (r
 // GET /rest/map/{path}
 func (Handler) SearchModelling(ctx context.Context, params api.SearchModellingParams) (r api.SearchModellingRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User, params.Path) {
+	if !auth.ValidUser(auth.UserRole, false, session.User(), params.Path) {
 		return &api.SearchModellingForbidden{}, nil
 	}
 	log.Log.Debugf("SQL modelling field of an table %s - %v", params.Path, params.Path)

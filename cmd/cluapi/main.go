@@ -62,8 +62,8 @@ func main() {
 			log.Log.Fatalf("User info not found for user %s", user)
 		}
 		m := clu.NewContextUserInfo(u, pass)
-		if m.User.LongName == "" {
-			m.User.LongName = user
+		if m.LongName() == "" {
+			m.SetLongName(user)
 		}
 		m.Auth.Roles = []string{"user", "admin"}
 		m.Auth.Session = s

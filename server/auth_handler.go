@@ -52,18 +52,18 @@ func GenerateJWToken(ctx context.Context) (interface{}, error) {
 		fmt.Println("Error parsing UUID", session.UUID())
 	}
 	permission := ""
-	if session.User.Permission != nil {
-		permission = session.User.Permission.Name + " " +
-			session.User.Permission.Read + ":" + session.User.Permission.Write
+	if session.Permission() != nil {
+		permission = session.Permission().Name + " " +
+			session.Permission().Read + ":" + session.Permission().Write
 	}
 	t := api.AuthorizationToken{Token: api.NewOptString(session.Token),
-		User: api.NewOptUser(api.User{LongName: api.NewOptString(session.User.LongName),
-			Created:    api.NewOptDateTime(session.User.Created),
-			LastLogin:  api.NewOptDateTime(session.User.LastLogin),
+		User: api.NewOptUser(api.User{LongName: api.NewOptString(session.LongName()),
+			Created:    api.NewOptDateTime(session.Created()),
+			LastLogin:  api.NewOptDateTime(session.LastLogin()),
 			UUID:       api.NewOptUUID(uuid),
-			Name:       api.NewOptString(session.User.User),
+			Name:       api.NewOptString(session.UserName()),
 			Permission: api.NewOptString(permission),
-			Email:      api.NewOptString(session.User.EMail)})}
+			Email:      api.NewOptString(session.EMail())})}
 	return &api.AuthorizationTokenHeaders{XToken: api.NewOptString(session.Token),
 		Response: t}, nil
 }

@@ -16,7 +16,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
@@ -45,19 +44,19 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 	_, err = server.GenerateJWToken(pm)
 	if err != nil {
 		log.Log.Errorf("Basic auth error... %v", err)
-		plugins.LoginAudit("LOGIN", err.Error(), pm.Auth.Session.(*auth.SessionInfo), pm.User)
+		plugins.LoginAudit("LOGIN", err.Error(), pm.Auth.Session.(*auth.SessionInfo), pm.User())
 		return nil, err
 	}
-	pm.User.LastLogin = time.Now()
-	if pm.User.Permission.Name == "" {
-		pm.User.Permission.Name = clu.DefaultRole
-		pm.User.Permission.Read = "*"
+	pm.UpdateLastLogin()
+	if pm.Permission().Name == "" {
+		pm.Permission().Name = clu.DefaultRole
+		pm.Permission().Read = "*"
 	}
-	err = clu.AddUserInfo(pm.User)
+	err = clu.AddUserInfo(pm.User())
 	if err != nil {
-		services.ServerMessage("User %s cannot be stored in user information", pm.User.User)
+		services.ServerMessage("User %s cannot be stored in user information", pm.UserName())
 	}
-	plugins.LoginAudit("LOGIN", "Authenticated", pm.Auth.Session.(*auth.SessionInfo), pm.User)
+	plugins.LoginAudit("LOGIN", "Authenticated", pm.Auth.Session.(*auth.SessionInfo), pm.User())
 	// plugins.ReceiveAudit(nil, req)
 	return pm, nil
 }

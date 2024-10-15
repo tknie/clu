@@ -37,7 +37,7 @@ func (Handler) NewError(ctx context.Context, err error) (r *api.ErrorStatusCode)
 	r.StatusCode = http.StatusServiceUnavailable
 	switch session := ctx.(type) {
 	case *clu.Context:
-		log.Log.Errorf("Server handler error: %v/%s -> status=%d", err, session.User, r.StatusCode)
+		log.Log.Errorf("Server handler error: %v/%s -> status=%d", err, session.UserName(), r.StatusCode)
 		session.SendAuditError(time.Now(), err)
 	default:
 		log.Log.Errorf("Unknown error context: %T", ctx)

@@ -38,7 +38,7 @@ func (Handler) BrowseList(ctx context.Context) (r api.BrowseListRes, _ error) {
 	for _, bd := range Viewer.FileTransfer.Directories.Directory {
 		dbd := api.Directory{Location: api.NewOptString(bd.Location),
 			Name: api.NewOptString(bd.Name)}
-		if !auth.ValidUser(auth.UserRole, false, session.User, "<"+dbd.Name.Value) {
+		if !auth.ValidUser(auth.UserRole, false, session.User(), "<"+dbd.Name.Value) {
 			return &api.BrowseListForbidden{}, nil
 		}
 		d.Directories = append(d.Directories, dbd)
@@ -59,7 +59,7 @@ func (Handler) CreateDirectory(ctx context.Context, params api.CreateDirectoryPa
 
 	}
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, true, session.User, ">"+d.Name) {
+	if !auth.ValidUser(auth.UserRole, true, session.User(), ">"+d.Name) {
 		return &api.CreateDirectoryForbidden{}, nil
 	}
 	fileName := os.ExpandEnv(d.Location + "/" + path)
@@ -90,7 +90,7 @@ func (Handler) DeleteFileLocation(ctx context.Context, params api.DeleteFileLoca
 
 	}
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, true, session.User, ">"+d.Name) {
+	if !auth.ValidUser(auth.UserRole, true, session.User(), ">"+d.Name) {
 		return &api.DeleteFileLocationForbidden{}, nil
 	}
 	fileName := os.ExpandEnv(d.Location + "/" + path)
@@ -134,7 +134,7 @@ func (Handler) DownloadFile(ctx context.Context, params api.DownloadFileParams) 
 
 	}
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User, "<"+d.Name) {
+	if !auth.ValidUser(auth.UserRole, false, session.User(), "<"+d.Name) {
 		return &api.DownloadFileForbidden{}, nil
 	}
 	log.Log.Debugf("Try download location=%s path=%s", d.Location, path)
@@ -202,7 +202,7 @@ func (Handler) BrowseLocation(ctx context.Context, params api.BrowseLocationPara
 		return &api.BrowseLocationNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 	}
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User, "<"+d.Name) {
+	if !auth.ValidUser(auth.UserRole, false, session.User(), "<"+d.Name) {
 		return &api.BrowseLocationForbidden{}, nil
 	}
 	fileName := os.ExpandEnv(d.Location + "/" + path)
@@ -310,7 +310,7 @@ func (Handler) UploadFile(ctx context.Context, req *api.UploadFileReq, params ap
 		return &api.UploadFileNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 	}
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, true, session.User, ">"+d.Name) {
+	if !auth.ValidUser(auth.UserRole, true, session.User(), ">"+d.Name) {
 		return &api.UploadFileForbidden{}, nil
 	}
 

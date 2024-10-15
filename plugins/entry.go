@@ -303,10 +303,10 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 		return
 	}
 	if p != nil {
-		c := &http.Cookie{Name: p.User.User, Value: p.UUID()}
+		c := &http.Cookie{Name: p.UserName(), Value: p.UUID()}
 		r.AddCookie(c)
 		for _, x := range auditPlugins {
-			x.Audit.ReceiveAudit(p.User.User, p.UUID(), r)
+			x.Audit.ReceiveAudit(p.UserName(), p.UUID(), r)
 		}
 		return
 	}
@@ -316,7 +316,7 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 			log.Log.Fatal("Error clu context not defined")
 			x.Audit.ReceiveAudit("Unknown", "-", r)
 		} else {
-			x.Audit.ReceiveAudit(p.User.User, p.UUID(), r)
+			x.Audit.ReceiveAudit(p.UserName(), p.UUID(), r)
 		}
 	}
 }
@@ -346,7 +346,7 @@ func SendAuditEnded(started time.Time, r *http.Request) {
 		} else {
 			c := p.(*clu.Context)
 			uuid = c.UUID()
-			user = c.User.User
+			user = c.UserName()
 		}
 	default:
 		log.Log.Debugf("User evaluation failed in " + strings.ToLower(splitToken[0]))

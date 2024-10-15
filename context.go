@@ -23,7 +23,7 @@ var Audit func(time.Time, *http.Request, error)
 
 // Context server context
 type Context struct {
-	User *auth.UserInfo
+	user *auth.UserInfo
 	// User string
 	Pass string
 	Auth struct {
@@ -40,7 +40,7 @@ type Context struct {
 // NewContextUserInfo new server context with user information and password
 func NewContextUserInfo(userInfo *auth.UserInfo, pass string) *Context {
 	return &Context{
-		User: userInfo,
+		user: userInfo,
 		Auth: struct {
 			Roles   []string
 			Remote  string
@@ -51,6 +51,8 @@ func NewContextUserInfo(userInfo *auth.UserInfo, pass string) *Context {
 }
 
 // NewContext new server context with user and password
+//
+// Deprecated: Use NewContextUserInfo instead
 func NewContext(user, pass string) *Context {
 	created := time.Now()
 	return NewContextUserInfo(&auth.UserInfo{User: user, Created: created}, pass)
@@ -77,12 +79,12 @@ func (sc *Context) UUID() string {
 
 // UserName user interface function
 func (sc *Context) UserName() string {
-	return sc.User.User
+	return sc.user.User
 }
 
 // Name Name interface function
 func (sc *Context) Name() string {
-	return sc.User.LongName
+	return sc.user.LongName
 }
 
 // AddRoles add roles interface function
@@ -130,4 +132,44 @@ func (sc *Context) StoreData(key string, value any) {
 // GetData entry specific storage of data is requested
 func (sc *Context) GetData(key string) any {
 	return sc.dataMap[key]
+}
+
+// Permission return user permission
+func (sc *Context) Permission() *auth.User {
+	return sc.user.Permission
+}
+
+// Created context creation time
+func (sc *Context) Created() time.Time {
+	return sc.user.Created
+}
+
+// EMail email for this user
+func (sc *Context) EMail() string {
+	return sc.user.EMail
+}
+
+// LastLogin last login of user
+func (sc *Context) LastLogin() time.Time {
+	return sc.user.LastLogin
+}
+
+// UpdateLastLogin set last login of user
+func (sc *Context) UpdateLastLogin() {
+	sc.user.LastLogin = time.Now()
+}
+
+// LongName long name of user
+func (sc *Context) LongName() string {
+	return sc.user.LongName
+}
+
+// SetLongName set long name of user
+func (sc *Context) SetLongName(longName string) {
+	sc.user.LongName = longName
+}
+
+// User return user information
+func (sc *Context) User() *auth.UserInfo {
+	return sc.user
 }

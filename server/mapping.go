@@ -199,7 +199,7 @@ func ConnectTable(ctx *clu.Context, table string) (common.RegDbID, error) {
 	password := databaseTableEntry.database.Password
 	if !databaseTableEntry.database.AuthenticationGlobal {
 		log.Log.Debugf("Using user authentication")
-		refCopy.User = ctx.User.User
+		refCopy.User = ctx.UserName()
 		password = ctx.Pass
 	}
 	log.Log.Debugf("Connect table (register handle) %#v \n-> %#v", databaseTableEntry.reference, refCopy)
