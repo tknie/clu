@@ -120,8 +120,7 @@ func parseJx(v jx.Raw) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		layout := "2006-01-02 15:04:05 -0700 MST"
-		t, err := time.Parse(layout, x)
+		t, err := time.Parse(time.RFC3339, x)
 		if err == nil {
 			return t, err
 		}

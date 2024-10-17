@@ -71,9 +71,9 @@ func convertTypeToRaw(d api.ResponseRecordsItem, s string, r interface{}) {
 		raw := jx.Raw([]byte("\"" + str + "\""))
 		d[s] = raw
 	case *time.Time:
-		d[s] = jx.Raw([]byte("\"" + (*t).String() + "\""))
+		d[s] = jx.Raw([]byte("\"" + (*t).UTC().Format(time.RFC3339) + "\""))
 	case time.Time:
-		d[s] = jx.Raw([]byte("\"" + (t).String() + "\""))
+		d[s] = jx.Raw([]byte("\"" + (t).UTC().Format(time.RFC3339) + "\""))
 	case pgtype.Numeric:
 		v := uint64(t.Int.Uint64()) * uint64(math.Pow10(int(t.Exp)))
 		st := fmt.Sprintf("%d", v)
