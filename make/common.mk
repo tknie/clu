@@ -244,6 +244,8 @@ doc: ; $(info $(M) running GODOC…) @ ## Run go doc on all source files
 vendor-update:
 	@echo "Update GO modules"
 	CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" $(GO) get -u ./...
+	$(GO) mod verify
+	$(GO) mod tidy
 #	GOSUMDB=off CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" $(GO) get -u ./...
 
 .PHONY: vendor
