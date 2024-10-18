@@ -85,7 +85,14 @@ func (read *StreamRead) initStreamFromTable(srvctx *clu.Context, search, destMim
 		if d == nil {
 			return fmt.Errorf("stream query result empty")
 		}
-		read.data = d.([]byte)
+		switch v := d.(type) {
+		case []byte:
+			read.data = v
+		case string:
+			read.data = []byte(v)
+		default:
+			return fmt.Errorf("data entry return wrong type %T", d)
+		}
 		if read.mimetypeField != "" {
 			s := strings.ToLower(read.mimetypeField)
 			if d, ok := result[s]; ok {
