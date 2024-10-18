@@ -4210,7 +4210,7 @@ type GetLobByMapParams struct {
 	// Specific the field to be.
 	Field string
 	// Specific the field containing the mimetype.
-	MimetypeField string
+	MimetypeField OptString
 	// Specific the data MIME type.
 	Mimetype OptString
 	// Search criterium.
@@ -4244,7 +4244,9 @@ func unpackGetLobByMapParams(packed middleware.Parameters) (params GetLobByMapPa
 			Name: "mimetypeField",
 			In:   "query",
 		}
-		params.MimetypeField = packed[key].(string)
+		if v, ok := packed[key]; ok {
+			params.MimetypeField = v.(OptString)
+		}
 	}
 	{
 		key := middleware.ParameterKey{
@@ -4414,23 +4416,28 @@ func decodeGetLobByMapParams(args [3]string, argsEscaped bool, r *http.Request) 
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
+				var paramsDotMimetypeFieldVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMimetypeFieldVal = c
+					return nil
+				}(); err != nil {
 					return err
 				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.MimetypeField = c
+				params.MimetypeField.SetTo(paramsDotMimetypeFieldVal)
 				return nil
 			}); err != nil {
 				return err
 			}
-		} else {
-			return validate.ErrFieldRequired
 		}
 		return nil
 	}(); err != nil {

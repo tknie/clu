@@ -107,8 +107,8 @@ func (Handler) GetLobByMap(ctx context.Context, params api.GetLobByMapParams) (r
 	}
 
 	mimeTypeField := ""
-	if params.MimetypeField != "" {
-		mimeTypeField = params.MimetypeField
+	if params.MimetypeField.Set && params.MimetypeField.Value != "" {
+		mimeTypeField = params.MimetypeField.Value
 	}
 	mimeType := ""
 	if params.Mimetype.Set {
@@ -116,12 +116,17 @@ func (Handler) GetLobByMap(ctx context.Context, params api.GetLobByMapParams) (r
 	}
 	log.Log.Debugf("SQL image search", params.Table, params.Field, params.Search)
 	read := NewStreamRead(params.Table, params.Field, mimeTypeField)
+	if read.mimetype == "" {
+		read.mimetype = mimeType
+	}
 	err := read.initStreamFromTable(session, params.Search, mimeType)
 	if err != nil {
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
 		return nil, err
 	}
-	read.mimetype = "application/octet-stream"
+	if read.mimetype == "" {
+		read.mimetype = "application/octet-stream"
+	}
 	read.field = params.Field
 	reader, err := read.streamResponderFunc()
 	if err != nil {

@@ -6795,7 +6795,10 @@ func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) 
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.StringToString(params.MimetypeField))
+			if val, ok := params.MimetypeField.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
 		}); err != nil {
 			return res, errors.Wrap(err, "encode query")
 		}
