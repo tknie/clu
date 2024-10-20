@@ -17,7 +17,7 @@ import (
 	"github.com/tknie/services/auth"
 )
 
-// BasicAuth handle basic authorisation
+// BasicAuth handle basic authentication
 func BasicAuth(user string, pass string) (auth.PrincipalInterface, error) {
 	sessionUUID := &auth.SessionInfo{}
 	principal := auth.PrincipalCreater(sessionUUID, user, pass)
@@ -30,7 +30,7 @@ func BasicAuth(user string, pass string) (auth.PrincipalInterface, error) {
 	return nil, fmt.Errorf("no plugins")
 }
 
-// HandleBearerAuth handle bearer auth
+// HandleBearerAuth handle bearer authentication
 func HandleBearerAuth(token string) (auth.PrincipalInterface, error) {
 	return nil, fmt.Errorf("no plugins")
 }
