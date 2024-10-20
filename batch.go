@@ -32,10 +32,10 @@ type BatchEntry struct {
 
 var batchDbRef *common.Reference
 var batchDbPassword = ""
-
 var batchtablename = ""
-var batchStoreOnline = false
+
 var batchLock sync.Mutex
+var batchStoreOnline = false
 
 func openBatchRepository() (common.RegDbID, error) {
 	var err error
@@ -68,6 +68,7 @@ func InitBatchRepository(dbRef *common.Reference, dbPassword, tablename string) 
 		if d == tablename {
 			batchtablename = tablename
 			batchStoreOnline = true
+			log.Log.Debugf("batch store online = %v", batchStoreOnline)
 			services.ServerMessage("Using batch repository on table '%s'", batchtablename)
 			return
 		}
@@ -85,6 +86,7 @@ func InitBatchRepository(dbRef *common.Reference, dbPassword, tablename string) 
 
 // BatchSelect search for batchname in an batch repository
 func BatchSelect(batchname string) (*BatchEntry, error) {
+	log.Log.Debugf("batch select online = %v", batchStoreOnline)
 	if !batchStoreOnline {
 		return nil, fmt.Errorf("error batch repository disabled")
 	}
@@ -110,11 +112,14 @@ func BatchSelect(batchname string) (*BatchEntry, error) {
 		return nil
 	})
 	if err != nil {
+		log.Log.Debugf("Failure batch select online = %v", batchStoreOnline)
 		log.Log.Errorf("Query batch store failure: %v", err)
 		return nil, err
 	}
 	if b == nil {
+		log.Log.Debugf("Fail batch select online = %v", batchStoreOnline)
 		return nil, fmt.Errorf("error batch entry not found")
 	}
+	log.Log.Debugf("Return batch select online = %v", batchStoreOnline)
 	return b, nil
 }
