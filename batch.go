@@ -88,6 +88,7 @@ func InitBatchRepository(dbRef *common.Reference, dbPassword, tablename string) 
 func BatchSelect(batchname string) (*BatchEntry, error) {
 	log.Log.Debugf("batch select online = %v", batchStoreOnline)
 	if !batchStoreOnline {
+		log.Log.Debugf("batch rep disabled online = %v", batchStoreOnline)
 		return nil, fmt.Errorf("error batch repository disabled")
 	}
 	batchLock.Lock()
