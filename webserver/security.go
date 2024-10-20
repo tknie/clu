@@ -33,7 +33,11 @@ type SecurityHandler struct {
 // HandleBasicAuth handle basic authorisation
 func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName string, t api.BasicAuth) (context.Context, error) {
 	username := strings.ToLower(strings.Trim(t.Username, " "))
-	p, err := auth.BasicAuth(username, t.Password)
+	p, err := plugins.BasicAuth(username, t.Password)
+	if err != nil {
+		log.Log.Errorf("Plugin Basic auth fail try basic... %v", err)
+		p, err = auth.BasicAuth(username, t.Password)
+	}
 	if err != nil {
 		log.Log.Errorf("Basic auth error... %v", err)
 		plugins.LoginAudit("LOGIN", err.Error(), nil, &auth.UserInfo{User: username})
@@ -63,12 +67,16 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 
 // HandleBearerAuth handler Bearer authentication
 func (sec SecurityHandler) HandleBearerAuth(ctx context.Context, operationName string, t api.BearerAuth) (context.Context, error) {
+
+	p, err := plugins.HandleBearerAuth(t.Token)
 	// The header: Authorization: Bearer {base64 string} (or ?access_token={base 64 string} param) has already
 	// been decoded by the runtime as a token
-	p, err := server.Viewer.Server.WebToken.JWTContainsRoles(t.Token, []string{"admin"})
 	if err != nil {
-		log.Log.Errorf("Bearer auth return: %v", err)
-		return nil, err
+		p, err = server.Viewer.Server.WebToken.JWTContainsRoles(t.Token, []string{"admin"})
+		if err != nil {
+			log.Log.Errorf("Bearer auth return: %v", err)
+			return nil, err
+		}
 	}
 	if log.IsDebugLevel() {
 		log.Log.Debugf("Bearer request return %s", p.Name())

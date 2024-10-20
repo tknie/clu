@@ -140,7 +140,7 @@ func querySQLstatement(query *batchSelect) (*api.ResponseHeaders, error) {
 func (Handler) BatchParameterQuery(ctx context.Context, params api.BatchParameterQueryParams) (r api.BatchParameterQueryRes, _ error) {
 	session := ctx.(*clu.Context)
 	if !auth.ValidUser(auth.UserRole, false, session.User(), "/batch") {
-		log.Log.Debugf("SQL statemant forbidden")
+		log.Log.Debugf("Batch SQL statement for user forbidden, returning forbidden‚")
 		return &api.BatchParameterQueryForbidden{}, nil
 	}
 	log.Log.Debugf("SQL statement on table %s - %v", params.Table, params.Query)

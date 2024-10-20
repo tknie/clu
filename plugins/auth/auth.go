@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/tknie/clu/plugins"
@@ -46,10 +47,10 @@ func (tp *testPrincipal) SetSession(interface{}) {
 func (tc *testCallback) GetName() string { return "testCallback" }
 func (tc *testCallback) Init() error     { initAuthCallback(); return nil }
 func (tc *testCallback) Authenticate(principal auth.PrincipalInterface, userName, passwd string) error {
-	return nil
+	return errors.New("to be implemented")
 }
 func (tc *testCallback) Authorize(principal auth.PrincipalInterface, userName, passwd string) error {
-	return nil
+	return errors.New("to be implemented")
 }
 func (tc *testCallback) CheckToken(token string, scopes []string) (auth.PrincipalInterface, error) {
 	if tc.checkTokenErr != nil {
@@ -78,7 +79,7 @@ func (g greeting) Types() []plugins.PluginTypes {
 
 // Name name of the plugin
 func (g greeting) Name() string {
-	return "Auth Access"
+	return "Auth Test Access"
 }
 
 // Version version of the number

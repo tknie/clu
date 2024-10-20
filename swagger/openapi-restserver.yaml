@@ -1653,7 +1653,6 @@ paths:
         - name: mimetypeField
           in: query
           description: Specific the field containing the mimetype
-          required: true
           schema:
             type: string
         - name: mimetype
