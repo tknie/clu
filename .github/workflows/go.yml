@@ -40,7 +40,9 @@ jobs:
 
     - name: Build the Docker image
       run: >
-        cd docker; docker buildx build . 
+        cp promote/$(go env GOOS)_$(go env GOARCH)/../cluapi-$(go env GOOS)_$(go env GOARCH).tar.gz docker/cluapi.tar.gz
+        cd docker
+        docker buildx build . 
         --file Dockerfile
         --build-arg PROJECT_VERSION="$PROJECT_VERSION"
         --tag tknie/cluapi:$(date +%s)
