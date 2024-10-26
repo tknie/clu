@@ -32,5 +32,12 @@ jobs:
     - name: Build
       run: make
 
-#    - name: Test
-#      run: go test -v ./...
+    - name: Test
+      run: go test -v ./...
+
+    - name: Build the Docker image
+      run: >
+        docker buildx build docker 
+        --file Dockerfile
+        --build-arg PROJECT_VERSION="$PROJECT_VERSION"
+        --tag tknie/cluapi:$(date +%s)
