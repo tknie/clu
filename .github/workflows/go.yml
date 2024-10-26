@@ -43,7 +43,8 @@ jobs:
         GOOS: $(go env GOOS)
         GOARCH: $(go env GOARCH)
       run: |
-        cp promote/${GOOS}_${GOARCH}/../cluapi-${GOOS}_${GOARCH}.tar.gz docker/cluapi.tar.gz;
+        find .
+        cp promote/${GOOS}_${GOARCH}/../cluapi-${GOOS}_${GOARCH}.tar.gz docker/cluapi.tar.gz
         cd docker
         docker buildx build . 
         --file Dockerfile
