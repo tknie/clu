@@ -35,9 +35,12 @@ jobs:
     - name: Test
       run: go test -v ./...
 
+    - name: Prepare Docker
+      run: make promote prepareUpload VERSION=${{ github.run_number }}
+
     - name: Build the Docker image
       run: >
-        docker buildx build docker 
+        cd docker; docker buildx build . 
         --file Dockerfile
         --build-arg PROJECT_VERSION="$PROJECT_VERSION"
         --tag tknie/cluapi:$(date +%s)
