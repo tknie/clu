@@ -67,7 +67,6 @@ func main() {
 		}
 		m.Auth.Roles = []string{"user", "admin"}
 		m.Auth.Session = s
-		log.Log.Debugf("Create OGEN principal: %#v", m)
 		return m
 	}
 
