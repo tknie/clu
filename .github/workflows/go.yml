@@ -39,14 +39,4 @@ jobs:
       run: make promote prepareUpload VERSION=${{ github.run_number }}
 
     - name: Build the Docker image
-      env:
-        GOOS: $(go env GOOS)
-        GOARCH: $(go env GOARCH)
-      run: |
-        find .
-        cp promote/${GOOS}_${GOARCH}/../cluapi-${GOOS}_${GOARCH}.tar.gz docker/cluapi.tar.gz
-        cd docker
-        docker buildx build . 
-        --file Dockerfile
-        --build-arg PROJECT_VERSION="$PROJECT_VERSION"
-        --tag tknie/cluapi:$(date +%s)
+      run: make docker VERSION=${{ github.run_number }}

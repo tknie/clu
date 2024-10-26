@@ -163,4 +163,4 @@ webapp-update:
 .PHONY: docker
 docker: ; $(info $(M) genering docker image…)
 	cp $(PROMOTE)/../${TARFILE}  $(CURDIR)/docker/cluapi.tar.gz
-	cd docker; docker build --platform linux/amd64 -t cluapi .
+	cd docker; docker buildx build --platform $(GOOS)/$(GOARCH) -t cluapi:$(VERSION) .
