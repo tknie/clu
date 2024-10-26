@@ -39,8 +39,11 @@ jobs:
       run: make promote prepareUpload VERSION=${{ github.run_number }}
 
     - name: Build the Docker image
-      run: >
-        cp promote/$(go env GOOS)_$(go env GOARCH)/../cluapi-$(go env GOOS)_$(go env GOARCH).tar.gz docker/cluapi.tar.gz
+      env:
+        GOOS: $(go env GOOS)
+        GOARCH: $(go env GOARCH)
+      run: |
+        cp promote/${GOOS}_${GOARCH}/../cluapi-${GOOS}_${GOARCH}.tar.gz docker/cluapi.tar.gz;
         cd docker
         docker buildx build . 
         --file Dockerfile
