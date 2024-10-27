@@ -30,9 +30,7 @@ jobs:
 #      run: go generate .
 
     - name: Build
-      env:
-        VERSION: $(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g')  
-      run: make VERSION=${VERSION}.${{ github.ref_number }}
+      run: make VERSION=$(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g').${{ github.ref_number }}
 
     - name: Test
       run: go test -v ./...
