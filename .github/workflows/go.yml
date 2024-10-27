@@ -36,14 +36,10 @@ jobs:
       run: go test -v ./...
 
     - name: Prepare Docker
-      env:
-        VERSION: $(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g')  
-      run: make promote prepareUpload VERSION=${VERSION}.${{ github.ref_number }}
+      run: make promote prepareUpload VERSION=$(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g').${{ github.ref_number }}
 
     - name: Build the Docker image
-      env:
-        VERSION: $(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g')  
-      run: make docker VERSION=${VERSION}.${{ github.ref_number }} IMAGE_NAME=thknie/cluapi:${VERSION}
+      run: make docker VERSION=$(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g').${{ github.ref_number }} IMAGE_NAME=thknie/cluapi:$(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g')
 
     - name: Login to private registry
       uses: docker/login-action@v3
