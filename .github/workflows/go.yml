@@ -31,7 +31,7 @@ jobs:
 
     - name: Build
       env:
-        VERSION: $(grep ^VERSION Makefile|awk '{print $3}'|sed 's/[v]//g')  
+        VERSION: $(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g')  
       run: make VERSION=${VERSION}.${{ github.ref_number }}
 
     - name: Test
@@ -39,12 +39,12 @@ jobs:
 
     - name: Prepare Docker
       env:
-        VERSION: $(grep ^VERSION Makefile|awk '{print $3}'|sed 's/[v]//g')  
+        VERSION: $(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g')  
       run: make promote prepareUpload VERSION=${VERSION}.${{ github.ref_number }}
 
     - name: Build the Docker image
       env:
-        VERSION: $(grep ^VERSION Makefile|awk '{print $3}'|sed 's/[v]//g')  
+        VERSION: $(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g')  
       run: make docker VERSION=${VERSION}.${{ github.ref_number }} IMAGE_NAME=thknie/cluapi:${VERSION}
 
     - name: Login to private registry
