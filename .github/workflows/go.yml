@@ -53,7 +53,7 @@ jobs:
       with:
           paths: |
             ./report.xml            
-        if: always()
+      if: always()
     - name: Prepare Docker
       run: make promote prepareUpload VERSION=$(grep "^VERSION" Makefile|awk '{print $3}'|sed 's/[v]//g'|sed 's/\.0$//g').${{ github.run_number }}
 
