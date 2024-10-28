@@ -27,7 +27,7 @@ import (
 //
 // GET /version
 func (Handler) GetVersion(ctx context.Context) (r api.GetVersionRes, _ error) {
-	r = &api.Versions{Product: api.NewOptString("REST-API"),
+	r = &api.Versions{Product: api.NewOptString(ServiceName),
 		Version: api.NewOptString(services.BuildVersion)}
 	return r, nil
 }
