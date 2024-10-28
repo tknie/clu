@@ -1,4 +1,4 @@
-# Clu REST API (_draft_)
+# Clu REST API
 
 ## Introduction
 
@@ -7,19 +7,20 @@ No complex infrastructure inbetween, a direct connection to the database.
 
 There should be no difference if the database is a SQL or a NoSQL database.
 
-A list of data recrods should be able to be inserted or updated in one call. May be as transaction or in an atomic matter.
+A list of data records should be able to be inserted or updated in one REST API call.
+**May be as transaction or in an atomic matter**.
 
-In advance real main database functionality should be contained like:
+Based on database layer at `https://github.com/tknie/flynn` the database should be accessed
 
-* Create database tables
 * Read, Search, Insert, Update and Delete of data records
 * Search by passing database specific queries to be flexible for complex queries
-* One-to-One mapping of `Golang` structures to database tables
 * Large object support of big data
+  * binary data queries
+  * image data queries
+  * video data queries
 * Support creating batch jobs for database-specific tasks like SQL scripts
-* Create index or other enhancements on database configuration
 
-For details have a look at the API documentation. It can be referenced here: <https://godoc.org/github.com/tknie/flynn>
+For possible future details have a look at the API documentation. It can be referenced here: <https://godoc.org/github.com/tknie/flynn>
 
 ## Authentication
 
@@ -29,11 +30,11 @@ There are several possibilities to use authentication
 * Using LDAP or system password authentication
 * Using a SQL query to authenticate to SQL database
 
-All these configuration are located in <https://github.com/tknie/services>.
+All these configuration are used from <https://github.com/tknie/services>.
 
 ## Authorization
 
-You can use SQL authorization limits if you use SQL users.
+You can use SQL database authorization restriction if you use SQL users.
 CLU provides a query entry role management to obmit user specific queries for read- or write-access.
 
 ## Example of Clu usage
@@ -81,8 +82,8 @@ Feature | Ready-State | Description
  Load images out of database | :heavy_check_mark: | Draft
  Load videos out of database | :heavy_check_mark: | Draft
  Load binaries out of database |:heavy_check_mark: | Draft
- Insert Large Object (Image, binary or others) | :heavy_check_mark: | Draft(not recommended if images is to big)
+ Insert Large Object (Image, binary or others) | :heavy_check_mark: | Draft (not recommended if images is to big)
  Create table |  | Draft
  Insert database |  | Draft
- Work with batch queries | :heavy_check_mark: | draft
+ Work with predefined batch queries | :heavy_check_mark: | Draft
  Complex search queries (common to SQL or NonSQL databases) |  | planned
