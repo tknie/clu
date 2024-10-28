@@ -8,33 +8,15 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// Access implements access operation.
-	//
-	// Retrieve the list of users who are allowed to access data.
-	//
-	// GET /admin/access/{role}
-	Access(ctx context.Context, params AccessParams) (AccessRes, error)
 	// AdaptPermission implements adaptPermission operation.
 	//
 	// Add RBAC role.
 	//
 	// PUT /rest/database/{table}/permission
 	AdaptPermission(ctx context.Context, params AdaptPermissionParams) (AdaptPermissionRes, error)
-	// AddAccess implements addAccess operation.
-	//
-	// Insert user in the list of users who are allowed to access data.
-	//
-	// POST /admin/access/{role}
-	AddAccess(ctx context.Context, params AddAccessParams) (AddAccessRes, error)
-	// AddRBACResource implements addRBACResource operation.
-	//
-	// Add permission role.
-	//
-	// PUT /rest/database/{table}/permission/{resource}/{name}
-	AddRBACResource(ctx context.Context, params AddRBACResourceParams) (AddRBACResourceRes, error)
 	// AddView implements addView operation.
 	//
-	// Add configuration in View repositories.
+	// Add table view in View repositories.
 	//
 	// POST /config/views
 	AddView(ctx context.Context, params AddViewParams) (AddViewRes, error)
@@ -46,13 +28,13 @@ type Handler interface {
 	BatchParameterQuery(ctx context.Context, params BatchParameterQueryParams) (BatchParameterQueryRes, error)
 	// BatchQuery implements batchQuery operation.
 	//
-	// Call a SQL query batch command posted in body.
+	// Call a SQL query batch command using insert or update data in body.
 	//
 	// POST /rest/batch/{table}
 	BatchQuery(ctx context.Context, req BatchQueryReq, params BatchQueryParams) (BatchQueryRes, error)
 	// BatchSelect implements batchSelect operation.
 	//
-	// Call a SQL query batch command out of the stored query list.
+	// Call a SQL query batch command store in batch database table with name.
 	//
 	// GET /rest/batch/{table}
 	BatchSelect(ctx context.Context, params BatchSelectParams) (BatchSelectRes, error)
@@ -70,7 +52,7 @@ type Handler interface {
 	BrowseLocation(ctx context.Context, params BrowseLocationParams) (BrowseLocationRes, error)
 	// CallExtend implements callExtend operation.
 	//
-	// Call plugin extend.
+	// Call extend plugin, own implementation plugin.
 	//
 	// GET /rest/extend/{path}
 	CallExtend(ctx context.Context, params CallExtendParams) (CallExtendRes, error)
@@ -86,30 +68,6 @@ type Handler interface {
 	//
 	// PUT /rest/file/{path}
 	CreateDirectory(ctx context.Context, params CreateDirectoryParams) (CreateDirectoryRes, error)
-	// DatabaseOperation implements databaseOperation operation.
-	//
-	// Retrieve the current status of database with the given dbid.
-	//
-	// GET /rest/database/{table_operation}
-	DatabaseOperation(ctx context.Context, params DatabaseOperationParams) (DatabaseOperationRes, error)
-	// DatabasePostOperations implements databasePostOperations operation.
-	//
-	// Initiate operations on the given dbid.
-	//
-	// POST /rest/database/{table_operation}
-	DatabasePostOperations(ctx context.Context, params DatabasePostOperationsParams) (DatabasePostOperationsRes, error)
-	// DelAccess implements delAccess operation.
-	//
-	// Delete user in the list of users who are allowed to access data.
-	//
-	// DELETE /admin/access/{role}
-	DelAccess(ctx context.Context, params DelAccessParams) (DelAccessRes, error)
-	// DeleteDatabase implements deleteDatabase operation.
-	//
-	// Delete the database.
-	//
-	// DELETE /rest/database/{table_operation}
-	DeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (DeleteDatabaseRes, error)
 	// DeleteExtend implements deleteExtend operation.
 	//
 	// Delete extend/plugin data.
@@ -126,14 +84,8 @@ type Handler interface {
 	//
 	// Delete a specific job result.
 	//
-	// DELETE /rest/tasks/{jobName}/{jobId}
+	// DELETE /tasks/{jobName}/{jobId}
 	DeleteJobResult(ctx context.Context, params DeleteJobResultParams) (DeleteJobResultRes, error)
-	// DeleteRBACResource implements deleteRBACResource operation.
-	//
-	// Delete RBAC role.
-	//
-	// DELETE /rest/database/{table}/permission/{resource}/{name}
-	DeleteRBACResource(ctx context.Context, params DeleteRBACResourceParams) (DeleteRBACResourceRes, error)
 	// DeleteRecordsSearched implements deleteRecordsSearched operation.
 	//
 	// Delete a record with a given search.
@@ -142,7 +94,7 @@ type Handler interface {
 	DeleteRecordsSearched(ctx context.Context, params DeleteRecordsSearchedParams) (DeleteRecordsSearchedRes, error)
 	// DeleteView implements deleteView operation.
 	//
-	// Delete entry in configuration.
+	// Delete/disable table view in configuration.
 	//
 	// DELETE /config/views
 	DeleteView(ctx context.Context, params DeleteViewParams) (DeleteViewRes, error)
@@ -160,7 +112,7 @@ type Handler interface {
 	DownloadFile(ctx context.Context, params DownloadFileParams) (DownloadFileRes, error)
 	// GetConfig implements getConfig operation.
 	//
-	// Get configuration.
+	// Get current active configuration.
 	//
 	// GET /config
 	GetConfig(ctx context.Context) (GetConfigRes, error)
@@ -176,24 +128,12 @@ type Handler interface {
 	//
 	// GET /rest/database/{table}/sessions
 	GetDatabaseSessions(ctx context.Context, params GetDatabaseSessionsParams) (GetDatabaseSessionsRes, error)
-	// GetDatabaseStats implements getDatabaseStats operation.
-	//
-	// Retrieve SQL statistics.
-	//
-	// GET /rest/database/{table}/stats
-	GetDatabaseStats(ctx context.Context, params GetDatabaseStatsParams) (GetDatabaseStatsRes, error)
 	// GetDatabases implements getDatabases operation.
 	//
-	// Retrieves a list of databases known by Interface.
+	// Retrieves a list of databases known by server.
 	//
 	// GET /rest/database
 	GetDatabases(ctx context.Context) (GetDatabasesRes, error)
-	// GetEnvironments implements getEnvironments operation.
-	//
-	// Retrieves the list of environments.
-	//
-	// GET /rest/env
-	GetEnvironments(ctx context.Context) (GetEnvironmentsRes, error)
 	// GetFields implements getFields operation.
 	//
 	// Retrieves all fields of an file.
@@ -202,7 +142,7 @@ type Handler interface {
 	GetFields(ctx context.Context, params GetFieldsParams) (GetFieldsRes, error)
 	// GetImage implements getImage operation.
 	//
-	// Retrieves a field of a specific ISN of a Map definition.
+	// Retrieves a field of a specific table record of a Map definition.
 	//
 	// GET /image/{table}/{field}/{search}
 	GetImage(ctx context.Context, params GetImageParams) (GetImageRes, error)
@@ -210,25 +150,25 @@ type Handler interface {
 	//
 	// Retrieves a specific job result.
 	//
-	// GET /rest/tasks/results
+	// GET /tasks/results
 	GetJobExecutionResult(ctx context.Context, params GetJobExecutionResultParams) (GetJobExecutionResultRes, error)
 	// GetJobFullInfo implements getJobFullInfo operation.
 	//
 	// Retrieves a full job definition.
 	//
-	// GET /rest/tasks/{jobName}
+	// GET /tasks/{jobName}
 	GetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (GetJobFullInfoRes, error)
 	// GetJobResult implements getJobResult operation.
 	//
 	// Delete a specific job result.
 	//
-	// GET /rest/tasks/{jobName}/{jobId}
+	// GET /tasks/{jobName}/{jobId}
 	GetJobResult(ctx context.Context, params GetJobResultParams) (GetJobResultRes, error)
 	// GetJobs implements getJobs operation.
 	//
 	// Retrieves a list of jobs known by the Interface.
 	//
-	// GET /rest/tasks
+	// GET /tasks
 	GetJobs(ctx context.Context, params GetJobsParams) (GetJobsRes, error)
 	// GetJobsConfig implements getJobsConfig operation.
 	//
@@ -238,13 +178,13 @@ type Handler interface {
 	GetJobsConfig(ctx context.Context) (GetJobsConfigRes, error)
 	// GetLobByMap implements getLobByMap operation.
 	//
-	// Retrieves a lob of a specific ISN of an field in a Map.
+	// Retrieves a lob of a specific table record of an field in a Map.
 	//
 	// GET /binary/{table}/{field}/{search}
 	GetLobByMap(ctx context.Context, params GetLobByMapParams) (GetLobByMapRes, error)
 	// GetLoginSession implements getLoginSession operation.
 	//
-	// Login receiving JWT.
+	// Login using baseauth or bearer to receive or validate token.
 	//
 	// GET /login
 	GetLoginSession(ctx context.Context) (GetLoginSessionRes, error)
@@ -256,7 +196,7 @@ type Handler interface {
 	GetMapMetadata(ctx context.Context, params GetMapMetadataParams) (GetMapMetadataRes, error)
 	// GetMapRecordsFields implements getMapRecordsFields operation.
 	//
-	// Retrieves a field of a specific ISN of a Map definition.
+	// Retrieves a field of a specific table record of a Map definition.
 	//
 	// GET /rest/view/{table}/{fields}/{search}
 	GetMapRecordsFields(ctx context.Context, params GetMapRecordsFieldsParams) (GetMapRecordsFieldsRes, error)
@@ -274,25 +214,25 @@ type Handler interface {
 	GetPermission(ctx context.Context, params GetPermissionParams) (GetPermissionRes, error)
 	// GetUserInfo implements getUserInfo operation.
 	//
-	// Retrieves the user information.
+	// Get the token user information.
 	//
 	// GET /rest/user
 	GetUserInfo(ctx context.Context) (GetUserInfoRes, error)
 	// GetVersion implements getVersion operation.
 	//
-	// Retrieves the current version.
+	// Get the current server version.
 	//
 	// GET /version
 	GetVersion(ctx context.Context) (GetVersionRes, error)
 	// GetVideo implements getVideo operation.
 	//
-	// Retrieves a video stream of a specific ISN of a Map definition.
+	// Retrieves a video stream of a specific table record of a Map definition.
 	//
 	// GET /video/{table}/{field}/{search}
 	GetVideo(ctx context.Context, params GetVideoParams) (GetVideoRes, error)
 	// GetViews implements getViews operation.
 	//
-	// Defines the current views.
+	// Get the available table views of all databases.
 	//
 	// GET /config/views
 	GetViews(ctx context.Context) (GetViewsRes, error)
@@ -314,12 +254,6 @@ type Handler interface {
 	//
 	// GET /rest/map
 	ListModelling(ctx context.Context) (ListModellingRes, error)
-	// ListRBACResource implements listRBACResource operation.
-	//
-	// Add permission role.
-	//
-	// GET /rest/database/{table}/permission/{resource}
-	ListRBACResource(ctx context.Context, params ListRBACResourceParams) (ListRBACResourceRes, error)
 	// ListTables implements listTables operation.
 	//
 	// Retrieves all tables of databases.
@@ -328,13 +262,13 @@ type Handler interface {
 	ListTables(ctx context.Context) (ListTablesRes, error)
 	// LoginSession implements loginSession operation.
 	//
-	// Login receiving JWT.
+	// Login using baseauth or bearer to receive or validate token.
 	//
 	// PUT /login
 	LoginSession(ctx context.Context) (LoginSessionRes, error)
 	// LogoutSessionCompat implements logoutSessionCompat operation.
 	//
-	// Logout the session.
+	// Invalidate given token session.
 	//
 	// PUT /logout
 	LogoutSessionCompat(ctx context.Context) (LogoutSessionCompatRes, error)
@@ -349,20 +283,14 @@ type Handler interface {
 	//
 	// Create a new Job database.
 	//
-	// POST /rest/tasks
+	// POST /tasks
 	PostJob(ctx context.Context, req PostJobReq) (PostJobRes, error)
 	// PushLoginSession implements pushLoginSession operation.
 	//
-	// Login receiving JWT.
+	// Login using baseauth or bearer to receive or validate token.
 	//
 	// POST /login
 	PushLoginSession(ctx context.Context) (PushLoginSessionRes, error)
-	// PutDatabaseResource implements putDatabaseResource operation.
-	//
-	// Change resource of the database.
-	//
-	// PUT /rest/database/{table_operation}
-	PutDatabaseResource(ctx context.Context, params PutDatabaseResourceParams) (PutDatabaseResourceRes, error)
 	// RemovePermission implements removePermission operation.
 	//
 	// Add RBAC role.
@@ -371,7 +299,7 @@ type Handler interface {
 	RemovePermission(ctx context.Context, params RemovePermissionParams) (RemovePermissionRes, error)
 	// RemoveSessionCompat implements removeSessionCompat operation.
 	//
-	// Remove the session.
+	// Invalidate given token session.
 	//
 	// GET /logoff
 	RemoveSessionCompat(ctx context.Context) (RemoveSessionCompatRes, error)
@@ -395,25 +323,25 @@ type Handler interface {
 	SearchTable(ctx context.Context, params SearchTableParams) (SearchTableRes, error)
 	// SetConfig implements setConfig operation.
 	//
-	// Store configuration.
+	// Update current configuration and test.
 	//
 	// PUT /config
 	SetConfig(ctx context.Context, req SetConfigReq) (SetConfigRes, error)
 	// SetJobsConfig implements setJobsConfig operation.
 	//
-	// Set the ADADATADIR.
+	// Set the Job configuration database.
 	//
 	// PUT /config/jobs
 	SetJobsConfig(ctx context.Context, req OptJobStore) (SetJobsConfigRes, error)
 	// ShutdownServer implements shutdownServer operation.
 	//
-	// Init shutdown procedure.
+	// Trigger shutdown of server instance.
 	//
 	// PUT /rest/shutdown/{hash}
 	ShutdownServer(ctx context.Context, params ShutdownServerParams) (ShutdownServerRes, error)
 	// StoreConfig implements storeConfig operation.
 	//
-	// Store configuration.
+	// Store current active configuration to configuration file.
 	//
 	// POST /config
 	StoreConfig(ctx context.Context) (StoreConfigRes, error)
@@ -427,11 +355,11 @@ type Handler interface {
 	//
 	// Trigger a job.
 	//
-	// PUT /rest/tasks/{jobName}
+	// PUT /tasks/{jobName}
 	TriggerJob(ctx context.Context, params TriggerJobParams) (TriggerJobRes, error)
 	// UpdateLobByMap implements updateLobByMap operation.
 	//
-	// Set a lob at a specific ISN of an field in a Map.
+	// Set a lob at a specific table record of an field in a Map.
 	//
 	// PUT /binary/{table}/{field}/{search}
 	UpdateLobByMap(ctx context.Context, req UpdateLobByMapReq, params UpdateLobByMapParams) (UpdateLobByMapRes, error)

@@ -44,124 +44,6 @@ func (s *APIHandler) SetVersion(val OptString) {
 	s.Version = val
 }
 
-type AccessBadRequest Error
-
-func (*AccessBadRequest) accessRes() {}
-
-// AccessForbidden is response for Access operation.
-type AccessForbidden struct{}
-
-func (*AccessForbidden) accessRes() {}
-
-type AccessNotFound Error
-
-func (*AccessNotFound) accessRes() {}
-
-type AccessRole string
-
-const (
-	AccessRole_User          AccessRole = "User"
-	AccessRole_user          AccessRole = "user"
-	AccessRole_USER          AccessRole = "USER"
-	AccessRole_Administrator AccessRole = "Administrator"
-	AccessRole_administrator AccessRole = "administrator"
-	AccessRole_ADMINISTRATOR AccessRole = "ADMINISTRATOR"
-)
-
-// AllValues returns all AccessRole values.
-func (AccessRole) AllValues() []AccessRole {
-	return []AccessRole{
-		AccessRole_User,
-		AccessRole_user,
-		AccessRole_USER,
-		AccessRole_Administrator,
-		AccessRole_administrator,
-		AccessRole_ADMINISTRATOR,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s AccessRole) MarshalText() ([]byte, error) {
-	switch s {
-	case AccessRole_User:
-		return []byte(s), nil
-	case AccessRole_user:
-		return []byte(s), nil
-	case AccessRole_USER:
-		return []byte(s), nil
-	case AccessRole_Administrator:
-		return []byte(s), nil
-	case AccessRole_administrator:
-		return []byte(s), nil
-	case AccessRole_ADMINISTRATOR:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *AccessRole) UnmarshalText(data []byte) error {
-	switch AccessRole(data) {
-	case AccessRole_User:
-		*s = AccessRole_User
-		return nil
-	case AccessRole_user:
-		*s = AccessRole_user
-		return nil
-	case AccessRole_USER:
-		*s = AccessRole_USER
-		return nil
-	case AccessRole_Administrator:
-		*s = AccessRole_Administrator
-		return nil
-	case AccessRole_administrator:
-		*s = AccessRole_administrator
-		return nil
-	case AccessRole_ADMINISTRATOR:
-		*s = AccessRole_ADMINISTRATOR
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-// AccessUnauthorized is response for Access operation.
-type AccessUnauthorized struct{}
-
-func (*AccessUnauthorized) accessRes() {}
-
-// Ref: #/components/schemas/ActivityStats
-type ActivityStats struct {
-	Statistics OptActivityStatsStatistics `json:"Statistics"`
-}
-
-// GetStatistics returns the value of Statistics.
-func (s *ActivityStats) GetStatistics() OptActivityStatsStatistics {
-	return s.Statistics
-}
-
-// SetStatistics sets the value of Statistics.
-func (s *ActivityStats) SetStatistics(val OptActivityStatsStatistics) {
-	s.Statistics = val
-}
-
-func (*ActivityStats) getDatabaseStatsRes() {}
-
-type ActivityStatsStatistics struct {
-	BPHitRate OptFloat64 `json:"BPHitRate"`
-}
-
-// GetBPHitRate returns the value of BPHitRate.
-func (s *ActivityStatsStatistics) GetBPHitRate() OptFloat64 {
-	return s.BPHitRate
-}
-
-// SetBPHitRate sets the value of BPHitRate.
-func (s *ActivityStatsStatistics) SetBPHitRate(val OptFloat64) {
-	s.BPHitRate = val
-}
-
 // AdaptPermissionForbidden is response for AdaptPermission operation.
 type AdaptPermissionForbidden struct{}
 
@@ -171,219 +53,6 @@ func (*AdaptPermissionForbidden) adaptPermissionRes() {}
 type AdaptPermissionUnauthorized struct{}
 
 func (*AdaptPermissionUnauthorized) adaptPermissionRes() {}
-
-type AddAccessBadRequest Error
-
-func (*AddAccessBadRequest) addAccessRes() {}
-
-// AddAccessForbidden is response for AddAccess operation.
-type AddAccessForbidden struct{}
-
-func (*AddAccessForbidden) addAccessRes() {}
-
-type AddAccessNotFound Error
-
-func (*AddAccessNotFound) addAccessRes() {}
-
-// AddAccessOK is response for AddAccess operation.
-type AddAccessOK struct{}
-
-func (*AddAccessOK) addAccessRes() {}
-
-type AddAccessRole string
-
-const (
-	AddAccessRole_User          AddAccessRole = "User"
-	AddAccessRole_user          AddAccessRole = "user"
-	AddAccessRole_USER          AddAccessRole = "USER"
-	AddAccessRole_Administrator AddAccessRole = "Administrator"
-	AddAccessRole_administrator AddAccessRole = "administrator"
-	AddAccessRole_ADMINISTRATOR AddAccessRole = "ADMINISTRATOR"
-)
-
-// AllValues returns all AddAccessRole values.
-func (AddAccessRole) AllValues() []AddAccessRole {
-	return []AddAccessRole{
-		AddAccessRole_User,
-		AddAccessRole_user,
-		AddAccessRole_USER,
-		AddAccessRole_Administrator,
-		AddAccessRole_administrator,
-		AddAccessRole_ADMINISTRATOR,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s AddAccessRole) MarshalText() ([]byte, error) {
-	switch s {
-	case AddAccessRole_User:
-		return []byte(s), nil
-	case AddAccessRole_user:
-		return []byte(s), nil
-	case AddAccessRole_USER:
-		return []byte(s), nil
-	case AddAccessRole_Administrator:
-		return []byte(s), nil
-	case AddAccessRole_administrator:
-		return []byte(s), nil
-	case AddAccessRole_ADMINISTRATOR:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *AddAccessRole) UnmarshalText(data []byte) error {
-	switch AddAccessRole(data) {
-	case AddAccessRole_User:
-		*s = AddAccessRole_User
-		return nil
-	case AddAccessRole_user:
-		*s = AddAccessRole_user
-		return nil
-	case AddAccessRole_USER:
-		*s = AddAccessRole_USER
-		return nil
-	case AddAccessRole_Administrator:
-		*s = AddAccessRole_Administrator
-		return nil
-	case AddAccessRole_administrator:
-		*s = AddAccessRole_administrator
-		return nil
-	case AddAccessRole_ADMINISTRATOR:
-		*s = AddAccessRole_ADMINISTRATOR
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-// AddAccessUnauthorized is response for AddAccess operation.
-type AddAccessUnauthorized struct{}
-
-func (*AddAccessUnauthorized) addAccessRes() {}
-
-// AddRBACResourceForbidden is response for AddRBACResource operation.
-type AddRBACResourceForbidden struct{}
-
-func (*AddRBACResourceForbidden) addRBACResourceRes() {}
-
-type AddRBACResourceResource string
-
-const (
-	AddRBACResourceResource_Role      AddRBACResourceResource = "Role"
-	AddRBACResourceResource_role      AddRBACResourceResource = "role"
-	AddRBACResourceResource_ROLE      AddRBACResourceResource = "ROLE"
-	AddRBACResourceResource_Object    AddRBACResourceResource = "Object"
-	AddRBACResourceResource_object    AddRBACResourceResource = "object"
-	AddRBACResourceResource_OBJECT    AddRBACResourceResource = "OBJECT"
-	AddRBACResourceResource_User      AddRBACResourceResource = "User"
-	AddRBACResourceResource_user      AddRBACResourceResource = "user"
-	AddRBACResourceResource_USER      AddRBACResourceResource = "USER"
-	AddRBACResourceResource_Operation AddRBACResourceResource = "Operation"
-	AddRBACResourceResource_operation AddRBACResourceResource = "operation"
-	AddRBACResourceResource_OPERATION AddRBACResourceResource = "OPERATION"
-)
-
-// AllValues returns all AddRBACResourceResource values.
-func (AddRBACResourceResource) AllValues() []AddRBACResourceResource {
-	return []AddRBACResourceResource{
-		AddRBACResourceResource_Role,
-		AddRBACResourceResource_role,
-		AddRBACResourceResource_ROLE,
-		AddRBACResourceResource_Object,
-		AddRBACResourceResource_object,
-		AddRBACResourceResource_OBJECT,
-		AddRBACResourceResource_User,
-		AddRBACResourceResource_user,
-		AddRBACResourceResource_USER,
-		AddRBACResourceResource_Operation,
-		AddRBACResourceResource_operation,
-		AddRBACResourceResource_OPERATION,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s AddRBACResourceResource) MarshalText() ([]byte, error) {
-	switch s {
-	case AddRBACResourceResource_Role:
-		return []byte(s), nil
-	case AddRBACResourceResource_role:
-		return []byte(s), nil
-	case AddRBACResourceResource_ROLE:
-		return []byte(s), nil
-	case AddRBACResourceResource_Object:
-		return []byte(s), nil
-	case AddRBACResourceResource_object:
-		return []byte(s), nil
-	case AddRBACResourceResource_OBJECT:
-		return []byte(s), nil
-	case AddRBACResourceResource_User:
-		return []byte(s), nil
-	case AddRBACResourceResource_user:
-		return []byte(s), nil
-	case AddRBACResourceResource_USER:
-		return []byte(s), nil
-	case AddRBACResourceResource_Operation:
-		return []byte(s), nil
-	case AddRBACResourceResource_operation:
-		return []byte(s), nil
-	case AddRBACResourceResource_OPERATION:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *AddRBACResourceResource) UnmarshalText(data []byte) error {
-	switch AddRBACResourceResource(data) {
-	case AddRBACResourceResource_Role:
-		*s = AddRBACResourceResource_Role
-		return nil
-	case AddRBACResourceResource_role:
-		*s = AddRBACResourceResource_role
-		return nil
-	case AddRBACResourceResource_ROLE:
-		*s = AddRBACResourceResource_ROLE
-		return nil
-	case AddRBACResourceResource_Object:
-		*s = AddRBACResourceResource_Object
-		return nil
-	case AddRBACResourceResource_object:
-		*s = AddRBACResourceResource_object
-		return nil
-	case AddRBACResourceResource_OBJECT:
-		*s = AddRBACResourceResource_OBJECT
-		return nil
-	case AddRBACResourceResource_User:
-		*s = AddRBACResourceResource_User
-		return nil
-	case AddRBACResourceResource_user:
-		*s = AddRBACResourceResource_user
-		return nil
-	case AddRBACResourceResource_USER:
-		*s = AddRBACResourceResource_USER
-		return nil
-	case AddRBACResourceResource_Operation:
-		*s = AddRBACResourceResource_Operation
-		return nil
-	case AddRBACResourceResource_operation:
-		*s = AddRBACResourceResource_operation
-		return nil
-	case AddRBACResourceResource_OPERATION:
-		*s = AddRBACResourceResource_OPERATION
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-// AddRBACResourceUnauthorized is response for AddRBACResource operation.
-type AddRBACResourceUnauthorized struct{}
-
-func (*AddRBACResourceUnauthorized) addRBACResourceRes() {}
 
 // AddViewForbidden is response for AddView operation.
 type AddViewForbidden struct{}
@@ -1306,70 +975,6 @@ func (s *DatabaseInformation) SetLocation(val OptString) {
 	s.Location = val
 }
 
-// DatabaseOperationForbidden is response for DatabaseOperation operation.
-type DatabaseOperationForbidden struct{}
-
-func (*DatabaseOperationForbidden) databaseOperationRes() {}
-
-// DatabaseOperationUnauthorized is response for DatabaseOperation operation.
-type DatabaseOperationUnauthorized struct{}
-
-func (*DatabaseOperationUnauthorized) databaseOperationRes() {}
-
-// DatabasePostOperationsForbidden is response for DatabasePostOperations operation.
-type DatabasePostOperationsForbidden struct{}
-
-func (*DatabasePostOperationsForbidden) databasePostOperationsRes() {}
-
-// DatabasePostOperationsUnauthorized is response for DatabasePostOperations operation.
-type DatabasePostOperationsUnauthorized struct{}
-
-func (*DatabasePostOperationsUnauthorized) databasePostOperationsRes() {}
-
-// Ref: #/components/schemas/DatabaseStatus
-type DatabaseStatus struct {
-	Database OptDatabaseStatusDatabase `json:"Database"`
-}
-
-// GetDatabase returns the value of Database.
-func (s *DatabaseStatus) GetDatabase() OptDatabaseStatusDatabase {
-	return s.Database
-}
-
-// SetDatabase sets the value of Database.
-func (s *DatabaseStatus) SetDatabase(val OptDatabaseStatusDatabase) {
-	s.Database = val
-}
-
-func (*DatabaseStatus) databaseOperationRes()      {}
-func (*DatabaseStatus) databasePostOperationsRes() {}
-func (*DatabaseStatus) putDatabaseResourceRes()    {}
-
-type DatabaseStatusDatabase struct {
-	Dbid   OptString `json:"Dbid"`
-	Status OptString `json:"Status"`
-}
-
-// GetDbid returns the value of Dbid.
-func (s *DatabaseStatusDatabase) GetDbid() OptString {
-	return s.Dbid
-}
-
-// GetStatus returns the value of Status.
-func (s *DatabaseStatusDatabase) GetStatus() OptString {
-	return s.Status
-}
-
-// SetDbid sets the value of Dbid.
-func (s *DatabaseStatusDatabase) SetDbid(val OptString) {
-	s.Dbid = val
-}
-
-// SetStatus sets the value of Status.
-func (s *DatabaseStatusDatabase) SetStatus(val OptString) {
-	s.Status = val
-}
-
 // Database entry in database list.
 // Ref: #/components/schemas/Databases
 type Databases struct {
@@ -1387,108 +992,6 @@ func (s *Databases) SetDatabase(val []DatabaseInformation) {
 }
 
 func (*Databases) getDatabasesRes() {}
-
-type DelAccessBadRequest Error
-
-func (*DelAccessBadRequest) delAccessRes() {}
-
-// DelAccessForbidden is response for DelAccess operation.
-type DelAccessForbidden struct{}
-
-func (*DelAccessForbidden) delAccessRes() {}
-
-type DelAccessNotFound Error
-
-func (*DelAccessNotFound) delAccessRes() {}
-
-// DelAccessOK is response for DelAccess operation.
-type DelAccessOK struct{}
-
-func (*DelAccessOK) delAccessRes() {}
-
-type DelAccessRole string
-
-const (
-	DelAccessRole_User          DelAccessRole = "User"
-	DelAccessRole_user          DelAccessRole = "user"
-	DelAccessRole_USER          DelAccessRole = "USER"
-	DelAccessRole_Administrator DelAccessRole = "Administrator"
-	DelAccessRole_administrator DelAccessRole = "administrator"
-	DelAccessRole_ADMINISTRATOR DelAccessRole = "ADMINISTRATOR"
-)
-
-// AllValues returns all DelAccessRole values.
-func (DelAccessRole) AllValues() []DelAccessRole {
-	return []DelAccessRole{
-		DelAccessRole_User,
-		DelAccessRole_user,
-		DelAccessRole_USER,
-		DelAccessRole_Administrator,
-		DelAccessRole_administrator,
-		DelAccessRole_ADMINISTRATOR,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s DelAccessRole) MarshalText() ([]byte, error) {
-	switch s {
-	case DelAccessRole_User:
-		return []byte(s), nil
-	case DelAccessRole_user:
-		return []byte(s), nil
-	case DelAccessRole_USER:
-		return []byte(s), nil
-	case DelAccessRole_Administrator:
-		return []byte(s), nil
-	case DelAccessRole_administrator:
-		return []byte(s), nil
-	case DelAccessRole_ADMINISTRATOR:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *DelAccessRole) UnmarshalText(data []byte) error {
-	switch DelAccessRole(data) {
-	case DelAccessRole_User:
-		*s = DelAccessRole_User
-		return nil
-	case DelAccessRole_user:
-		*s = DelAccessRole_user
-		return nil
-	case DelAccessRole_USER:
-		*s = DelAccessRole_USER
-		return nil
-	case DelAccessRole_Administrator:
-		*s = DelAccessRole_Administrator
-		return nil
-	case DelAccessRole_administrator:
-		*s = DelAccessRole_administrator
-		return nil
-	case DelAccessRole_ADMINISTRATOR:
-		*s = DelAccessRole_ADMINISTRATOR
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-// DelAccessUnauthorized is response for DelAccess operation.
-type DelAccessUnauthorized struct{}
-
-func (*DelAccessUnauthorized) delAccessRes() {}
-
-// DeleteDatabaseForbidden is response for DeleteDatabase operation.
-type DeleteDatabaseForbidden struct{}
-
-func (*DeleteDatabaseForbidden) deleteDatabaseRes() {}
-
-// DeleteDatabaseUnauthorized is response for DeleteDatabase operation.
-type DeleteDatabaseUnauthorized struct{}
-
-func (*DeleteDatabaseUnauthorized) deleteDatabaseRes() {}
 
 type DeleteExtendBadRequest Error
 
@@ -1559,127 +1062,6 @@ func (*DeleteJobResultNotFound) deleteJobResultRes() {}
 type DeleteJobResultUnauthorized struct{}
 
 func (*DeleteJobResultUnauthorized) deleteJobResultRes() {}
-
-// DeleteRBACResourceForbidden is response for DeleteRBACResource operation.
-type DeleteRBACResourceForbidden struct{}
-
-func (*DeleteRBACResourceForbidden) deleteRBACResourceRes() {}
-
-type DeleteRBACResourceResource string
-
-const (
-	DeleteRBACResourceResource_Role      DeleteRBACResourceResource = "Role"
-	DeleteRBACResourceResource_role      DeleteRBACResourceResource = "role"
-	DeleteRBACResourceResource_ROLE      DeleteRBACResourceResource = "ROLE"
-	DeleteRBACResourceResource_Object    DeleteRBACResourceResource = "Object"
-	DeleteRBACResourceResource_object    DeleteRBACResourceResource = "object"
-	DeleteRBACResourceResource_OBJECT    DeleteRBACResourceResource = "OBJECT"
-	DeleteRBACResourceResource_User      DeleteRBACResourceResource = "User"
-	DeleteRBACResourceResource_user      DeleteRBACResourceResource = "user"
-	DeleteRBACResourceResource_USER      DeleteRBACResourceResource = "USER"
-	DeleteRBACResourceResource_Operation DeleteRBACResourceResource = "Operation"
-	DeleteRBACResourceResource_operation DeleteRBACResourceResource = "operation"
-	DeleteRBACResourceResource_OPERATION DeleteRBACResourceResource = "OPERATION"
-)
-
-// AllValues returns all DeleteRBACResourceResource values.
-func (DeleteRBACResourceResource) AllValues() []DeleteRBACResourceResource {
-	return []DeleteRBACResourceResource{
-		DeleteRBACResourceResource_Role,
-		DeleteRBACResourceResource_role,
-		DeleteRBACResourceResource_ROLE,
-		DeleteRBACResourceResource_Object,
-		DeleteRBACResourceResource_object,
-		DeleteRBACResourceResource_OBJECT,
-		DeleteRBACResourceResource_User,
-		DeleteRBACResourceResource_user,
-		DeleteRBACResourceResource_USER,
-		DeleteRBACResourceResource_Operation,
-		DeleteRBACResourceResource_operation,
-		DeleteRBACResourceResource_OPERATION,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s DeleteRBACResourceResource) MarshalText() ([]byte, error) {
-	switch s {
-	case DeleteRBACResourceResource_Role:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_role:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_ROLE:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_Object:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_object:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_OBJECT:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_User:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_user:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_USER:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_Operation:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_operation:
-		return []byte(s), nil
-	case DeleteRBACResourceResource_OPERATION:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *DeleteRBACResourceResource) UnmarshalText(data []byte) error {
-	switch DeleteRBACResourceResource(data) {
-	case DeleteRBACResourceResource_Role:
-		*s = DeleteRBACResourceResource_Role
-		return nil
-	case DeleteRBACResourceResource_role:
-		*s = DeleteRBACResourceResource_role
-		return nil
-	case DeleteRBACResourceResource_ROLE:
-		*s = DeleteRBACResourceResource_ROLE
-		return nil
-	case DeleteRBACResourceResource_Object:
-		*s = DeleteRBACResourceResource_Object
-		return nil
-	case DeleteRBACResourceResource_object:
-		*s = DeleteRBACResourceResource_object
-		return nil
-	case DeleteRBACResourceResource_OBJECT:
-		*s = DeleteRBACResourceResource_OBJECT
-		return nil
-	case DeleteRBACResourceResource_User:
-		*s = DeleteRBACResourceResource_User
-		return nil
-	case DeleteRBACResourceResource_user:
-		*s = DeleteRBACResourceResource_user
-		return nil
-	case DeleteRBACResourceResource_USER:
-		*s = DeleteRBACResourceResource_USER
-		return nil
-	case DeleteRBACResourceResource_Operation:
-		*s = DeleteRBACResourceResource_Operation
-		return nil
-	case DeleteRBACResourceResource_operation:
-		*s = DeleteRBACResourceResource_operation
-		return nil
-	case DeleteRBACResourceResource_OPERATION:
-		*s = DeleteRBACResourceResource_OPERATION
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-// DeleteRBACResourceUnauthorized is response for DeleteRBACResource operation.
-type DeleteRBACResourceUnauthorized struct{}
-
-func (*DeleteRBACResourceUnauthorized) deleteRBACResourceRes() {}
 
 // DeleteRecordsSearchedForbidden is response for DeleteRecordsSearched operation.
 type DeleteRecordsSearchedForbidden struct{}
@@ -1854,51 +1236,6 @@ type DownloadFileUnauthorized struct{}
 
 func (*DownloadFileUnauthorized) downloadFileRes() {}
 
-// Ref: #/components/schemas/Environments
-type Environments struct {
-	Environment *EnvironmentsEnvironment `json:"Environment"`
-}
-
-// GetEnvironment returns the value of Environment.
-func (s *Environments) GetEnvironment() *EnvironmentsEnvironment {
-	return s.Environment
-}
-
-// SetEnvironment sets the value of Environment.
-func (s *Environments) SetEnvironment(val *EnvironmentsEnvironment) {
-	s.Environment = val
-}
-
-type EnvironmentsEnvironment struct{}
-
-// EnvironmentsHeaders wraps Environments with response headers.
-type EnvironmentsHeaders struct {
-	XToken   OptString
-	Response Environments
-}
-
-// GetXToken returns the value of XToken.
-func (s *EnvironmentsHeaders) GetXToken() OptString {
-	return s.XToken
-}
-
-// GetResponse returns the value of Response.
-func (s *EnvironmentsHeaders) GetResponse() Environments {
-	return s.Response
-}
-
-// SetXToken sets the value of XToken.
-func (s *EnvironmentsHeaders) SetXToken(val OptString) {
-	s.XToken = val
-}
-
-// SetResponse sets the value of Response.
-func (s *EnvironmentsHeaders) SetResponse(val Environments) {
-	s.Response = val
-}
-
-func (*EnvironmentsHeaders) getEnvironmentsRes() {}
-
 // Ref: #/components/schemas/Error
 type Error struct {
 	Code    OptString     `json:"code"`
@@ -1947,51 +1284,42 @@ func (s *Error) SetError(val OptErrorError) {
 	s.Error = val
 }
 
-func (*Error) adaptPermissionRes()        {}
-func (*Error) addRBACResourceRes()        {}
-func (*Error) addViewRes()                {}
-func (*Error) batchParameterQueryRes()    {}
-func (*Error) batchQueryRes()             {}
-func (*Error) batchSelectRes()            {}
-func (*Error) databaseOperationRes()      {}
-func (*Error) databasePostOperationsRes() {}
-func (*Error) deleteDatabaseRes()         {}
-func (*Error) deleteRBACResourceRes()     {}
-func (*Error) deleteRecordsSearchedRes()  {}
-func (*Error) deleteViewRes()             {}
-func (*Error) disconnectTCPRes()          {}
-func (*Error) getConfigRes()              {}
-func (*Error) getConnectionsRes()         {}
-func (*Error) getDatabaseSessionsRes()    {}
-func (*Error) getDatabaseStatsRes()       {}
-func (*Error) getDatabasesRes()           {}
-func (*Error) getEnvironmentsRes()        {}
-func (*Error) getImageRes()               {}
-func (*Error) getJobsConfigRes()          {}
-func (*Error) getLobByMapRes()            {}
-func (*Error) getLoginSessionRes()        {}
-func (*Error) getMapMetadataRes()         {}
-func (*Error) getMapRecordsFieldsRes()    {}
-func (*Error) getMapsRes()                {}
-func (*Error) getPermissionRes()          {}
-func (*Error) getUserInfoRes()            {}
-func (*Error) getVersionRes()             {}
-func (*Error) getVideoRes()               {}
-func (*Error) getViewsRes()               {}
-func (*Error) insertRecordRes()           {}
-func (*Error) listRBACResourceRes()       {}
-func (*Error) loginSessionRes()           {}
-func (*Error) postDatabaseRes()           {}
-func (*Error) pushLoginSessionRes()       {}
-func (*Error) putDatabaseResourceRes()    {}
-func (*Error) removePermissionRes()       {}
-func (*Error) searchRecordsFieldsRes()    {}
-func (*Error) setConfigRes()              {}
-func (*Error) setJobsConfigRes()          {}
-func (*Error) shutdownServerRes()         {}
-func (*Error) storeConfigRes()            {}
-func (*Error) updateLobByMapRes()         {}
-func (*Error) updateRecordsByFieldsRes()  {}
+func (*Error) adaptPermissionRes()       {}
+func (*Error) addViewRes()               {}
+func (*Error) batchParameterQueryRes()   {}
+func (*Error) batchQueryRes()            {}
+func (*Error) batchSelectRes()           {}
+func (*Error) deleteRecordsSearchedRes() {}
+func (*Error) deleteViewRes()            {}
+func (*Error) disconnectTCPRes()         {}
+func (*Error) getConfigRes()             {}
+func (*Error) getConnectionsRes()        {}
+func (*Error) getDatabaseSessionsRes()   {}
+func (*Error) getDatabasesRes()          {}
+func (*Error) getImageRes()              {}
+func (*Error) getJobsConfigRes()         {}
+func (*Error) getLobByMapRes()           {}
+func (*Error) getLoginSessionRes()       {}
+func (*Error) getMapMetadataRes()        {}
+func (*Error) getMapRecordsFieldsRes()   {}
+func (*Error) getMapsRes()               {}
+func (*Error) getPermissionRes()         {}
+func (*Error) getUserInfoRes()           {}
+func (*Error) getVersionRes()            {}
+func (*Error) getVideoRes()              {}
+func (*Error) getViewsRes()              {}
+func (*Error) insertRecordRes()          {}
+func (*Error) loginSessionRes()          {}
+func (*Error) postDatabaseRes()          {}
+func (*Error) pushLoginSessionRes()      {}
+func (*Error) removePermissionRes()      {}
+func (*Error) searchRecordsFieldsRes()   {}
+func (*Error) setConfigRes()             {}
+func (*Error) setJobsConfigRes()         {}
+func (*Error) shutdownServerRes()        {}
+func (*Error) storeConfigRes()           {}
+func (*Error) updateLobByMapRes()        {}
+func (*Error) updateRecordsByFieldsRes() {}
 
 type ErrorError struct {
 	Code    OptString `json:"code"`
@@ -2325,16 +1653,6 @@ type GetDatabaseSessionsUnauthorized struct{}
 
 func (*GetDatabaseSessionsUnauthorized) getDatabaseSessionsRes() {}
 
-// GetDatabaseStatsForbidden is response for GetDatabaseStats operation.
-type GetDatabaseStatsForbidden struct{}
-
-func (*GetDatabaseStatsForbidden) getDatabaseStatsRes() {}
-
-// GetDatabaseStatsUnauthorized is response for GetDatabaseStats operation.
-type GetDatabaseStatsUnauthorized struct{}
-
-func (*GetDatabaseStatsUnauthorized) getDatabaseStatsRes() {}
-
 // GetDatabasesForbidden is response for GetDatabases operation.
 type GetDatabasesForbidden struct{}
 
@@ -2344,16 +1662,6 @@ func (*GetDatabasesForbidden) getDatabasesRes() {}
 type GetDatabasesUnauthorized struct{}
 
 func (*GetDatabasesUnauthorized) getDatabasesRes() {}
-
-// GetEnvironmentsForbidden is response for GetEnvironments operation.
-type GetEnvironmentsForbidden struct{}
-
-func (*GetEnvironmentsForbidden) getEnvironmentsRes() {}
-
-// GetEnvironmentsUnauthorized is response for GetEnvironments operation.
-type GetEnvironmentsUnauthorized struct{}
-
-func (*GetEnvironmentsUnauthorized) getEnvironmentsRes() {}
 
 type GetFieldsBadRequest Error
 
@@ -3370,132 +2678,6 @@ type ListModellingUnauthorized struct{}
 
 func (*ListModellingUnauthorized) listModellingRes() {}
 
-// ListRBACResourceForbidden is response for ListRBACResource operation.
-type ListRBACResourceForbidden struct{}
-
-func (*ListRBACResourceForbidden) listRBACResourceRes() {}
-
-// ListRBACResourceOK is response for ListRBACResource operation.
-type ListRBACResourceOK struct{}
-
-func (*ListRBACResourceOK) listRBACResourceRes() {}
-
-type ListRBACResourceResource string
-
-const (
-	ListRBACResourceResource_Role      ListRBACResourceResource = "Role"
-	ListRBACResourceResource_role      ListRBACResourceResource = "role"
-	ListRBACResourceResource_ROLE      ListRBACResourceResource = "ROLE"
-	ListRBACResourceResource_Object    ListRBACResourceResource = "Object"
-	ListRBACResourceResource_object    ListRBACResourceResource = "object"
-	ListRBACResourceResource_OBJECT    ListRBACResourceResource = "OBJECT"
-	ListRBACResourceResource_User      ListRBACResourceResource = "User"
-	ListRBACResourceResource_user      ListRBACResourceResource = "user"
-	ListRBACResourceResource_USER      ListRBACResourceResource = "USER"
-	ListRBACResourceResource_Operation ListRBACResourceResource = "Operation"
-	ListRBACResourceResource_operation ListRBACResourceResource = "operation"
-	ListRBACResourceResource_OPERATION ListRBACResourceResource = "OPERATION"
-)
-
-// AllValues returns all ListRBACResourceResource values.
-func (ListRBACResourceResource) AllValues() []ListRBACResourceResource {
-	return []ListRBACResourceResource{
-		ListRBACResourceResource_Role,
-		ListRBACResourceResource_role,
-		ListRBACResourceResource_ROLE,
-		ListRBACResourceResource_Object,
-		ListRBACResourceResource_object,
-		ListRBACResourceResource_OBJECT,
-		ListRBACResourceResource_User,
-		ListRBACResourceResource_user,
-		ListRBACResourceResource_USER,
-		ListRBACResourceResource_Operation,
-		ListRBACResourceResource_operation,
-		ListRBACResourceResource_OPERATION,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s ListRBACResourceResource) MarshalText() ([]byte, error) {
-	switch s {
-	case ListRBACResourceResource_Role:
-		return []byte(s), nil
-	case ListRBACResourceResource_role:
-		return []byte(s), nil
-	case ListRBACResourceResource_ROLE:
-		return []byte(s), nil
-	case ListRBACResourceResource_Object:
-		return []byte(s), nil
-	case ListRBACResourceResource_object:
-		return []byte(s), nil
-	case ListRBACResourceResource_OBJECT:
-		return []byte(s), nil
-	case ListRBACResourceResource_User:
-		return []byte(s), nil
-	case ListRBACResourceResource_user:
-		return []byte(s), nil
-	case ListRBACResourceResource_USER:
-		return []byte(s), nil
-	case ListRBACResourceResource_Operation:
-		return []byte(s), nil
-	case ListRBACResourceResource_operation:
-		return []byte(s), nil
-	case ListRBACResourceResource_OPERATION:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *ListRBACResourceResource) UnmarshalText(data []byte) error {
-	switch ListRBACResourceResource(data) {
-	case ListRBACResourceResource_Role:
-		*s = ListRBACResourceResource_Role
-		return nil
-	case ListRBACResourceResource_role:
-		*s = ListRBACResourceResource_role
-		return nil
-	case ListRBACResourceResource_ROLE:
-		*s = ListRBACResourceResource_ROLE
-		return nil
-	case ListRBACResourceResource_Object:
-		*s = ListRBACResourceResource_Object
-		return nil
-	case ListRBACResourceResource_object:
-		*s = ListRBACResourceResource_object
-		return nil
-	case ListRBACResourceResource_OBJECT:
-		*s = ListRBACResourceResource_OBJECT
-		return nil
-	case ListRBACResourceResource_User:
-		*s = ListRBACResourceResource_User
-		return nil
-	case ListRBACResourceResource_user:
-		*s = ListRBACResourceResource_user
-		return nil
-	case ListRBACResourceResource_USER:
-		*s = ListRBACResourceResource_USER
-		return nil
-	case ListRBACResourceResource_Operation:
-		*s = ListRBACResourceResource_Operation
-		return nil
-	case ListRBACResourceResource_operation:
-		*s = ListRBACResourceResource_operation
-		return nil
-	case ListRBACResourceResource_OPERATION:
-		*s = ListRBACResourceResource_OPERATION
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-// ListRBACResourceUnauthorized is response for ListRBACResource operation.
-type ListRBACResourceUnauthorized struct{}
-
-func (*ListRBACResourceUnauthorized) listRBACResourceRes() {}
-
 type ListTablesBadRequest Error
 
 func (*ListTablesBadRequest) listTablesRes() {}
@@ -3914,52 +3096,6 @@ func (*Maps) getMapsRes()       {}
 func (*Maps) listModellingRes() {}
 func (*Maps) listTablesRes()    {}
 
-// NewOptActivityStatsStatistics returns new OptActivityStatsStatistics with value set to v.
-func NewOptActivityStatsStatistics(v ActivityStatsStatistics) OptActivityStatsStatistics {
-	return OptActivityStatsStatistics{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptActivityStatsStatistics is optional ActivityStatsStatistics.
-type OptActivityStatsStatistics struct {
-	Value ActivityStatsStatistics
-	Set   bool
-}
-
-// IsSet returns true if OptActivityStatsStatistics was set.
-func (o OptActivityStatsStatistics) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptActivityStatsStatistics) Reset() {
-	var v ActivityStatsStatistics
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptActivityStatsStatistics) SetTo(v ActivityStatsStatistics) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptActivityStatsStatistics) Get() (v ActivityStatsStatistics, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptActivityStatsStatistics) Or(d ActivityStatsStatistics) ActivityStatsStatistics {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {
 	return OptBool{
@@ -4368,52 +3504,6 @@ func (o OptDatabaseConfig) Get() (v DatabaseConfig, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptDatabaseConfig) Or(d DatabaseConfig) DatabaseConfig {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptDatabaseStatusDatabase returns new OptDatabaseStatusDatabase with value set to v.
-func NewOptDatabaseStatusDatabase(v DatabaseStatusDatabase) OptDatabaseStatusDatabase {
-	return OptDatabaseStatusDatabase{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptDatabaseStatusDatabase is optional DatabaseStatusDatabase.
-type OptDatabaseStatusDatabase struct {
-	Value DatabaseStatusDatabase
-	Set   bool
-}
-
-// IsSet returns true if OptDatabaseStatusDatabase was set.
-func (o OptDatabaseStatusDatabase) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptDatabaseStatusDatabase) Reset() {
-	var v DatabaseStatusDatabase
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptDatabaseStatusDatabase) SetTo(v DatabaseStatusDatabase) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptDatabaseStatusDatabase) Get() (v DatabaseStatusDatabase, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptDatabaseStatusDatabase) Or(d DatabaseStatusDatabase) DatabaseStatusDatabase {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -5950,16 +5040,6 @@ type PushLoginSessionUnauthorized struct{}
 
 func (*PushLoginSessionUnauthorized) pushLoginSessionRes() {}
 
-// PutDatabaseResourceForbidden is response for PutDatabaseResource operation.
-type PutDatabaseResourceForbidden struct{}
-
-func (*PutDatabaseResourceForbidden) putDatabaseResourceRes() {}
-
-// PutDatabaseResourceUnauthorized is response for PutDatabaseResource operation.
-type PutDatabaseResourceUnauthorized struct{}
-
-func (*PutDatabaseResourceUnauthorized) putDatabaseResourceRes() {}
-
 // RemovePermissionForbidden is response for RemovePermission operation.
 type RemovePermissionForbidden struct{}
 
@@ -6302,21 +5382,15 @@ func (s *StatusResponse) SetStatus(val OptStatusResponseStatus) {
 	s.Status = val
 }
 
-func (*StatusResponse) adaptPermissionRes()        {}
-func (*StatusResponse) addRBACResourceRes()        {}
-func (*StatusResponse) createDirectoryRes()        {}
-func (*StatusResponse) databaseOperationRes()      {}
-func (*StatusResponse) databasePostOperationsRes() {}
-func (*StatusResponse) deleteDatabaseRes()         {}
-func (*StatusResponse) deleteFileLocationRes()     {}
-func (*StatusResponse) deleteRBACResourceRes()     {}
-func (*StatusResponse) disconnectTCPRes()          {}
-func (*StatusResponse) postDatabaseRes()           {}
-func (*StatusResponse) postJobRes()                {}
-func (*StatusResponse) putDatabaseResourceRes()    {}
-func (*StatusResponse) removePermissionRes()       {}
-func (*StatusResponse) shutdownServerRes()         {}
-func (*StatusResponse) uploadFileRes()             {}
+func (*StatusResponse) adaptPermissionRes()    {}
+func (*StatusResponse) createDirectoryRes()    {}
+func (*StatusResponse) deleteFileLocationRes() {}
+func (*StatusResponse) disconnectTCPRes()      {}
+func (*StatusResponse) postDatabaseRes()       {}
+func (*StatusResponse) postJobRes()            {}
+func (*StatusResponse) removePermissionRes()   {}
+func (*StatusResponse) shutdownServerRes()     {}
+func (*StatusResponse) uploadFileRes()         {}
 
 type StatusResponseStatus struct {
 	Action  OptString  `json:"Action"`
@@ -6843,92 +5917,6 @@ func (s *User) SetPermission(val OptString) {
 }
 
 func (*User) getUserInfoRes() {}
-
-// Ref: #/components/schemas/Users
-type Users struct {
-	Users           []UsersUsersItem `json:"Users"`
-	ReadPermission  OptString        `json:"readPermission"`
-	WritePermission OptString        `json:"writePermission"`
-}
-
-// GetUsers returns the value of Users.
-func (s *Users) GetUsers() []UsersUsersItem {
-	return s.Users
-}
-
-// GetReadPermission returns the value of ReadPermission.
-func (s *Users) GetReadPermission() OptString {
-	return s.ReadPermission
-}
-
-// GetWritePermission returns the value of WritePermission.
-func (s *Users) GetWritePermission() OptString {
-	return s.WritePermission
-}
-
-// SetUsers sets the value of Users.
-func (s *Users) SetUsers(val []UsersUsersItem) {
-	s.Users = val
-}
-
-// SetReadPermission sets the value of ReadPermission.
-func (s *Users) SetReadPermission(val OptString) {
-	s.ReadPermission = val
-}
-
-// SetWritePermission sets the value of WritePermission.
-func (s *Users) SetWritePermission(val OptString) {
-	s.WritePermission = val
-}
-
-func (*Users) accessRes() {}
-
-type UsersUsersItem struct {
-	Name            OptString `json:"name"`
-	ReadPermission  OptString `json:"readPermission"`
-	WritePermission OptString `json:"writePermission"`
-	Administrator   OptBool   `json:"administrator"`
-}
-
-// GetName returns the value of Name.
-func (s *UsersUsersItem) GetName() OptString {
-	return s.Name
-}
-
-// GetReadPermission returns the value of ReadPermission.
-func (s *UsersUsersItem) GetReadPermission() OptString {
-	return s.ReadPermission
-}
-
-// GetWritePermission returns the value of WritePermission.
-func (s *UsersUsersItem) GetWritePermission() OptString {
-	return s.WritePermission
-}
-
-// GetAdministrator returns the value of Administrator.
-func (s *UsersUsersItem) GetAdministrator() OptBool {
-	return s.Administrator
-}
-
-// SetName sets the value of Name.
-func (s *UsersUsersItem) SetName(val OptString) {
-	s.Name = val
-}
-
-// SetReadPermission sets the value of ReadPermission.
-func (s *UsersUsersItem) SetReadPermission(val OptString) {
-	s.ReadPermission = val
-}
-
-// SetWritePermission sets the value of WritePermission.
-func (s *UsersUsersItem) SetWritePermission(val OptString) {
-	s.WritePermission = val
-}
-
-// SetAdministrator sets the value of Administrator.
-func (s *UsersUsersItem) SetAdministrator(val OptBool) {
-	s.Administrator = val
-}
 
 // Ref: #/components/schemas/Versions
 type Versions struct {

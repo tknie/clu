@@ -13,15 +13,6 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// Access implements access operation.
-//
-// Retrieve the list of users who are allowed to access data.
-//
-// GET /admin/access/{role}
-func (UnimplementedHandler) Access(ctx context.Context, params AccessParams) (r AccessRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // AdaptPermission implements adaptPermission operation.
 //
 // Add RBAC role.
@@ -31,27 +22,9 @@ func (UnimplementedHandler) AdaptPermission(ctx context.Context, params AdaptPer
 	return r, ht.ErrNotImplemented
 }
 
-// AddAccess implements addAccess operation.
-//
-// Insert user in the list of users who are allowed to access data.
-//
-// POST /admin/access/{role}
-func (UnimplementedHandler) AddAccess(ctx context.Context, params AddAccessParams) (r AddAccessRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// AddRBACResource implements addRBACResource operation.
-//
-// Add permission role.
-//
-// PUT /rest/database/{table}/permission/{resource}/{name}
-func (UnimplementedHandler) AddRBACResource(ctx context.Context, params AddRBACResourceParams) (r AddRBACResourceRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // AddView implements addView operation.
 //
-// Add configuration in View repositories.
+// Add table view in View repositories.
 //
 // POST /config/views
 func (UnimplementedHandler) AddView(ctx context.Context, params AddViewParams) (r AddViewRes, _ error) {
@@ -69,7 +42,7 @@ func (UnimplementedHandler) BatchParameterQuery(ctx context.Context, params Batc
 
 // BatchQuery implements batchQuery operation.
 //
-// Call a SQL query batch command posted in body.
+// Call a SQL query batch command using insert or update data in body.
 //
 // POST /rest/batch/{table}
 func (UnimplementedHandler) BatchQuery(ctx context.Context, req BatchQueryReq, params BatchQueryParams) (r BatchQueryRes, _ error) {
@@ -78,7 +51,7 @@ func (UnimplementedHandler) BatchQuery(ctx context.Context, req BatchQueryReq, p
 
 // BatchSelect implements batchSelect operation.
 //
-// Call a SQL query batch command out of the stored query list.
+// Call a SQL query batch command store in batch database table with name.
 //
 // GET /rest/batch/{table}
 func (UnimplementedHandler) BatchSelect(ctx context.Context, params BatchSelectParams) (r BatchSelectRes, _ error) {
@@ -105,7 +78,7 @@ func (UnimplementedHandler) BrowseLocation(ctx context.Context, params BrowseLoc
 
 // CallExtend implements callExtend operation.
 //
-// Call plugin extend.
+// Call extend plugin, own implementation plugin.
 //
 // GET /rest/extend/{path}
 func (UnimplementedHandler) CallExtend(ctx context.Context, params CallExtendParams) (r CallExtendRes, _ error) {
@@ -127,42 +100,6 @@ func (UnimplementedHandler) CallPostExtend(ctx context.Context, req *CallPostExt
 //
 // PUT /rest/file/{path}
 func (UnimplementedHandler) CreateDirectory(ctx context.Context, params CreateDirectoryParams) (r CreateDirectoryRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DatabaseOperation implements databaseOperation operation.
-//
-// Retrieve the current status of database with the given dbid.
-//
-// GET /rest/database/{table_operation}
-func (UnimplementedHandler) DatabaseOperation(ctx context.Context, params DatabaseOperationParams) (r DatabaseOperationRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DatabasePostOperations implements databasePostOperations operation.
-//
-// Initiate operations on the given dbid.
-//
-// POST /rest/database/{table_operation}
-func (UnimplementedHandler) DatabasePostOperations(ctx context.Context, params DatabasePostOperationsParams) (r DatabasePostOperationsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DelAccess implements delAccess operation.
-//
-// Delete user in the list of users who are allowed to access data.
-//
-// DELETE /admin/access/{role}
-func (UnimplementedHandler) DelAccess(ctx context.Context, params DelAccessParams) (r DelAccessRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DeleteDatabase implements deleteDatabase operation.
-//
-// Delete the database.
-//
-// DELETE /rest/database/{table_operation}
-func (UnimplementedHandler) DeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (r DeleteDatabaseRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -188,17 +125,8 @@ func (UnimplementedHandler) DeleteFileLocation(ctx context.Context, params Delet
 //
 // Delete a specific job result.
 //
-// DELETE /rest/tasks/{jobName}/{jobId}
+// DELETE /tasks/{jobName}/{jobId}
 func (UnimplementedHandler) DeleteJobResult(ctx context.Context, params DeleteJobResultParams) (r DeleteJobResultRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DeleteRBACResource implements deleteRBACResource operation.
-//
-// Delete RBAC role.
-//
-// DELETE /rest/database/{table}/permission/{resource}/{name}
-func (UnimplementedHandler) DeleteRBACResource(ctx context.Context, params DeleteRBACResourceParams) (r DeleteRBACResourceRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -213,7 +141,7 @@ func (UnimplementedHandler) DeleteRecordsSearched(ctx context.Context, params De
 
 // DeleteView implements deleteView operation.
 //
-// Delete entry in configuration.
+// Delete/disable table view in configuration.
 //
 // DELETE /config/views
 func (UnimplementedHandler) DeleteView(ctx context.Context, params DeleteViewParams) (r DeleteViewRes, _ error) {
@@ -240,7 +168,7 @@ func (UnimplementedHandler) DownloadFile(ctx context.Context, params DownloadFil
 
 // GetConfig implements getConfig operation.
 //
-// Get configuration.
+// Get current active configuration.
 //
 // GET /config
 func (UnimplementedHandler) GetConfig(ctx context.Context) (r GetConfigRes, _ error) {
@@ -265,30 +193,12 @@ func (UnimplementedHandler) GetDatabaseSessions(ctx context.Context, params GetD
 	return r, ht.ErrNotImplemented
 }
 
-// GetDatabaseStats implements getDatabaseStats operation.
-//
-// Retrieve SQL statistics.
-//
-// GET /rest/database/{table}/stats
-func (UnimplementedHandler) GetDatabaseStats(ctx context.Context, params GetDatabaseStatsParams) (r GetDatabaseStatsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // GetDatabases implements getDatabases operation.
 //
-// Retrieves a list of databases known by Interface.
+// Retrieves a list of databases known by server.
 //
 // GET /rest/database
 func (UnimplementedHandler) GetDatabases(ctx context.Context) (r GetDatabasesRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// GetEnvironments implements getEnvironments operation.
-//
-// Retrieves the list of environments.
-//
-// GET /rest/env
-func (UnimplementedHandler) GetEnvironments(ctx context.Context) (r GetEnvironmentsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -303,7 +213,7 @@ func (UnimplementedHandler) GetFields(ctx context.Context, params GetFieldsParam
 
 // GetImage implements getImage operation.
 //
-// Retrieves a field of a specific ISN of a Map definition.
+// Retrieves a field of a specific table record of a Map definition.
 //
 // GET /image/{table}/{field}/{search}
 func (UnimplementedHandler) GetImage(ctx context.Context, params GetImageParams) (r GetImageRes, _ error) {
@@ -314,7 +224,7 @@ func (UnimplementedHandler) GetImage(ctx context.Context, params GetImageParams)
 //
 // Retrieves a specific job result.
 //
-// GET /rest/tasks/results
+// GET /tasks/results
 func (UnimplementedHandler) GetJobExecutionResult(ctx context.Context, params GetJobExecutionResultParams) (r GetJobExecutionResultRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -323,7 +233,7 @@ func (UnimplementedHandler) GetJobExecutionResult(ctx context.Context, params Ge
 //
 // Retrieves a full job definition.
 //
-// GET /rest/tasks/{jobName}
+// GET /tasks/{jobName}
 func (UnimplementedHandler) GetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (r GetJobFullInfoRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -332,7 +242,7 @@ func (UnimplementedHandler) GetJobFullInfo(ctx context.Context, params GetJobFul
 //
 // Delete a specific job result.
 //
-// GET /rest/tasks/{jobName}/{jobId}
+// GET /tasks/{jobName}/{jobId}
 func (UnimplementedHandler) GetJobResult(ctx context.Context, params GetJobResultParams) (r GetJobResultRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -341,7 +251,7 @@ func (UnimplementedHandler) GetJobResult(ctx context.Context, params GetJobResul
 //
 // Retrieves a list of jobs known by the Interface.
 //
-// GET /rest/tasks
+// GET /tasks
 func (UnimplementedHandler) GetJobs(ctx context.Context, params GetJobsParams) (r GetJobsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -357,7 +267,7 @@ func (UnimplementedHandler) GetJobsConfig(ctx context.Context) (r GetJobsConfigR
 
 // GetLobByMap implements getLobByMap operation.
 //
-// Retrieves a lob of a specific ISN of an field in a Map.
+// Retrieves a lob of a specific table record of an field in a Map.
 //
 // GET /binary/{table}/{field}/{search}
 func (UnimplementedHandler) GetLobByMap(ctx context.Context, params GetLobByMapParams) (r GetLobByMapRes, _ error) {
@@ -366,7 +276,7 @@ func (UnimplementedHandler) GetLobByMap(ctx context.Context, params GetLobByMapP
 
 // GetLoginSession implements getLoginSession operation.
 //
-// Login receiving JWT.
+// Login using baseauth or bearer to receive or validate token.
 //
 // GET /login
 func (UnimplementedHandler) GetLoginSession(ctx context.Context) (r GetLoginSessionRes, _ error) {
@@ -384,7 +294,7 @@ func (UnimplementedHandler) GetMapMetadata(ctx context.Context, params GetMapMet
 
 // GetMapRecordsFields implements getMapRecordsFields operation.
 //
-// Retrieves a field of a specific ISN of a Map definition.
+// Retrieves a field of a specific table record of a Map definition.
 //
 // GET /rest/view/{table}/{fields}/{search}
 func (UnimplementedHandler) GetMapRecordsFields(ctx context.Context, params GetMapRecordsFieldsParams) (r GetMapRecordsFieldsRes, _ error) {
@@ -411,7 +321,7 @@ func (UnimplementedHandler) GetPermission(ctx context.Context, params GetPermiss
 
 // GetUserInfo implements getUserInfo operation.
 //
-// Retrieves the user information.
+// Get the token user information.
 //
 // GET /rest/user
 func (UnimplementedHandler) GetUserInfo(ctx context.Context) (r GetUserInfoRes, _ error) {
@@ -420,7 +330,7 @@ func (UnimplementedHandler) GetUserInfo(ctx context.Context) (r GetUserInfoRes, 
 
 // GetVersion implements getVersion operation.
 //
-// Retrieves the current version.
+// Get the current server version.
 //
 // GET /version
 func (UnimplementedHandler) GetVersion(ctx context.Context) (r GetVersionRes, _ error) {
@@ -429,7 +339,7 @@ func (UnimplementedHandler) GetVersion(ctx context.Context) (r GetVersionRes, _ 
 
 // GetVideo implements getVideo operation.
 //
-// Retrieves a video stream of a specific ISN of a Map definition.
+// Retrieves a video stream of a specific table record of a Map definition.
 //
 // GET /video/{table}/{field}/{search}
 func (UnimplementedHandler) GetVideo(ctx context.Context, params GetVideoParams) (r GetVideoRes, _ error) {
@@ -438,7 +348,7 @@ func (UnimplementedHandler) GetVideo(ctx context.Context, params GetVideoParams)
 
 // GetViews implements getViews operation.
 //
-// Defines the current views.
+// Get the available table views of all databases.
 //
 // GET /config/views
 func (UnimplementedHandler) GetViews(ctx context.Context) (r GetViewsRes, _ error) {
@@ -472,15 +382,6 @@ func (UnimplementedHandler) ListModelling(ctx context.Context) (r ListModellingR
 	return r, ht.ErrNotImplemented
 }
 
-// ListRBACResource implements listRBACResource operation.
-//
-// Add permission role.
-//
-// GET /rest/database/{table}/permission/{resource}
-func (UnimplementedHandler) ListRBACResource(ctx context.Context, params ListRBACResourceParams) (r ListRBACResourceRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // ListTables implements listTables operation.
 //
 // Retrieves all tables of databases.
@@ -492,7 +393,7 @@ func (UnimplementedHandler) ListTables(ctx context.Context) (r ListTablesRes, _ 
 
 // LoginSession implements loginSession operation.
 //
-// Login receiving JWT.
+// Login using baseauth or bearer to receive or validate token.
 //
 // PUT /login
 func (UnimplementedHandler) LoginSession(ctx context.Context) (r LoginSessionRes, _ error) {
@@ -501,7 +402,7 @@ func (UnimplementedHandler) LoginSession(ctx context.Context) (r LoginSessionRes
 
 // LogoutSessionCompat implements logoutSessionCompat operation.
 //
-// Logout the session.
+// Invalidate given token session.
 //
 // PUT /logout
 func (UnimplementedHandler) LogoutSessionCompat(ctx context.Context) (r LogoutSessionCompatRes, _ error) {
@@ -522,26 +423,17 @@ func (UnimplementedHandler) PostDatabase(ctx context.Context, req *Database) (r 
 //
 // Create a new Job database.
 //
-// POST /rest/tasks
+// POST /tasks
 func (UnimplementedHandler) PostJob(ctx context.Context, req PostJobReq) (r PostJobRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
 // PushLoginSession implements pushLoginSession operation.
 //
-// Login receiving JWT.
+// Login using baseauth or bearer to receive or validate token.
 //
 // POST /login
 func (UnimplementedHandler) PushLoginSession(ctx context.Context) (r PushLoginSessionRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// PutDatabaseResource implements putDatabaseResource operation.
-//
-// Change resource of the database.
-//
-// PUT /rest/database/{table_operation}
-func (UnimplementedHandler) PutDatabaseResource(ctx context.Context, params PutDatabaseResourceParams) (r PutDatabaseResourceRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -556,7 +448,7 @@ func (UnimplementedHandler) RemovePermission(ctx context.Context, params RemoveP
 
 // RemoveSessionCompat implements removeSessionCompat operation.
 //
-// Remove the session.
+// Invalidate given token session.
 //
 // GET /logoff
 func (UnimplementedHandler) RemoveSessionCompat(ctx context.Context) (r RemoveSessionCompatRes, _ error) {
@@ -592,7 +484,7 @@ func (UnimplementedHandler) SearchTable(ctx context.Context, params SearchTableP
 
 // SetConfig implements setConfig operation.
 //
-// Store configuration.
+// Update current configuration and test.
 //
 // PUT /config
 func (UnimplementedHandler) SetConfig(ctx context.Context, req SetConfigReq) (r SetConfigRes, _ error) {
@@ -601,7 +493,7 @@ func (UnimplementedHandler) SetConfig(ctx context.Context, req SetConfigReq) (r 
 
 // SetJobsConfig implements setJobsConfig operation.
 //
-// Set the ADADATADIR.
+// Set the Job configuration database.
 //
 // PUT /config/jobs
 func (UnimplementedHandler) SetJobsConfig(ctx context.Context, req OptJobStore) (r SetJobsConfigRes, _ error) {
@@ -610,7 +502,7 @@ func (UnimplementedHandler) SetJobsConfig(ctx context.Context, req OptJobStore) 
 
 // ShutdownServer implements shutdownServer operation.
 //
-// Init shutdown procedure.
+// Trigger shutdown of server instance.
 //
 // PUT /rest/shutdown/{hash}
 func (UnimplementedHandler) ShutdownServer(ctx context.Context, params ShutdownServerParams) (r ShutdownServerRes, _ error) {
@@ -619,7 +511,7 @@ func (UnimplementedHandler) ShutdownServer(ctx context.Context, params ShutdownS
 
 // StoreConfig implements storeConfig operation.
 //
-// Store configuration.
+// Store current active configuration to configuration file.
 //
 // POST /config
 func (UnimplementedHandler) StoreConfig(ctx context.Context) (r StoreConfigRes, _ error) {
@@ -639,14 +531,14 @@ func (UnimplementedHandler) TriggerExtend(ctx context.Context, params TriggerExt
 //
 // Trigger a job.
 //
-// PUT /rest/tasks/{jobName}
+// PUT /tasks/{jobName}
 func (UnimplementedHandler) TriggerJob(ctx context.Context, params TriggerJobParams) (r TriggerJobRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
 // UpdateLobByMap implements updateLobByMap operation.
 //
-// Set a lob at a specific ISN of an field in a Map.
+// Set a lob at a specific table record of an field in a Map.
 //
 // PUT /binary/{table}/{field}/{search}
 func (UnimplementedHandler) UpdateLobByMap(ctx context.Context, req UpdateLobByMapReq, params UpdateLobByMapParams) (r UpdateLobByMapRes, _ error) {

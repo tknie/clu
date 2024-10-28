@@ -61,42 +61,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "admin/access/"
-				origElem := elem
-				if l := len("admin/access/"); len(elem) >= l && elem[0:l] == "admin/access/" {
-					elem = elem[l:]
-				} else {
-					break
-				}
-
-				// Param: "role"
-				// Leaf parameter
-				args[0] = elem
-				elem = ""
-
-				if len(elem) == 0 {
-					// Leaf node.
-					switch r.Method {
-					case "DELETE":
-						s.handleDelAccessRequest([1]string{
-							args[0],
-						}, elemIsEscaped, w, r)
-					case "GET":
-						s.handleAccessRequest([1]string{
-							args[0],
-						}, elemIsEscaped, w, r)
-					case "POST":
-						s.handleAddAccessRequest([1]string{
-							args[0],
-						}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, "DELETE,GET,POST")
-					}
-
-					return
-				}
-
-				elem = origElem
 			case 'b': // Prefix: "binary/"
 				origElem := elem
 				if l := len("binary/"); len(elem) >= l && elem[0:l] == "binary/" {
@@ -562,28 +526,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						elem = elem[idx:]
 
 						if len(elem) == 0 {
-							switch r.Method {
-							case "DELETE":
-								s.handleDeleteDatabaseRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							case "GET":
-								s.handleDatabaseOperationRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							case "POST":
-								s.handleDatabasePostOperationsRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							case "PUT":
-								s.handlePutDatabaseResourceRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "DELETE,GET,POST,PUT")
-							}
-
-							return
+							break
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
@@ -634,6 +577,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								}
 
 								if len(elem) == 0 {
+									// Leaf node.
 									switch r.Method {
 									case "DELETE":
 										s.handleRemovePermissionRequest([1]string{
@@ -653,138 +597,28 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 									return
 								}
-								switch elem[0] {
-								case '/': // Prefix: "/"
-									origElem := elem
-									if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									// Param: "resource"
-									// Match until "/"
-									idx := strings.IndexByte(elem, '/')
-									if idx < 0 {
-										idx = len(elem)
-									}
-									args[1] = elem[:idx]
-									elem = elem[idx:]
-
-									if len(elem) == 0 {
-										switch r.Method {
-										case "GET":
-											s.handleListRBACResourceRequest([2]string{
-												args[0],
-												args[1],
-											}, elemIsEscaped, w, r)
-										default:
-											s.notAllowed(w, r, "GET")
-										}
-
-										return
-									}
-									switch elem[0] {
-									case '/': // Prefix: "/"
-										origElem := elem
-										if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-											elem = elem[l:]
-										} else {
-											break
-										}
-
-										// Param: "name"
-										// Leaf parameter
-										args[2] = elem
-										elem = ""
-
-										if len(elem) == 0 {
-											// Leaf node.
-											switch r.Method {
-											case "DELETE":
-												s.handleDeleteRBACResourceRequest([3]string{
-													args[0],
-													args[1],
-													args[2],
-												}, elemIsEscaped, w, r)
-											case "PUT":
-												s.handleAddRBACResourceRequest([3]string{
-													args[0],
-													args[1],
-													args[2],
-												}, elemIsEscaped, w, r)
-											default:
-												s.notAllowed(w, r, "DELETE,PUT")
-											}
-
-											return
-										}
-
-										elem = origElem
-									}
-
-									elem = origElem
-								}
 
 								elem = origElem
-							case 's': // Prefix: "s"
+							case 's': // Prefix: "sessions"
 								origElem := elem
-								if l := len("s"); len(elem) >= l && elem[0:l] == "s" {
+								if l := len("sessions"); len(elem) >= l && elem[0:l] == "sessions" {
 									elem = elem[l:]
 								} else {
 									break
 								}
 
 								if len(elem) == 0 {
-									break
-								}
-								switch elem[0] {
-								case 'e': // Prefix: "essions"
-									origElem := elem
-									if l := len("essions"); len(elem) >= l && elem[0:l] == "essions" {
-										elem = elem[l:]
-									} else {
-										break
+									// Leaf node.
+									switch r.Method {
+									case "GET":
+										s.handleGetDatabaseSessionsRequest([1]string{
+											args[0],
+										}, elemIsEscaped, w, r)
+									default:
+										s.notAllowed(w, r, "GET")
 									}
 
-									if len(elem) == 0 {
-										// Leaf node.
-										switch r.Method {
-										case "GET":
-											s.handleGetDatabaseSessionsRequest([1]string{
-												args[0],
-											}, elemIsEscaped, w, r)
-										default:
-											s.notAllowed(w, r, "GET")
-										}
-
-										return
-									}
-
-									elem = origElem
-								case 't': // Prefix: "tats"
-									origElem := elem
-									if l := len("tats"); len(elem) >= l && elem[0:l] == "tats" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									if len(elem) == 0 {
-										// Leaf node.
-										switch r.Method {
-										case "GET":
-											s.handleGetDatabaseStatsRequest([1]string{
-												args[0],
-											}, elemIsEscaped, w, r)
-										default:
-											s.notAllowed(w, r, "GET")
-										}
-
-										return
-									}
-
-									elem = origElem
+									return
 								}
 
 								elem = origElem
@@ -797,79 +631,43 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					elem = origElem
-				case 'e': // Prefix: "e"
+				case 'e': // Prefix: "extend/"
 					origElem := elem
-					if l := len("e"); len(elem) >= l && elem[0:l] == "e" {
+					if l := len("extend/"); len(elem) >= l && elem[0:l] == "extend/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
+					// Param: "path"
+					// Leaf parameter
+					args[0] = elem
+					elem = ""
+
 					if len(elem) == 0 {
-						break
-					}
-					switch elem[0] {
-					case 'n': // Prefix: "nv"
-						origElem := elem
-						if l := len("nv"); len(elem) >= l && elem[0:l] == "nv" {
-							elem = elem[l:]
-						} else {
-							break
+						// Leaf node.
+						switch r.Method {
+						case "DELETE":
+							s.handleDeleteExtendRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "GET":
+							s.handleCallExtendRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "POST":
+							s.handleCallPostExtendRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "PUT":
+							s.handleTriggerExtendRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "DELETE,GET,POST,PUT")
 						}
 
-						if len(elem) == 0 {
-							// Leaf node.
-							switch r.Method {
-							case "GET":
-								s.handleGetEnvironmentsRequest([0]string{}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "GET")
-							}
-
-							return
-						}
-
-						elem = origElem
-					case 'x': // Prefix: "xtend/"
-						origElem := elem
-						if l := len("xtend/"); len(elem) >= l && elem[0:l] == "xtend/" {
-							elem = elem[l:]
-						} else {
-							break
-						}
-
-						// Param: "path"
-						// Leaf parameter
-						args[0] = elem
-						elem = ""
-
-						if len(elem) == 0 {
-							// Leaf node.
-							switch r.Method {
-							case "DELETE":
-								s.handleDeleteExtendRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							case "GET":
-								s.handleCallExtendRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							case "POST":
-								s.handleCallPostExtendRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							case "PUT":
-								s.handleTriggerExtendRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "DELETE,GET,POST,PUT")
-							}
-
-							return
-						}
-
-						elem = origElem
+						return
 					}
 
 					elem = origElem
@@ -1089,165 +887,44 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					elem = origElem
-				case 't': // Prefix: "ta"
+				case 't': // Prefix: "tables"
 					origElem := elem
-					if l := len("ta"); len(elem) >= l && elem[0:l] == "ta" {
+					if l := len("tables"); len(elem) >= l && elem[0:l] == "tables" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						break
+						switch r.Method {
+						case "GET":
+							s.handleListTablesRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
 					}
 					switch elem[0] {
-					case 'b': // Prefix: "bles"
+					case '/': // Prefix: "/"
 						origElem := elem
-						if l := len("bles"); len(elem) >= l && elem[0:l] == "bles" {
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
+						// Param: "table"
+						// Match until "/"
+						idx := strings.IndexByte(elem, '/')
+						if idx < 0 {
+							idx = len(elem)
+						}
+						args[0] = elem[:idx]
+						elem = elem[idx:]
+
 						if len(elem) == 0 {
-							switch r.Method {
-							case "GET":
-								s.handleListTablesRequest([0]string{}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "GET")
-							}
-
-							return
-						}
-						switch elem[0] {
-						case '/': // Prefix: "/"
-							origElem := elem
-							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							// Param: "table"
-							// Match until "/"
-							idx := strings.IndexByte(elem, '/')
-							if idx < 0 {
-								idx = len(elem)
-							}
-							args[0] = elem[:idx]
-							elem = elem[idx:]
-
-							if len(elem) == 0 {
-								break
-							}
-							switch elem[0] {
-							case '/': // Prefix: "/"
-								origElem := elem
-								if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									break
-								}
-								switch elem[0] {
-								case 'f': // Prefix: "fields"
-									origElem := elem
-									if l := len("fields"); len(elem) >= l && elem[0:l] == "fields" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									if len(elem) == 0 {
-										// Leaf node.
-										switch r.Method {
-										case "GET":
-											s.handleGetFieldsRequest([1]string{
-												args[0],
-											}, elemIsEscaped, w, r)
-										default:
-											s.notAllowed(w, r, "GET")
-										}
-
-										return
-									}
-
-									elem = origElem
-								}
-								// Param: "fields"
-								// Match until "/"
-								idx := strings.IndexByte(elem, '/')
-								if idx < 0 {
-									idx = len(elem)
-								}
-								args[1] = elem[:idx]
-								elem = elem[idx:]
-
-								if len(elem) == 0 {
-									break
-								}
-								switch elem[0] {
-								case '/': // Prefix: "/"
-									origElem := elem
-									if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									// Param: "search"
-									// Leaf parameter
-									args[2] = elem
-									elem = ""
-
-									if len(elem) == 0 {
-										// Leaf node.
-										switch r.Method {
-										case "GET":
-											s.handleSearchTableRequest([3]string{
-												args[0],
-												args[1],
-												args[2],
-											}, elemIsEscaped, w, r)
-										default:
-											s.notAllowed(w, r, "GET")
-										}
-
-										return
-									}
-
-									elem = origElem
-								}
-
-								elem = origElem
-							}
-
-							elem = origElem
-						}
-
-						elem = origElem
-					case 's': // Prefix: "sks"
-						origElem := elem
-						if l := len("sks"); len(elem) >= l && elem[0:l] == "sks" {
-							elem = elem[l:]
-						} else {
 							break
-						}
-
-						if len(elem) == 0 {
-							switch r.Method {
-							case "GET":
-								s.handleGetJobsRequest([0]string{}, elemIsEscaped, w, r)
-							case "POST":
-								s.handlePostJobRequest([0]string{}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "GET,POST")
-							}
-
-							return
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
@@ -1262,9 +939,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								break
 							}
 							switch elem[0] {
-							case 'r': // Prefix: "results"
+							case 'f': // Prefix: "fields"
 								origElem := elem
-								if l := len("results"); len(elem) >= l && elem[0:l] == "results" {
+								if l := len("fields"); len(elem) >= l && elem[0:l] == "fields" {
 									elem = elem[l:]
 								} else {
 									break
@@ -1274,7 +951,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 									// Leaf node.
 									switch r.Method {
 									case "GET":
-										s.handleGetJobExecutionResultRequest([0]string{}, elemIsEscaped, w, r)
+										s.handleGetFieldsRequest([1]string{
+											args[0],
+										}, elemIsEscaped, w, r)
 									default:
 										s.notAllowed(w, r, "GET")
 									}
@@ -1284,30 +963,17 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 								elem = origElem
 							}
-							// Param: "jobName"
+							// Param: "fields"
 							// Match until "/"
 							idx := strings.IndexByte(elem, '/')
 							if idx < 0 {
 								idx = len(elem)
 							}
-							args[0] = elem[:idx]
+							args[1] = elem[:idx]
 							elem = elem[idx:]
 
 							if len(elem) == 0 {
-								switch r.Method {
-								case "GET":
-									s.handleGetJobFullInfoRequest([1]string{
-										args[0],
-									}, elemIsEscaped, w, r)
-								case "PUT":
-									s.handleTriggerJobRequest([1]string{
-										args[0],
-									}, elemIsEscaped, w, r)
-								default:
-									s.notAllowed(w, r, "GET,PUT")
-								}
-
-								return
+								break
 							}
 							switch elem[0] {
 							case '/': // Prefix: "/"
@@ -1318,26 +984,22 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 									break
 								}
 
-								// Param: "jobId"
+								// Param: "search"
 								// Leaf parameter
-								args[1] = elem
+								args[2] = elem
 								elem = ""
 
 								if len(elem) == 0 {
 									// Leaf node.
 									switch r.Method {
-									case "DELETE":
-										s.handleDeleteJobResultRequest([2]string{
-											args[0],
-											args[1],
-										}, elemIsEscaped, w, r)
 									case "GET":
-										s.handleGetJobResultRequest([2]string{
+										s.handleSearchTableRequest([3]string{
 											args[0],
 											args[1],
+											args[2],
 										}, elemIsEscaped, w, r)
 									default:
-										s.notAllowed(w, r, "DELETE,GET")
+										s.notAllowed(w, r, "GET")
 									}
 
 									return
@@ -1499,6 +1161,127 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 
 							elem = origElem
+						}
+
+						elem = origElem
+					}
+
+					elem = origElem
+				}
+
+				elem = origElem
+			case 't': // Prefix: "tasks"
+				origElem := elem
+				if l := len("tasks"); len(elem) >= l && elem[0:l] == "tasks" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch r.Method {
+					case "GET":
+						s.handleGetJobsRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handlePostJobRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET,POST")
+					}
+
+					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+					origElem := elem
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case 'r': // Prefix: "results"
+						origElem := elem
+						if l := len("results"); len(elem) >= l && elem[0:l] == "results" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleGetJobExecutionResultRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET")
+							}
+
+							return
+						}
+
+						elem = origElem
+					}
+					// Param: "jobName"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch r.Method {
+						case "GET":
+							s.handleGetJobFullInfoRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "PUT":
+							s.handleTriggerJobRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET,PUT")
+						}
+
+						return
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/"
+						origElem := elem
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "jobId"
+						// Leaf parameter
+						args[1] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "DELETE":
+								s.handleDeleteJobResultRequest([2]string{
+									args[0],
+									args[1],
+								}, elemIsEscaped, w, r)
+							case "GET":
+								s.handleGetJobResultRequest([2]string{
+									args[0],
+									args[1],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "DELETE,GET")
+							}
+
+							return
 						}
 
 						elem = origElem
@@ -1717,52 +1500,6 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "admin/access/"
-				origElem := elem
-				if l := len("admin/access/"); len(elem) >= l && elem[0:l] == "admin/access/" {
-					elem = elem[l:]
-				} else {
-					break
-				}
-
-				// Param: "role"
-				// Leaf parameter
-				args[0] = elem
-				elem = ""
-
-				if len(elem) == 0 {
-					// Leaf node.
-					switch method {
-					case "DELETE":
-						r.name = "DelAccess"
-						r.summary = "Delete user of current user list"
-						r.operationID = "delAccess"
-						r.pathPattern = "/admin/access/{role}"
-						r.args = args
-						r.count = 1
-						return r, true
-					case "GET":
-						r.name = "Access"
-						r.summary = "Retrieve current user list"
-						r.operationID = "access"
-						r.pathPattern = "/admin/access/{role}"
-						r.args = args
-						r.count = 1
-						return r, true
-					case "POST":
-						r.name = "AddAccess"
-						r.summary = "Add new user in current user list"
-						r.operationID = "addAccess"
-						r.pathPattern = "/admin/access/{role}"
-						r.args = args
-						r.count = 1
-						return r, true
-					default:
-						return
-					}
-				}
-
-				elem = origElem
 			case 'b': // Prefix: "binary/"
 				origElem := elem
 				if l := len("binary/"); len(elem) >= l && elem[0:l] == "binary/" {
@@ -2313,42 +2050,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						elem = elem[idx:]
 
 						if len(elem) == 0 {
-							switch method {
-							case "DELETE":
-								r.name = "DeleteDatabase"
-								r.summary = ""
-								r.operationID = "deleteDatabase"
-								r.pathPattern = "/rest/database/{table_operation}"
-								r.args = args
-								r.count = 1
-								return r, true
-							case "GET":
-								r.name = "DatabaseOperation"
-								r.summary = ""
-								r.operationID = "databaseOperation"
-								r.pathPattern = "/rest/database/{table_operation}"
-								r.args = args
-								r.count = 1
-								return r, true
-							case "POST":
-								r.name = "DatabasePostOperations"
-								r.summary = ""
-								r.operationID = "databasePostOperations"
-								r.pathPattern = "/rest/database/{table_operation}"
-								r.args = args
-								r.count = 1
-								return r, true
-							case "PUT":
-								r.name = "PutDatabaseResource"
-								r.summary = ""
-								r.operationID = "putDatabaseResource"
-								r.pathPattern = "/rest/database/{table_operation}"
-								r.args = args
-								r.count = 1
-								return r, true
-							default:
-								return
-							}
+							break
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
@@ -2405,6 +2107,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								}
 
 								if len(elem) == 0 {
+									// Leaf node.
 									switch method {
 									case "DELETE":
 										r.name = "RemovePermission"
@@ -2434,145 +2137,30 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 										return
 									}
 								}
-								switch elem[0] {
-								case '/': // Prefix: "/"
-									origElem := elem
-									if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									// Param: "resource"
-									// Match until "/"
-									idx := strings.IndexByte(elem, '/')
-									if idx < 0 {
-										idx = len(elem)
-									}
-									args[1] = elem[:idx]
-									elem = elem[idx:]
-
-									if len(elem) == 0 {
-										switch method {
-										case "GET":
-											r.name = "ListRBACResource"
-											r.summary = ""
-											r.operationID = "listRBACResource"
-											r.pathPattern = "/rest/database/{table}/permission/{resource}"
-											r.args = args
-											r.count = 2
-											return r, true
-										default:
-											return
-										}
-									}
-									switch elem[0] {
-									case '/': // Prefix: "/"
-										origElem := elem
-										if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-											elem = elem[l:]
-										} else {
-											break
-										}
-
-										// Param: "name"
-										// Leaf parameter
-										args[2] = elem
-										elem = ""
-
-										if len(elem) == 0 {
-											// Leaf node.
-											switch method {
-											case "DELETE":
-												r.name = "DeleteRBACResource"
-												r.summary = ""
-												r.operationID = "deleteRBACResource"
-												r.pathPattern = "/rest/database/{table}/permission/{resource}/{name}"
-												r.args = args
-												r.count = 3
-												return r, true
-											case "PUT":
-												r.name = "AddRBACResource"
-												r.summary = ""
-												r.operationID = "addRBACResource"
-												r.pathPattern = "/rest/database/{table}/permission/{resource}/{name}"
-												r.args = args
-												r.count = 3
-												return r, true
-											default:
-												return
-											}
-										}
-
-										elem = origElem
-									}
-
-									elem = origElem
-								}
 
 								elem = origElem
-							case 's': // Prefix: "s"
+							case 's': // Prefix: "sessions"
 								origElem := elem
-								if l := len("s"); len(elem) >= l && elem[0:l] == "s" {
+								if l := len("sessions"); len(elem) >= l && elem[0:l] == "sessions" {
 									elem = elem[l:]
 								} else {
 									break
 								}
 
 								if len(elem) == 0 {
-									break
-								}
-								switch elem[0] {
-								case 'e': // Prefix: "essions"
-									origElem := elem
-									if l := len("essions"); len(elem) >= l && elem[0:l] == "essions" {
-										elem = elem[l:]
-									} else {
-										break
+									// Leaf node.
+									switch method {
+									case "GET":
+										r.name = "GetDatabaseSessions"
+										r.summary = ""
+										r.operationID = "getDatabaseSessions"
+										r.pathPattern = "/rest/database/{table}/sessions"
+										r.args = args
+										r.count = 1
+										return r, true
+									default:
+										return
 									}
-
-									if len(elem) == 0 {
-										// Leaf node.
-										switch method {
-										case "GET":
-											r.name = "GetDatabaseSessions"
-											r.summary = ""
-											r.operationID = "getDatabaseSessions"
-											r.pathPattern = "/rest/database/{table}/sessions"
-											r.args = args
-											r.count = 1
-											return r, true
-										default:
-											return
-										}
-									}
-
-									elem = origElem
-								case 't': // Prefix: "tats"
-									origElem := elem
-									if l := len("tats"); len(elem) >= l && elem[0:l] == "tats" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									if len(elem) == 0 {
-										// Leaf node.
-										switch method {
-										case "GET":
-											r.name = "GetDatabaseStats"
-											r.summary = ""
-											r.operationID = "getDatabaseStats"
-											r.pathPattern = "/rest/database/{table}/stats"
-											r.args = args
-											r.count = 1
-											return r, true
-										default:
-											return
-										}
-									}
-
-									elem = origElem
 								}
 
 								elem = origElem
@@ -2585,97 +2173,57 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 
 					elem = origElem
-				case 'e': // Prefix: "e"
+				case 'e': // Prefix: "extend/"
 					origElem := elem
-					if l := len("e"); len(elem) >= l && elem[0:l] == "e" {
+					if l := len("extend/"); len(elem) >= l && elem[0:l] == "extend/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
+					// Param: "path"
+					// Leaf parameter
+					args[0] = elem
+					elem = ""
+
 					if len(elem) == 0 {
-						break
-					}
-					switch elem[0] {
-					case 'n': // Prefix: "nv"
-						origElem := elem
-						if l := len("nv"); len(elem) >= l && elem[0:l] == "nv" {
-							elem = elem[l:]
-						} else {
-							break
+						// Leaf node.
+						switch method {
+						case "DELETE":
+							r.name = "DeleteExtend"
+							r.summary = ""
+							r.operationID = "deleteExtend"
+							r.pathPattern = "/rest/extend/{path}"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "GET":
+							r.name = "CallExtend"
+							r.summary = ""
+							r.operationID = "callExtend"
+							r.pathPattern = "/rest/extend/{path}"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "POST":
+							r.name = "CallPostExtend"
+							r.summary = ""
+							r.operationID = "callPostExtend"
+							r.pathPattern = "/rest/extend/{path}"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "PUT":
+							r.name = "TriggerExtend"
+							r.summary = ""
+							r.operationID = "triggerExtend"
+							r.pathPattern = "/rest/extend/{path}"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
 						}
-
-						if len(elem) == 0 {
-							// Leaf node.
-							switch method {
-							case "GET":
-								r.name = "GetEnvironments"
-								r.summary = ""
-								r.operationID = "getEnvironments"
-								r.pathPattern = "/rest/env"
-								r.args = args
-								r.count = 0
-								return r, true
-							default:
-								return
-							}
-						}
-
-						elem = origElem
-					case 'x': // Prefix: "xtend/"
-						origElem := elem
-						if l := len("xtend/"); len(elem) >= l && elem[0:l] == "xtend/" {
-							elem = elem[l:]
-						} else {
-							break
-						}
-
-						// Param: "path"
-						// Leaf parameter
-						args[0] = elem
-						elem = ""
-
-						if len(elem) == 0 {
-							// Leaf node.
-							switch method {
-							case "DELETE":
-								r.name = "DeleteExtend"
-								r.summary = ""
-								r.operationID = "deleteExtend"
-								r.pathPattern = "/rest/extend/{path}"
-								r.args = args
-								r.count = 1
-								return r, true
-							case "GET":
-								r.name = "CallExtend"
-								r.summary = ""
-								r.operationID = "callExtend"
-								r.pathPattern = "/rest/extend/{path}"
-								r.args = args
-								r.count = 1
-								return r, true
-							case "POST":
-								r.name = "CallPostExtend"
-								r.summary = ""
-								r.operationID = "callPostExtend"
-								r.pathPattern = "/rest/extend/{path}"
-								r.args = args
-								r.count = 1
-								return r, true
-							case "PUT":
-								r.name = "TriggerExtend"
-								r.summary = ""
-								r.operationID = "triggerExtend"
-								r.pathPattern = "/rest/extend/{path}"
-								r.args = args
-								r.count = 1
-								return r, true
-							default:
-								return
-							}
-						}
-
-						elem = origElem
 					}
 
 					elem = origElem
@@ -2925,181 +2473,48 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 
 					elem = origElem
-				case 't': // Prefix: "ta"
+				case 't': // Prefix: "tables"
 					origElem := elem
-					if l := len("ta"); len(elem) >= l && elem[0:l] == "ta" {
+					if l := len("tables"); len(elem) >= l && elem[0:l] == "tables" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						break
+						switch method {
+						case "GET":
+							r.name = "ListTables"
+							r.summary = ""
+							r.operationID = "listTables"
+							r.pathPattern = "/rest/tables"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
 					}
 					switch elem[0] {
-					case 'b': // Prefix: "bles"
+					case '/': // Prefix: "/"
 						origElem := elem
-						if l := len("bles"); len(elem) >= l && elem[0:l] == "bles" {
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
+						// Param: "table"
+						// Match until "/"
+						idx := strings.IndexByte(elem, '/')
+						if idx < 0 {
+							idx = len(elem)
+						}
+						args[0] = elem[:idx]
+						elem = elem[idx:]
+
 						if len(elem) == 0 {
-							switch method {
-							case "GET":
-								r.name = "ListTables"
-								r.summary = ""
-								r.operationID = "listTables"
-								r.pathPattern = "/rest/tables"
-								r.args = args
-								r.count = 0
-								return r, true
-							default:
-								return
-							}
-						}
-						switch elem[0] {
-						case '/': // Prefix: "/"
-							origElem := elem
-							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							// Param: "table"
-							// Match until "/"
-							idx := strings.IndexByte(elem, '/')
-							if idx < 0 {
-								idx = len(elem)
-							}
-							args[0] = elem[:idx]
-							elem = elem[idx:]
-
-							if len(elem) == 0 {
-								break
-							}
-							switch elem[0] {
-							case '/': // Prefix: "/"
-								origElem := elem
-								if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									break
-								}
-								switch elem[0] {
-								case 'f': // Prefix: "fields"
-									origElem := elem
-									if l := len("fields"); len(elem) >= l && elem[0:l] == "fields" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									if len(elem) == 0 {
-										// Leaf node.
-										switch method {
-										case "GET":
-											r.name = "GetFields"
-											r.summary = ""
-											r.operationID = "getFields"
-											r.pathPattern = "/rest/tables/{table}/fields"
-											r.args = args
-											r.count = 1
-											return r, true
-										default:
-											return
-										}
-									}
-
-									elem = origElem
-								}
-								// Param: "fields"
-								// Match until "/"
-								idx := strings.IndexByte(elem, '/')
-								if idx < 0 {
-									idx = len(elem)
-								}
-								args[1] = elem[:idx]
-								elem = elem[idx:]
-
-								if len(elem) == 0 {
-									break
-								}
-								switch elem[0] {
-								case '/': // Prefix: "/"
-									origElem := elem
-									if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-										elem = elem[l:]
-									} else {
-										break
-									}
-
-									// Param: "search"
-									// Leaf parameter
-									args[2] = elem
-									elem = ""
-
-									if len(elem) == 0 {
-										// Leaf node.
-										switch method {
-										case "GET":
-											r.name = "SearchTable"
-											r.summary = ""
-											r.operationID = "searchTable"
-											r.pathPattern = "/rest/tables/{table}/{fields}/{search}"
-											r.args = args
-											r.count = 3
-											return r, true
-										default:
-											return
-										}
-									}
-
-									elem = origElem
-								}
-
-								elem = origElem
-							}
-
-							elem = origElem
-						}
-
-						elem = origElem
-					case 's': // Prefix: "sks"
-						origElem := elem
-						if l := len("sks"); len(elem) >= l && elem[0:l] == "sks" {
-							elem = elem[l:]
-						} else {
 							break
-						}
-
-						if len(elem) == 0 {
-							switch method {
-							case "GET":
-								r.name = "GetJobs"
-								r.summary = ""
-								r.operationID = "getJobs"
-								r.pathPattern = "/rest/tasks"
-								r.args = args
-								r.count = 0
-								return r, true
-							case "POST":
-								r.name = "PostJob"
-								r.summary = ""
-								r.operationID = "postJob"
-								r.pathPattern = "/rest/tasks"
-								r.args = args
-								r.count = 0
-								return r, true
-							default:
-								return
-							}
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
@@ -3114,9 +2529,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								break
 							}
 							switch elem[0] {
-							case 'r': // Prefix: "results"
+							case 'f': // Prefix: "fields"
 								origElem := elem
-								if l := len("results"); len(elem) >= l && elem[0:l] == "results" {
+								if l := len("fields"); len(elem) >= l && elem[0:l] == "fields" {
 									elem = elem[l:]
 								} else {
 									break
@@ -3126,12 +2541,12 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									// Leaf node.
 									switch method {
 									case "GET":
-										r.name = "GetJobExecutionResult"
+										r.name = "GetFields"
 										r.summary = ""
-										r.operationID = "getJobExecutionResult"
-										r.pathPattern = "/rest/tasks/results"
+										r.operationID = "getFields"
+										r.pathPattern = "/rest/tables/{table}/fields"
 										r.args = args
-										r.count = 0
+										r.count = 1
 										return r, true
 									default:
 										return
@@ -3140,36 +2555,17 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 								elem = origElem
 							}
-							// Param: "jobName"
+							// Param: "fields"
 							// Match until "/"
 							idx := strings.IndexByte(elem, '/')
 							if idx < 0 {
 								idx = len(elem)
 							}
-							args[0] = elem[:idx]
+							args[1] = elem[:idx]
 							elem = elem[idx:]
 
 							if len(elem) == 0 {
-								switch method {
-								case "GET":
-									r.name = "GetJobFullInfo"
-									r.summary = ""
-									r.operationID = "getJobFullInfo"
-									r.pathPattern = "/rest/tasks/{jobName}"
-									r.args = args
-									r.count = 1
-									return r, true
-								case "PUT":
-									r.name = "TriggerJob"
-									r.summary = ""
-									r.operationID = "triggerJob"
-									r.pathPattern = "/rest/tasks/{jobName}"
-									r.args = args
-									r.count = 1
-									return r, true
-								default:
-									return
-								}
+								break
 							}
 							switch elem[0] {
 							case '/': // Prefix: "/"
@@ -3180,29 +2576,21 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									break
 								}
 
-								// Param: "jobId"
+								// Param: "search"
 								// Leaf parameter
-								args[1] = elem
+								args[2] = elem
 								elem = ""
 
 								if len(elem) == 0 {
 									// Leaf node.
 									switch method {
-									case "DELETE":
-										r.name = "DeleteJobResult"
-										r.summary = ""
-										r.operationID = "deleteJobResult"
-										r.pathPattern = "/rest/tasks/{jobName}/{jobId}"
-										r.args = args
-										r.count = 2
-										return r, true
 									case "GET":
-										r.name = "GetJobResult"
+										r.name = "SearchTable"
 										r.summary = ""
-										r.operationID = "getJobResult"
-										r.pathPattern = "/rest/tasks/{jobName}/{jobId}"
+										r.operationID = "searchTable"
+										r.pathPattern = "/rest/tables/{table}/{fields}/{search}"
 										r.args = args
-										r.count = 2
+										r.count = 3
 										return r, true
 									default:
 										return
@@ -3388,6 +2776,151 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 
 							elem = origElem
+						}
+
+						elem = origElem
+					}
+
+					elem = origElem
+				}
+
+				elem = origElem
+			case 't': // Prefix: "tasks"
+				origElem := elem
+				if l := len("tasks"); len(elem) >= l && elem[0:l] == "tasks" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						r.name = "GetJobs"
+						r.summary = ""
+						r.operationID = "getJobs"
+						r.pathPattern = "/tasks"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = "PostJob"
+						r.summary = ""
+						r.operationID = "postJob"
+						r.pathPattern = "/tasks"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+					origElem := elem
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case 'r': // Prefix: "results"
+						origElem := elem
+						if l := len("results"); len(elem) >= l && elem[0:l] == "results" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "GET":
+								r.name = "GetJobExecutionResult"
+								r.summary = ""
+								r.operationID = "getJobExecutionResult"
+								r.pathPattern = "/tasks/results"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
+					}
+					// Param: "jobName"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							r.name = "GetJobFullInfo"
+							r.summary = ""
+							r.operationID = "getJobFullInfo"
+							r.pathPattern = "/tasks/{jobName}"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "PUT":
+							r.name = "TriggerJob"
+							r.summary = ""
+							r.operationID = "triggerJob"
+							r.pathPattern = "/tasks/{jobName}"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/"
+						origElem := elem
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "jobId"
+						// Leaf parameter
+						args[1] = elem
+						elem = ""
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "DELETE":
+								r.name = "DeleteJobResult"
+								r.summary = ""
+								r.operationID = "deleteJobResult"
+								r.pathPattern = "/tasks/{jobName}/{jobId}"
+								r.args = args
+								r.count = 2
+								return r, true
+							case "GET":
+								r.name = "GetJobResult"
+								r.summary = ""
+								r.operationID = "getJobResult"
+								r.pathPattern = "/tasks/{jobName}/{jobId}"
+								r.args = args
+								r.count = 2
+								return r, true
+							default:
+								return
+							}
 						}
 
 						elem = origElem

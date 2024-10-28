@@ -6,7 +6,7 @@ info:
     name: Thorsten A. Knieling
     url: https://github.com/tknie/api
     email: thorsten.knieling@googlemail.com
-  version: 1.0.0.0.15072023
+  version: 1.0.0.0.18102024
 servers:
   - url: http://localhost:8030/
   - url: https://localhost:8033/
@@ -18,19 +18,19 @@ tags:
   - name: Administrator
     description: Administration tasks
   - name: Modifier
-    description: Changer
+    description: Insert or Update records in database
   - name: Scheduler
     description: Scheduler managing jobs running in the RESTful server
   - name: Browser
-    description: Browse File for logs or data at services
+    description: Browse Files in server to download logs or data
   - name: Upload
-    description: Upload File transfer for logs or data
+    description: Upload File transfer to upload database record data
 paths:
   /login:
     get:
       tags:
         - Environment
-      description: Login receiving JWT
+      description: Login using baseauth or bearer to receive or validate token
       operationId: getLoginSession
       responses:
         '200':
@@ -67,7 +67,7 @@ paths:
     put:
       tags:
         - Environment
-      description: Login receiving JWT
+      description: Login using baseauth or bearer to receive or validate token
       operationId: loginSession
       responses:
         '200':
@@ -104,7 +104,7 @@ paths:
     post:
       tags:
         - Environment
-      description: Login receiving JWT
+      description: Login using baseauth or bearer to receive or validate token
       operationId: pushLoginSession
       responses:
         '200':
@@ -142,7 +142,7 @@ paths:
     get:
       tags:
         - Environment
-      description: Remove the session
+      description: Invalidate given token session
       operationId: removeSessionCompat
       responses:
         '200':
@@ -175,7 +175,7 @@ paths:
     put:
       tags:
         - Environment
-      description: Logout the session
+      description: Invalidate given token session
       operationId: logoutSessionCompat
       responses:
         '200':
@@ -208,7 +208,7 @@ paths:
     put:
       tags:
         - Environment
-      description: Init shutdown procedure
+      description: Trigger shutdown of server instance
       operationId: shutdownServer
       parameters:
         - name: hash
@@ -247,46 +247,11 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - admin
-  /rest/env:
-    get:
-      tags:
-        - Environment
-      description: Retrieves the list of environments
-      operationId: getEnvironments
-      responses:
-        '200':
-          description: Successful response, with a list of environment and versions
-          headers:
-            X-Token:
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Environments'
-        '400':
-          description: Environment evaluation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /rest/user:
     get:
       tags:
         - Environment
-      description: Retrieves the user information
+      description: Get the token user information
       operationId: getUserInfo
       responses:
         '200':
@@ -317,7 +282,7 @@ paths:
     get:
       tags:
         - Environment
-      description: Retrieves the current version
+      description: Get the current server version
       operationId: getVersion
       responses:
         '200':
@@ -342,7 +307,7 @@ paths:
     get:
       tags:
         - Administrator
-      description: Get configuration
+      description: Get current active configuration
       operationId: getConfig
       responses:
         '200':
@@ -377,7 +342,7 @@ paths:
     put:
       tags:
         - Administrator
-      description: Store configuration
+      description: Update current configuration and test
       operationId: setConfig
       requestBody:
         description: Configuration content
@@ -424,7 +389,7 @@ paths:
     post:
       tags:
         - Administrator
-      description: Store configuration
+      description: Store current active configuration to configuration file
       operationId: storeConfig
       responses:
         '200':
@@ -461,7 +426,7 @@ paths:
     get:
       tags:
         - Administrator
-      description: Defines the current views
+      description: Get the available table views of all databases
       operationId: getViews
       responses:
         '200':
@@ -497,7 +462,7 @@ paths:
     post:
       tags:
         - Administrator
-      description: add configuration in View repositories
+      description: add table view in View repositories
       operationId: addView
       parameters:
         - name: url
@@ -542,7 +507,7 @@ paths:
     delete:
       tags:
         - Administrator
-      description: delete entry in configuration
+      description: delete/disable table view in configuration
       operationId: deleteView
       parameters:
         - name: url
@@ -623,7 +588,7 @@ paths:
     put:
       tags:
         - Administrator
-      description: Set the ADADATADIR
+      description: Set the Job configuration database
       operationId: setJobsConfig
       requestBody:
         content:
@@ -664,7 +629,7 @@ paths:
       tags:
         - Queries
       description: >-
-        Call a SQL query batch command out of the stored query list
+        Call a SQL query batch command store in batch database table with name
       operationId: batchSelect
       parameters:
         - name: table
@@ -719,7 +684,7 @@ paths:
       tags:
         - Queries
       description: >-
-        Call a SQL query batch command posted in body
+        Call a SQL query batch command using insert or update data in body
       operationId: batchQuery
       parameters:
         - name: table
@@ -831,7 +796,7 @@ paths:
     get:
       tags:
         - Administrator
-      description: Retrieves a list of databases known by Interface.
+      description: Retrieves a list of databases known by server.
       operationId: getDatabases
       responses:
         '200':
@@ -907,260 +872,6 @@ paths:
         - BearerAuth:
             - admin
       x-codegen-request-body-name: database
-  /rest/database/{table_operation}:
-    get:
-      tags:
-        - Administrator
-      description: Retrieve the current status of database with the given dbid
-      operationId: databaseOperation
-      parameters:
-        - name: table_operation
-          in: path
-          description: >-
-            Database ID optional with operation append with : like 123:shutdown
-            Possible operations are - cancel - shutdown - abort - start
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response, with database status
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DatabaseStatus'
-        '202':
-          description: Successful response, with database status
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusResponse'
-        '400':
-          description: Database evaluation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-    put:
-      tags:
-        - Administrator
-      description: Change resource of the database
-      operationId: putDatabaseResource
-      parameters:
-        - name: table_operation
-          in: path
-          description: Database ID
-          required: true
-          schema:
-            type: string
-        - name: name
-          in: query
-          description: Database name
-          schema:
-            type: string
-        - name: lock
-          in: query
-          description: Lock database
-          schema:
-            type: boolean
-        - name: externalbackup
-          in: query
-          description: External database backup (true=prepare false=continue)
-          schema:
-            type: boolean
-      responses:
-        '200':
-          description: Successful response, with database status
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DatabaseStatus'
-        '202':
-          description: Successful response, with database message
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusResponse'
-        '400':
-          description: Database evaluation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-    post:
-      tags:
-        - Administrator
-      description: Initiate operations on the given dbid
-      operationId: databasePostOperations
-      parameters:
-        - name: table_operation
-          in: path
-          description: >-
-            Database ID optional with operation append with : like 123:shutdown
-            Possible operations are - cancel - shutdown - abort - start
-          required: true
-          schema:
-            type: string
-        - name: etsync
-          in: query
-          description: Only used together journal
-          schema:
-            type: boolean
-      responses:
-        '200':
-          description: Successful response, with database status
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DatabaseStatus'
-        '202':
-          description: Successful response, with database status
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusResponse'
-        '400':
-          description: Database evaluation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-    delete:
-      tags:
-        - Administrator
-      description: Delete the database
-      operationId: deleteDatabase
-      parameters:
-        - name: table_operation
-          in: path
-          description: Database ID
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Successful response, a database is deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusResponse'
-        '400':
-          description: Error deleting the database
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-  /rest/database/{table}/stats:
-    get:
-      tags:
-        - Administrator
-      description: Retrieve SQL statistics
-      operationId: getDatabaseStats
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response, with Activity statistics
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ActivityStats'
-        '400':
-          description: Database not available/unknown
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
   /rest/database/{table}/permission:
     get:
       tags:
@@ -1260,200 +971,6 @@ paths:
         - name: table
           in: path
           description: SQL table
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response, with status of permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusResponse'
-        '400':
-          description: Database error evaluating RBAC list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-  /rest/database/{table}/permission/{resource}:
-    get:
-      tags:
-        - Administrator
-      description: Add permission role
-      operationId: listRBACResource
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-        - name: resource
-          in: path
-          description: permission type
-          required: true
-          schema:
-            type: string
-            enum:
-              - Role
-              - role
-              - ROLE
-              - Object
-              - object
-              - OBJECT
-              - User
-              - user
-              - USER
-              - Operation
-              - operation
-              - OPERATION
-      responses:
-        '200':
-          description: Successful response, with status of permissions.
-          content: {}
-        '400':
-          description: Database error evaluating RBAC list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-  /rest/database/{table}/permission/{resource}/{name}:
-    put:
-      tags:
-        - Administrator
-      description: Add permission role
-      operationId: addRBACResource
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-        - name: resource
-          in: path
-          description: RBAC type
-          required: true
-          schema:
-            type: string
-            enum:
-              - Role
-              - role
-              - ROLE
-              - Object
-              - object
-              - OBJECT
-              - User
-              - user
-              - USER
-              - Operation
-              - operation
-              - OPERATION
-        - name: name
-          in: path
-          description: resource name
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response, with status of permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusResponse'
-        '400':
-          description: Database error evaluating RBAC list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-    delete:
-      tags:
-        - Administrator
-      description: Delete RBAC role
-      operationId: deleteRBACResource
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-        - name: resource
-          in: path
-          description: RBAC type
-          required: true
-          schema:
-            type: string
-            enum:
-              - Role
-              - role
-              - ROLE
-              - Object
-              - object
-              - OBJECT
-              - User
-              - user
-              - USER
-              - Operation
-              - operation
-              - OPERATION
-        - name: name
-          in: path
-          description: resource name
           required: true
           schema:
             type: string
@@ -1629,7 +1146,7 @@ paths:
     get:
       tags:
         - Queries
-      description: Retrieves a lob of a specific ISN of an field in a Map
+      description: Retrieves a lob of a specific table record of an field in a Map
       operationId: getLobByMap
       parameters:
         - name: table
@@ -1640,7 +1157,7 @@ paths:
             type: string
         - name: search
           in: path
-          description: Specific ISN number
+          description: Specific table record
           required: true
           schema:
             type: string
@@ -1698,7 +1215,7 @@ paths:
     put:
       tags:
         - Modifier
-      description: Set a lob at a specific ISN of an field in a Map
+      description: Set a lob at a specific table record of an field in a Map
       operationId: updateLobByMap
       parameters:
         - name: table
@@ -1709,7 +1226,7 @@ paths:
             type: string
         - name: search
           in: path
-          description: Specific ISN number
+          description: Specific table record number
           required: true
           schema:
             type: string
@@ -2095,7 +1612,7 @@ paths:
     get:
       tags:
         - Queries
-      description: Retrieves a field of a specific ISN of a Map definition
+      description: Retrieves a field of a specific table record of a Map definition
       operationId: getImage
       parameters:
         - name: table
@@ -2181,7 +1698,7 @@ paths:
     get:
       tags:
         - Queries
-      description: Retrieves a video stream of a specific ISN of a Map definition
+      description: Retrieves a video stream of a specific table record of a Map definition
       operationId: getVideo
       parameters:
         - name: table
@@ -2192,7 +1709,7 @@ paths:
             type: string
         - name: search
           in: path
-          description: Specific ISN number
+          description: Specific table record number
           required: true
           schema:
             type: string
@@ -2426,7 +1943,7 @@ paths:
     get:
       tags:
         - Queries
-      description: Retrieves a field of a specific ISN of a Map definition
+      description: Retrieves a field of a specific table record of a Map definition
       operationId: getMapRecordsFields
       parameters:
         - name: table
@@ -3097,7 +2614,7 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - user
-  /rest/tasks:
+  /tasks:
     get:
       tags:
         - Scheduler
@@ -3192,7 +2709,7 @@ paths:
         - BearerAuth:
             - admin
       x-codegen-request-body-name: job
-  /rest/tasks/{jobName}:
+  /tasks/{jobName}:
     get:
       tags:
         - Scheduler
@@ -3289,7 +2806,7 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - admin
-  /rest/tasks/{jobName}/{jobId}:
+  /tasks/{jobName}/{jobId}:
     get:
       tags:
         - Scheduler
@@ -3398,7 +2915,7 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - admin
-  /rest/tasks/results:
+  /tasks/results:
     get:
       tags:
         - Scheduler
@@ -3451,186 +2968,11 @@ paths:
         - tokenCheck: []
         - BearerAuth:
             - admin
-  /admin/access/{role}:
-    get:
-      tags:
-        - Administrator
-      summary: Retrieve current user list
-      description: Retrieve the list of users who are allowed to access data
-      operationId: access
-      parameters:
-        - name: role
-          in: path
-          description: access role information for users or administrators
-          required: true
-          schema:
-            type: string
-            enum:
-              - User
-              - user
-              - USER
-              - Administrator
-              - administrator
-              - ADMINISTRATOR
-      responses:
-        '200':
-          description: Successful response, with a specific job id.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Users'
-        '400':
-          description: Environment evaluation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        '404':
-          description: Database not available/unknown
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        default:
-          description: Admin role access problem
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-    post:
-      tags:
-        - Administrator
-      summary: Add new user in current user list
-      description: Insert user in the list of users who are allowed to access data
-      operationId: addAccess
-      parameters:
-        - name: role
-          in: path
-          description: access role information for users or administrators
-          required: true
-          schema:
-            type: string
-            enum:
-              - User
-              - user
-              - USER
-              - Administrator
-              - administrator
-              - ADMINISTRATOR
-        - name: user
-          in: query
-          description: New user to be added
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response, with a added user.
-          content: {}
-        '400':
-          description: Environment evaluation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        '404':
-          description: Database not available/unknown
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-    delete:
-      tags:
-        - Administrator
-      summary: Delete user of current user list
-      description: Delete user in the list of users who are allowed to access data
-      operationId: delAccess
-      parameters:
-        - name: role
-          in: path
-          description: access role information for users or administrators
-          required: true
-          schema:
-            type: string
-            enum:
-              - User
-              - user
-              - USER
-              - Administrator
-              - administrator
-              - ADMINISTRATOR
-        - name: user
-          in: query
-          description: User to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response, with a user deleted.
-          content: {}
-        '400':
-          description: Environment evaluation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        '404':
-          description: Database not available/unknown
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
   /rest/extend/{path}:
     get:
       tags:
         - Extend
-      description: Call plugin extend
+      description: Call extend plugin, own implementation plugin
       operationId: callExtend
       parameters:
         - name: path
@@ -4125,12 +3467,6 @@ components:
           type: string
         Name:
           type: string
-    Environments:
-      type: object
-      properties:
-        Environment:
-          type: object
-          properties: {}
     Error:
       type: object
       properties:

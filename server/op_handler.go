@@ -60,57 +60,12 @@ func (Handler) GetMaps(ctx context.Context) (r api.GetMapsRes, _ error) {
 	return r, nil
 }
 
-// GetEnvironments implements getEnvironments operation.
-//
-// Retrieves the list of environments.
-//
-// GET /version/env
-func (Handler) GetEnvironments(ctx context.Context) (r api.GetEnvironmentsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // GetDatabaseSessions implements getDatabaseSessions operation.
 //
 // Retrieve a list of user queue entries.
 //
 // GET /admin/database/{table}/sessions
 func (Handler) GetDatabaseSessions(ctx context.Context, params api.GetDatabaseSessionsParams) (r api.GetDatabaseSessionsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// GetDatabaseStats implements getDatabaseStats operation.
-//
-// Retrieve SQL statistics.
-//
-// GET /admin/database/{table}/stats
-func (Handler) GetDatabaseStats(ctx context.Context, params api.GetDatabaseStatsParams) (r api.GetDatabaseStatsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DatabaseOperation implements databaseOperation operation.
-//
-// Retrieve the current status of database with the given dbid.
-//
-// GET /admin/database/{table_operation}
-func (Handler) DatabaseOperation(ctx context.Context, params api.DatabaseOperationParams) (r api.DatabaseOperationRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DatabasePostOperations implements databasePostOperations operation.
-//
-// Initiate operations on the given dbid.
-//
-// POST /admin/database/{table_operation}
-func (Handler) DatabasePostOperations(ctx context.Context, params api.DatabasePostOperationsParams) (r api.DatabasePostOperationsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// DeleteDatabase implements deleteDatabase operation.
-//
-// Delete the database.
-//
-// DELETE /admin/database/{table_operation}
-func (Handler) DeleteDatabase(ctx context.Context, params api.DeleteDatabaseParams) (r api.DeleteDatabaseRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

@@ -24,33 +24,15 @@ import (
 
 // Invoker invokes operations described by OpenAPI v3 specification.
 type Invoker interface {
-	// Access invokes access operation.
-	//
-	// Retrieve the list of users who are allowed to access data.
-	//
-	// GET /admin/access/{role}
-	Access(ctx context.Context, params AccessParams) (AccessRes, error)
 	// AdaptPermission invokes adaptPermission operation.
 	//
 	// Add RBAC role.
 	//
 	// PUT /rest/database/{table}/permission
 	AdaptPermission(ctx context.Context, params AdaptPermissionParams) (AdaptPermissionRes, error)
-	// AddAccess invokes addAccess operation.
-	//
-	// Insert user in the list of users who are allowed to access data.
-	//
-	// POST /admin/access/{role}
-	AddAccess(ctx context.Context, params AddAccessParams) (AddAccessRes, error)
-	// AddRBACResource invokes addRBACResource operation.
-	//
-	// Add permission role.
-	//
-	// PUT /rest/database/{table}/permission/{resource}/{name}
-	AddRBACResource(ctx context.Context, params AddRBACResourceParams) (AddRBACResourceRes, error)
 	// AddView invokes addView operation.
 	//
-	// Add configuration in View repositories.
+	// Add table view in View repositories.
 	//
 	// POST /config/views
 	AddView(ctx context.Context, params AddViewParams) (AddViewRes, error)
@@ -62,13 +44,13 @@ type Invoker interface {
 	BatchParameterQuery(ctx context.Context, params BatchParameterQueryParams) (BatchParameterQueryRes, error)
 	// BatchQuery invokes batchQuery operation.
 	//
-	// Call a SQL query batch command posted in body.
+	// Call a SQL query batch command using insert or update data in body.
 	//
 	// POST /rest/batch/{table}
 	BatchQuery(ctx context.Context, request BatchQueryReq, params BatchQueryParams) (BatchQueryRes, error)
 	// BatchSelect invokes batchSelect operation.
 	//
-	// Call a SQL query batch command out of the stored query list.
+	// Call a SQL query batch command store in batch database table with name.
 	//
 	// GET /rest/batch/{table}
 	BatchSelect(ctx context.Context, params BatchSelectParams) (BatchSelectRes, error)
@@ -86,7 +68,7 @@ type Invoker interface {
 	BrowseLocation(ctx context.Context, params BrowseLocationParams) (BrowseLocationRes, error)
 	// CallExtend invokes callExtend operation.
 	//
-	// Call plugin extend.
+	// Call extend plugin, own implementation plugin.
 	//
 	// GET /rest/extend/{path}
 	CallExtend(ctx context.Context, params CallExtendParams) (CallExtendRes, error)
@@ -102,30 +84,6 @@ type Invoker interface {
 	//
 	// PUT /rest/file/{path}
 	CreateDirectory(ctx context.Context, params CreateDirectoryParams) (CreateDirectoryRes, error)
-	// DatabaseOperation invokes databaseOperation operation.
-	//
-	// Retrieve the current status of database with the given dbid.
-	//
-	// GET /rest/database/{table_operation}
-	DatabaseOperation(ctx context.Context, params DatabaseOperationParams) (DatabaseOperationRes, error)
-	// DatabasePostOperations invokes databasePostOperations operation.
-	//
-	// Initiate operations on the given dbid.
-	//
-	// POST /rest/database/{table_operation}
-	DatabasePostOperations(ctx context.Context, params DatabasePostOperationsParams) (DatabasePostOperationsRes, error)
-	// DelAccess invokes delAccess operation.
-	//
-	// Delete user in the list of users who are allowed to access data.
-	//
-	// DELETE /admin/access/{role}
-	DelAccess(ctx context.Context, params DelAccessParams) (DelAccessRes, error)
-	// DeleteDatabase invokes deleteDatabase operation.
-	//
-	// Delete the database.
-	//
-	// DELETE /rest/database/{table_operation}
-	DeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (DeleteDatabaseRes, error)
 	// DeleteExtend invokes deleteExtend operation.
 	//
 	// Delete extend/plugin data.
@@ -142,14 +100,8 @@ type Invoker interface {
 	//
 	// Delete a specific job result.
 	//
-	// DELETE /rest/tasks/{jobName}/{jobId}
+	// DELETE /tasks/{jobName}/{jobId}
 	DeleteJobResult(ctx context.Context, params DeleteJobResultParams) (DeleteJobResultRes, error)
-	// DeleteRBACResource invokes deleteRBACResource operation.
-	//
-	// Delete RBAC role.
-	//
-	// DELETE /rest/database/{table}/permission/{resource}/{name}
-	DeleteRBACResource(ctx context.Context, params DeleteRBACResourceParams) (DeleteRBACResourceRes, error)
 	// DeleteRecordsSearched invokes deleteRecordsSearched operation.
 	//
 	// Delete a record with a given search.
@@ -158,7 +110,7 @@ type Invoker interface {
 	DeleteRecordsSearched(ctx context.Context, params DeleteRecordsSearchedParams) (DeleteRecordsSearchedRes, error)
 	// DeleteView invokes deleteView operation.
 	//
-	// Delete entry in configuration.
+	// Delete/disable table view in configuration.
 	//
 	// DELETE /config/views
 	DeleteView(ctx context.Context, params DeleteViewParams) (DeleteViewRes, error)
@@ -176,7 +128,7 @@ type Invoker interface {
 	DownloadFile(ctx context.Context, params DownloadFileParams) (DownloadFileRes, error)
 	// GetConfig invokes getConfig operation.
 	//
-	// Get configuration.
+	// Get current active configuration.
 	//
 	// GET /config
 	GetConfig(ctx context.Context) (GetConfigRes, error)
@@ -192,24 +144,12 @@ type Invoker interface {
 	//
 	// GET /rest/database/{table}/sessions
 	GetDatabaseSessions(ctx context.Context, params GetDatabaseSessionsParams) (GetDatabaseSessionsRes, error)
-	// GetDatabaseStats invokes getDatabaseStats operation.
-	//
-	// Retrieve SQL statistics.
-	//
-	// GET /rest/database/{table}/stats
-	GetDatabaseStats(ctx context.Context, params GetDatabaseStatsParams) (GetDatabaseStatsRes, error)
 	// GetDatabases invokes getDatabases operation.
 	//
-	// Retrieves a list of databases known by Interface.
+	// Retrieves a list of databases known by server.
 	//
 	// GET /rest/database
 	GetDatabases(ctx context.Context) (GetDatabasesRes, error)
-	// GetEnvironments invokes getEnvironments operation.
-	//
-	// Retrieves the list of environments.
-	//
-	// GET /rest/env
-	GetEnvironments(ctx context.Context) (GetEnvironmentsRes, error)
 	// GetFields invokes getFields operation.
 	//
 	// Retrieves all fields of an file.
@@ -218,7 +158,7 @@ type Invoker interface {
 	GetFields(ctx context.Context, params GetFieldsParams) (GetFieldsRes, error)
 	// GetImage invokes getImage operation.
 	//
-	// Retrieves a field of a specific ISN of a Map definition.
+	// Retrieves a field of a specific table record of a Map definition.
 	//
 	// GET /image/{table}/{field}/{search}
 	GetImage(ctx context.Context, params GetImageParams) (GetImageRes, error)
@@ -226,25 +166,25 @@ type Invoker interface {
 	//
 	// Retrieves a specific job result.
 	//
-	// GET /rest/tasks/results
+	// GET /tasks/results
 	GetJobExecutionResult(ctx context.Context, params GetJobExecutionResultParams) (GetJobExecutionResultRes, error)
 	// GetJobFullInfo invokes getJobFullInfo operation.
 	//
 	// Retrieves a full job definition.
 	//
-	// GET /rest/tasks/{jobName}
+	// GET /tasks/{jobName}
 	GetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (GetJobFullInfoRes, error)
 	// GetJobResult invokes getJobResult operation.
 	//
 	// Delete a specific job result.
 	//
-	// GET /rest/tasks/{jobName}/{jobId}
+	// GET /tasks/{jobName}/{jobId}
 	GetJobResult(ctx context.Context, params GetJobResultParams) (GetJobResultRes, error)
 	// GetJobs invokes getJobs operation.
 	//
 	// Retrieves a list of jobs known by the Interface.
 	//
-	// GET /rest/tasks
+	// GET /tasks
 	GetJobs(ctx context.Context, params GetJobsParams) (GetJobsRes, error)
 	// GetJobsConfig invokes getJobsConfig operation.
 	//
@@ -254,13 +194,13 @@ type Invoker interface {
 	GetJobsConfig(ctx context.Context) (GetJobsConfigRes, error)
 	// GetLobByMap invokes getLobByMap operation.
 	//
-	// Retrieves a lob of a specific ISN of an field in a Map.
+	// Retrieves a lob of a specific table record of an field in a Map.
 	//
 	// GET /binary/{table}/{field}/{search}
 	GetLobByMap(ctx context.Context, params GetLobByMapParams) (GetLobByMapRes, error)
 	// GetLoginSession invokes getLoginSession operation.
 	//
-	// Login receiving JWT.
+	// Login using baseauth or bearer to receive or validate token.
 	//
 	// GET /login
 	GetLoginSession(ctx context.Context) (GetLoginSessionRes, error)
@@ -272,7 +212,7 @@ type Invoker interface {
 	GetMapMetadata(ctx context.Context, params GetMapMetadataParams) (GetMapMetadataRes, error)
 	// GetMapRecordsFields invokes getMapRecordsFields operation.
 	//
-	// Retrieves a field of a specific ISN of a Map definition.
+	// Retrieves a field of a specific table record of a Map definition.
 	//
 	// GET /rest/view/{table}/{fields}/{search}
 	GetMapRecordsFields(ctx context.Context, params GetMapRecordsFieldsParams) (GetMapRecordsFieldsRes, error)
@@ -290,25 +230,25 @@ type Invoker interface {
 	GetPermission(ctx context.Context, params GetPermissionParams) (GetPermissionRes, error)
 	// GetUserInfo invokes getUserInfo operation.
 	//
-	// Retrieves the user information.
+	// Get the token user information.
 	//
 	// GET /rest/user
 	GetUserInfo(ctx context.Context) (GetUserInfoRes, error)
 	// GetVersion invokes getVersion operation.
 	//
-	// Retrieves the current version.
+	// Get the current server version.
 	//
 	// GET /version
 	GetVersion(ctx context.Context) (GetVersionRes, error)
 	// GetVideo invokes getVideo operation.
 	//
-	// Retrieves a video stream of a specific ISN of a Map definition.
+	// Retrieves a video stream of a specific table record of a Map definition.
 	//
 	// GET /video/{table}/{field}/{search}
 	GetVideo(ctx context.Context, params GetVideoParams) (GetVideoRes, error)
 	// GetViews invokes getViews operation.
 	//
-	// Defines the current views.
+	// Get the available table views of all databases.
 	//
 	// GET /config/views
 	GetViews(ctx context.Context) (GetViewsRes, error)
@@ -330,12 +270,6 @@ type Invoker interface {
 	//
 	// GET /rest/map
 	ListModelling(ctx context.Context) (ListModellingRes, error)
-	// ListRBACResource invokes listRBACResource operation.
-	//
-	// Add permission role.
-	//
-	// GET /rest/database/{table}/permission/{resource}
-	ListRBACResource(ctx context.Context, params ListRBACResourceParams) (ListRBACResourceRes, error)
 	// ListTables invokes listTables operation.
 	//
 	// Retrieves all tables of databases.
@@ -344,13 +278,13 @@ type Invoker interface {
 	ListTables(ctx context.Context) (ListTablesRes, error)
 	// LoginSession invokes loginSession operation.
 	//
-	// Login receiving JWT.
+	// Login using baseauth or bearer to receive or validate token.
 	//
 	// PUT /login
 	LoginSession(ctx context.Context) (LoginSessionRes, error)
 	// LogoutSessionCompat invokes logoutSessionCompat operation.
 	//
-	// Logout the session.
+	// Invalidate given token session.
 	//
 	// PUT /logout
 	LogoutSessionCompat(ctx context.Context) (LogoutSessionCompatRes, error)
@@ -365,20 +299,14 @@ type Invoker interface {
 	//
 	// Create a new Job database.
 	//
-	// POST /rest/tasks
+	// POST /tasks
 	PostJob(ctx context.Context, request PostJobReq) (PostJobRes, error)
 	// PushLoginSession invokes pushLoginSession operation.
 	//
-	// Login receiving JWT.
+	// Login using baseauth or bearer to receive or validate token.
 	//
 	// POST /login
 	PushLoginSession(ctx context.Context) (PushLoginSessionRes, error)
-	// PutDatabaseResource invokes putDatabaseResource operation.
-	//
-	// Change resource of the database.
-	//
-	// PUT /rest/database/{table_operation}
-	PutDatabaseResource(ctx context.Context, params PutDatabaseResourceParams) (PutDatabaseResourceRes, error)
 	// RemovePermission invokes removePermission operation.
 	//
 	// Add RBAC role.
@@ -387,7 +315,7 @@ type Invoker interface {
 	RemovePermission(ctx context.Context, params RemovePermissionParams) (RemovePermissionRes, error)
 	// RemoveSessionCompat invokes removeSessionCompat operation.
 	//
-	// Remove the session.
+	// Invalidate given token session.
 	//
 	// GET /logoff
 	RemoveSessionCompat(ctx context.Context) (RemoveSessionCompatRes, error)
@@ -411,25 +339,25 @@ type Invoker interface {
 	SearchTable(ctx context.Context, params SearchTableParams) (SearchTableRes, error)
 	// SetConfig invokes setConfig operation.
 	//
-	// Store configuration.
+	// Update current configuration and test.
 	//
 	// PUT /config
 	SetConfig(ctx context.Context, request SetConfigReq) (SetConfigRes, error)
 	// SetJobsConfig invokes setJobsConfig operation.
 	//
-	// Set the ADADATADIR.
+	// Set the Job configuration database.
 	//
 	// PUT /config/jobs
 	SetJobsConfig(ctx context.Context, request OptJobStore) (SetJobsConfigRes, error)
 	// ShutdownServer invokes shutdownServer operation.
 	//
-	// Init shutdown procedure.
+	// Trigger shutdown of server instance.
 	//
 	// PUT /rest/shutdown/{hash}
 	ShutdownServer(ctx context.Context, params ShutdownServerParams) (ShutdownServerRes, error)
 	// StoreConfig invokes storeConfig operation.
 	//
-	// Store configuration.
+	// Store current active configuration to configuration file.
 	//
 	// POST /config
 	StoreConfig(ctx context.Context) (StoreConfigRes, error)
@@ -443,11 +371,11 @@ type Invoker interface {
 	//
 	// Trigger a job.
 	//
-	// PUT /rest/tasks/{jobName}
+	// PUT /tasks/{jobName}
 	TriggerJob(ctx context.Context, params TriggerJobParams) (TriggerJobRes, error)
 	// UpdateLobByMap invokes updateLobByMap operation.
 	//
-	// Set a lob at a specific ISN of an field in a Map.
+	// Set a lob at a specific table record of an field in a Map.
 	//
 	// PUT /binary/{table}/{field}/{search}
 	UpdateLobByMap(ctx context.Context, request UpdateLobByMapReq, params UpdateLobByMapParams) (UpdateLobByMapRes, error)
@@ -517,153 +445,6 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 		return c.serverURL
 	}
 	return u
-}
-
-// Access invokes access operation.
-//
-// Retrieve the list of users who are allowed to access data.
-//
-// GET /admin/access/{role}
-func (c *Client) Access(ctx context.Context, params AccessParams) (AccessRes, error) {
-	res, err := c.sendAccess(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendAccess(ctx context.Context, params AccessParams) (res AccessRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("access"),
-		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/admin/access/{role}"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "Access",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [2]string
-	pathParts[0] = "/admin/access/"
-	{
-		// Encode "role" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "role",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(string(params.Role)))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "Access", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "Access", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "Access", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeAccessResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
 }
 
 // AdaptPermission invokes adaptPermission operation.
@@ -814,359 +595,9 @@ func (c *Client) sendAdaptPermission(ctx context.Context, params AdaptPermission
 	return result, nil
 }
 
-// AddAccess invokes addAccess operation.
-//
-// Insert user in the list of users who are allowed to access data.
-//
-// POST /admin/access/{role}
-func (c *Client) AddAccess(ctx context.Context, params AddAccessParams) (AddAccessRes, error) {
-	res, err := c.sendAddAccess(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendAddAccess(ctx context.Context, params AddAccessParams) (res AddAccessRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("addAccess"),
-		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/admin/access/{role}"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "AddAccess",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [2]string
-	pathParts[0] = "/admin/access/"
-	{
-		// Encode "role" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "role",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(string(params.Role)))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeQueryParams"
-	q := uri.NewQueryEncoder()
-	{
-		// Encode "user" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "user",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.StringToString(params.User))
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	u.RawQuery = q.Values().Encode()
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "POST", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "AddAccess", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "AddAccess", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "AddAccess", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeAddAccessResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// AddRBACResource invokes addRBACResource operation.
-//
-// Add permission role.
-//
-// PUT /rest/database/{table}/permission/{resource}/{name}
-func (c *Client) AddRBACResource(ctx context.Context, params AddRBACResourceParams) (AddRBACResourceRes, error) {
-	res, err := c.sendAddRBACResource(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendAddRBACResource(ctx context.Context, params AddRBACResourceParams) (res AddRBACResourceRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("addRBACResource"),
-		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}/{name}"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "AddRBACResource",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [6]string
-	pathParts[0] = "/rest/database/"
-	{
-		// Encode "table" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "table",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.Table))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	pathParts[2] = "/permission/"
-	{
-		// Encode "resource" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "resource",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(string(params.Resource)))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[3] = encoded
-	}
-	pathParts[4] = "/"
-	{
-		// Encode "name" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "name",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.Name))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[5] = encoded
-	}
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "PUT", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "AddRBACResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "AddRBACResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "AddRBACResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeAddRBACResourceResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
 // AddView invokes addView operation.
 //
-// Add configuration in View repositories.
+// Add table view in View repositories.
 //
 // POST /config/views
 func (c *Client) AddView(ctx context.Context, params AddViewParams) (AddViewRes, error) {
@@ -1493,7 +924,7 @@ func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParame
 
 // BatchQuery invokes batchQuery operation.
 //
-// Call a SQL query batch command posted in body.
+// Call a SQL query batch command using insert or update data in body.
 //
 // POST /rest/batch/{table}
 func (c *Client) BatchQuery(ctx context.Context, request BatchQueryReq, params BatchQueryParams) (BatchQueryRes, error) {
@@ -1643,7 +1074,7 @@ func (c *Client) sendBatchQuery(ctx context.Context, request BatchQueryReq, para
 
 // BatchSelect invokes batchSelect operation.
 //
-// Call a SQL query batch command out of the stored query list.
+// Call a SQL query batch command store in batch database table with name.
 //
 // GET /rest/batch/{table}
 func (c *Client) BatchSelect(ctx context.Context, params BatchSelectParams) (BatchSelectRes, error) {
@@ -2117,7 +1548,7 @@ func (c *Client) sendBrowseLocation(ctx context.Context, params BrowseLocationPa
 
 // CallExtend invokes callExtend operation.
 //
-// Call plugin extend.
+// Call extend plugin, own implementation plugin.
 //
 // GET /rest/extend/{path}
 func (c *Client) CallExtend(ctx context.Context, params CallExtendParams) (CallExtendRes, error) {
@@ -2598,633 +2029,6 @@ func (c *Client) sendCreateDirectory(ctx context.Context, params CreateDirectory
 	return result, nil
 }
 
-// DatabaseOperation invokes databaseOperation operation.
-//
-// Retrieve the current status of database with the given dbid.
-//
-// GET /rest/database/{table_operation}
-func (c *Client) DatabaseOperation(ctx context.Context, params DatabaseOperationParams) (DatabaseOperationRes, error) {
-	res, err := c.sendDatabaseOperation(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendDatabaseOperation(ctx context.Context, params DatabaseOperationParams) (res DatabaseOperationRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("databaseOperation"),
-		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DatabaseOperation",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [2]string
-	pathParts[0] = "/rest/database/"
-	{
-		// Encode "table_operation" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "table_operation",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.TableOperation))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DatabaseOperation", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DatabaseOperation", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DatabaseOperation", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeDatabaseOperationResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// DatabasePostOperations invokes databasePostOperations operation.
-//
-// Initiate operations on the given dbid.
-//
-// POST /rest/database/{table_operation}
-func (c *Client) DatabasePostOperations(ctx context.Context, params DatabasePostOperationsParams) (DatabasePostOperationsRes, error) {
-	res, err := c.sendDatabasePostOperations(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendDatabasePostOperations(ctx context.Context, params DatabasePostOperationsParams) (res DatabasePostOperationsRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("databasePostOperations"),
-		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DatabasePostOperations",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [2]string
-	pathParts[0] = "/rest/database/"
-	{
-		// Encode "table_operation" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "table_operation",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.TableOperation))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeQueryParams"
-	q := uri.NewQueryEncoder()
-	{
-		// Encode "etsync" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "etsync",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.Etsync.Get(); ok {
-				return e.EncodeValue(conv.BoolToString(val))
-			}
-			return nil
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	u.RawQuery = q.Values().Encode()
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "POST", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DatabasePostOperations", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DatabasePostOperations", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DatabasePostOperations", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeDatabasePostOperationsResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// DelAccess invokes delAccess operation.
-//
-// Delete user in the list of users who are allowed to access data.
-//
-// DELETE /admin/access/{role}
-func (c *Client) DelAccess(ctx context.Context, params DelAccessParams) (DelAccessRes, error) {
-	res, err := c.sendDelAccess(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendDelAccess(ctx context.Context, params DelAccessParams) (res DelAccessRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("delAccess"),
-		semconv.HTTPRequestMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/admin/access/{role}"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DelAccess",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [2]string
-	pathParts[0] = "/admin/access/"
-	{
-		// Encode "role" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "role",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(string(params.Role)))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeQueryParams"
-	q := uri.NewQueryEncoder()
-	{
-		// Encode "user" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "user",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.StringToString(params.User))
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	u.RawQuery = q.Values().Encode()
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "DELETE", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DelAccess", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DelAccess", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DelAccess", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeDelAccessResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// DeleteDatabase invokes deleteDatabase operation.
-//
-// Delete the database.
-//
-// DELETE /rest/database/{table_operation}
-func (c *Client) DeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (DeleteDatabaseRes, error) {
-	res, err := c.sendDeleteDatabase(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendDeleteDatabase(ctx context.Context, params DeleteDatabaseParams) (res DeleteDatabaseRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("deleteDatabase"),
-		semconv.HTTPRequestMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteDatabase",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [2]string
-	pathParts[0] = "/rest/database/"
-	{
-		// Encode "table_operation" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "table_operation",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.IntToString(params.TableOperation))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "DELETE", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DeleteDatabase", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DeleteDatabase", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DeleteDatabase", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeDeleteDatabaseResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
 // DeleteExtend invokes deleteExtend operation.
 //
 // Delete extend/plugin data.
@@ -3562,7 +2366,7 @@ func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLo
 //
 // Delete a specific job result.
 //
-// DELETE /rest/tasks/{jobName}/{jobId}
+// DELETE /tasks/{jobName}/{jobId}
 func (c *Client) DeleteJobResult(ctx context.Context, params DeleteJobResultParams) (DeleteJobResultRes, error) {
 	res, err := c.sendDeleteJobResult(ctx, params)
 	return res, err
@@ -3572,7 +2376,7 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteJobResult"),
 		semconv.HTTPRequestMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}/{jobId}"),
+		semconv.HTTPRouteKey.String("/tasks/{jobName}/{jobId}"),
 	}
 
 	// Run stopwatch.
@@ -3605,7 +2409,7 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [4]string
-	pathParts[0] = "/rest/tasks/"
+	pathParts[0] = "/tasks/"
 	{
 		// Encode "jobName" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -3717,191 +2521,6 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 
 	stage = "DecodeResponse"
 	result, err := decodeDeleteJobResultResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// DeleteRBACResource invokes deleteRBACResource operation.
-//
-// Delete RBAC role.
-//
-// DELETE /rest/database/{table}/permission/{resource}/{name}
-func (c *Client) DeleteRBACResource(ctx context.Context, params DeleteRBACResourceParams) (DeleteRBACResourceRes, error) {
-	res, err := c.sendDeleteRBACResource(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendDeleteRBACResource(ctx context.Context, params DeleteRBACResourceParams) (res DeleteRBACResourceRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("deleteRBACResource"),
-		semconv.HTTPRequestMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}/{name}"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteRBACResource",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [6]string
-	pathParts[0] = "/rest/database/"
-	{
-		// Encode "table" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "table",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.Table))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	pathParts[2] = "/permission/"
-	{
-		// Encode "resource" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "resource",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(string(params.Resource)))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[3] = encoded
-	}
-	pathParts[4] = "/"
-	{
-		// Encode "name" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "name",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.Name))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[5] = encoded
-	}
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "DELETE", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DeleteRBACResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DeleteRBACResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DeleteRBACResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeDeleteRBACResourceResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -4234,7 +2853,7 @@ func (c *Client) sendDeleteRecordsSearched(ctx context.Context, params DeleteRec
 
 // DeleteView invokes deleteView operation.
 //
-// Delete entry in configuration.
+// Delete/disable table view in configuration.
 //
 // DELETE /config/views
 func (c *Client) DeleteView(ctx context.Context, params DeleteViewParams) (DeleteViewRes, error) {
@@ -4728,7 +3347,7 @@ func (c *Client) sendDownloadFile(ctx context.Context, params DownloadFileParams
 
 // GetConfig invokes getConfig operation.
 //
-// Get configuration.
+// Get current active configuration.
 //
 // GET /config
 func (c *Client) GetConfig(ctx context.Context) (GetConfigRes, error) {
@@ -5151,157 +3770,9 @@ func (c *Client) sendGetDatabaseSessions(ctx context.Context, params GetDatabase
 	return result, nil
 }
 
-// GetDatabaseStats invokes getDatabaseStats operation.
-//
-// Retrieve SQL statistics.
-//
-// GET /rest/database/{table}/stats
-func (c *Client) GetDatabaseStats(ctx context.Context, params GetDatabaseStatsParams) (GetDatabaseStatsRes, error) {
-	res, err := c.sendGetDatabaseStats(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendGetDatabaseStats(ctx context.Context, params GetDatabaseStatsParams) (res GetDatabaseStatsRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("getDatabaseStats"),
-		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/database/{table}/stats"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetDatabaseStats",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [3]string
-	pathParts[0] = "/rest/database/"
-	{
-		// Encode "table" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "table",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.Table))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	pathParts[2] = "/stats"
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetDatabaseStats", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetDatabaseStats", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetDatabaseStats", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeGetDatabaseStatsResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
 // GetDatabases invokes getDatabases operation.
 //
-// Retrieves a list of databases known by Interface.
+// Retrieves a list of databases known by server.
 //
 // GET /rest/database
 func (c *Client) GetDatabases(ctx context.Context) (GetDatabasesRes, error) {
@@ -5421,78 +3892,6 @@ func (c *Client) sendGetDatabases(ctx context.Context) (res GetDatabasesRes, err
 
 	stage = "DecodeResponse"
 	result, err := decodeGetDatabasesResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// GetEnvironments invokes getEnvironments operation.
-//
-// Retrieves the list of environments.
-//
-// GET /rest/env
-func (c *Client) GetEnvironments(ctx context.Context) (GetEnvironmentsRes, error) {
-	res, err := c.sendGetEnvironments(ctx)
-	return res, err
-}
-
-func (c *Client) sendGetEnvironments(ctx context.Context) (res GetEnvironmentsRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("getEnvironments"),
-		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/env"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetEnvironments",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [1]string
-	pathParts[0] = "/rest/env"
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeGetEnvironmentsResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -5650,7 +4049,7 @@ func (c *Client) sendGetFields(ctx context.Context, params GetFieldsParams) (res
 
 // GetImage invokes getImage operation.
 //
-// Retrieves a field of a specific ISN of a Map definition.
+// Retrieves a field of a specific table record of a Map definition.
 //
 // GET /image/{table}/{field}/{search}
 func (c *Client) GetImage(ctx context.Context, params GetImageParams) (GetImageRes, error) {
@@ -5906,7 +4305,7 @@ func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res G
 //
 // Retrieves a specific job result.
 //
-// GET /rest/tasks/results
+// GET /tasks/results
 func (c *Client) GetJobExecutionResult(ctx context.Context, params GetJobExecutionResultParams) (GetJobExecutionResultRes, error) {
 	res, err := c.sendGetJobExecutionResult(ctx, params)
 	return res, err
@@ -5916,7 +4315,7 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobExecutionResult"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/tasks/results"),
+		semconv.HTTPRouteKey.String("/tasks/results"),
 	}
 
 	// Run stopwatch.
@@ -5949,7 +4348,7 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/rest/tasks/results"
+	pathParts[0] = "/tasks/results"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeQueryParams"
@@ -6073,7 +4472,7 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 //
 // Retrieves a full job definition.
 //
-// GET /rest/tasks/{jobName}
+// GET /tasks/{jobName}
 func (c *Client) GetJobFullInfo(ctx context.Context, params GetJobFullInfoParams) (GetJobFullInfoRes, error) {
 	res, err := c.sendGetJobFullInfo(ctx, params)
 	return res, err
@@ -6083,7 +4482,7 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobFullInfo"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}"),
+		semconv.HTTPRouteKey.String("/tasks/{jobName}"),
 	}
 
 	// Run stopwatch.
@@ -6116,7 +4515,7 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/rest/tasks/"
+	pathParts[0] = "/tasks/"
 	{
 		// Encode "jobName" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -6220,7 +4619,7 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 //
 // Delete a specific job result.
 //
-// GET /rest/tasks/{jobName}/{jobId}
+// GET /tasks/{jobName}/{jobId}
 func (c *Client) GetJobResult(ctx context.Context, params GetJobResultParams) (GetJobResultRes, error) {
 	res, err := c.sendGetJobResult(ctx, params)
 	return res, err
@@ -6230,7 +4629,7 @@ func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobResult"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}/{jobId}"),
+		semconv.HTTPRouteKey.String("/tasks/{jobName}/{jobId}"),
 	}
 
 	// Run stopwatch.
@@ -6263,7 +4662,7 @@ func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [4]string
-	pathParts[0] = "/rest/tasks/"
+	pathParts[0] = "/tasks/"
 	{
 		// Encode "jobName" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -6386,7 +4785,7 @@ func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams
 //
 // Retrieves a list of jobs known by the Interface.
 //
-// GET /rest/tasks
+// GET /tasks
 func (c *Client) GetJobs(ctx context.Context, params GetJobsParams) (GetJobsRes, error) {
 	res, err := c.sendGetJobs(ctx, params)
 	return res, err
@@ -6396,7 +4795,7 @@ func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res Get
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobs"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/tasks"),
+		semconv.HTTPRouteKey.String("/tasks"),
 	}
 
 	// Run stopwatch.
@@ -6429,7 +4828,7 @@ func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res Get
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/rest/tasks"
+	pathParts[0] = "/tasks"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeQueryParams"
@@ -6680,7 +5079,7 @@ func (c *Client) sendGetJobsConfig(ctx context.Context) (res GetJobsConfigRes, e
 
 // GetLobByMap invokes getLobByMap operation.
 //
-// Retrieves a lob of a specific ISN of an field in a Map.
+// Retrieves a lob of a specific table record of an field in a Map.
 //
 // GET /binary/{table}/{field}/{search}
 func (c *Client) GetLobByMap(ctx context.Context, params GetLobByMapParams) (GetLobByMapRes, error) {
@@ -6920,7 +5319,7 @@ func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) 
 
 // GetLoginSession invokes getLoginSession operation.
 //
-// Login receiving JWT.
+// Login using baseauth or bearer to receive or validate token.
 //
 // GET /login
 func (c *Client) GetLoginSession(ctx context.Context) (GetLoginSessionRes, error) {
@@ -7184,7 +5583,7 @@ func (c *Client) sendGetMapMetadata(ctx context.Context, params GetMapMetadataPa
 
 // GetMapRecordsFields invokes getMapRecordsFields operation.
 //
-// Retrieves a field of a specific ISN of a Map definition.
+// Retrieves a field of a specific table record of a Map definition.
 //
 // GET /rest/view/{table}/{fields}/{search}
 func (c *Client) GetMapRecordsFields(ctx context.Context, params GetMapRecordsFieldsParams) (GetMapRecordsFieldsRes, error) {
@@ -7824,7 +6223,7 @@ func (c *Client) sendGetPermission(ctx context.Context, params GetPermissionPara
 
 // GetUserInfo invokes getUserInfo operation.
 //
-// Retrieves the user information.
+// Get the token user information.
 //
 // GET /rest/user
 func (c *Client) GetUserInfo(ctx context.Context) (GetUserInfoRes, error) {
@@ -7896,7 +6295,7 @@ func (c *Client) sendGetUserInfo(ctx context.Context) (res GetUserInfoRes, err e
 
 // GetVersion invokes getVersion operation.
 //
-// Retrieves the current version.
+// Get the current server version.
 //
 // GET /version
 func (c *Client) GetVersion(ctx context.Context) (GetVersionRes, error) {
@@ -7968,7 +6367,7 @@ func (c *Client) sendGetVersion(ctx context.Context) (res GetVersionRes, err err
 
 // GetVideo invokes getVideo operation.
 //
-// Retrieves a video stream of a specific ISN of a Map definition.
+// Retrieves a video stream of a specific table record of a Map definition.
 //
 // GET /video/{table}/{field}/{search}
 func (c *Client) GetVideo(ctx context.Context, params GetVideoParams) (GetVideoRes, error) {
@@ -8222,7 +6621,7 @@ func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res G
 
 // GetViews invokes getViews operation.
 //
-// Defines the current views.
+// Get the available table views of all databases.
 //
 // GET /config/views
 func (c *Client) GetViews(ctx context.Context) (GetViewsRes, error) {
@@ -8781,172 +7180,6 @@ func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, e
 	return result, nil
 }
 
-// ListRBACResource invokes listRBACResource operation.
-//
-// Add permission role.
-//
-// GET /rest/database/{table}/permission/{resource}
-func (c *Client) ListRBACResource(ctx context.Context, params ListRBACResourceParams) (ListRBACResourceRes, error) {
-	res, err := c.sendListRBACResource(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendListRBACResource(ctx context.Context, params ListRBACResourceParams) (res ListRBACResourceRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("listRBACResource"),
-		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/database/{table}/permission/{resource}"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ListRBACResource",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [4]string
-	pathParts[0] = "/rest/database/"
-	{
-		// Encode "table" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "table",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.Table))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	pathParts[2] = "/permission/"
-	{
-		// Encode "resource" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "resource",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(string(params.Resource)))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[3] = encoded
-	}
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "ListRBACResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "ListRBACResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "ListRBACResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeListRBACResourceResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
 // ListTables invokes listTables operation.
 //
 // Retrieves all tables of databases.
@@ -9078,7 +7311,7 @@ func (c *Client) sendListTables(ctx context.Context) (res ListTablesRes, err err
 
 // LoginSession invokes loginSession operation.
 //
-// Login receiving JWT.
+// Login using baseauth or bearer to receive or validate token.
 //
 // PUT /login
 func (c *Client) LoginSession(ctx context.Context) (LoginSessionRes, error) {
@@ -9195,7 +7428,7 @@ func (c *Client) sendLoginSession(ctx context.Context) (res LoginSessionRes, err
 
 // LogoutSessionCompat invokes logoutSessionCompat operation.
 //
-// Logout the session.
+// Invalidate given token session.
 //
 // PUT /logout
 func (c *Client) LogoutSessionCompat(ctx context.Context) (LogoutSessionCompatRes, error) {
@@ -9459,7 +7692,7 @@ func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res P
 //
 // Create a new Job database.
 //
-// POST /rest/tasks
+// POST /tasks
 func (c *Client) PostJob(ctx context.Context, request PostJobReq) (PostJobRes, error) {
 	res, err := c.sendPostJob(ctx, request)
 	return res, err
@@ -9469,7 +7702,7 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postJob"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/rest/tasks"),
+		semconv.HTTPRouteKey.String("/tasks"),
 	}
 
 	// Run stopwatch.
@@ -9502,7 +7735,7 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/rest/tasks"
+	pathParts[0] = "/tasks"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -9589,7 +7822,7 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 
 // PushLoginSession invokes pushLoginSession operation.
 //
-// Login receiving JWT.
+// Login using baseauth or bearer to receive or validate token.
 //
 // POST /login
 func (c *Client) PushLoginSession(ctx context.Context) (PushLoginSessionRes, error) {
@@ -9697,208 +7930,6 @@ func (c *Client) sendPushLoginSession(ctx context.Context) (res PushLoginSession
 
 	stage = "DecodeResponse"
 	result, err := decodePushLoginSessionResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// PutDatabaseResource invokes putDatabaseResource operation.
-//
-// Change resource of the database.
-//
-// PUT /rest/database/{table_operation}
-func (c *Client) PutDatabaseResource(ctx context.Context, params PutDatabaseResourceParams) (PutDatabaseResourceRes, error) {
-	res, err := c.sendPutDatabaseResource(ctx, params)
-	return res, err
-}
-
-func (c *Client) sendPutDatabaseResource(ctx context.Context, params PutDatabaseResourceParams) (res PutDatabaseResourceRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("putDatabaseResource"),
-		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/rest/database/{table_operation}"),
-	}
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "PutDatabaseResource",
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [2]string
-	pathParts[0] = "/rest/database/"
-	{
-		// Encode "table_operation" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "table_operation",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.TableOperation))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeQueryParams"
-	q := uri.NewQueryEncoder()
-	{
-		// Encode "name" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "name",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.Name.Get(); ok {
-				return e.EncodeValue(conv.StringToString(val))
-			}
-			return nil
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	{
-		// Encode "lock" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "lock",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.Lock.Get(); ok {
-				return e.EncodeValue(conv.BoolToString(val))
-			}
-			return nil
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	{
-		// Encode "externalbackup" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "externalbackup",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.Externalbackup.Get(); ok {
-				return e.EncodeValue(conv.BoolToString(val))
-			}
-			return nil
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	u.RawQuery = q.Values().Encode()
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "PUT", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "PutDatabaseResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BasicAuth\"")
-			}
-		}
-		{
-			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "PutDatabaseResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 1
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"TokenCheck\"")
-			}
-		}
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "PutDatabaseResource", r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 2
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-				{0b00000010},
-				{0b00000100},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	defer resp.Body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodePutDatabaseResourceResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -10056,7 +8087,7 @@ func (c *Client) sendRemovePermission(ctx context.Context, params RemovePermissi
 
 // RemoveSessionCompat invokes removeSessionCompat operation.
 //
-// Remove the session.
+// Invalidate given token session.
 //
 // GET /logoff
 func (c *Client) RemoveSessionCompat(ctx context.Context) (RemoveSessionCompatRes, error) {
@@ -10861,7 +8892,7 @@ func (c *Client) sendSearchTable(ctx context.Context, params SearchTableParams) 
 
 // SetConfig invokes setConfig operation.
 //
-// Store configuration.
+// Update current configuration and test.
 //
 // PUT /config
 func (c *Client) SetConfig(ctx context.Context, request SetConfigReq) (SetConfigRes, error) {
@@ -10993,7 +9024,7 @@ func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res S
 
 // SetJobsConfig invokes setJobsConfig operation.
 //
-// Set the ADADATADIR.
+// Set the Job configuration database.
 //
 // PUT /config/jobs
 func (c *Client) SetJobsConfig(ctx context.Context, request OptJobStore) (SetJobsConfigRes, error) {
@@ -11125,7 +9156,7 @@ func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (re
 
 // ShutdownServer invokes shutdownServer operation.
 //
-// Init shutdown procedure.
+// Trigger shutdown of server instance.
 //
 // PUT /rest/shutdown/{hash}
 func (c *Client) ShutdownServer(ctx context.Context, params ShutdownServerParams) (ShutdownServerRes, error) {
@@ -11272,7 +9303,7 @@ func (c *Client) sendShutdownServer(ctx context.Context, params ShutdownServerPa
 
 // StoreConfig invokes storeConfig operation.
 //
-// Store configuration.
+// Store current active configuration to configuration file.
 //
 // POST /config
 func (c *Client) StoreConfig(ctx context.Context) (StoreConfigRes, error) {
@@ -11550,7 +9581,7 @@ func (c *Client) sendTriggerExtend(ctx context.Context, params TriggerExtendPara
 //
 // Trigger a job.
 //
-// PUT /rest/tasks/{jobName}
+// PUT /tasks/{jobName}
 func (c *Client) TriggerJob(ctx context.Context, params TriggerJobParams) (TriggerJobRes, error) {
 	res, err := c.sendTriggerJob(ctx, params)
 	return res, err
@@ -11560,7 +9591,7 @@ func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (r
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("triggerJob"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/rest/tasks/{jobName}"),
+		semconv.HTTPRouteKey.String("/tasks/{jobName}"),
 	}
 
 	// Run stopwatch.
@@ -11593,7 +9624,7 @@ func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (r
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [2]string
-	pathParts[0] = "/rest/tasks/"
+	pathParts[0] = "/tasks/"
 	{
 		// Encode "jobName" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -11695,7 +9726,7 @@ func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (r
 
 // UpdateLobByMap invokes updateLobByMap operation.
 //
-// Set a lob at a specific ISN of an field in a Map.
+// Set a lob at a specific table record of an field in a Map.
 //
 // PUT /binary/{table}/{field}/{search}
 func (c *Client) UpdateLobByMap(ctx context.Context, request UpdateLobByMapReq, params UpdateLobByMapParams) (UpdateLobByMapRes, error) {
