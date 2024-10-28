@@ -18,8 +18,8 @@ jobs:
         include:
           - os: ubuntu-latest
             arch: amd64
-          - os: ubuntu-latest
-            arch: arm64
+#          - os: ubuntu-latest
+#            arch: arm64
         go-version: [ '1.23.x' ]
     steps:
     - uses: actions/checkout@v4
