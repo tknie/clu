@@ -19,7 +19,7 @@ TESTPKGSDIR        = server
 INSTALL_DEST       = .
 DATE               = $(shell date +%d-%m-%Y'_'%H:%M:%S)
 VERSION           ?= v0.9.4.0
-MAJORVERS          = v094
+MAJORVERS          = $(echo $(VERSION)|sed 's/[.]//g'|cut -c 1-4)
 RESTVERSION       ?= $(VERSION).$(shell date +%d%m%Y)
 #$(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
 #			cat $(CURDIR)/.version 2> /dev/null || echo v0)

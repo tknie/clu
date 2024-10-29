@@ -13,7 +13,7 @@ require (
 	github.com/ogen-go/ogen v1.5.0
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.9.0
-	github.com/tknie/goheif v0.0.0-20240128173714-9840945571ae
+	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
 	github.com/tknie/services v0.0.0-20241014201404-b3670d1a0383
 	go.opentelemetry.io/otel v1.31.0
