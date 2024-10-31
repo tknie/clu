@@ -162,10 +162,10 @@ func loadTableOfDatabases() {
 		// log.Log.Infof("Database with table %s count: %d", key, tableEntry.readCount)
 		if tableEntry.readCount > 0 {
 			counter++
-			if counter%8 == 0 {
+			if counter%4 == 0 {
 				tableStat += "\n  "
 			}
-			tableStat += fmt.Sprintf("%s=%d ", key, tableEntry.readCount)
+			tableStat += fmt.Sprintf("%20s=%05d ", key, tableEntry.readCount)
 		}
 		return true
 	})
