@@ -167,10 +167,14 @@ func StoreConfig() error {
 func loadConfigurationTemplate(loaderInterface services.ConfigInterface) *RestServer {
 	byteValue, err := embedConfig.ReadFile("config.yaml")
 	if err != nil {
-		panic("Internal config load error: " + err.Error())
+		panic("Internal config access error: " + err.Error())
 	}
 	viewer := &RestServer{}
-	services.ParseConfig(byteValue, loaderInterface)
+	err = services.ParseConfig(byteValue, loaderInterface)
+	if err != nil {
+		panic("Internal config interpreter error: " + err.Error())
+	}
+
 	return viewer
 }
 

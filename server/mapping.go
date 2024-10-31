@@ -77,7 +77,7 @@ func Handles(dm *Database) (*common.Reference, error) {
 		atomic.AddUint64(&regEntry.readCount, 1)
 		return regEntry.reference, nil
 	}
-	log.Log.Infof("Add database hash %s", dHash)
+	log.Log.Debugf("Add database hash %s", dHash)
 	target := os.ExpandEnv(dm.Target)
 	log.Log.Debugf("Handles %s", target)
 	ref, _, err := common.NewReference(target)
@@ -155,11 +155,25 @@ func loadTableOfDatabases() {
 			services.ServerMessage("Collected %04d table(s) in dictionary", len(newDatabases))
 		}
 	}
+	tableStat := "Registered Database access\n  "
+	counter := 0
 	dbTableMap.Range(func(key, value any) bool {
 		tableEntry := value.(*databaseRegister)
-		log.Log.Infof("Database with table %s count: %d", key, tableEntry.readCount)
+		// log.Log.Infof("Database with table %s count: %d", key, tableEntry.readCount)
+		if tableEntry.readCount > 0 {
+			counter++
+			if counter%8 == 0 {
+				tableStat += "\n  "
+			}
+			tableStat += fmt.Sprintf("%s=%d ", key, tableEntry.readCount)
+		}
 		return true
 	})
+	if counter > 0 {
+		log.Log.Infof(tableStat)
+	} else {
+		log.Log.Infof("No database access registered")
+	}
 
 }
 

@@ -43,7 +43,7 @@ func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName st
 		plugins.LoginAudit("LOGIN", err.Error(), nil, &auth.UserInfo{User: username})
 		return nil, err
 	}
-	log.Log.Infof("Basic auth... done: %s", p.Name())
+	log.Log.Debugf("Basic auth... done: %s", p.Name())
 	pm := p.(*clu.Context)
 	_, err = server.GenerateJWToken(pm)
 	if err != nil {

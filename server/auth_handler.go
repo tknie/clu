@@ -34,7 +34,8 @@ func (Handler) GetLoginSession(ctx context.Context) (r api.GetLoginSessionRes, _
 	return x.(api.GetLoginSessionRes), err
 }
 
-// GenerateJWToken generate JWT token on context
+// GenerateJWToken generate JWT token on given context and returning the
+// authorization instance containing session information
 func GenerateJWToken(ctx context.Context) (interface{}, error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Generate JWT token")

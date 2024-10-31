@@ -72,7 +72,9 @@ func main() {
 
 	services.ServerMessage("Starting CLUAPI server version %s", services.BuildVersion)
 	services.ServerMessage("Build date %s", services.BuildDate)
-	services.ServerMessage("Go build version %s", runtime.Version())
+	log.Log.Infof("CLUAPI server version=%s started", services.BuildVersion)
+	log.Log.Infof("Build date %s", services.BuildDate)
+	log.Log.Infof("Go build version %s", runtime.Version())
 	webserver.InitServices()
 
 	// Load XML configuration
