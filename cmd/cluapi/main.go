@@ -87,7 +87,7 @@ func main() {
 
 	s, err := api.NewServer(server.Handler{}, webserver.SecurityHandler{},
 		api.WithNotFound(func(w http.ResponseWriter, r *http.Request) {
-			_, _ = io.WriteString(w, `{"error_message": "not found"}`)
+			_, _ = io.WriteString(w, `{"error_message": "resource not found"}`)
 		}), api.WithPathPrefix(server.Viewer.Server.Prefix))
 	if err != nil {
 		panic(err)

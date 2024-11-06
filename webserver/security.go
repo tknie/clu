@@ -31,7 +31,9 @@ type SecurityHandler struct {
 }
 
 // HandleBasicAuth handle basic authorisation
-func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName string, t api.BasicAuth) (context.Context, error) {
+func (sec SecurityHandler) HandleBasicAuth(ctx context.Context, operationName string,
+	t api.BasicAuth) (context.Context, error) {
+
 	username := strings.ToLower(strings.Trim(t.Username, " "))
 	p, err := plugins.BasicAuth(username, t.Password)
 	if err != nil {
@@ -72,7 +74,7 @@ func (sec SecurityHandler) HandleBearerAuth(ctx context.Context, operationName s
 	// The header: Authorization: Bearer {base64 string} (or ?access_token={base 64 string} param) has already
 	// been decoded by the runtime as a token
 	if err != nil {
-		p, err = server.Viewer.Server.WebToken.JWTContainsRoles(t.Token, []string{"admin"})
+		p, err = server.Viewer.Server.WebToken.JWTContainsRoles(t.Token, []string{"admin", "user"})
 		if err != nil {
 			log.Log.Errorf("Bearer auth return: %v", err)
 			return nil, err

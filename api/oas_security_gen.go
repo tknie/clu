@@ -83,6 +83,7 @@ func (s *Server) securityBearerAuth(ctx context.Context, operationName string, r
 
 	return rctx, true, err
 }
+
 func (s *Server) securityTokenCheck(ctx context.Context, operationName string, req *http.Request) (context.Context, bool, error) {
 	var t TokenCheck
 	const parameterName = "X-Tokencheck"

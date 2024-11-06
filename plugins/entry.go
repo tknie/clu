@@ -339,7 +339,7 @@ func SendAuditEnded(started time.Time, r *http.Request) {
 		user, _, _ = r.BasicAuth()
 	case "bearer":
 		reqToken = strings.TrimSpace(splitToken[1])
-		p, err := server.Viewer.Server.WebToken.JWTContainsRoles(reqToken, []string{"admin"})
+		p, err := server.Viewer.Server.WebToken.JWTContainsRoles(reqToken, []string{"admin", "user"})
 		if err != nil {
 			uuid = err.Error()
 			log.Log.Errorf("Audit error: %v", err)
