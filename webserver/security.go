@@ -76,7 +76,7 @@ func (sec SecurityHandler) HandleBearerAuth(ctx context.Context, operationName s
 	if err != nil {
 		p, err = server.Viewer.Server.WebToken.JWTContainsRoles(t.Token, []string{"admin", "user"})
 		if err != nil {
-			log.Log.Errorf("Bearer auth return: %v", err)
+			log.Log.Errorf("Bearer authorization return: %v", err)
 			return nil, err
 		}
 	}

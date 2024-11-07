@@ -15,7 +15,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
-	github.com/tknie/services v0.0.0-20241106153112-b4a04e927e8b
+	github.com/tknie/services v0.0.0-20241107193317-93b855ef9588
 	go.opentelemetry.io/otel v1.31.0
 	go.opentelemetry.io/otel/metric v1.31.0
 	go.opentelemetry.io/otel/trace v1.31.0
