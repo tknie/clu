@@ -15,7 +15,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
 	github.com/tknie/log v0.0.0-20231006083545-fabe25f4fb0e
-	github.com/tknie/services v0.0.0-20241107203216-28f1d5a79c25
+	github.com/tknie/services v0.0.0-20241108144722-77e741ae7a24
 	go.opentelemetry.io/otel v1.31.0
 	go.opentelemetry.io/otel/metric v1.31.0
 	go.opentelemetry.io/otel/trace v1.31.0
@@ -33,7 +33,7 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
-	github.com/godror/godror v0.45.0 // indirect
+	github.com/godror/godror v0.45.1 // indirect
 	github.com/godror/knownpb v0.2.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -45,7 +45,7 @@ require (
 	github.com/pquerna/cachecontrol v0.2.0 // indirect
 	github.com/tknie/adabas-go-api v1.7.11-0.20231130200115-0931956e3a9c // indirect
 	golang.org/x/image v0.21.0 // indirect
-	golang.org/x/oauth2 v0.23.0 // indirect
+	golang.org/x/oauth2 v0.24.0 // indirect
 	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )
@@ -71,12 +71,12 @@ require (
 	github.com/tknie/flynn v0.0.0-20241025124258-482e7b21f511
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.28.0 // indirect
-	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c // indirect
+	golang.org/x/crypto v0.29.0 // indirect
+	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f // indirect
 	golang.org/x/net v0.30.0
-	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
-	golang.org/x/text v0.19.0 // indirect
+	golang.org/x/sync v0.9.0 // indirect
+	golang.org/x/sys v0.27.0 // indirect
+	golang.org/x/text v0.20.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
