@@ -215,7 +215,7 @@ func startHTTPS() error {
 				if err != nil {
 					return err
 				}*/
-				reloader, err := NewKeypairReloader(string(s.TLSCertificate), string(s.TLSCertificateKey))
+				reloader, err := NewCertificateReloader(string(s.TLSCertificate), string(s.TLSCertificateKey))
 				if err != nil {
 					return err
 				}
@@ -281,12 +281,13 @@ func configureTLS(tlsConfig *tls.Config) {
 				var err error
 				certPath := os.ExpandEnv(s.Certificate)
 				keyPath := os.ExpandEnv(s.Key)
-
-				tlsConfig.Certificates[0], err = tls.LoadX509KeyPair(certPath, keyPath)
+				reloader, err := NewCertificateReloader(certPath, keyPath)
 				if err != nil {
 					services.ServerMessage("TLS configuration error: %v", err)
 					os.Exit(1)
 				}
+				tlsConfig.GetCertificate = reloader.GetCertificateFunc()
+
 			} else {
 				services.ServerMessage("TLS default configuration used")
 			}

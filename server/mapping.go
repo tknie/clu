@@ -95,7 +95,7 @@ func Handles(dm *Database) (*common.Reference, error) {
 	for i := 0; i < len(dm.Tables); i++ {
 		dm.Tables[i] = strings.ToLower(dm.Tables[i])
 	}
-	services.ServerMessage("Registered database driver=%s to %s:%d/%s",
+	log.Log.Infof("Registered database driver=%s to %s:%d/%s",
 		dm.Driver, ref.Host, ref.Port, ref.Database)
 	return ref, nil
 }

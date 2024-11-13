@@ -70,8 +70,8 @@ func main() {
 		return m
 	}
 
-	services.ServerMessage("Starting CLUAPI server version %s", services.BuildVersion)
-	services.ServerMessage("Build date %s", services.BuildDate)
+	services.ServerMessage("Starting CLUAPI server version %s Build date %s",
+		services.BuildVersion, services.BuildDate)
 	log.Log.Infof("CLUAPI server version=%s started", services.BuildVersion)
 	log.Log.Infof("Build date %s", services.BuildDate)
 	log.Log.Infof("Go build version %s", runtime.Version())
