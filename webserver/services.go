@@ -210,11 +210,16 @@ func startHTTPS() error {
 
 			// build standard config from server options
 			if s.TLSCertificate != "" && s.TLSCertificateKey != "" {
-				httpsServer.TLSConfig.Certificates = make([]tls.Certificate, 1)
+				/*httpsServer.TLSConfig.Certificates = make([]tls.Certificate, 1)
 				httpsServer.TLSConfig.Certificates[0], err = tls.LoadX509KeyPair(string(s.TLSCertificate), string(s.TLSCertificateKey))
 				if err != nil {
 					return err
+				}*/
+				reloader, err := NewKeypairReloader(string(s.TLSCertificate), string(s.TLSCertificateKey))
+				if err != nil {
+					return err
 				}
+				httpsServer.TLSConfig.GetCertificate = reloader.GetCertificateFunc()
 			}
 
 			if s.TLSCACertificate != "" {
