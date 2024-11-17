@@ -169,8 +169,8 @@ github.com/tknie/log v0.0.0-20241117202403-65556e62b83d h1:B2kRbca8940u2AVM9yyU1
 github.com/tknie/log v0.0.0-20241117202403-65556e62b83d/go.mod h1:W67unT0xxqTLc9tyxpdV1lED/JuD0veFgxT/astdxt4=
 github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d h1:3zGPtYkv/JaryvdSS5B1de4myatWo6LmJpYdl3Es4Bg=
 github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d/go.mod h1:Cm4sO5ULVw8B931M31W6fsvK2Z9a5GdcAPNYaCqvOcM=
-github.com/tknie/services v0.0.0-20241113071730-53cdb3bf82aa h1:qVc3mPzygiDZOW1YKS/iVaexDnCDLaFiq+h+negg1QU=
-github.com/tknie/services v0.0.0-20241113071730-53cdb3bf82aa/go.mod h1:+0Zn+b6coBjT+U9QpV6bxbI0sEfj8otmqX4bEdPlLSQ=
+github.com/tknie/services v0.0.0-20241117203611-b539ce4e2b3a h1:MUFF4OO2kJ1j3Ubpt6HwIXw0k8km1vZzqv351mf7g14=
+github.com/tknie/services v0.0.0-20241117203611-b539ce4e2b3a/go.mod h1:NHmMx13ZoDAuLotyKXZV1Fkfi5yGzq2l4GCnn15Jyjk=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 go.opentelemetry.io/otel v1.32.0 h1:WnBN+Xjcteh0zdk01SVqV55d/m62NJLJdIyb4y/WO5U=
