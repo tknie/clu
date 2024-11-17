@@ -44,7 +44,7 @@ database:
         DestinationTable: ""
         DestinationField: ""
   access:
-    Database:
+    databases:
       - driver: postgres
         target: postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/Bitgarten
         table: xxx

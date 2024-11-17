@@ -26,6 +26,8 @@ server:
     publicKey: ${DATADIR}/keys/certificate.pem
     privateKey: ${DATADIR}/keys/key.pem
   login:
+    administrators: ${CURDIR}/configuration/administrator.yaml
+    users: ${CURDIR}/configuration/users.yaml
     authenticationServer:
       - type: file
         passwordFile: ${DATADIR}/configuration/realm.properties
@@ -47,7 +49,7 @@ database:
         DestinationTable: ""
         DestinationField: ""
   access:
-    Database:
+    databases:
       - driver: postgres
         target: postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
         user: ${POSTGRES_USER}
@@ -56,6 +58,26 @@ database:
         target: ${MYSQL_USER}:${MYSQL_PASS}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DATABASE}
         user: ${MYSQL_PORT}
         password: ${MYSQL_PASS}
+  sessionInfo:
+    deleteUUID: false
+    database:
+        driver: postgres
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASS}
+        target: ${POSTGRES_URL}
+        table: "session_info"
+  userInfo:
+        driver: postgres
+        target: ${POSTGRES_URL}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASS}
+        table: "user_info"
+  batchRepository:
+        driver: postgres
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASS}
+        target: ${POSTGRES_URL}
+        table: "batch_repo"
 tasks:
   use_role: true
   directory: ${DATADIR}/log
