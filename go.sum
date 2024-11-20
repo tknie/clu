@@ -163,6 +163,8 @@ github.com/tknie/errorrepo v0.0.0-20240912184714-682ebdc389d9 h1:shVv/rwnRD0bVOV
 github.com/tknie/errorrepo v0.0.0-20240912184714-682ebdc389d9/go.mod h1:lI2i/ZvgnOsoeJnzKbme2Cpa8lIs5ORgKILrtBwZyqk=
 github.com/tknie/flynn v0.0.0-20241112204322-d282d431f942 h1:AgLtyWKJUDdCkceIT/UEfqIOzyYRpsaAgQpXf6AtOmc=
 github.com/tknie/flynn v0.0.0-20241112204322-d282d431f942/go.mod h1:4tcE5swWzNzzo3f68qpZZwPxP+Znsh5E1L4032BYwSI=
+github.com/tknie/flynn v0.0.0-20241120133938-60287a1a882f h1:2zOdabeQ2ENoekzidjzK+5bCaWvhMx+g7B/yKNBVa7I=
+github.com/tknie/flynn v0.0.0-20241120133938-60287a1a882f/go.mod h1:MJU/oFfRDaAOEEwYuzWAc0/e7k+GxYa9MCK0G5u8pn8=
 github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138 h1:PUFKDGFiEfT/e6f5XGQ2IGY9lcjEAGdl45z1yl8xY4Y=
 github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138/go.mod h1:dVvJAEmU8sloNLQh1wq2+GPwxa/9gg3VXuK/FO8eGX4=
 github.com/tknie/log v0.0.0-20241117202403-65556e62b83d h1:B2kRbca8940u2AVM9yyU1fMScDqFz04B56rz4WnMNgk=

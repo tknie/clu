@@ -66,7 +66,7 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20240912184714-682ebdc389d9
-	github.com/tknie/flynn v0.0.0-20241112204322-d282d431f942
+	github.com/tknie/flynn v0.0.0-20241120133938-60287a1a882f
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.29.0 // indirect
