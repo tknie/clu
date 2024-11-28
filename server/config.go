@@ -231,7 +231,7 @@ func LoadedConfig() {
 	for _, f := range allCallbacks {
 		f()
 	}
-	services.ServerMessage("Configuration loading completed")
+	services.ServerMessage("Load of configuration completed")
 }
 
 // String representation of Database instance

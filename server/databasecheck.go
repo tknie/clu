@@ -119,7 +119,7 @@ func (viewer *RestServer) InitSecurityInfrastructure() {
 
 	// Add File transfer locations
 	if len(viewer.FileTransfer.Directories.Directory) == 0 {
-		services.ServerMessage("No File location defined, file transfer not possible")
+		log.Log.Infof("No File location defined, file transfer not possible")
 	} else {
 		for _, d := range viewer.FileTransfer.Directories.Directory {
 			if AddLocation != nil {

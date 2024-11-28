@@ -94,7 +94,7 @@ func NewCertificateReloader(certPath, keyPath string) (*keypairReloader, error) 
 		services.ServerMessage("Certificate error init watching: %v", err)
 		return nil, err
 	}
-	services.ServerMessage("Certificate watcher enabled")
+	services.ServerMessage("SSL/TLS Server certificate watcher enabled")
 	return result, nil
 }
 

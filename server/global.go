@@ -96,9 +96,6 @@ func InitConfig(watch bool) error {
 		a := &auth.AuthenticationServer{Type: "file", PasswordFile: "configuration/realm.properties"}
 		Viewer.Server.LoginService.AuthenticationServer = append(Viewer.Server.LoginService.AuthenticationServer, a)
 	}
-	if Viewer.Server.Plugins == "" {
-		Viewer.Server.Plugins = "${INSTALLDIR}/Metaverse/plugins"
-	}
 	auth.AuthenticationConfig = &auth.Authentication{AuthenticationServer: Viewer.Server.LoginService.AuthenticationServer}
 	if Viewer.Server.WebToken != nil {
 		err = Viewer.Server.WebToken.InitWebTokenJose2()

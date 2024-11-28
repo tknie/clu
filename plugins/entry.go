@@ -257,6 +257,9 @@ func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 func ShutdownPlugins() {
 	shutOnce.Do(func() {
 		disablePlugin = true
+		if len(adabasPlugins) == 0 && len(auditPlugins) == 0 {
+			return
+		}
 		services.ServerMessage("Shutdown all plugins ...")
 
 		for _, v := range auditPlugins {
