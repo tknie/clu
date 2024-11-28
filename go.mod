@@ -10,12 +10,12 @@ require (
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.0
 	github.com/jackc/pgx/v5 v5.7.1
-	github.com/ogen-go/ogen v1.6.0
+	github.com/ogen-go/ogen v1.7.0
 	github.com/rs/cors v1.11.1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
 	github.com/tknie/log v0.0.0-20241117202403-65556e62b83d
-	github.com/tknie/services v0.0.0-20241117203611-b539ce4e2b3a
+	github.com/tknie/services v0.0.0-20241125180359-e6741d6de79d
 	go.opentelemetry.io/otel v1.32.0
 	go.opentelemetry.io/otel/metric v1.32.0
 	go.opentelemetry.io/otel/trace v1.32.0
@@ -33,7 +33,7 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
-	github.com/godror/godror v0.45.1 // indirect
+	github.com/godror/godror v0.45.2 // indirect
 	github.com/godror/knownpb v0.2.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -66,7 +66,7 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20240912184714-682ebdc389d9
-	github.com/tknie/flynn v0.0.0-20241120133938-60287a1a882f
+	github.com/tknie/flynn v0.0.0-20241125081020-3b9ffeb8b63b
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.29.0 // indirect
