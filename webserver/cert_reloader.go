@@ -32,8 +32,8 @@ type keypairReloader struct {
 	watcher  *fsnotify.Watcher
 }
 
-// NewCertificateReloader certificate reloader
-func NewCertificateReloader(certPath, keyPath string) (*keypairReloader, error) {
+// newCertificateReloader certificate reloader
+func newCertificateReloader(certPath, keyPath string) (*keypairReloader, error) {
 	result := &keypairReloader{
 		certPath: certPath,
 		keyPath:  keyPath,
