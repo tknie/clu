@@ -10,7 +10,7 @@ require (
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.0
 	github.com/jackc/pgx/v5 v5.7.1
-	github.com/ogen-go/ogen v1.7.0
+	github.com/ogen-go/ogen v1.8.1
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
@@ -43,7 +43,7 @@ require (
 	github.com/planetscale/vtprotobuf v0.6.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/tknie/adabas-go-api v1.7.11-0.20231130200115-0931956e3a9c // indirect
-	golang.org/x/image v0.22.0 // indirect
+	golang.org/x/image v0.23.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
 	google.golang.org/protobuf v1.35.2 // indirect
 )
@@ -66,15 +66,15 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.0.0-20240912184714-682ebdc389d9
-	github.com/tknie/flynn v0.0.0-20241125081020-3b9ffeb8b63b
+	github.com/tknie/flynn v0.0.0-20241208122233-68c9d1ab4c44
 	github.com/tknie/pam v0.0.0-20221009204632-bfcf495c828d // indirect
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.29.0 // indirect
-	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f // indirect
-	golang.org/x/net v0.31.0
-	golang.org/x/sync v0.9.0 // indirect
-	golang.org/x/sys v0.27.0 // indirect
-	golang.org/x/text v0.20.0 // indirect
+	golang.org/x/crypto v0.30.0 // indirect
+	golang.org/x/exp v0.0.0-20241204233417-43b7b7cde48d // indirect
+	golang.org/x/net v0.32.0
+	golang.org/x/sync v0.10.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
