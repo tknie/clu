@@ -27,7 +27,8 @@ import (
 
 	"github.com/go-openapi/runtime/flagext"
 	"github.com/go-openapi/swag"
-	"github.com/tknie/clu/server"
+	"github.com/tknie/clu"
+	"github.com/tknie/errorrepo"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
 	"golang.org/x/net/netutil"
@@ -78,7 +79,7 @@ func StartServices(mainHandler http.Handler) error {
 
 // startSocket start local socket
 func startSocket() {
-	for _, s := range server.Viewer.Server.Service {
+	for _, s := range clu.Viewer.Server.Service {
 		if strings.ToLower(s.Type) == "socket" {
 			domainSocket := new(http.Server)
 			domainSocket.MaxHeaderBytes = int(MaxHeaderSize)
@@ -111,7 +112,7 @@ func startSocket() {
 
 // startHTTP start HTTP service
 func startHTTP() error {
-	for _, s := range server.Viewer.Server.Service {
+	for _, s := range clu.Viewer.Server.Service {
 		if strings.ToLower(s.Type) == "http" {
 
 			listener, err := net.Listen("tcp", net.JoinHostPort(s.Host, strconv.Itoa(s.Port)))
@@ -158,7 +159,7 @@ func startHTTP() error {
 
 // startHTTPS start HTTPS service
 func startHTTPS() error {
-	for _, s := range server.Viewer.Server.Service {
+	for _, s := range clu.Viewer.Server.Service {
 		if strings.ToLower(s.Type) == "https" {
 			tlsListener, err := net.Listen("tcp", net.JoinHostPort(s.Host, strconv.Itoa(s.Port)))
 			if err != nil {
@@ -231,7 +232,7 @@ func startHTTPS() error {
 				caCertPool := x509.NewCertPool()
 				ok := caCertPool.AppendCertsFromPEM(caCert)
 				if !ok {
-					return fmt.Errorf("cannot parse CA certificate")
+					return errorrepo.NewError("REST00118", string(s.TLSCACertificate))
 				}
 				httpsServer.TLSConfig.ClientCAs = caCertPool
 				httpsServer.TLSConfig.ClientAuth = tls.RequireAndVerifyClientCert
@@ -275,7 +276,7 @@ func startHTTPS() error {
 func configureTLS(tlsConfig *tls.Config) {
 	// Make all necessary changes to the TLS configuration here.
 	tlsConfig.Certificates = make([]tls.Certificate, 1)
-	for _, s := range server.Viewer.Server.Service {
+	for _, s := range clu.Viewer.Server.Service {
 		if strings.ToLower(s.Type) == "https" {
 			if s.Certificate != "" && s.Key != "" {
 				var err error

@@ -12,8 +12,7 @@
 package plugins
 
 import (
-	"fmt"
-
+	"github.com/tknie/errorrepo"
 	"github.com/tknie/services/auth"
 )
 
@@ -27,10 +26,10 @@ func BasicAuth(user string, pass string) (auth.PrincipalInterface, error) {
 			return principal, nil
 		}
 	}
-	return nil, fmt.Errorf("no plugins")
+	return nil, errorrepo.NewError("RERR00010")
 }
 
 // HandleBearerAuth handle bearer authentication
 func HandleBearerAuth(token string) (auth.PrincipalInterface, error) {
-	return nil, fmt.Errorf("no plugins")
+	return nil, errorrepo.NewError("RERR00011")
 }

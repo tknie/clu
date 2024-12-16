@@ -20,7 +20,7 @@ import (
 
 // InitDatabaseStores init database session store
 func InitDatabaseStores() error {
-	dm := Viewer.Database.UserInfo
+	dm := clu.Viewer.Database.UserInfo
 	if dm != nil {
 		r, err := Handles(dm)
 		if err == nil {
@@ -29,10 +29,10 @@ func InitDatabaseStores() error {
 			log.Fatal("user information store not being able to start:", err)
 		}
 	}
-	if Viewer.Database.SessionInfo != nil {
-		dm = Viewer.Database.SessionInfo.Database
+	if clu.Viewer.Database.SessionInfo != nil {
+		dm = clu.Viewer.Database.SessionInfo.Database
 		if dm != nil {
-			clu.DeleteUUID = Viewer.Database.SessionInfo.DeleteUUID
+			clu.DeleteUUID = clu.Viewer.Database.SessionInfo.DeleteUUID
 			r, err := Handles(dm)
 			if err == nil {
 				clu.InitStoreInfo(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
@@ -41,7 +41,7 @@ func InitDatabaseStores() error {
 			}
 		}
 	}
-	dm = Viewer.Database.BatchRepository
+	dm = clu.Viewer.Database.BatchRepository
 	if dm != nil {
 		r, err := Handles(dm)
 		if err == nil {

@@ -18,9 +18,9 @@ import (
 	"time"
 
 	"github.com/rs/cors"
+	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
 	"github.com/tknie/clu/plugins"
-	"github.com/tknie/clu/server"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
 )
@@ -114,11 +114,11 @@ func fileServerMiddleware(next http.Handler) http.Handler {
 		}
 		if log.IsDebugLevel() {
 			log.Log.Debugf("Serve file %s on %s -> %s", r.RequestURI,
-				server.Viewer.Server.Content, r.URL.Path)
+				clu.Viewer.Server.Content, r.URL.Path)
 		}
 		directory := staticContent
 		if directory == "" {
-			directory = os.ExpandEnv(server.Viewer.Server.Content)
+			directory = os.ExpandEnv(clu.Viewer.Server.Content)
 		}
 		log.Log.Debugf("Directory search for: %s", directory)
 		if directory == "" {
@@ -130,11 +130,11 @@ func fileServerMiddleware(next http.Handler) http.Handler {
 }
 
 func clearPath(r *http.Request) string {
-	if server.Viewer.Server.Prefix == "" {
+	if clu.Viewer.Server.Prefix == "" {
 		return r.URL.Path
 	}
 	path := r.URL.Path
-	for _, prefix := range strings.Split(server.Viewer.Server.Prefix, ",") {
+	for _, prefix := range strings.Split(clu.Viewer.Server.Prefix, ",") {
 		path = strings.TrimPrefix(r.URL.Path, strings.Trim(prefix, " "))
 	}
 	return path

@@ -139,7 +139,7 @@ func init() {
 func InitPlugins() {
 	pluginDir, ok := os.LookupEnv("METAVERS_PLUGINS")
 	if !ok {
-		pluginDir = server.Viewer.Server.Plugins
+		pluginDir = clu.Viewer.Server.Plugins
 	}
 	pluginDir = os.ExpandEnv(pluginDir)
 	if pluginDir == "" {
@@ -342,7 +342,7 @@ func SendAuditEnded(started time.Time, r *http.Request) {
 		user, _, _ = r.BasicAuth()
 	case "bearer":
 		reqToken = strings.TrimSpace(splitToken[1])
-		p, err := server.Viewer.Server.WebToken.JWTContainsRoles(reqToken, []string{"admin", "user"})
+		p, err := clu.Viewer.Server.WebToken.JWTContainsRoles(reqToken, []string{"admin", "user"})
 		if err != nil {
 			uuid = err.Error()
 			log.Log.Errorf("Audit error: %v", err)

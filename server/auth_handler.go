@@ -40,7 +40,7 @@ func GenerateJWToken(ctx context.Context) (interface{}, error) {
 	session := ctx.(*clu.Context)
 	log.Log.Debugf("Generate JWT token")
 	if session.Token == "" {
-		token, err := Viewer.Server.WebToken.GenerateJWToken("*", session)
+		token, err := clu.Viewer.Server.WebToken.GenerateJWToken("*", session)
 		if err != nil {
 			log.Log.Errorf("Error token generation:%v", err)
 			return nil, err

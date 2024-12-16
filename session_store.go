@@ -12,11 +12,11 @@
 package clu
 
 import (
-	"fmt"
 	"os"
 	"sync"
 	"time"
 
+	"github.com/tknie/errorrepo"
 	"github.com/tknie/flynn"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
@@ -139,7 +139,7 @@ func (st *StoreJWTHandler) Range(f func(uuid, value any) bool) error {
 		s := result.Data.(*auth.SessionInfo)
 		elapsed := s.Invalidated
 		if !f(s.UUID, elapsed) {
-			return fmt.Errorf("aborted Range")
+			return errorrepo.NewError("REST00004")
 		}
 		return nil
 	})

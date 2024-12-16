@@ -76,14 +76,13 @@ func (read *StreamRead) initStreamFromTable(srvctx *clu.Context, search, destMim
 
 	if len(result) == 0 {
 		err = errorrepo.NewError("REST00002", read.field, read.table)
-		// err = fmt.Errorf("field '%s' not in result", field)
 		return
 	}
 
 	s := strings.ToLower(read.field)
 	if d, ok := result[s]; ok {
 		if d == nil {
-			return fmt.Errorf("stream query result empty")
+			return errorrepo.NewError("REST00009")
 		}
 		switch v := d.(type) {
 		case []byte:
@@ -91,7 +90,7 @@ func (read *StreamRead) initStreamFromTable(srvctx *clu.Context, search, destMim
 		case string:
 			read.data = []byte(v)
 		default:
-			return fmt.Errorf("data entry return wrong type %T", d)
+			return errorrepo.NewError("REST00010", d)
 		}
 		if read.mimetypeField != "" {
 			s := strings.ToLower(read.mimetypeField)
@@ -107,7 +106,6 @@ func (read *StreamRead) initStreamFromTable(srvctx *clu.Context, search, destMim
 		return nil
 	}
 	err = errorrepo.NewError("RERR00002", read.field, read.table)
-	// err = fmt.Errorf("field '%s' not in result", field)
 	return
 }
 
@@ -187,10 +185,10 @@ func queryBytes(d common.RegDbID, query *common.Query) (map[string]interface{}, 
 	found := false
 	_, err := d.Query(query, func(search *common.Query, result *common.Result) error {
 		if result == nil {
-			return fmt.Errorf("result empty")
+			return errorrepo.NewError("REST00006")
 		}
 		if found {
-			return fmt.Errorf("result not unique")
+			return errorrepo.NewError("REST00007")
 		}
 		log.Log.Debugf("Rows: %d", len(result.Rows))
 		///var d api.ResponseRecordsItem
@@ -211,6 +209,7 @@ func queryBytes(d common.RegDbID, query *common.Query) (map[string]interface{}, 
 		return nil
 	})
 	if err != nil {
+		err = errorrepo.NewError("REST00008", err)
 		return nil, err
 	}
 	return dataMap, nil

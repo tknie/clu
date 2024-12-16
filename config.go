@@ -9,16 +9,18 @@
 *
  */
 
-package server
+package clu
 
 import (
 	"embed"
 	"os"
+	"path"
 	"strconv"
 	"sync"
 	"time"
 
 	"github.com/go-openapi/runtime/flagext"
+	"github.com/tknie/errorrepo"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
@@ -35,12 +37,13 @@ const (
 	ServiceName = "clutronapi"
 )
 
-var currentConfig = ""
+// CurrentConfig current config name
+var CurrentConfig = ""
 
 //go:embed messages
 var embedFiles embed.FS
 
-//go:embed config.yaml
+//go:embed server/config.yaml
 var embedConfig embed.FS
 
 // ErrorType web request return type
@@ -205,6 +208,15 @@ type Database struct {
 	AuthenticationGlobal bool     `yaml:"global_authentication,omitempty"`
 }
 
+var adadatadir string
+var installation []string
+
+// InitDirectAccess init Adabas direct access function, only need in active server
+var InitDirectAccess func(*RestServer)
+
+// InitAdmin init Adabas admin function, only need in active server
+var InitAdmin func(*RestServer)
+
 // Viewer containing server config
 var Viewer *RestServer
 
@@ -248,4 +260,135 @@ func (db *Database) String() string {
 	}
 	port := strconv.Itoa(ref.Port)
 	return db.User + ":***@" + ref.Host + ":" + port
+}
+
+// InitSecurityInfrastructure init configruation data
+func (viewer *RestServer) InitSecurityInfrastructure() {
+
+	if viewer.Server.Content == "" {
+		viewer.Server.Content = "./static"
+	}
+
+	if viewer.Database.DatabaseAccess.Global {
+		services.ServerMessage("Direct access granted to all database (global=true)")
+	} else {
+		// Init Adabas map, not needed if configuration script is used
+		if InitDirectAccess != nil {
+			InitDirectAccess(viewer)
+		}
+	}
+
+	if InitAdmin != nil {
+		InitAdmin(viewer)
+	}
+
+	// if len(viewer.JobStore.Database) > 0 {
+	// 	jobs.Storage = &jobs.JobStore{Dbid: viewer.JobStore.Database[0].Dbid,
+	// 		File: viewer.JobStore.Database[0].File,
+	// 	}
+	// }
+
+	// Add File transfer locations
+	if len(viewer.FileTransfer.Directories.Directory) == 0 {
+		log.Log.Infof("No File location defined, file transfer not possible")
+	} else {
+		for _, d := range viewer.FileTransfer.Directories.Directory {
+			if AddLocation != nil {
+				AddLocation(d.Name, d.Location)
+			}
+		}
+	}
+	log.Log.Debugf("Load of configuration finished")
+}
+
+// GetAdaDataDir get ADADATADIR configuration
+func GetAdaDataDir() string {
+	return adadatadir
+}
+
+// GetInstallation get defined installations
+func GetInstallation() []string {
+	return installation
+}
+
+// CloseConfig close configuration watcher
+func (viewer *RestServer) CloseConfig() {
+	// done <- true
+	services.CloseConfig()
+}
+
+// AddLocation add location, only needed in active server
+var AddLocation = func(name, location string) error {
+	if name != "" && os.ExpandEnv(location) != "" {
+		services.ServerMessage("Add location %s at %s", name, location)
+	}
+	return nil
+}
+
+// LoadMessages load all REST server embed message templates
+func LoadMessages() {
+	fss, err := embedFiles.ReadDir("messages")
+	if err != nil {
+		panic("Internal config load error: " + err.Error())
+	}
+	for _, f := range fss {
+		if f.Type().IsRegular() {
+			byteValue, err := embedFiles.ReadFile("messages/" + f.Name())
+			if err != nil {
+				panic("Internal config load error: " + err.Error())
+			}
+			lang := path.Ext(f.Name())
+			errorrepo.RegisterMessage(lang[1:], string(byteValue))
+		}
+	}
+	// errorrepo.RegisterDirectory(fss)
+}
+
+// LoadConfig load xml configuration file
+// The components are used to load and inject the configuration
+func LoadConfig(watch bool, loaderInterface services.ConfigInterface) error {
+	CurrentConfig = os.Getenv(DefaultConfigFileEnv)
+	if CurrentConfig == "" {
+		CurrentConfig = os.ExpandEnv("${SERVER_HOME}/configuration/config.yaml")
+	}
+	Viewer = &RestServer{}
+	err := services.LoadConfig(CurrentConfig, loaderInterface, watch)
+	if err != nil {
+		services.ServerErrorMessage("RERR00042", err)
+		/*if skipTemplate {
+			return adaErr
+		}*/
+		services.ServerMessage("Loading config template (%v)", err)
+		Viewer = loadConfigurationTemplate(loaderInterface)
+		services.ServerMessage("Using embed template configuration")
+	}
+	adaptLogInstances()
+	return nil
+}
+
+func adaptLogInstances() {
+	// if log.Log != log.Log {
+	// 	// log.Log = log.Log
+	// 	log.SetDebugLevel(log.IsDebugLevel())
+	// 	log.Log.Debugf("DEBUG: Testing log ....")
+	// 	log.Log.Infof("INFO:  Testing log ....")
+	// 	log.Log.Errorf("ERROR: Testing log ....")
+	// 	log.Log.Debugf("DEBUG: Testing adatype log ....")
+	// }
+}
+
+// loadConfigurationTemplate load default configuration available as
+// embed file in the binary
+func loadConfigurationTemplate(loaderInterface services.ConfigInterface) *RestServer {
+	byteValue, err := embedConfig.ReadFile("config.yaml")
+	if err != nil {
+		panic("Internal config access error: " + err.Error())
+	}
+	viewer := &RestServer{}
+	err = services.ParseConfig(byteValue, loaderInterface)
+	if err != nil {
+		panic("Internal config interpreter error: " + err.Error())
+	}
+
+	return viewer
 }

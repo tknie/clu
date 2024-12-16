@@ -20,6 +20,7 @@ import (
 	"github.com/go-faster/jx"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/tknie/clu/api"
+	"github.com/tknie/errorrepo"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
 )
@@ -31,7 +32,7 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, []
 	var fields []string
 	_, err := d.Query(query, func(search *common.Query, result *common.Result) error {
 		if result == nil {
-			return fmt.Errorf("result empty")
+			return errorrepo.NewError("REST00011")
 		}
 		if fields == nil {
 			fields = result.Fields

@@ -13,7 +13,6 @@ package webserver
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -21,6 +20,7 @@ import (
 	"github.com/tknie/clu/api"
 	"github.com/tknie/clu/plugins"
 	"github.com/tknie/clu/server"
+	"github.com/tknie/errorrepo"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
 	"github.com/tknie/services/auth"
@@ -74,7 +74,7 @@ func (sec SecurityHandler) HandleBearerAuth(ctx context.Context, operationName s
 	// The header: Authorization: Bearer {base64 string} (or ?access_token={base 64 string} param) has already
 	// been decoded by the runtime as a token
 	if err != nil {
-		p, err = server.Viewer.Server.WebToken.JWTContainsRoles(t.Token, []string{"admin", "user"})
+		p, err = clu.Viewer.Server.WebToken.JWTContainsRoles(t.Token, []string{"admin", "user"})
 		if err != nil {
 			log.Log.Errorf("Bearer authorization return: %v", err)
 			return nil, err
@@ -88,7 +88,7 @@ func (sec SecurityHandler) HandleBearerAuth(ctx context.Context, operationName s
 
 // HandleTokenCheck handler for Token to authentication
 func (sec SecurityHandler) HandleTokenCheck(ctx context.Context, operationName string, t api.TokenCheck) (context.Context, error) {
-	return nil, fmt.Errorf("not supported yet")
+	return nil, errorrepo.NewError("RERR00001")
 }
 
 // Request request secruity handler

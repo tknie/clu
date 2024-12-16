@@ -15,15 +15,14 @@
 package server
 
 import (
-	"fmt"
 	"image"
 	"io"
 )
 
 func heifdecoder(r io.Reader) (image.Image, error) {
-	return nil, fmt.Errorf("heif decoding not supported yet")
+	return nil, errorepo.NewError("REST00051")
 }
 
 func heifextractor(ra io.ReaderAt) ([]byte, error) {
-	return nil, fmt.Errorf("heif decoding not supported yet")
+	return nil, errorepo.NewError("REST00051")
 }

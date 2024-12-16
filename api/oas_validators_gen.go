@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/go-faster/errors"
+	"github.com/tknie/errorrepo"
 
 	"github.com/ogen-go/ogen/validate"
 )
@@ -534,7 +535,7 @@ func (s GetPermissionList) Validate() error {
 	case "userrole":
 		return nil
 	default:
-		return errors.Errorf("invalid value: %v", s)
+		return errorrepo.NewError("RERR00012", s)
 	}
 }
 

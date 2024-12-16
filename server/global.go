@@ -18,12 +18,11 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"path"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/tknie/errorrepo"
+	"github.com/tknie/clu"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
 	"github.com/tknie/services/auth"
@@ -32,83 +31,31 @@ import (
 // INSTALLDIR installation directory environment
 const INSTALLDIR = "INSTALLDIR"
 
-// LoadMessages load all REST server embed message templates
-func LoadMessages() {
-	fss, err := embedFiles.ReadDir("messages")
-	if err != nil {
-		panic("Internal config load error: " + err.Error())
-	}
-	for _, f := range fss {
-		if f.Type().IsRegular() {
-			byteValue, err := embedFiles.ReadFile("messages/" + f.Name())
-			if err != nil {
-				panic("Internal config load error: " + err.Error())
-			}
-			lang := path.Ext(f.Name())
-			errorrepo.RegisterMessage(lang[1:], string(byteValue))
-		}
-	}
-	// errorrepo.RegisterDirectory(fss)
-}
-
-// LoadConfig load xml configuration file
-// The components are used to load and inject the configuration
-func LoadConfig(watch bool, loaderInterface services.ConfigInterface) error {
-	currentConfig = os.Getenv(DefaultConfigFileEnv)
-	if currentConfig == "" {
-		currentConfig = os.ExpandEnv("${SERVER_HOME}/configuration/config.yaml")
-	}
-	Viewer = &RestServer{}
-	err := services.LoadConfig(currentConfig, loaderInterface, watch)
-	if err != nil {
-		services.ServerErrorMessage("RERR00042", err)
-		/*if skipTemplate {
-			return adaErr
-		}*/
-		services.ServerMessage("Loading config template (%v)", err)
-		Viewer = loadConfigurationTemplate(loaderInterface)
-		services.ServerMessage("Using embed template configuration")
-	}
-	adaptLogInstances()
-	return nil
-}
-
-func adaptLogInstances() {
-	// if log.Log != log.Log {
-	// 	// log.Log = log.Log
-	// 	log.SetDebugLevel(log.IsDebugLevel())
-	// 	log.Log.Debugf("DEBUG: Testing log ....")
-	// 	log.Log.Infof("INFO:  Testing log ....")
-	// 	log.Log.Errorf("ERROR: Testing log ....")
-	// 	log.Log.Debugf("DEBUG: Testing adatype log ....")
-	// }
-}
-
 // InitConfig load xml configuration file
 // The components are used to load and inject the configuration
 func InitConfig(watch bool) error {
-	err := LoadConfig(watch, loader)
+	err := clu.LoadConfig(watch, loader)
 	if err != nil {
 		return err
 	}
-	if len(Viewer.Server.LoginService.AuthenticationServer) == 0 {
+	if len(clu.Viewer.Server.LoginService.AuthenticationServer) == 0 {
 		services.ServerMessage("No authentication configuration found, using default configuration")
 		a := &auth.AuthenticationServer{Type: "file", PasswordFile: "configuration/realm.properties"}
-		Viewer.Server.LoginService.AuthenticationServer = append(Viewer.Server.LoginService.AuthenticationServer, a)
+		clu.Viewer.Server.LoginService.AuthenticationServer = append(clu.Viewer.Server.LoginService.AuthenticationServer, a)
 	}
-	auth.AuthenticationConfig = &auth.Authentication{AuthenticationServer: Viewer.Server.LoginService.AuthenticationServer}
-	if Viewer.Server.WebToken != nil {
-		err = Viewer.Server.WebToken.InitWebTokenJose2()
+	auth.AuthenticationConfig = &auth.Authentication{AuthenticationServer: clu.Viewer.Server.LoginService.AuthenticationServer}
+	if clu.Viewer.Server.WebToken != nil {
+		err = clu.Viewer.Server.WebToken.InitWebTokenJose2()
 		if err != nil {
 			services.ServerErrorMessage("RERR00044", err.Error())
 			os.Exit(44)
 		}
 	}
-	err = auth.LoadUsers(auth.AdministratorRole, Viewer.Server.LoginService.Administrators)
+	err = auth.LoadUsers(auth.AdministratorRole, clu.Viewer.Server.LoginService.Administrators)
 	if err != nil {
 		return err
 	}
-	err = auth.LoadUsers(auth.UserRole, Viewer.Server.LoginService.Users)
+	err = auth.LoadUsers(auth.UserRole, clu.Viewer.Server.LoginService.Users)
 	if err != nil {
 		return err
 	}
@@ -122,7 +69,7 @@ func initEnvironmentConfig() {
 	os.Setenv("PGAPPNAME", "CLU Rest-Server")
 
 	// Check port configuration to be set via environment
-	if Viewer != nil {
+	if clu.Viewer != nil {
 		host := os.Getenv("HOST")
 		if host == "" {
 			os.Setenv("HOST", "")
@@ -131,7 +78,7 @@ func initEnvironmentConfig() {
 		if host == "" {
 			os.Setenv("TLS_HOST", "")
 		}
-		for _, s := range Viewer.Server.Service {
+		for _, s := range clu.Viewer.Server.Service {
 			switch strings.ToLower(s.Type) {
 			case "http":
 				os.Setenv("PORT", strconv.Itoa(s.Port))
@@ -146,33 +93,17 @@ func initEnvironmentConfig() {
 // AdaptConfig adapt and reload xml configuration file
 func AdaptConfig(config string) {
 	log.Log.Debugf("Adapting config %s", config)
-	if config != "" && config != currentConfig {
+	if config != "" && config != clu.CurrentConfig {
 		services.LoadConfig(config, loader, true)
 	}
-	LoadedConfig()
+	clu.LoadedConfig()
 }
 
 // StoreConfig store the current config, wraps the REST server configuration
 // and uses components to store the current configuration
 func StoreConfig() error {
-	err := services.StoreConfig(currentConfig, loader)
+	err := services.StoreConfig(clu.CurrentConfig, loader)
 	return err
-}
-
-// loadConfigurationTemplate load default configuration available as
-// embed file in the binary
-func loadConfigurationTemplate(loaderInterface services.ConfigInterface) *RestServer {
-	byteValue, err := embedConfig.ReadFile("config.yaml")
-	if err != nil {
-		panic("Internal config access error: " + err.Error())
-	}
-	viewer := &RestServer{}
-	err = services.ParseConfig(byteValue, loaderInterface)
-	if err != nil {
-		panic("Internal config interpreter error: " + err.Error())
-	}
-
-	return viewer
 }
 
 // ConvertByteArrayToString convert byte array to string by evaluating
@@ -191,7 +122,7 @@ func GenerateShutdownHash() string {
 	tnow := t.Unix()
 	torg := tnow - tnow%60
 	h := sha1.New()
-	dc := fmt.Sprintf("%s-%d", Viewer.Server.Shutdown.Passcode.Value, torg)
+	dc := fmt.Sprintf("%s-%d", clu.Viewer.Server.Shutdown.Passcode.Value, torg)
 	h.Write([]byte(dc))
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
@@ -200,7 +131,7 @@ func GenerateShutdownHash() string {
 func DefaultPIDFile() string {
 	p := os.Getenv("TEMP")
 	if p == "" {
-		p = os.Getenv(INSTALLDIR) + string(os.PathSeparator) + InstallationDirName +
+		p = os.Getenv(INSTALLDIR) + string(os.PathSeparator) + clu.InstallationDirName +
 			string(os.PathSeparator) + "tmp"
 	}
 	return p + string(os.PathSeparator) + "server.pid"

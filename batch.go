@@ -12,10 +12,10 @@
 package clu
 
 import (
-	"fmt"
 	"os"
 	"sync"
 
+	"github.com/tknie/errorrepo"
 	"github.com/tknie/flynn"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
@@ -48,6 +48,19 @@ func openBatchRepository() (common.RegDbID, error) {
 		return 0, err
 	}
 	return sessionStoreID, nil
+}
+
+// InitBatchWatcher initialize batch watcher
+func InitBatchWatcher() {
+	// dm := Viewer.Database.BatchRepository
+	// if dm != nil {
+	// 	r, err := Handles(dm)
+	// 	if err == nil {
+	// 		clu.InitBatchRepository(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
+	// 	} else {
+	// 		log.Fatal("batch repository store not being able to start:", err)
+	// 	}
+	// }
 }
 
 // InitBatchRepository init batch repository
@@ -89,7 +102,7 @@ func BatchSelect(batchname string) (*BatchEntry, error) {
 	log.Log.Debugf("batch select online = %v", batchStoreOnline)
 	if !batchStoreOnline {
 		log.Log.Debugf("batch rep disabled online = %v", batchStoreOnline)
-		return nil, fmt.Errorf("error batch repository disabled")
+		return nil, errorrepo.NewError("REST00003")
 	}
 	batchLock.Lock()
 	defer batchLock.Unlock()
@@ -119,7 +132,7 @@ func BatchSelect(batchname string) (*BatchEntry, error) {
 	}
 	if b == nil {
 		log.Log.Debugf("Fail batch select online = %v", batchStoreOnline)
-		return nil, fmt.Errorf("error batch entry not found")
+		return nil, errorrepo.NewError("REST00004")
 	}
 	log.Log.Debugf("Return batch select online = %v", batchStoreOnline)
 	return b, nil

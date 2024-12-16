@@ -21,6 +21,7 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
+	"github.com/tknie/errorrepo"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
 	"github.com/tknie/services/auth"
@@ -159,7 +160,7 @@ func parseJx(v jx.Raw) (any, error) {
 	default:
 		fmt.Println("Unknown type ->>", v.Type().String())
 	}
-	return nil, fmt.Errorf("json type unknown")
+	return nil, errorrepo.NewError("REST00050")
 }
 
 // DeleteRecordsSearched implements deleteRecordsSearched operation.

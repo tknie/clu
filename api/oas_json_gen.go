@@ -366,7 +366,7 @@ func (s *BrowseLocationOK) Decode(d *jx.Decoder) error {
 	}
 	// Sum type fields.
 	if typ := d.Next(); typ != jx.Object {
-		return errors.Errorf("unexpected json type %q", typ)
+		return errors.Errorf("unexpected json type %q", typ) // RERR00003
 	}
 
 	var found bool

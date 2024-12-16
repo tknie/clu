@@ -33,7 +33,7 @@ import (
 type databaseRegister struct {
 	readCount uint64
 	reference *common.Reference
-	database  *Database
+	database  *clu.Database
 }
 
 // dbDictionary map of hash to database registry entry
@@ -44,7 +44,7 @@ var dbTableMap = sync.Map{}
 
 // init config update tracker to tracke changes
 func init() {
-	RegisterConfigUpdates(initRegister)
+	clu.RegisterConfigUpdates(initRegister)
 }
 
 // initRegister initialize database register getting all current available database
@@ -64,12 +64,12 @@ func loadTableThread() {
 	}
 }
 
-func databaseHash(dm *Database) string {
+func databaseHash(dm *clu.Database) string {
 	return fmt.Sprintf("%X", md5.Sum([]byte(dm.String())))
 }
 
 // Handles handle database
-func Handles(dm *Database) (*common.Reference, error) {
+func Handles(dm *clu.Database) (*common.Reference, error) {
 	dHash := databaseHash(dm)
 	if e, ok := dbDictionary.Load(dHash); ok {
 		regEntry := e.(*databaseRegister)
@@ -82,13 +82,13 @@ func Handles(dm *Database) (*common.Reference, error) {
 	log.Log.Debugf("Handles %s", target)
 	ref, _, err := common.NewReference(target)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing target <%s>: %s -> %s", dm.Target, err, target)
+		return nil, errorrepo.NewError("REST00500", dm.Target, err, target)
 	}
 	log.Log.Debugf("Register database handler for target %s", dm.Target)
 	_, err = flynn.Handler(ref, os.ExpandEnv(dm.Password))
 	if err != nil {
 		services.ServerMessage("Error registering database <%s>: %v", dm.Target, err)
-		return nil, fmt.Errorf("error registering database")
+		return nil, errorrepo.NewError("REST00501")
 	}
 	dbDictionary.Store(dHash,
 		&databaseRegister{reference: ref, readCount: 1, database: dm})
@@ -101,7 +101,7 @@ func Handles(dm *Database) (*common.Reference, error) {
 }
 
 func initTableOfDatabases() {
-	for _, dm := range Viewer.Database.DatabaseAccess.Database {
+	for _, dm := range clu.Viewer.Database.DatabaseAccess.Database {
 		Handles(&dm)
 	}
 }
@@ -123,7 +123,7 @@ func checkFilter(filters []string, table string) bool {
 
 func loadTableOfDatabases() {
 	log.Log.Debugf("Refreshing database list")
-	for _, dm := range Viewer.Database.DatabaseAccess.Database {
+	for _, dm := range clu.Viewer.Database.DatabaseAccess.Database {
 		log.Log.Debugf("Access database %s with user %s", dm.Target, dm.User)
 		//u := dm.URL
 		//m := regexp.MustCompile(`(?m):[^:]*@`)
@@ -221,7 +221,7 @@ func ConnectTable(ctx *clu.Context, table string) (common.RegDbID, error) {
 	if err != nil {
 		services.ServerMessage("Error connecting database %s:%d...%v",
 			refCopy.Host, refCopy.Port, err)
-		return 0, fmt.Errorf("error connecting database")
+		return 0, errorrepo.NewError("REST00200", err)
 	}
 	log.Log.Debugf("Got connectiion to database handle %s", id)
 	return id, nil
