@@ -22,7 +22,7 @@ import (
 func InitDatabaseStores() error {
 	dm := clu.Viewer.Database.UserInfo
 	if dm != nil {
-		r, err := Handles(dm)
+		r, err := dm.Handles()
 		if err == nil {
 			clu.InitUserInfo(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
 		} else {
@@ -33,7 +33,7 @@ func InitDatabaseStores() error {
 		dm = clu.Viewer.Database.SessionInfo.Database
 		if dm != nil {
 			clu.DeleteUUID = clu.Viewer.Database.SessionInfo.DeleteUUID
-			r, err := Handles(dm)
+			r, err := dm.Handles()
 			if err == nil {
 				clu.InitStoreInfo(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
 			} else {
@@ -41,14 +41,7 @@ func InitDatabaseStores() error {
 			}
 		}
 	}
-	dm = clu.Viewer.Database.BatchRepository
-	if dm != nil {
-		r, err := Handles(dm)
-		if err == nil {
-			clu.InitBatchRepository(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table))
-		} else {
-			log.Fatal("batch repository store not being able to start:", err)
-		}
-	}
+	go clu.InitBatchWatcher()
+
 	return nil
 }

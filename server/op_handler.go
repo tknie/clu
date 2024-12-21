@@ -53,7 +53,7 @@ func (Handler) GetMaps(ctx context.Context) (r api.GetMapsRes, _ error) {
 	}
 
 	maps := make([]api.Map, 0)
-	for _, m := range GetAllViews() {
+	for _, m := range clu.GetAllViews() {
 		maps = append(maps, api.Map(m))
 	}
 	r = &api.Maps{Maps: maps}

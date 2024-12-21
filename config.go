@@ -12,15 +12,22 @@
 package clu
 
 import (
+	"crypto/md5"
 	"embed"
+	"fmt"
 	"os"
 	"path"
+	"path/filepath"
+	"slices"
 	"strconv"
+	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/go-openapi/runtime/flagext"
 	"github.com/tknie/errorrepo"
+	"github.com/tknie/flynn"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
 	"github.com/tknie/services"
@@ -208,6 +215,16 @@ type Database struct {
 	AuthenticationGlobal bool     `yaml:"global_authentication,omitempty"`
 }
 
+// DatabaseRegister database register
+type DatabaseRegister struct {
+	readCount uint64
+	Reference *common.Reference
+	Database  *Database
+}
+
+// dbDictionary map of hash to database registry entry
+var dbDictionary = sync.Map{}
+
 var adadatadir string
 var installation []string
 
@@ -224,6 +241,9 @@ var allCallbacks = make([]func(), 0)
 var lock sync.Mutex
 var loadedAlready = false
 
+// dbTableMap map of database table and registry entry
+var dbTableMap = sync.Map{}
+
 // RegisterConfigUpdates register configuration trigger function
 func RegisterConfigUpdates(f func()) {
 	log.Log.Debugf("Registry function")
@@ -235,6 +255,46 @@ func RegisterConfigUpdates(f func()) {
 	}
 }
 
+// CheckDatabaseRegister check database register
+func CheckDatabaseRegister(s string, id *common.Reference) bool {
+	if sid, ok := dbTableMap.Load(s); ok {
+		if sid.(*DatabaseRegister).Reference != id {
+			return true
+		}
+	}
+	return false
+}
+
+// checkFilter checks the filters array if it match to the given table
+func checkFilter(filters []string, table string) bool {
+	log.Log.Debugf("Check filters: %v search %s", filters, table)
+	if len(filters) == 0 {
+		return true
+	}
+	checkTable := strings.ToLower(table)
+	for _, filter := range filters {
+		if ok, _ := filepath.Match(strings.ToLower(filter), checkTable); ok {
+			return true
+		}
+	}
+	return slices.Contains(filters, strings.ToLower(table))
+}
+
+// RegisterDatabase register database for table
+func RegisterDatabase(dm Database, s string, id *common.Reference) bool {
+	if checkFilter(dm.Tables, s) {
+		name := strings.ToLower(s)
+		if _, ok := dbTableMap.Load(name); !ok {
+			log.Log.Debugf("Append table: %s", s)
+			dbTableMap.Store(s, &DatabaseRegister{Reference: id, Database: &dm})
+			return true
+		}
+	}
+	log.Log.Debugf("Ignore table: %s", s)
+
+	return false
+}
+
 // LoadedConfig triggered by configuration load
 func LoadedConfig() {
 	lock.Lock()
@@ -244,6 +304,17 @@ func LoadedConfig() {
 		f()
 	}
 	services.ServerMessage("Load of configuration completed")
+}
+
+// SearchTable search table ref ID
+func SearchTable(table string) (*DatabaseRegister, error) {
+	name := strings.ToLower(table)
+	if d, ok := dbTableMap.Load(name); ok {
+		dicEntry := d.(*DatabaseRegister)
+		atomic.AddUint64(&dicEntry.readCount, 1)
+		return dicEntry, nil
+	}
+	return nil, errorrepo.NewError("RERR01000", table)
 }
 
 // String representation of Database instance
@@ -391,4 +462,74 @@ func loadConfigurationTemplate(loaderInterface services.ConfigInterface) *RestSe
 	}
 
 	return viewer
+}
+
+func (db *Database) databaseHash() string {
+	return fmt.Sprintf("%X", md5.Sum([]byte(db.String())))
+}
+
+// Handles handle database
+func (db *Database) Handles() (*common.Reference, error) {
+	dHash := db.databaseHash()
+	if e, ok := dbDictionary.Load(dHash); ok {
+		regEntry := e.(*DatabaseRegister)
+		log.Log.Debugf("Found database hash %s", dHash)
+		atomic.AddUint64(&regEntry.readCount, 1)
+		return regEntry.Reference, nil
+	}
+	log.Log.Debugf("Add database hash %s", dHash)
+	target := os.ExpandEnv(db.Target)
+	log.Log.Debugf("Handles %s", target)
+	ref, _, err := common.NewReference(target)
+	if err != nil {
+		return nil, errorrepo.NewError("REST00500", db.Target, err, target)
+	}
+	log.Log.Debugf("Register database handler for target %s", db.Target)
+	_, err = flynn.Handler(ref, os.ExpandEnv(db.Password))
+	if err != nil {
+		services.ServerMessage("Error registering database <%s>: %v", db.Target, err)
+		return nil, errorrepo.NewError("REST00501")
+	}
+	dbDictionary.Store(dHash,
+		&DatabaseRegister{Reference: ref, readCount: 1, Database: db})
+	for i := 0; i < len(db.Tables); i++ {
+		db.Tables[i] = strings.ToLower(db.Tables[i])
+	}
+	log.Log.Infof("Registered database driver=%s to %s:%d/%s",
+		db.Driver, ref.Host, ref.Port, ref.Database)
+	return ref, nil
+}
+
+// GetAllViews get all table and view names
+func GetAllViews() []string {
+	viewList := make([]string, 0)
+	dbTableMap.Range(func(key, value any) bool {
+		viewList = append(viewList, key.(string))
+		return true
+	})
+	return viewList
+}
+
+// DumpStat dump database access statistics to log
+func DumpStat() {
+	tableStat := "Registered Database access\n  "
+	counter := 0
+	dbTableMap.Range(func(key, value any) bool {
+		tableEntry := value.(*DatabaseRegister)
+		// log.Log.Infof("Database with table %s count: %d", key, tableEntry.readCount)
+		if tableEntry.readCount > 0 {
+			counter++
+			if counter%4 == 0 {
+				tableStat += "\n  "
+			}
+			tableStat += fmt.Sprintf("%20s=%05d ", key, tableEntry.readCount)
+		}
+		return true
+	})
+	if counter > 0 {
+		log.Log.Infof(tableStat)
+	} else {
+		log.Log.Infof("No database access registered")
+	}
+
 }

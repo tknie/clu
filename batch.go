@@ -14,6 +14,7 @@ package clu
 import (
 	"os"
 	"sync"
+	"time"
 
 	"github.com/tknie/errorrepo"
 	"github.com/tknie/flynn"
@@ -61,16 +62,30 @@ func InitBatchWatcher() {
 	// 		log.Fatal("batch repository store not being able to start:", err)
 	// 	}
 	// }
+	dm := Viewer.Database.BatchRepository
+	if dm != nil {
+		for {
+			r, err := dm.Handles()
+			if err == nil {
+				if InitBatchRepository(r, os.ExpandEnv(dm.Password), os.ExpandEnv(dm.Table)) {
+					break
+				}
+				time.Sleep(5 * time.Minute)
+			} else {
+				services.ServerMessage("Batch repository store not being able to start: %v", err)
+			}
+		}
+	}
 }
 
 // InitBatchRepository init batch repository
-func InitBatchRepository(dbRef *common.Reference, dbPassword, tablename string) {
+func InitBatchRepository(dbRef *common.Reference, dbPassword, tablename string) bool {
 	batchDbRef = dbRef
 	batchDbPassword = dbPassword
 	batchStoreID, err := openBatchRepository()
 	if err != nil {
 		services.ServerMessage("Register error log: %v", err)
-		return
+		return false
 	}
 	log.Log.Debugf("Receive batch store handler %s", batchStoreID)
 	defer batchStoreID.FreeHandler()
@@ -83,18 +98,19 @@ func InitBatchRepository(dbRef *common.Reference, dbPassword, tablename string) 
 			batchStoreOnline = true
 			log.Log.Debugf("batch store online = %v", batchStoreOnline)
 			services.ServerMessage("Using batch repository on table '%s'", batchtablename)
-			return
+			return true
 		}
 	}
 	su := &BatchEntry{}
 	err = batchStoreID.CreateTable(tablename, su)
 	if err != nil {
 		services.ServerMessage("Database batch store creating failed: %v", err)
-		return
+		return false
 	}
 	batchtablename = tablename
 	batchStoreOnline = true
 	services.ServerMessage("Database batch store '%s' created successfully", batchtablename)
+	return true
 }
 
 // BatchSelect search for batchname in an batch repository
