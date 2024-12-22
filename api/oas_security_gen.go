@@ -16,10 +16,10 @@ import (
 type SecurityHandler interface {
 	// HandleBasicAuth handles BasicAuth security.
 	// HTTP Basic Authentication. Works over `HTTP` and `HTTPS`.
-	HandleBasicAuth(ctx context.Context, operationName string, t BasicAuth) (context.Context, error)
+	HandleBasicAuth(ctx context.Context, operationName OperationName, t BasicAuth) (context.Context, error)
 	// HandleBearerAuth handles BearerAuth security.
 	// HTTP Bearer Authentication. Works over `HTTP` and `HTTPS`.
-	HandleBearerAuth(ctx context.Context, operationName string, t BearerAuth) (context.Context, error)
+	HandleBearerAuth(ctx context.Context, operationName OperationName, t BearerAuth) (context.Context, error)
 	// HandleTokenCheck handles tokenCheck security.
 	// HTTP Basic Authentication. Works over `HTTP` and `HTTPS`.
 	HandleTokenCheck(ctx context.Context, operationName string, t TokenCheck) (context.Context, error)
@@ -42,7 +42,7 @@ func findAuthorization(h http.Header, prefix string) (string, bool) {
 	return "", false
 }
 
-func (s *Server) securityBasicAuth(ctx context.Context, operationName string, req *http.Request) (context.Context, bool, error) {
+func (s *Server) securityBasicAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
 	var t BasicAuth
 	if _, ok := findAuthorization(req.Header, "Basic"); !ok {
 		return ctx, false, nil
@@ -64,8 +64,7 @@ func (s *Server) securityBasicAuth(ctx context.Context, operationName string, re
 
 	return rctx, true, err
 }
-
-func (s *Server) securityBearerAuth(ctx context.Context, operationName string, req *http.Request) (context.Context, bool, error) {
+func (s *Server) securityBearerAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
 	var t BearerAuth
 	token, ok := findAuthorization(req.Header, "Bearer")
 	if !ok {
@@ -83,8 +82,7 @@ func (s *Server) securityBearerAuth(ctx context.Context, operationName string, r
 
 	return rctx, true, err
 }
-
-func (s *Server) securityTokenCheck(ctx context.Context, operationName string, req *http.Request) (context.Context, bool, error) {
+func (s *Server) securityTokenCheck(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
 	var t TokenCheck
 	const parameterName = "X-Tokencheck"
 	value := req.Header.Get(parameterName)
@@ -108,16 +106,16 @@ func (s *Server) securityTokenCheck(ctx context.Context, operationName string, r
 type SecuritySource interface {
 	// BasicAuth provides BasicAuth security value.
 	// HTTP Basic Authentication. Works over `HTTP` and `HTTPS`.
-	BasicAuth(ctx context.Context, operationName string) (BasicAuth, error)
+	BasicAuth(ctx context.Context, operationName OperationName) (BasicAuth, error)
 	// BearerAuth provides BearerAuth security value.
 	// HTTP Bearer Authentication. Works over `HTTP` and `HTTPS`.
-	BearerAuth(ctx context.Context, operationName string) (BearerAuth, error)
+	BearerAuth(ctx context.Context, operationName OperationName) (BearerAuth, error)
 	// TokenCheck provides tokenCheck security value.
 	// HTTP Basic Authentication. Works over `HTTP` and `HTTPS`.
-	TokenCheck(ctx context.Context, operationName string) (TokenCheck, error)
+	TokenCheck(ctx context.Context, operationName OperationName) (TokenCheck, error)
 }
 
-func (s *Client) securityBasicAuth(ctx context.Context, operationName string, req *http.Request) error {
+func (s *Client) securityBasicAuth(ctx context.Context, operationName OperationName, req *http.Request) error {
 	t, err := s.sec.BasicAuth(ctx, operationName)
 	if err != nil {
 		return errors.Wrap(err, "security source \"BasicAuth\"")
@@ -125,7 +123,7 @@ func (s *Client) securityBasicAuth(ctx context.Context, operationName string, re
 	req.SetBasicAuth(t.Username, t.Password)
 	return nil
 }
-func (s *Client) securityBearerAuth(ctx context.Context, operationName string, req *http.Request) error {
+func (s *Client) securityBearerAuth(ctx context.Context, operationName OperationName, req *http.Request) error {
 	t, err := s.sec.BearerAuth(ctx, operationName)
 	if err != nil {
 		return errors.Wrap(err, "security source \"BearerAuth\"")
@@ -133,7 +131,7 @@ func (s *Client) securityBearerAuth(ctx context.Context, operationName string, r
 	req.Header.Set("Authorization", "Bearer "+t.Token)
 	return nil
 }
-func (s *Client) securityTokenCheck(ctx context.Context, operationName string, req *http.Request) error {
+func (s *Client) securityTokenCheck(ctx context.Context, operationName OperationName, req *http.Request) error {
 	t, err := s.sec.TokenCheck(ctx, operationName)
 	if err != nil {
 		return errors.Wrap(err, "security source \"TokenCheck\"")

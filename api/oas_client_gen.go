@@ -469,14 +469,14 @@ func (c *Client) sendAdaptPermission(ctx context.Context, params AdaptPermission
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "AdaptPermission",
+	ctx, span := c.cfg.Tracer.Start(ctx, AdaptPermissionOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -527,7 +527,7 @@ func (c *Client) sendAdaptPermission(ctx context.Context, params AdaptPermission
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "AdaptPermission", r); {
+			switch err := c.securityBasicAuth(ctx, AdaptPermissionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -538,7 +538,7 @@ func (c *Client) sendAdaptPermission(ctx context.Context, params AdaptPermission
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "AdaptPermission", r); {
+			switch err := c.securityTokenCheck(ctx, AdaptPermissionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -549,7 +549,7 @@ func (c *Client) sendAdaptPermission(ctx context.Context, params AdaptPermission
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "AdaptPermission", r); {
+			switch err := c.securityBearerAuth(ctx, AdaptPermissionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -617,14 +617,14 @@ func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res Add
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "AddView",
+	ctx, span := c.cfg.Tracer.Start(ctx, AddViewOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -688,7 +688,7 @@ func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res Add
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "AddView", r); {
+			switch err := c.securityBasicAuth(ctx, AddViewOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -699,7 +699,7 @@ func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res Add
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "AddView", r); {
+			switch err := c.securityTokenCheck(ctx, AddViewOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -710,7 +710,7 @@ func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res Add
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "AddView", r); {
+			switch err := c.securityBearerAuth(ctx, AddViewOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -778,14 +778,14 @@ func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParame
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "BatchParameterQuery",
+	ctx, span := c.cfg.Tracer.Start(ctx, BatchParameterQueryOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -854,7 +854,7 @@ func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParame
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "BatchParameterQuery", r); {
+			switch err := c.securityBasicAuth(ctx, BatchParameterQueryOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -865,7 +865,7 @@ func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParame
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "BatchParameterQuery", r); {
+			switch err := c.securityTokenCheck(ctx, BatchParameterQueryOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -876,7 +876,7 @@ func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParame
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "BatchParameterQuery", r); {
+			switch err := c.securityBearerAuth(ctx, BatchParameterQueryOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -944,14 +944,14 @@ func (c *Client) sendBatchQuery(ctx context.Context, request BatchQueryReq, para
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "BatchQuery",
+	ctx, span := c.cfg.Tracer.Start(ctx, BatchQueryOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1004,7 +1004,7 @@ func (c *Client) sendBatchQuery(ctx context.Context, request BatchQueryReq, para
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "BatchQuery", r); {
+			switch err := c.securityBasicAuth(ctx, BatchQueryOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1015,7 +1015,7 @@ func (c *Client) sendBatchQuery(ctx context.Context, request BatchQueryReq, para
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "BatchQuery", r); {
+			switch err := c.securityTokenCheck(ctx, BatchQueryOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1026,7 +1026,7 @@ func (c *Client) sendBatchQuery(ctx context.Context, request BatchQueryReq, para
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "BatchQuery", r); {
+			switch err := c.securityBearerAuth(ctx, BatchQueryOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1094,14 +1094,14 @@ func (c *Client) sendBatchSelect(ctx context.Context, params BatchSelectParams) 
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "BatchSelect",
+	ctx, span := c.cfg.Tracer.Start(ctx, BatchSelectOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1181,7 +1181,7 @@ func (c *Client) sendBatchSelect(ctx context.Context, params BatchSelectParams) 
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "BatchSelect", r); {
+			switch err := c.securityBasicAuth(ctx, BatchSelectOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1192,7 +1192,7 @@ func (c *Client) sendBatchSelect(ctx context.Context, params BatchSelectParams) 
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "BatchSelect", r); {
+			switch err := c.securityTokenCheck(ctx, BatchSelectOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1203,7 +1203,7 @@ func (c *Client) sendBatchSelect(ctx context.Context, params BatchSelectParams) 
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "BatchSelect", r); {
+			switch err := c.securityBearerAuth(ctx, BatchSelectOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1271,14 +1271,14 @@ func (c *Client) sendBrowseList(ctx context.Context) (res BrowseListRes, err err
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "BrowseList",
+	ctx, span := c.cfg.Tracer.Start(ctx, BrowseListOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1310,7 +1310,7 @@ func (c *Client) sendBrowseList(ctx context.Context) (res BrowseListRes, err err
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "BrowseList", r); {
+			switch err := c.securityBasicAuth(ctx, BrowseListOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1321,7 +1321,7 @@ func (c *Client) sendBrowseList(ctx context.Context) (res BrowseListRes, err err
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "BrowseList", r); {
+			switch err := c.securityTokenCheck(ctx, BrowseListOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1332,7 +1332,7 @@ func (c *Client) sendBrowseList(ctx context.Context) (res BrowseListRes, err err
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "BrowseList", r); {
+			switch err := c.securityBearerAuth(ctx, BrowseListOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1400,14 +1400,14 @@ func (c *Client) sendBrowseLocation(ctx context.Context, params BrowseLocationPa
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "BrowseLocation",
+	ctx, span := c.cfg.Tracer.Start(ctx, BrowseLocationOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1478,7 +1478,7 @@ func (c *Client) sendBrowseLocation(ctx context.Context, params BrowseLocationPa
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "BrowseLocation", r); {
+			switch err := c.securityBasicAuth(ctx, BrowseLocationOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1489,7 +1489,7 @@ func (c *Client) sendBrowseLocation(ctx context.Context, params BrowseLocationPa
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "BrowseLocation", r); {
+			switch err := c.securityTokenCheck(ctx, BrowseLocationOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1500,7 +1500,7 @@ func (c *Client) sendBrowseLocation(ctx context.Context, params BrowseLocationPa
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "BrowseLocation", r); {
+			switch err := c.securityBearerAuth(ctx, BrowseLocationOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1568,14 +1568,14 @@ func (c *Client) sendCallExtend(ctx context.Context, params CallExtendParams) (r
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "CallExtend",
+	ctx, span := c.cfg.Tracer.Start(ctx, CallExtendOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1646,7 +1646,7 @@ func (c *Client) sendCallExtend(ctx context.Context, params CallExtendParams) (r
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "CallExtend", r); {
+			switch err := c.securityBasicAuth(ctx, CallExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1657,7 +1657,7 @@ func (c *Client) sendCallExtend(ctx context.Context, params CallExtendParams) (r
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "CallExtend", r); {
+			switch err := c.securityTokenCheck(ctx, CallExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1668,7 +1668,7 @@ func (c *Client) sendCallExtend(ctx context.Context, params CallExtendParams) (r
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "CallExtend", r); {
+			switch err := c.securityBearerAuth(ctx, CallExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1736,14 +1736,14 @@ func (c *Client) sendCallPostExtend(ctx context.Context, request *CallPostExtend
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "CallPostExtend",
+	ctx, span := c.cfg.Tracer.Start(ctx, CallPostExtendOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1814,7 +1814,7 @@ func (c *Client) sendCallPostExtend(ctx context.Context, request *CallPostExtend
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "CallPostExtend", r); {
+			switch err := c.securityBasicAuth(ctx, CallPostExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1825,7 +1825,7 @@ func (c *Client) sendCallPostExtend(ctx context.Context, request *CallPostExtend
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "CallPostExtend", r); {
+			switch err := c.securityTokenCheck(ctx, CallPostExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1836,7 +1836,7 @@ func (c *Client) sendCallPostExtend(ctx context.Context, request *CallPostExtend
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "CallPostExtend", r); {
+			switch err := c.securityBearerAuth(ctx, CallPostExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1904,14 +1904,14 @@ func (c *Client) sendCreateDirectory(ctx context.Context, params CreateDirectory
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "CreateDirectory",
+	ctx, span := c.cfg.Tracer.Start(ctx, CreateDirectoryOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1961,7 +1961,7 @@ func (c *Client) sendCreateDirectory(ctx context.Context, params CreateDirectory
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "CreateDirectory", r); {
+			switch err := c.securityBasicAuth(ctx, CreateDirectoryOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1972,7 +1972,7 @@ func (c *Client) sendCreateDirectory(ctx context.Context, params CreateDirectory
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "CreateDirectory", r); {
+			switch err := c.securityTokenCheck(ctx, CreateDirectoryOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -1983,7 +1983,7 @@ func (c *Client) sendCreateDirectory(ctx context.Context, params CreateDirectory
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "CreateDirectory", r); {
+			switch err := c.securityBearerAuth(ctx, CreateDirectoryOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2051,14 +2051,14 @@ func (c *Client) sendDeleteExtend(ctx context.Context, params DeleteExtendParams
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteExtend",
+	ctx, span := c.cfg.Tracer.Start(ctx, DeleteExtendOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -2126,7 +2126,7 @@ func (c *Client) sendDeleteExtend(ctx context.Context, params DeleteExtendParams
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DeleteExtend", r); {
+			switch err := c.securityBasicAuth(ctx, DeleteExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2137,7 +2137,7 @@ func (c *Client) sendDeleteExtend(ctx context.Context, params DeleteExtendParams
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DeleteExtend", r); {
+			switch err := c.securityTokenCheck(ctx, DeleteExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2148,7 +2148,7 @@ func (c *Client) sendDeleteExtend(ctx context.Context, params DeleteExtendParams
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DeleteExtend", r); {
+			switch err := c.securityBearerAuth(ctx, DeleteExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2216,14 +2216,14 @@ func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLo
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteFileLocation",
+	ctx, span := c.cfg.Tracer.Start(ctx, DeleteFileLocationOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -2294,7 +2294,7 @@ func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLo
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DeleteFileLocation", r); {
+			switch err := c.securityBasicAuth(ctx, DeleteFileLocationOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2305,7 +2305,7 @@ func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLo
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DeleteFileLocation", r); {
+			switch err := c.securityTokenCheck(ctx, DeleteFileLocationOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2316,7 +2316,7 @@ func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLo
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DeleteFileLocation", r); {
+			switch err := c.securityBearerAuth(ctx, DeleteFileLocationOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2384,14 +2384,14 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteJobResult",
+	ctx, span := c.cfg.Tracer.Start(ctx, DeleteJobResultOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -2460,7 +2460,7 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DeleteJobResult", r); {
+			switch err := c.securityBasicAuth(ctx, DeleteJobResultOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2471,7 +2471,7 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DeleteJobResult", r); {
+			switch err := c.securityTokenCheck(ctx, DeleteJobResultOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2482,7 +2482,7 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DeleteJobResult", r); {
+			switch err := c.securityBearerAuth(ctx, DeleteJobResultOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2550,14 +2550,14 @@ func (c *Client) sendDeleteRecordsSearched(ctx context.Context, params DeleteRec
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteRecordsSearched",
+	ctx, span := c.cfg.Tracer.Start(ctx, DeleteRecordsSearchedOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -2783,7 +2783,7 @@ func (c *Client) sendDeleteRecordsSearched(ctx context.Context, params DeleteRec
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DeleteRecordsSearched", r); {
+			switch err := c.securityBasicAuth(ctx, DeleteRecordsSearchedOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2794,7 +2794,7 @@ func (c *Client) sendDeleteRecordsSearched(ctx context.Context, params DeleteRec
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DeleteRecordsSearched", r); {
+			switch err := c.securityTokenCheck(ctx, DeleteRecordsSearchedOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2805,7 +2805,7 @@ func (c *Client) sendDeleteRecordsSearched(ctx context.Context, params DeleteRec
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DeleteRecordsSearched", r); {
+			switch err := c.securityBearerAuth(ctx, DeleteRecordsSearchedOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2873,14 +2873,14 @@ func (c *Client) sendDeleteView(ctx context.Context, params DeleteViewParams) (r
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DeleteView",
+	ctx, span := c.cfg.Tracer.Start(ctx, DeleteViewOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -2944,7 +2944,7 @@ func (c *Client) sendDeleteView(ctx context.Context, params DeleteViewParams) (r
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DeleteView", r); {
+			switch err := c.securityBasicAuth(ctx, DeleteViewOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2955,7 +2955,7 @@ func (c *Client) sendDeleteView(ctx context.Context, params DeleteViewParams) (r
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DeleteView", r); {
+			switch err := c.securityTokenCheck(ctx, DeleteViewOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -2966,7 +2966,7 @@ func (c *Client) sendDeleteView(ctx context.Context, params DeleteViewParams) (r
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DeleteView", r); {
+			switch err := c.securityBearerAuth(ctx, DeleteViewOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3034,14 +3034,14 @@ func (c *Client) sendDisconnectTCP(ctx context.Context, params DisconnectTCPPara
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DisconnectTCP",
+	ctx, span := c.cfg.Tracer.Start(ctx, DisconnectTCPOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -3130,7 +3130,7 @@ func (c *Client) sendDisconnectTCP(ctx context.Context, params DisconnectTCPPara
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DisconnectTCP", r); {
+			switch err := c.securityBasicAuth(ctx, DisconnectTCPOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3141,7 +3141,7 @@ func (c *Client) sendDisconnectTCP(ctx context.Context, params DisconnectTCPPara
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DisconnectTCP", r); {
+			switch err := c.securityTokenCheck(ctx, DisconnectTCPOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3152,7 +3152,7 @@ func (c *Client) sendDisconnectTCP(ctx context.Context, params DisconnectTCPPara
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DisconnectTCP", r); {
+			switch err := c.securityBearerAuth(ctx, DisconnectTCPOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3220,14 +3220,14 @@ func (c *Client) sendDownloadFile(ctx context.Context, params DownloadFileParams
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "DownloadFile",
+	ctx, span := c.cfg.Tracer.Start(ctx, DownloadFileOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -3277,7 +3277,7 @@ func (c *Client) sendDownloadFile(ctx context.Context, params DownloadFileParams
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "DownloadFile", r); {
+			switch err := c.securityBasicAuth(ctx, DownloadFileOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3288,7 +3288,7 @@ func (c *Client) sendDownloadFile(ctx context.Context, params DownloadFileParams
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "DownloadFile", r); {
+			switch err := c.securityTokenCheck(ctx, DownloadFileOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3299,7 +3299,7 @@ func (c *Client) sendDownloadFile(ctx context.Context, params DownloadFileParams
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "DownloadFile", r); {
+			switch err := c.securityBearerAuth(ctx, DownloadFileOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3367,14 +3367,14 @@ func (c *Client) sendGetConfig(ctx context.Context) (res GetConfigRes, err error
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetConfig",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetConfigOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -3406,7 +3406,7 @@ func (c *Client) sendGetConfig(ctx context.Context) (res GetConfigRes, err error
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetConfig", r); {
+			switch err := c.securityBasicAuth(ctx, GetConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3417,7 +3417,7 @@ func (c *Client) sendGetConfig(ctx context.Context) (res GetConfigRes, err error
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetConfig", r); {
+			switch err := c.securityTokenCheck(ctx, GetConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3428,7 +3428,7 @@ func (c *Client) sendGetConfig(ctx context.Context) (res GetConfigRes, err error
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetConfig", r); {
+			switch err := c.securityBearerAuth(ctx, GetConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3496,14 +3496,14 @@ func (c *Client) sendGetConnections(ctx context.Context, params GetConnectionsPa
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetConnections",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetConnectionsOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -3554,7 +3554,7 @@ func (c *Client) sendGetConnections(ctx context.Context, params GetConnectionsPa
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetConnections", r); {
+			switch err := c.securityBasicAuth(ctx, GetConnectionsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3565,7 +3565,7 @@ func (c *Client) sendGetConnections(ctx context.Context, params GetConnectionsPa
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetConnections", r); {
+			switch err := c.securityTokenCheck(ctx, GetConnectionsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3576,7 +3576,7 @@ func (c *Client) sendGetConnections(ctx context.Context, params GetConnectionsPa
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetConnections", r); {
+			switch err := c.securityBearerAuth(ctx, GetConnectionsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3644,14 +3644,14 @@ func (c *Client) sendGetDatabaseSessions(ctx context.Context, params GetDatabase
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetDatabaseSessions",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetDatabaseSessionsOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -3702,7 +3702,7 @@ func (c *Client) sendGetDatabaseSessions(ctx context.Context, params GetDatabase
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetDatabaseSessions", r); {
+			switch err := c.securityBasicAuth(ctx, GetDatabaseSessionsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3713,7 +3713,7 @@ func (c *Client) sendGetDatabaseSessions(ctx context.Context, params GetDatabase
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetDatabaseSessions", r); {
+			switch err := c.securityTokenCheck(ctx, GetDatabaseSessionsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3724,7 +3724,7 @@ func (c *Client) sendGetDatabaseSessions(ctx context.Context, params GetDatabase
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetDatabaseSessions", r); {
+			switch err := c.securityBearerAuth(ctx, GetDatabaseSessionsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3792,14 +3792,14 @@ func (c *Client) sendGetDatabases(ctx context.Context) (res GetDatabasesRes, err
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetDatabases",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetDatabasesOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -3831,7 +3831,7 @@ func (c *Client) sendGetDatabases(ctx context.Context) (res GetDatabasesRes, err
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetDatabases", r); {
+			switch err := c.securityBasicAuth(ctx, GetDatabasesOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3842,7 +3842,7 @@ func (c *Client) sendGetDatabases(ctx context.Context) (res GetDatabasesRes, err
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetDatabases", r); {
+			switch err := c.securityTokenCheck(ctx, GetDatabasesOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3853,7 +3853,7 @@ func (c *Client) sendGetDatabases(ctx context.Context) (res GetDatabasesRes, err
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetDatabases", r); {
+			switch err := c.securityBearerAuth(ctx, GetDatabasesOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3921,14 +3921,14 @@ func (c *Client) sendGetFields(ctx context.Context, params GetFieldsParams) (res
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetFields",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetFieldsOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -3979,7 +3979,7 @@ func (c *Client) sendGetFields(ctx context.Context, params GetFieldsParams) (res
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetFields", r); {
+			switch err := c.securityBasicAuth(ctx, GetFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -3990,7 +3990,7 @@ func (c *Client) sendGetFields(ctx context.Context, params GetFieldsParams) (res
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetFields", r); {
+			switch err := c.securityTokenCheck(ctx, GetFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4001,7 +4001,7 @@ func (c *Client) sendGetFields(ctx context.Context, params GetFieldsParams) (res
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetFields", r); {
+			switch err := c.securityBearerAuth(ctx, GetFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4069,14 +4069,14 @@ func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res G
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetImage",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetImageOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -4233,7 +4233,7 @@ func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res G
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetImage", r); {
+			switch err := c.securityBasicAuth(ctx, GetImageOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4244,7 +4244,7 @@ func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res G
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetImage", r); {
+			switch err := c.securityTokenCheck(ctx, GetImageOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4255,7 +4255,7 @@ func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res G
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetImage", r); {
+			switch err := c.securityBearerAuth(ctx, GetImageOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4323,14 +4323,14 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetJobExecutionResult",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetJobExecutionResultOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -4400,7 +4400,7 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetJobExecutionResult", r); {
+			switch err := c.securityBasicAuth(ctx, GetJobExecutionResultOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4411,7 +4411,7 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetJobExecutionResult", r); {
+			switch err := c.securityTokenCheck(ctx, GetJobExecutionResultOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4422,7 +4422,7 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetJobExecutionResult", r); {
+			switch err := c.securityBearerAuth(ctx, GetJobExecutionResultOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4490,14 +4490,14 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetJobFullInfo",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetJobFullInfoOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -4547,7 +4547,7 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetJobFullInfo", r); {
+			switch err := c.securityBasicAuth(ctx, GetJobFullInfoOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4558,7 +4558,7 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetJobFullInfo", r); {
+			switch err := c.securityTokenCheck(ctx, GetJobFullInfoOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4569,7 +4569,7 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetJobFullInfo", r); {
+			switch err := c.securityBearerAuth(ctx, GetJobFullInfoOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4637,14 +4637,14 @@ func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetJobResult",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetJobResultOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -4713,7 +4713,7 @@ func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetJobResult", r); {
+			switch err := c.securityBasicAuth(ctx, GetJobResultOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4724,7 +4724,7 @@ func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetJobResult", r); {
+			switch err := c.securityTokenCheck(ctx, GetJobResultOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4735,7 +4735,7 @@ func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetJobResult", r); {
+			switch err := c.securityBearerAuth(ctx, GetJobResultOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4803,14 +4803,14 @@ func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res Get
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetJobs",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetJobsOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -4880,7 +4880,7 @@ func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res Get
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetJobs", r); {
+			switch err := c.securityBasicAuth(ctx, GetJobsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4891,7 +4891,7 @@ func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res Get
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetJobs", r); {
+			switch err := c.securityTokenCheck(ctx, GetJobsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4902,7 +4902,7 @@ func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res Get
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetJobs", r); {
+			switch err := c.securityBearerAuth(ctx, GetJobsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -4970,14 +4970,14 @@ func (c *Client) sendGetJobsConfig(ctx context.Context) (res GetJobsConfigRes, e
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetJobsConfig",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetJobsConfigOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -5009,7 +5009,7 @@ func (c *Client) sendGetJobsConfig(ctx context.Context) (res GetJobsConfigRes, e
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetJobsConfig", r); {
+			switch err := c.securityBasicAuth(ctx, GetJobsConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5020,7 +5020,7 @@ func (c *Client) sendGetJobsConfig(ctx context.Context) (res GetJobsConfigRes, e
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetJobsConfig", r); {
+			switch err := c.securityTokenCheck(ctx, GetJobsConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5031,7 +5031,7 @@ func (c *Client) sendGetJobsConfig(ctx context.Context) (res GetJobsConfigRes, e
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetJobsConfig", r); {
+			switch err := c.securityBearerAuth(ctx, GetJobsConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5099,14 +5099,14 @@ func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) 
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetLobByMap",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetLobByMapOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -5249,7 +5249,7 @@ func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) 
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetLobByMap", r); {
+			switch err := c.securityBasicAuth(ctx, GetLobByMapOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5260,7 +5260,7 @@ func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) 
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetLobByMap", r); {
+			switch err := c.securityTokenCheck(ctx, GetLobByMapOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5271,7 +5271,7 @@ func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) 
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetLobByMap", r); {
+			switch err := c.securityBearerAuth(ctx, GetLobByMapOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5339,14 +5339,14 @@ func (c *Client) sendGetLoginSession(ctx context.Context) (res GetLoginSessionRe
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetLoginSession",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetLoginSessionOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -5378,7 +5378,7 @@ func (c *Client) sendGetLoginSession(ctx context.Context) (res GetLoginSessionRe
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetLoginSession", r); {
+			switch err := c.securityBasicAuth(ctx, GetLoginSessionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5389,7 +5389,7 @@ func (c *Client) sendGetLoginSession(ctx context.Context) (res GetLoginSessionRe
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetLoginSession", r); {
+			switch err := c.securityTokenCheck(ctx, GetLoginSessionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5456,14 +5456,14 @@ func (c *Client) sendGetMapMetadata(ctx context.Context, params GetMapMetadataPa
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetMapMetadata",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetMapMetadataOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -5513,7 +5513,7 @@ func (c *Client) sendGetMapMetadata(ctx context.Context, params GetMapMetadataPa
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetMapMetadata", r); {
+			switch err := c.securityBasicAuth(ctx, GetMapMetadataOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5524,7 +5524,7 @@ func (c *Client) sendGetMapMetadata(ctx context.Context, params GetMapMetadataPa
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetMapMetadata", r); {
+			switch err := c.securityTokenCheck(ctx, GetMapMetadataOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5535,7 +5535,7 @@ func (c *Client) sendGetMapMetadata(ctx context.Context, params GetMapMetadataPa
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetMapMetadata", r); {
+			switch err := c.securityBearerAuth(ctx, GetMapMetadataOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5603,14 +5603,14 @@ func (c *Client) sendGetMapRecordsFields(ctx context.Context, params GetMapRecor
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetMapRecordsFields",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetMapRecordsFieldsOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -5855,7 +5855,7 @@ func (c *Client) sendGetMapRecordsFields(ctx context.Context, params GetMapRecor
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetMapRecordsFields", r); {
+			switch err := c.securityBasicAuth(ctx, GetMapRecordsFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5866,7 +5866,7 @@ func (c *Client) sendGetMapRecordsFields(ctx context.Context, params GetMapRecor
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetMapRecordsFields", r); {
+			switch err := c.securityTokenCheck(ctx, GetMapRecordsFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5877,7 +5877,7 @@ func (c *Client) sendGetMapRecordsFields(ctx context.Context, params GetMapRecor
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetMapRecordsFields", r); {
+			switch err := c.securityBearerAuth(ctx, GetMapRecordsFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5945,14 +5945,14 @@ func (c *Client) sendGetMaps(ctx context.Context) (res GetMapsRes, err error) {
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetMaps",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetMapsOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -5984,7 +5984,7 @@ func (c *Client) sendGetMaps(ctx context.Context) (res GetMapsRes, err error) {
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetMaps", r); {
+			switch err := c.securityBasicAuth(ctx, GetMapsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -5995,7 +5995,7 @@ func (c *Client) sendGetMaps(ctx context.Context) (res GetMapsRes, err error) {
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetMaps", r); {
+			switch err := c.securityTokenCheck(ctx, GetMapsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6006,7 +6006,7 @@ func (c *Client) sendGetMaps(ctx context.Context) (res GetMapsRes, err error) {
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetMaps", r); {
+			switch err := c.securityBearerAuth(ctx, GetMapsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6074,14 +6074,14 @@ func (c *Client) sendGetPermission(ctx context.Context, params GetPermissionPara
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetPermission",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetPermissionOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -6153,7 +6153,7 @@ func (c *Client) sendGetPermission(ctx context.Context, params GetPermissionPara
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetPermission", r); {
+			switch err := c.securityBasicAuth(ctx, GetPermissionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6164,7 +6164,7 @@ func (c *Client) sendGetPermission(ctx context.Context, params GetPermissionPara
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetPermission", r); {
+			switch err := c.securityTokenCheck(ctx, GetPermissionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6175,7 +6175,7 @@ func (c *Client) sendGetPermission(ctx context.Context, params GetPermissionPara
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetPermission", r); {
+			switch err := c.securityBearerAuth(ctx, GetPermissionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6243,14 +6243,14 @@ func (c *Client) sendGetUserInfo(ctx context.Context) (res GetUserInfoRes, err e
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetUserInfo",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetUserInfoOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -6315,14 +6315,14 @@ func (c *Client) sendGetVersion(ctx context.Context) (res GetVersionRes, err err
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetVersion",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetVersionOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -6387,14 +6387,14 @@ func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res G
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetVideo",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetVideoOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -6551,7 +6551,7 @@ func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res G
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetVideo", r); {
+			switch err := c.securityBasicAuth(ctx, GetVideoOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6562,7 +6562,7 @@ func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res G
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetVideo", r); {
+			switch err := c.securityTokenCheck(ctx, GetVideoOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6573,7 +6573,7 @@ func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res G
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetVideo", r); {
+			switch err := c.securityBearerAuth(ctx, GetVideoOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6641,14 +6641,14 @@ func (c *Client) sendGetViews(ctx context.Context) (res GetViewsRes, err error) 
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetViews",
+	ctx, span := c.cfg.Tracer.Start(ctx, GetViewsOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -6680,7 +6680,7 @@ func (c *Client) sendGetViews(ctx context.Context) (res GetViewsRes, err error) 
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "GetViews", r); {
+			switch err := c.securityBasicAuth(ctx, GetViewsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6691,7 +6691,7 @@ func (c *Client) sendGetViews(ctx context.Context) (res GetViewsRes, err error) 
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "GetViews", r); {
+			switch err := c.securityTokenCheck(ctx, GetViewsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6702,7 +6702,7 @@ func (c *Client) sendGetViews(ctx context.Context) (res GetViewsRes, err error) 
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "GetViews", r); {
+			switch err := c.securityBearerAuth(ctx, GetViewsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6770,14 +6770,14 @@ func (c *Client) sendInsertMapFileRecords(ctx context.Context, request OptInsert
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "InsertMapFileRecords",
+	ctx, span := c.cfg.Tracer.Start(ctx, InsertMapFileRecordsOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -6812,7 +6812,7 @@ func (c *Client) sendInsertMapFileRecords(ctx context.Context, request OptInsert
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "InsertMapFileRecords", r); {
+			switch err := c.securityBasicAuth(ctx, InsertMapFileRecordsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6823,7 +6823,7 @@ func (c *Client) sendInsertMapFileRecords(ctx context.Context, request OptInsert
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "InsertMapFileRecords", r); {
+			switch err := c.securityTokenCheck(ctx, InsertMapFileRecordsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6834,7 +6834,7 @@ func (c *Client) sendInsertMapFileRecords(ctx context.Context, request OptInsert
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "InsertMapFileRecords", r); {
+			switch err := c.securityBearerAuth(ctx, InsertMapFileRecordsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6902,14 +6902,14 @@ func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordRe
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "InsertRecord",
+	ctx, span := c.cfg.Tracer.Start(ctx, InsertRecordOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -6983,7 +6983,7 @@ func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordRe
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "InsertRecord", r); {
+			switch err := c.securityBasicAuth(ctx, InsertRecordOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -6994,7 +6994,7 @@ func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordRe
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "InsertRecord", r); {
+			switch err := c.securityTokenCheck(ctx, InsertRecordOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7005,7 +7005,7 @@ func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordRe
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "InsertRecord", r); {
+			switch err := c.securityBearerAuth(ctx, InsertRecordOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7073,14 +7073,14 @@ func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, e
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ListModelling",
+	ctx, span := c.cfg.Tracer.Start(ctx, ListModellingOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -7112,7 +7112,7 @@ func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, e
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "ListModelling", r); {
+			switch err := c.securityBasicAuth(ctx, ListModellingOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7123,7 +7123,7 @@ func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, e
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "ListModelling", r); {
+			switch err := c.securityTokenCheck(ctx, ListModellingOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7134,7 +7134,7 @@ func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, e
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "ListModelling", r); {
+			switch err := c.securityBearerAuth(ctx, ListModellingOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7202,14 +7202,14 @@ func (c *Client) sendListTables(ctx context.Context) (res ListTablesRes, err err
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ListTables",
+	ctx, span := c.cfg.Tracer.Start(ctx, ListTablesOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -7241,7 +7241,7 @@ func (c *Client) sendListTables(ctx context.Context) (res ListTablesRes, err err
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "ListTables", r); {
+			switch err := c.securityBasicAuth(ctx, ListTablesOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7252,7 +7252,7 @@ func (c *Client) sendListTables(ctx context.Context) (res ListTablesRes, err err
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "ListTables", r); {
+			switch err := c.securityTokenCheck(ctx, ListTablesOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7263,7 +7263,7 @@ func (c *Client) sendListTables(ctx context.Context) (res ListTablesRes, err err
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "ListTables", r); {
+			switch err := c.securityBearerAuth(ctx, ListTablesOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7331,14 +7331,14 @@ func (c *Client) sendLoginSession(ctx context.Context) (res LoginSessionRes, err
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "LoginSession",
+	ctx, span := c.cfg.Tracer.Start(ctx, LoginSessionOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -7370,7 +7370,7 @@ func (c *Client) sendLoginSession(ctx context.Context) (res LoginSessionRes, err
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "LoginSession", r); {
+			switch err := c.securityBasicAuth(ctx, LoginSessionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7381,7 +7381,7 @@ func (c *Client) sendLoginSession(ctx context.Context) (res LoginSessionRes, err
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "LoginSession", r); {
+			switch err := c.securityTokenCheck(ctx, LoginSessionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7448,14 +7448,14 @@ func (c *Client) sendLogoutSessionCompat(ctx context.Context) (res LogoutSession
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "LogoutSessionCompat",
+	ctx, span := c.cfg.Tracer.Start(ctx, LogoutSessionCompatOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -7487,7 +7487,7 @@ func (c *Client) sendLogoutSessionCompat(ctx context.Context) (res LogoutSession
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "LogoutSessionCompat", r); {
+			switch err := c.securityBasicAuth(ctx, LogoutSessionCompatOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7498,7 +7498,7 @@ func (c *Client) sendLogoutSessionCompat(ctx context.Context) (res LogoutSession
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "LogoutSessionCompat", r); {
+			switch err := c.securityTokenCheck(ctx, LogoutSessionCompatOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7509,7 +7509,7 @@ func (c *Client) sendLogoutSessionCompat(ctx context.Context) (res LogoutSession
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "LogoutSessionCompat", r); {
+			switch err := c.securityBearerAuth(ctx, LogoutSessionCompatOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7578,14 +7578,14 @@ func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res P
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "PostDatabase",
+	ctx, span := c.cfg.Tracer.Start(ctx, PostDatabaseOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -7620,7 +7620,7 @@ func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res P
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "PostDatabase", r); {
+			switch err := c.securityBasicAuth(ctx, PostDatabaseOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7631,7 +7631,7 @@ func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res P
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "PostDatabase", r); {
+			switch err := c.securityTokenCheck(ctx, PostDatabaseOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7642,7 +7642,7 @@ func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res P
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "PostDatabase", r); {
+			switch err := c.securityBearerAuth(ctx, PostDatabaseOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7710,14 +7710,14 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "PostJob",
+	ctx, span := c.cfg.Tracer.Start(ctx, PostJobOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -7752,7 +7752,7 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "PostJob", r); {
+			switch err := c.securityBasicAuth(ctx, PostJobOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7763,7 +7763,7 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "PostJob", r); {
+			switch err := c.securityTokenCheck(ctx, PostJobOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7774,7 +7774,7 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "PostJob", r); {
+			switch err := c.securityBearerAuth(ctx, PostJobOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7842,14 +7842,14 @@ func (c *Client) sendPushLoginSession(ctx context.Context) (res PushLoginSession
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "PushLoginSession",
+	ctx, span := c.cfg.Tracer.Start(ctx, PushLoginSessionOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -7881,7 +7881,7 @@ func (c *Client) sendPushLoginSession(ctx context.Context) (res PushLoginSession
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "PushLoginSession", r); {
+			switch err := c.securityBasicAuth(ctx, PushLoginSessionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7892,7 +7892,7 @@ func (c *Client) sendPushLoginSession(ctx context.Context) (res PushLoginSession
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "PushLoginSession", r); {
+			switch err := c.securityTokenCheck(ctx, PushLoginSessionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -7959,14 +7959,14 @@ func (c *Client) sendRemovePermission(ctx context.Context, params RemovePermissi
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "RemovePermission",
+	ctx, span := c.cfg.Tracer.Start(ctx, RemovePermissionOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -8017,7 +8017,7 @@ func (c *Client) sendRemovePermission(ctx context.Context, params RemovePermissi
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "RemovePermission", r); {
+			switch err := c.securityBasicAuth(ctx, RemovePermissionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8028,7 +8028,7 @@ func (c *Client) sendRemovePermission(ctx context.Context, params RemovePermissi
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "RemovePermission", r); {
+			switch err := c.securityTokenCheck(ctx, RemovePermissionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8039,7 +8039,7 @@ func (c *Client) sendRemovePermission(ctx context.Context, params RemovePermissi
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "RemovePermission", r); {
+			switch err := c.securityBearerAuth(ctx, RemovePermissionOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8107,14 +8107,14 @@ func (c *Client) sendRemoveSessionCompat(ctx context.Context) (res RemoveSession
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "RemoveSessionCompat",
+	ctx, span := c.cfg.Tracer.Start(ctx, RemoveSessionCompatOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -8146,7 +8146,7 @@ func (c *Client) sendRemoveSessionCompat(ctx context.Context) (res RemoveSession
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "RemoveSessionCompat", r); {
+			switch err := c.securityBasicAuth(ctx, RemoveSessionCompatOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8157,7 +8157,7 @@ func (c *Client) sendRemoveSessionCompat(ctx context.Context) (res RemoveSession
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "RemoveSessionCompat", r); {
+			switch err := c.securityTokenCheck(ctx, RemoveSessionCompatOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8168,7 +8168,7 @@ func (c *Client) sendRemoveSessionCompat(ctx context.Context) (res RemoveSession
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "RemoveSessionCompat", r); {
+			switch err := c.securityBearerAuth(ctx, RemoveSessionCompatOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8236,14 +8236,14 @@ func (c *Client) sendSearchModelling(ctx context.Context, params SearchModelling
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "SearchModelling",
+	ctx, span := c.cfg.Tracer.Start(ctx, SearchModellingOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -8293,7 +8293,7 @@ func (c *Client) sendSearchModelling(ctx context.Context, params SearchModelling
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "SearchModelling", r); {
+			switch err := c.securityBasicAuth(ctx, SearchModellingOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8304,7 +8304,7 @@ func (c *Client) sendSearchModelling(ctx context.Context, params SearchModelling
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "SearchModelling", r); {
+			switch err := c.securityTokenCheck(ctx, SearchModellingOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8315,7 +8315,7 @@ func (c *Client) sendSearchModelling(ctx context.Context, params SearchModelling
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "SearchModelling", r); {
+			switch err := c.securityBearerAuth(ctx, SearchModellingOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8383,14 +8383,14 @@ func (c *Client) sendSearchRecordsFields(ctx context.Context, params SearchRecor
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "SearchRecordsFields",
+	ctx, span := c.cfg.Tracer.Start(ctx, SearchRecordsFieldsOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -8616,7 +8616,7 @@ func (c *Client) sendSearchRecordsFields(ctx context.Context, params SearchRecor
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "SearchRecordsFields", r); {
+			switch err := c.securityBasicAuth(ctx, SearchRecordsFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8627,7 +8627,7 @@ func (c *Client) sendSearchRecordsFields(ctx context.Context, params SearchRecor
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "SearchRecordsFields", r); {
+			switch err := c.securityTokenCheck(ctx, SearchRecordsFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8638,7 +8638,7 @@ func (c *Client) sendSearchRecordsFields(ctx context.Context, params SearchRecor
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "SearchRecordsFields", r); {
+			switch err := c.securityBearerAuth(ctx, SearchRecordsFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8706,14 +8706,14 @@ func (c *Client) sendSearchTable(ctx context.Context, params SearchTableParams) 
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "SearchTable",
+	ctx, span := c.cfg.Tracer.Start(ctx, SearchTableOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -8822,7 +8822,7 @@ func (c *Client) sendSearchTable(ctx context.Context, params SearchTableParams) 
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "SearchTable", r); {
+			switch err := c.securityBasicAuth(ctx, SearchTableOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8833,7 +8833,7 @@ func (c *Client) sendSearchTable(ctx context.Context, params SearchTableParams) 
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "SearchTable", r); {
+			switch err := c.securityTokenCheck(ctx, SearchTableOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8844,7 +8844,7 @@ func (c *Client) sendSearchTable(ctx context.Context, params SearchTableParams) 
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "SearchTable", r); {
+			switch err := c.securityBearerAuth(ctx, SearchTableOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8912,14 +8912,14 @@ func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res S
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "SetConfig",
+	ctx, span := c.cfg.Tracer.Start(ctx, SetConfigOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -8954,7 +8954,7 @@ func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res S
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "SetConfig", r); {
+			switch err := c.securityBasicAuth(ctx, SetConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8965,7 +8965,7 @@ func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res S
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "SetConfig", r); {
+			switch err := c.securityTokenCheck(ctx, SetConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -8976,7 +8976,7 @@ func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res S
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "SetConfig", r); {
+			switch err := c.securityBearerAuth(ctx, SetConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9044,14 +9044,14 @@ func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (re
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "SetJobsConfig",
+	ctx, span := c.cfg.Tracer.Start(ctx, SetJobsConfigOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -9086,7 +9086,7 @@ func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (re
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "SetJobsConfig", r); {
+			switch err := c.securityBasicAuth(ctx, SetJobsConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9097,7 +9097,7 @@ func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (re
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "SetJobsConfig", r); {
+			switch err := c.securityTokenCheck(ctx, SetJobsConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9108,7 +9108,7 @@ func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (re
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "SetJobsConfig", r); {
+			switch err := c.securityBearerAuth(ctx, SetJobsConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9176,14 +9176,14 @@ func (c *Client) sendShutdownServer(ctx context.Context, params ShutdownServerPa
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ShutdownServer",
+	ctx, span := c.cfg.Tracer.Start(ctx, ShutdownServerOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -9233,7 +9233,7 @@ func (c *Client) sendShutdownServer(ctx context.Context, params ShutdownServerPa
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "ShutdownServer", r); {
+			switch err := c.securityBasicAuth(ctx, ShutdownServerOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9244,7 +9244,7 @@ func (c *Client) sendShutdownServer(ctx context.Context, params ShutdownServerPa
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "ShutdownServer", r); {
+			switch err := c.securityTokenCheck(ctx, ShutdownServerOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9255,7 +9255,7 @@ func (c *Client) sendShutdownServer(ctx context.Context, params ShutdownServerPa
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "ShutdownServer", r); {
+			switch err := c.securityBearerAuth(ctx, ShutdownServerOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9323,14 +9323,14 @@ func (c *Client) sendStoreConfig(ctx context.Context) (res StoreConfigRes, err e
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "StoreConfig",
+	ctx, span := c.cfg.Tracer.Start(ctx, StoreConfigOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -9362,7 +9362,7 @@ func (c *Client) sendStoreConfig(ctx context.Context) (res StoreConfigRes, err e
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "StoreConfig", r); {
+			switch err := c.securityBasicAuth(ctx, StoreConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9373,7 +9373,7 @@ func (c *Client) sendStoreConfig(ctx context.Context) (res StoreConfigRes, err e
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "StoreConfig", r); {
+			switch err := c.securityTokenCheck(ctx, StoreConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9384,7 +9384,7 @@ func (c *Client) sendStoreConfig(ctx context.Context) (res StoreConfigRes, err e
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "StoreConfig", r); {
+			switch err := c.securityBearerAuth(ctx, StoreConfigOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9452,14 +9452,14 @@ func (c *Client) sendTriggerExtend(ctx context.Context, params TriggerExtendPara
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "TriggerExtend",
+	ctx, span := c.cfg.Tracer.Start(ctx, TriggerExtendOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -9509,7 +9509,7 @@ func (c *Client) sendTriggerExtend(ctx context.Context, params TriggerExtendPara
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "TriggerExtend", r); {
+			switch err := c.securityBasicAuth(ctx, TriggerExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9520,7 +9520,7 @@ func (c *Client) sendTriggerExtend(ctx context.Context, params TriggerExtendPara
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "TriggerExtend", r); {
+			switch err := c.securityTokenCheck(ctx, TriggerExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9531,7 +9531,7 @@ func (c *Client) sendTriggerExtend(ctx context.Context, params TriggerExtendPara
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "TriggerExtend", r); {
+			switch err := c.securityBearerAuth(ctx, TriggerExtendOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9599,14 +9599,14 @@ func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (r
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "TriggerJob",
+	ctx, span := c.cfg.Tracer.Start(ctx, TriggerJobOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -9656,7 +9656,7 @@ func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (r
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "TriggerJob", r); {
+			switch err := c.securityBasicAuth(ctx, TriggerJobOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9667,7 +9667,7 @@ func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (r
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "TriggerJob", r); {
+			switch err := c.securityTokenCheck(ctx, TriggerJobOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9678,7 +9678,7 @@ func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (r
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "TriggerJob", r); {
+			switch err := c.securityBearerAuth(ctx, TriggerJobOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9746,14 +9746,14 @@ func (c *Client) sendUpdateLobByMap(ctx context.Context, request UpdateLobByMapR
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "UpdateLobByMap",
+	ctx, span := c.cfg.Tracer.Start(ctx, UpdateLobByMapOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -9844,7 +9844,7 @@ func (c *Client) sendUpdateLobByMap(ctx context.Context, request UpdateLobByMapR
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "UpdateLobByMap", r); {
+			switch err := c.securityBasicAuth(ctx, UpdateLobByMapOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9855,7 +9855,7 @@ func (c *Client) sendUpdateLobByMap(ctx context.Context, request UpdateLobByMapR
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "UpdateLobByMap", r); {
+			switch err := c.securityTokenCheck(ctx, UpdateLobByMapOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9866,7 +9866,7 @@ func (c *Client) sendUpdateLobByMap(ctx context.Context, request UpdateLobByMapR
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "UpdateLobByMap", r); {
+			switch err := c.securityBearerAuth(ctx, UpdateLobByMapOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -9934,14 +9934,14 @@ func (c *Client) sendUpdateRecordsByFields(ctx context.Context, request OptUpdat
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "UpdateRecordsByFields",
+	ctx, span := c.cfg.Tracer.Start(ctx, UpdateRecordsByFieldsOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -10013,7 +10013,7 @@ func (c *Client) sendUpdateRecordsByFields(ctx context.Context, request OptUpdat
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "UpdateRecordsByFields", r); {
+			switch err := c.securityBasicAuth(ctx, UpdateRecordsByFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -10024,7 +10024,7 @@ func (c *Client) sendUpdateRecordsByFields(ctx context.Context, request OptUpdat
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "UpdateRecordsByFields", r); {
+			switch err := c.securityTokenCheck(ctx, UpdateRecordsByFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -10035,7 +10035,7 @@ func (c *Client) sendUpdateRecordsByFields(ctx context.Context, request OptUpdat
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "UpdateRecordsByFields", r); {
+			switch err := c.securityBearerAuth(ctx, UpdateRecordsByFieldsOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -10103,14 +10103,14 @@ func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileReq, par
 	defer func() {
 		// Use floating point division here for higher precision (instead of Millisecond method).
 		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "UploadFile",
+	ctx, span := c.cfg.Tracer.Start(ctx, UploadFileOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -10184,7 +10184,7 @@ func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileReq, par
 		var satisfied bitset
 		{
 			stage = "Security:BasicAuth"
-			switch err := c.securityBasicAuth(ctx, "UploadFile", r); {
+			switch err := c.securityBasicAuth(ctx, UploadFileOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 0
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -10195,7 +10195,7 @@ func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileReq, par
 		}
 		{
 			stage = "Security:TokenCheck"
-			switch err := c.securityTokenCheck(ctx, "UploadFile", r); {
+			switch err := c.securityTokenCheck(ctx, UploadFileOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 1
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
@@ -10206,7 +10206,7 @@ func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileReq, par
 		}
 		{
 			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, "UploadFile", r); {
+			switch err := c.securityBearerAuth(ctx, UploadFileOperation, r); {
 			case err == nil: // if NO error
 				satisfied[0] |= 1 << 2
 			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
