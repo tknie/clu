@@ -17,12 +17,14 @@ package server
 import (
 	"image"
 	"io"
+
+	"github.com/tknie/errorrepo"
 )
 
 func heifdecoder(r io.Reader) (image.Image, error) {
-	return nil, errorepo.NewError("REST00051")
+	return nil, errorrepo.NewError("REST00051")
 }
 
 func heifextractor(ra io.ReaderAt) ([]byte, error) {
-	return nil, errorepo.NewError("REST00051")
+	return nil, errorrepo.NewError("REST00051")
 }
