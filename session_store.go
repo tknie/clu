@@ -68,7 +68,7 @@ func InitStoreInfo(ref *common.Reference, password, tablename string) {
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
 		if d == tablename {
-			go updaterSessionInfo()
+			go updateSessionInfoThread()
 			auth.JWTOperator = &StoreJWTHandler{}
 			sessionTableName = tablename
 			services.ServerMessage("Storing session data to table '%s'", sessionTableName)
@@ -82,7 +82,7 @@ func InitStoreInfo(ref *common.Reference, password, tablename string) {
 		return
 	}
 	services.ServerMessage("Database session store created successfully")
-	go updaterSessionInfo()
+	go updateSessionInfoThread()
 	sessionTableName = tablename
 	services.ServerMessage("Creating and storing session data to table '%s'", sessionTableName)
 	auth.JWTOperator = &StoreJWTHandler{}
@@ -212,7 +212,7 @@ func (st *StoreJWTHandler) ValidateUUID(claims *auth.JWTClaims) (auth.PrincipalI
 	return p, true
 }
 
-func updaterSessionInfo() {
+func updateSessionInfoThread() {
 	for {
 		log.Log.Debugf("Waiting session info for updates or remove")
 		select {

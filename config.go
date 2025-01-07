@@ -281,12 +281,12 @@ func checkFilter(filters []string, table string) bool {
 }
 
 // RegisterDatabase register database for table
-func RegisterDatabase(dm Database, s string, id *common.Reference) bool {
-	if checkFilter(dm.Tables, s) {
+func (db *Database) RegisterDatabase(s string, id *common.Reference) bool {
+	if checkFilter(db.Tables, s) {
 		name := strings.ToLower(s)
 		if _, ok := dbTableMap.Load(name); !ok {
 			log.Log.Debugf("Append table: %s", s)
-			dbTableMap.Store(s, &DatabaseRegister{Reference: id, Database: &dm})
+			dbTableMap.Store(s, &DatabaseRegister{Reference: id, Database: db})
 			return true
 		}
 	}

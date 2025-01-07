@@ -123,7 +123,7 @@ func init() {
 	v := services.BuildVersion
 	si := NewSessionInfo(startSessionInfo, v, adminUser, startEventMethod)
 
-	go startStore()
+	go startStoreThread()
 
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
@@ -159,7 +159,7 @@ func (si *SessionInfo) adapt(req *http.Request) {
 	si.Host = req.Host
 }
 
-func startStore() {
+func startStoreThread() {
 	insert := &common.Entries{Fields: fieldList}
 	wg.Add(1)
 	defer wg.Done()

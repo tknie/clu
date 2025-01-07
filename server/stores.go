@@ -41,7 +41,7 @@ func InitDatabaseStores() error {
 			}
 		}
 	}
-	go clu.InitBatchWatcher()
+	go clu.InitBatchWatcherThread()
 
 	return nil
 }

@@ -70,7 +70,7 @@ func loadTableOfDatabases() {
 			if clu.CheckDatabaseRegister(s, id) {
 				services.ServerMessage("Found table on different databases: [%s]", s)
 			} else {
-				if clu.RegisterDatabase(dm, s, id) {
+				if (&dm).RegisterDatabase(s, id) {
 					newDatabases = append(newDatabases, s)
 				}
 			}

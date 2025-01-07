@@ -70,7 +70,7 @@ func InitUserInfo(ref *common.Reference, password, tablename string) {
 	disableUser = false
 	services.ServerMessage("Storing audit data to table '%s'", userTableName)
 
-	go updaterUserInfo()
+	go updaterUserInfoThread()
 
 	dbTables := flynn.Maps()
 	for _, d := range dbTables {
@@ -87,7 +87,7 @@ func InitUserInfo(ref *common.Reference, password, tablename string) {
 	services.ServerMessage("Database user store created successfully")
 }
 
-func updaterUserInfo() {
+func updaterUserInfoThread() {
 	for {
 		log.Log.Debugf("Waiting user info for updates or remove")
 		select {

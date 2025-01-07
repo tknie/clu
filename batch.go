@@ -51,8 +51,8 @@ func openBatchRepository() (common.RegDbID, error) {
 	return sessionStoreID, nil
 }
 
-// InitBatchWatcher initialize batch watcher
-func InitBatchWatcher() {
+// InitBatchWatcherThread initialize batch watcher
+func InitBatchWatcherThread() {
 	// dm := Viewer.Database.BatchRepository
 	// if dm != nil {
 	// 	r, err := Handles(dm)
