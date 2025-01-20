@@ -336,20 +336,26 @@ func SendAuditEnded(started time.Time, r *http.Request) {
 	user := "<Unknown>"
 	uuid := "<UUID undefined>"
 	reqToken := r.Header.Get("Authorization")
+	if reqToken == "" {
+		log.Log.Infof("Call without token: %v %v %v", r.Method, r.URL, server.RemoteHost(r))
+		return
+	}
 	splitToken := strings.Split(reqToken, " ")
 	switch strings.ToLower(splitToken[0]) {
 	case "basic":
 		user, _, _ = r.BasicAuth()
 	case "bearer":
-		reqToken = strings.TrimSpace(splitToken[1])
-		p, err := clu.Viewer.Server.WebToken.JWTContainsRoles(reqToken, []string{"admin", "user"})
-		if err != nil {
-			uuid = err.Error()
-			log.Log.Errorf("Audit error: %v", err)
-		} else {
-			c := p.(*clu.Context)
-			uuid = c.UUID()
-			user = c.UserName()
+		if len(splitToken) > 1 {
+			reqToken = strings.TrimSpace(splitToken[1])
+			p, err := clu.Viewer.Server.WebToken.JWTContainsRoles(reqToken, []string{"admin", "user"})
+			if err != nil {
+				uuid = err.Error()
+				log.Log.Errorf("Audit error: %v", err)
+			} else {
+				c := p.(*clu.Context)
+				uuid = c.UUID()
+				user = c.UserName()
+			}
 		}
 	default:
 		log.Log.Debugf("User evaluation failed in " + strings.ToLower(splitToken[0]))
