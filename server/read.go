@@ -13,7 +13,6 @@ package server
 
 import (
 	"fmt"
-	"math"
 	"strings"
 	"time"
 
@@ -76,9 +75,22 @@ func convertTypeToRaw(d api.ResponseRecordsItem, s string, r interface{}) {
 	case time.Time:
 		d[s] = jx.Raw([]byte("\"" + (t).UTC().Format(time.RFC3339) + "\""))
 	case pgtype.Numeric:
-		v := uint64(t.Int.Uint64()) * uint64(math.Pow10(int(t.Exp)))
-		st := fmt.Sprintf("%d", v)
-		d[s] = jx.Raw([]byte("\"" + (st) + "\""))
+		v, err := t.Int64Value()
+		if err == nil {
+			var e jx.Encoder
+			e.Int64(v.Int64)
+			d[s] = jx.Raw([]byte(e.String()))
+		} else {
+			v, err := t.Float64Value()
+			if err == nil {
+				var e jx.Encoder
+				e.Float64(v.Float64)
+				d[s] = jx.Raw([]byte(e.String()))
+			} else {
+				log.Log.Debugf("No Numeric value %s", t)
+				d[s] = jx.Raw([]byte("\"error no numeric\""))
+			}
+		}
 	default:
 		if r != nil {
 			log.Log.Debugf("using default ---> %v %T", r, t)

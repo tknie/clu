@@ -34,8 +34,9 @@ type Handler struct {
 // GET /rest/view/{table}/{fields}
 func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecordsFieldsParams) (r api.SearchRecordsFieldsRes, _ error) {
 	session := ctx.(*clu.Context)
-	log.Log.Debugf("Search records for fields %s -> %s", session.User, params.Table)
-	if !auth.ValidUser(auth.UserRole, false, session.User(), params.Table) {
+	user := session.User()
+	log.Log.Debugf("Search records for fields %s -> %s", user.User, params.Table)
+	if !auth.ValidUser(auth.UserRole, false, user, params.Table) {
 		return &api.SearchRecordsFieldsForbidden{}, nil
 	}
 	log.Log.Debugf("SQL search fields %s - %v", params.Table, params.Search)
