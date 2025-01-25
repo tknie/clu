@@ -51,14 +51,11 @@ func initTableOfDatabases() {
 	}
 }
 
+// loadTableOfDatabases load all tables of databases registered
 func loadTableOfDatabases() {
 	log.Log.Debugf("Refreshing database list")
 	for _, dm := range clu.Viewer.Database.DatabaseAccess.Database {
 		log.Log.Debugf("Access database %s with user %s", dm.Target, dm.User)
-		//u := dm.URL
-		//m := regexp.MustCompile(`(?m):[^:]*@`)
-		//m := regexp.MustCompile(`(?m)\${[^{]*PASS[^}]*}`)
-		//res := m.ReplaceAllString(u, ":****@")
 		id, err := (&dm).Handles()
 		if err != nil {
 			log.Log.Debugf("Handle creation problem: %v", err)
