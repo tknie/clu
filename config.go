@@ -477,15 +477,21 @@ func (db *Database) Handles() (*common.Reference, error) {
 		atomic.AddUint64(&regEntry.readCount, 1)
 		return regEntry.Reference, nil
 	}
-	log.Log.Debugf("Add database hash %s", dHash)
+	log.Log.Debugf("Database hash not found, creating new for dbhash %s", dHash)
 	target := os.ExpandEnv(db.Target)
 	log.Log.Debugf("Handles %s", target)
-	ref, _, err := common.NewReference(target)
+	ref, pwd, err := common.NewReference(target)
 	if err != nil {
 		return nil, errorrepo.NewError("REST00500", db.Target, err, target)
 	}
 	log.Log.Debugf("Register database handler for target %s", db.Target)
-	_, err = flynn.Handler(ref, os.ExpandEnv(db.Password))
+	if db.Password != "" {
+		p := os.ExpandEnv(db.Password)
+		if p != "" {
+			pwd = p
+		}
+	}
+	_, err = flynn.Handler(ref, pwd)
 	if err != nil {
 		services.ServerMessage("Error registering database <%s>: %v", db.Target, err)
 		return nil, errorrepo.NewError("REST00501")

@@ -61,6 +61,7 @@ func loadTableOfDatabases() {
 		//res := m.ReplaceAllString(u, ":****@")
 		id, err := (&dm).Handles()
 		if err != nil {
+			log.Log.Debugf("Handle creation problem: %v", err)
 			continue
 		}
 
