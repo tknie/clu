@@ -485,6 +485,12 @@ func (db *Database) Handles() (*common.Reference, error) {
 		return nil, errorrepo.NewError("REST00500", db.Target, err, target)
 	}
 	log.Log.Debugf("Register database handler for target %s", db.Target)
+	if ref.User == "" && db.User != "" {
+		u := os.ExpandEnv(db.User)
+		if u != "" {
+			ref.User = u
+		}
+	}
 	if db.Password != "" {
 		p := os.ExpandEnv(db.Password)
 		if p != "" {
