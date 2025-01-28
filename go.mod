@@ -10,7 +10,7 @@ require (
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.0
 	github.com/jackc/pgx/v5 v5.7.2
-	github.com/ogen-go/ogen v1.8.1
+	github.com/ogen-go/ogen v1.9.0
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
@@ -71,7 +71,7 @@ require (
 	github.com/tknie/pam v0.0.0-20241226202719-7fe89c1216fb // indirect
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 // indirect
+	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
 	golang.org/x/net v0.34.0
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
