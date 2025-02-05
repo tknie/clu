@@ -49,7 +49,7 @@ function clean_up {
 # Init ${DATADIR} environment for databases locations
 #
 function init_environment {
-   echo $(date +"%Y-%m-%d %H:%m:%S")" Prepare container directories"
+   echo $(date +"%Y/%m/%d %H:%m:%S")" Prepare container directories"
    if [ ! -d ${DATADIR}/configuration ]; then
       if [ ! -d ${DATADIR}/logs ]; then
          mkdir ${DATADIR}/logs
@@ -74,7 +74,7 @@ function init_environment {
 # Stop the administration tasks
 #
 function stop_administration {
-   echo $(date +"%Y-%m-%d %H:%m:%S")" Stop REST administration"
+   echo $(date +"%Y/%m/%d %H:%m:%S")" Stop REST administration"
    cd ${REST_SERVER}/tmp
    sh ${REST_SERVER}/bin/service.sh stop
    kill ${RUNPID}
@@ -100,7 +100,7 @@ offline_scripts
 # Background start of server
 sh ${REST_SERVER}/bin/service.sh run &
 RUNPID=$!
-echo $(date +"%Y-%m-%d %H:%m:%S")" Start API service with pid ${RUNPID}"
+echo $(date +"%Y/%m/%d %H:%m:%S")" Start API service with pid ${RUNPID}"
 
 if [ ! "$RUNPID" == "" ]; then
   # echo $(date +"%Y-%m-%d %H:%m:%S")" waiting on pid ${RUNPID}"
@@ -113,7 +113,7 @@ fi
 # Database is starting, mode need to be changed and timeout for minimum startup sequence
 STOP_MODE=stop
 
-echo $(date +"%Y-%m-%d %H:%m:%S")" Stop tasks ..."
+echo $(date +"%Y/%m/%d %H:%m:%S")" Stop tasks ..."
 kill ${RUNPID}
 
 exit ${ret}
