@@ -39,4 +39,5 @@ RERR00003=unexpected json type %q
 RERR00010=no auth plugins defined
 RERR00011=no auth plugins (bearer) defined
 RERR00012=invalid value: %v
+RERR00015=JSON parse error of %s: %v
 RERR01000=Database %v not registered

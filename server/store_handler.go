@@ -14,6 +14,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -58,8 +59,8 @@ func (Handler) InsertRecord(ctx context.Context, req api.OptInsertRecordReq, par
 		for n, v := range r {
 			v, err := parseJx(v)
 			if err != nil {
-				log.Log.Debugf("Error %s: %v", n, err)
-				return nil, err
+				log.Log.Debugf("Error JSON parser %s: %v", n, err)
+				return nil, errorrepo.NewError("RERR00015", n, err)
 			}
 			log.Log.Debugf("[%s]=%v", n, v)
 			m[n] = v
@@ -114,8 +115,12 @@ func parseJx(v jx.Raw) (any, error) {
 	d := jx.DecodeBytes(v)
 	switch v.Type() {
 	case jx.Number:
-		x, err := d.Int()
-		return x, err
+		f, err := d.Float64()
+		if f == math.Trunc(f) {
+			return int(f), nil
+		}
+		// x, err := d.Int()
+		return f, err
 	case jx.String:
 		x, err := d.Str()
 		if err != nil {
@@ -134,7 +139,8 @@ func parseJx(v jx.Raw) (any, error) {
 		d.Arr(func(d *jx.Decoder) error {
 			o, err := parseJx(v)
 			if err != nil {
-				return err
+				log.Log.Debugf("Error JSON parser of array: %v", err)
+				return errorrepo.NewError("RERR00015", "<Array>", err)
 			}
 			values = append(values, o)
 			return nil
@@ -149,7 +155,8 @@ func parseJx(v jx.Raw) (any, error) {
 			}
 			v, err := parseJx(r)
 			if err != nil {
-				return err
+				log.Log.Debugf("Error JSON parser %s: %v", key, err)
+				return errorrepo.NewError("RERR00015", key, err)
 			}
 			ms[key] = v
 			return nil
@@ -220,8 +227,8 @@ func (Handler) UpdateRecordsByFields(ctx context.Context, req api.OptUpdateRecor
 		for n, v := range r {
 			v, err := parseJx(v)
 			if err != nil {
-				log.Log.Debugf("Error %s: %v", n, err)
-				return nil, err
+				log.Log.Debugf("Error JSON parser %s: %v", n, err)
+				return nil, errorrepo.NewError("RERR00015", n, err)
 			}
 			log.Log.Debugf("[%s]=%v", n, v)
 			m[n] = v
