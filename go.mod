@@ -10,12 +10,12 @@ require (
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.0
 	github.com/jackc/pgx/v5 v5.7.2
-	github.com/ogen-go/ogen v1.9.0
+	github.com/ogen-go/ogen v1.10.0
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
 	github.com/tknie/log v0.1.0
-	github.com/tknie/services v0.1.0
+	github.com/tknie/services v0.2.0
 	go.opentelemetry.io/otel v1.34.0
 	go.opentelemetry.io/otel/metric v1.34.0
 	go.opentelemetry.io/otel/trace v1.34.0
@@ -46,7 +46,7 @@ require (
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	golang.org/x/image v0.24.0 // indirect
 	golang.org/x/oauth2 v0.26.0 // indirect
-	google.golang.org/protobuf v1.36.4 // indirect
+	google.golang.org/protobuf v1.36.5 // indirect
 )
 
 require (
@@ -70,8 +70,8 @@ require (
 	github.com/tknie/flynn v0.9.0
 	github.com/tknie/pam v0.0.0-20241226202719-7fe89c1216fb // indirect
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
+	golang.org/x/crypto v0.33.0 // indirect
+	golang.org/x/exp v0.0.0-20250207012021-f9890c6ad9f3 // indirect
 	golang.org/x/net v0.34.0
 	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
