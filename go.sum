@@ -46,8 +46,8 @@ github.com/go-openapi/runtime v0.28.0 h1:gpPPmWSNGo214l6n8hzdXYhPuJcGtziTOgUpvsF
 github.com/go-openapi/runtime v0.28.0/go.mod h1:QN7OzcS+XuYmkQLw05akXk0jRH/eZ3kb18+1KwW9gyc=
 github.com/go-openapi/swag v0.23.0 h1:vsEVJDUo2hPJ2tu0/Xc+4noaxyEffXNIs3cOULZ+GrE=
 github.com/go-openapi/swag v0.23.0/go.mod h1:esZ8ITTYEsH1V2trKHjAN8Ai7xHb8RV+YSZ577vPjgQ=
-github.com/go-sql-driver/mysql v1.8.1 h1:LedoTUt/eveggdHS9qUFC1EFSa8bU2+1pZjSRpvNJ1Y=
-github.com/go-sql-driver/mysql v1.8.1/go.mod h1:wEBSXgmK//2ZFJyE+qWnIsVGmvmEKlqwuVSjsCm7DZg=
+github.com/go-sql-driver/mysql v1.9.0 h1:Y0zIbQXhQKmQgTp44Y1dp3wTXcn804QoTptLZT1vtvo=
+github.com/go-sql-driver/mysql v1.9.0/go.mod h1:pDetrLJeA3oMujJuvXc8RJoasr589B6A9fwzD3QMrqw=
 github.com/godror/godror v0.46.0 h1:/43db84UcoxlooASIsasH8TvZ7E1huwJ64yDtZ2504k=
 github.com/godror/godror v0.46.0/go.mod h1:44hxVDzvFSwc+yGyRM+riCLNAY5SwZkUfLzVTh5MXCg=
 github.com/godror/knownpb v0.2.0 h1:RJLntksFiKUHoUz3wCCJ8+DBjxSLYHYDNl1xRz0/gXI=
@@ -141,6 +141,12 @@ github.com/tknie/pam v0.0.0-20241226202719-7fe89c1216fb h1:mOrOvaroDXI22EpXU09h7
 github.com/tknie/pam v0.0.0-20241226202719-7fe89c1216fb/go.mod h1:aDjuEgcUenpqcsmJjVqaef1SfOQj7aGEwozcCeZ09eY=
 github.com/tknie/services v0.2.0 h1:MzakPLmNgA8odb3XudCVZG9gBm4ed2q88f1twojPgyE=
 github.com/tknie/services v0.2.0/go.mod h1:i/gP4zvT8VIAhxirp1Qzy2/7XfMyAgGjEs58zx1M8iI=
+github.com/tknie/services v0.2.1-0.20250220194303-43e317c5db11 h1:lifBzesoHbLmmq19hXJPAnbjRIYo0LTkmpAog1pPqaA=
+github.com/tknie/services v0.2.1-0.20250220194303-43e317c5db11/go.mod h1:i/gP4zvT8VIAhxirp1Qzy2/7XfMyAgGjEs58zx1M8iI=
+github.com/tknie/services v0.2.1-0.20250221193627-1ca0faf06152 h1:wqO9z/vGLf2HQHBn2W+GJO+sDcr4VGrCprqthzLdUh4=
+github.com/tknie/services v0.2.1-0.20250221193627-1ca0faf06152/go.mod h1:i/gP4zvT8VIAhxirp1Qzy2/7XfMyAgGjEs58zx1M8iI=
+github.com/tknie/services v0.2.1-0.20250221193842-163794de8abd h1:M8gjz6zAd5rTzQiThbO8ar7n6+wUQb5qRSFMCwWNa0o=
+github.com/tknie/services v0.2.1-0.20250221193842-163794de8abd/go.mod h1:i/gP4zvT8VIAhxirp1Qzy2/7XfMyAgGjEs58zx1M8iI=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 go.opentelemetry.io/auto/sdk v1.1.0 h1:cH53jehLUN6UFLY71z+NDOiNJqDdPRaXzTel0sJySYA=
 go.opentelemetry.io/auto/sdk v1.1.0/go.mod h1:3wSPjt5PWp2RhlCcmmOial7AvC4DQqZb7a7wCow3W8A=
@@ -165,8 +171,8 @@ golang.org/x/crypto v0.23.0/go.mod h1:CKFgDieR+mRhux2Lsu27y0fO304Db0wZe70UKqHu0v
 golang.org/x/crypto v0.31.0/go.mod h1:kDsLvtWBEx7MV9tJOj9bnXsPbxwJQ6csT/x4KIN4Ssk=
 golang.org/x/crypto v0.33.0 h1:IOBPskki6Lysi0lo9qQvbxiQ+FvsCC/YWOecCHAixus=
 golang.org/x/crypto v0.33.0/go.mod h1:bVdXmD7IV/4GdElGPozy6U7lWdRXA4qyRVGJV57uQ5M=
-golang.org/x/exp v0.0.0-20250215185904-eff6e970281f h1:oFMYAjX0867ZD2jcNiLBrI9BdpmEkvPyi5YrBGXbamg=
-golang.org/x/exp v0.0.0-20250215185904-eff6e970281f/go.mod h1:BHOTPb3L19zxehTsLoJXVaTktb06DFgmdW6Wb9s8jqk=
+golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa h1:t2QcU6V556bFjYgu4L6C+6VrCPyJZ+eyRsABUPs1mz4=
+golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa/go.mod h1:BHOTPb3L19zxehTsLoJXVaTktb06DFgmdW6Wb9s8jqk=
 golang.org/x/image v0.24.0 h1:AN7zRgVsbvmTfNyqIbbOraYL8mSwcKncEj8ofjgzcMQ=
 golang.org/x/image v0.24.0/go.mod h1:4b/ITuLfqYq1hqZcjofwctIhi7sZh2WaCjvsBNjjya8=
 golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4/go.mod h1:jJ57K6gSWd91VN4djpZkiMVwK6gcyfeH4XE8wZrZaV4=

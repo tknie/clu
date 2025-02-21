@@ -51,11 +51,11 @@ func InitConfig(watch bool) error {
 			os.Exit(44)
 		}
 	}
-	err = auth.LoadUsers(auth.AdministratorRole, clu.Viewer.Server.LoginService.Administrators)
+	err = auth.LoadUsers(auth.AdministratorRole, clu.Viewer.Server.LoginService.Administrators, true)
 	if err != nil {
 		return err
 	}
-	err = auth.LoadUsers(auth.UserRole, clu.Viewer.Server.LoginService.Users)
+	err = auth.LoadUsers(auth.UserRole, clu.Viewer.Server.LoginService.Users, true)
 	if err != nil {
 		return err
 	}
