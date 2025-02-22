@@ -42,7 +42,7 @@ require (
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/planetscale/vtprotobuf v0.6.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/tknie/adabas-go-api v1.7.11 // indirect
+	github.com/tknie/adabas-go-api v1.7.12 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	golang.org/x/image v0.24.0 // indirect
 	golang.org/x/oauth2 v0.26.0 // indirect
