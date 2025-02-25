@@ -28,7 +28,7 @@ require (
 	github.com/coreos/go-oidc/v3 v3.12.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.0.4 // indirect
+	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
