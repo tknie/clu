@@ -90,8 +90,8 @@ case "$ACTION" in
   run)
         cd ${SERVER_HOME}
 
-        echo $(date +"%Y-%m-%d %H:%m:%S")" Starting CLUAPI server in Docker"
-        echo $(date +"%Y-%m-%d %H:%m:%S")" Service config file: ${SERVER_CONFIG}"
+        echo $(date +"%Y-%m-%d %H:%m:%S")".000 Starting CLUAPI server in Docker"
+        echo $(date +"%Y-%m-%d %H:%m:%S")".000 Service config file: ${SERVER_CONFIG}"
 
         bin/cluapi server -c ${SERVER_CONFIG} $*
         ;;
