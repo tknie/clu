@@ -43,11 +43,11 @@ func (g greeting) Version() string {
 func (g greeting) Stop() {
 }
 
-func (g greeting) EntryPoint() string {
-	return "test"
+func (g greeting) EntryPoint() []string {
+	return []string{"test"}
 }
 
-func (g greeting) CallGet(path string, req *http.Request) (r api.CallExtendRes, _ error) {
+func (g greeting) CallExtendGet(path string, req *http.Request) (r api.CallExtendRes, _ error) {
 	fmt.Println("Extend plugin call received: " + path + " " + req.RequestURI)
 	d := make(api.ResponseRaw)
 	t := "XXX"
@@ -83,10 +83,10 @@ func (g greeting) CallGet(path string, req *http.Request) (r api.CallExtendRes, 
 
 }
 
-func (g greeting) CallPut(path string, req *http.Request) (r api.TriggerExtendRes, _ error) {
+func (g greeting) CallExtendPut(path string, req *http.Request) (r api.TriggerExtendRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
-func (g greeting) CallPost(path string, req *http.Request) (r api.CallPostExtendRes, _ error) {
+func (g greeting) CallExtendPost(path string, req *http.Request) (r api.CallPostExtendRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

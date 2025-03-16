@@ -39,8 +39,8 @@ func (Handler) BatchSelect(ctx context.Context,
 	params api.BatchSelectParams) (r api.BatchSelectRes, _ error) {
 	session := ctx.(*clu.Context)
 
-	if !auth.ValidUser(auth.UserRole, false, session.User(), "^"+params.Table) {
-		log.Log.Debugf("SQL statemant forbidden")
+	if !Validate(session, auth.UserRole, "^"+params.Table) {
+		log.Log.Debugf("Validator forbidden")
 		return &api.BatchSelectForbidden{}, nil
 	}
 	log.Log.Debugf("Query batchname %s -> %#v", params.Table, params.Param)
@@ -84,7 +84,7 @@ func (Handler) BatchQuery(ctx context.Context, req api.BatchQueryReq,
 		sqlStatement = string(b[:n])
 	}
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, true, session.User(), "/batch") {
+	if !Validate(session, auth.UserRole, "^"+params.Table) {
 		log.Log.Debugf("SQL statemant forbidden")
 		return &api.BatchQueryForbidden{}, nil
 	}
@@ -139,7 +139,7 @@ func querySQLstatement(query *batchSelect) (*api.ResponseHeaders, error) {
 // GET /rest/batch/{table}/{query}
 func (Handler) BatchParameterQuery(ctx context.Context, params api.BatchParameterQueryParams) (r api.BatchParameterQueryRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User(), "/batch") {
+	if !Validate(session, auth.UserRole, "^"+params.Table) {
 		log.Log.Debugf("Batch SQL statement for user forbidden, returning forbidden‚")
 		return &api.BatchParameterQueryForbidden{}, nil
 	}

@@ -13,15 +13,6 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// AdaptPermission implements adaptPermission operation.
-//
-// Add RBAC role.
-//
-// PUT /rest/database/{table}/permission
-func (UnimplementedHandler) AdaptPermission(ctx context.Context, params AdaptPermissionParams) (r AdaptPermissionRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // AddView implements addView operation.
 //
 // Add table view in View repositories.
@@ -148,15 +139,6 @@ func (UnimplementedHandler) DeleteView(ctx context.Context, params DeleteViewPar
 	return r, ht.ErrNotImplemented
 }
 
-// DisconnectTCP implements disconnectTCP operation.
-//
-// Disconnect connection in the database with the given dbid.
-//
-// DELETE /rest/database/{table}/connection
-func (UnimplementedHandler) DisconnectTCP(ctx context.Context, params DisconnectTCPParams) (r DisconnectTCPRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // DownloadFile implements downloadFile operation.
 //
 // Download a file out of file location.
@@ -172,24 +154,6 @@ func (UnimplementedHandler) DownloadFile(ctx context.Context, params DownloadFil
 //
 // GET /config
 func (UnimplementedHandler) GetConfig(ctx context.Context) (r GetConfigRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// GetConnections implements getConnections operation.
-//
-// Retrieve the current TCP connection.
-//
-// GET /rest/database/{table}/connection
-func (UnimplementedHandler) GetConnections(ctx context.Context, params GetConnectionsParams) (r GetConnectionsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// GetDatabaseSessions implements getDatabaseSessions operation.
-//
-// Retrieve a list of user queue entries.
-//
-// GET /rest/database/{table}/sessions
-func (UnimplementedHandler) GetDatabaseSessions(ctx context.Context, params GetDatabaseSessionsParams) (r GetDatabaseSessionsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -310,15 +274,6 @@ func (UnimplementedHandler) GetMaps(ctx context.Context) (r GetMapsRes, _ error)
 	return r, ht.ErrNotImplemented
 }
 
-// GetPermission implements getPermission operation.
-//
-// List RBAC assignments permission.
-//
-// GET /rest/database/{table}/permission
-func (UnimplementedHandler) GetPermission(ctx context.Context, params GetPermissionParams) (r GetPermissionRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // GetUserInfo implements getUserInfo operation.
 //
 // Get the token user information.
@@ -434,15 +389,6 @@ func (UnimplementedHandler) PostJob(ctx context.Context, req PostJobReq) (r Post
 //
 // POST /login
 func (UnimplementedHandler) PushLoginSession(ctx context.Context) (r PushLoginSessionRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// RemovePermission implements removePermission operation.
-//
-// Add RBAC role.
-//
-// DELETE /rest/database/{table}/permission
-func (UnimplementedHandler) RemovePermission(ctx context.Context, params RemovePermissionParams) (r RemovePermissionRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

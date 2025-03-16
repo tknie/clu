@@ -48,7 +48,7 @@ func (Handler) GetUserInfo(ctx context.Context) (r api.GetUserInfoRes, _ error) 
 // GET /rest/view
 func (Handler) GetMaps(ctx context.Context) (r api.GetMapsRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.UserRole, false, session.User(), "*Maps") {
+	if !Validate(session, auth.UserRole, "*Maps") {
 		return &api.GetMapsForbidden{}, nil
 	}
 
@@ -60,15 +60,6 @@ func (Handler) GetMaps(ctx context.Context) (r api.GetMapsRes, _ error) {
 	return r, nil
 }
 
-// GetDatabaseSessions implements getDatabaseSessions operation.
-//
-// Retrieve a list of user queue entries.
-//
-// GET /admin/database/{table}/sessions
-func (Handler) GetDatabaseSessions(ctx context.Context, params api.GetDatabaseSessionsParams) (r api.GetDatabaseSessionsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // ShutdownServer implements shutdownServer operation.
 //
 // Init shutdown procedure.
@@ -76,7 +67,7 @@ func (Handler) GetDatabaseSessions(ctx context.Context, params api.GetDatabaseSe
 // PUT /shutdown/{hash}
 func (Handler) ShutdownServer(ctx context.Context, params api.ShutdownServerParams) (r api.ShutdownServerRes, _ error) {
 	session := ctx.(*clu.Context)
-	if !auth.ValidUser(auth.AdministratorRole, true, session.User(), "") {
+	if !Validate(session, auth.AdministratorRole, "") {
 		return &api.ShutdownServerForbidden{}, nil
 	}
 

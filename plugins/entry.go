@@ -47,6 +47,8 @@ const (
 	AuthPlugin
 	// ExtendPlugin extend entry point "/rest/extend"
 	ExtendPlugin
+	// ValidatorPlugin validate actions
+	ValidatorPlugin
 )
 
 const suffix = ".so"
@@ -104,9 +106,16 @@ type ExtendLoader struct {
 	Extend server.RestExtend
 }
 
+// ValidatorLoader valiadtor loader plugin structure
+type ValidatorLoader struct {
+	Loader    Loader
+	Validator server.RestValidator
+}
+
 var auditPlugins = make(map[string]*AuditLoader)
 var adabasPlugins = make(map[string]*AdabasLoader)
 var extendPlugins = make(map[string]*ExtendLoader)
+var validatorPlugins = make(map[string]*ValidatorLoader)
 var authPlugins = make(map[string]*AuthLoader)
 
 var pluginsFound = false
@@ -246,6 +255,16 @@ func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
 				extendSym := symExtend.(server.RestExtend)
 				extendPlugins[info.Name()] = &ExtendLoader{loader, extendSym}
 				server.RegisterExtend(extendSym)
+			}
+		case ValidatorPlugin:
+			symValidator, err := plug.Lookup("EntryPoint")
+			if err != nil {
+				services.ServerMessage("Error opening Validator plugin %s Version: %s : %v", loader.Name(), loader.Version(), err)
+			} else {
+				services.ServerMessage("Extend plugin: %s Version: %s", loader.Name(), loader.Version())
+				validatorSym := symValidator.(server.RestValidator)
+				validatorPlugins[info.Name()] = &ValidatorLoader{loader, validatorSym}
+				server.RegisterValidator(validatorSym)
 			}
 		default:
 			services.ServerMessage("Error opening plugin, unknown type: %v", t)

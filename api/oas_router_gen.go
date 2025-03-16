@@ -496,6 +496,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					if len(elem) == 0 {
+						// Leaf node.
 						switch r.Method {
 						case "GET":
 							s.handleGetDatabasesRequest([0]string{}, elemIsEscaped, w, r)
@@ -506,128 +507,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						return
-					}
-					switch elem[0] {
-					case '/': // Prefix: "/"
-						origElem := elem
-						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-							elem = elem[l:]
-						} else {
-							break
-						}
-
-						// Param: "table"
-						// Match until "/"
-						idx := strings.IndexByte(elem, '/')
-						if idx < 0 {
-							idx = len(elem)
-						}
-						args[0] = elem[:idx]
-						elem = elem[idx:]
-
-						if len(elem) == 0 {
-							break
-						}
-						switch elem[0] {
-						case '/': // Prefix: "/"
-							origElem := elem
-							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							if len(elem) == 0 {
-								break
-							}
-							switch elem[0] {
-							case 'c': // Prefix: "connection"
-								origElem := elem
-								if l := len("connection"); len(elem) >= l && elem[0:l] == "connection" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch r.Method {
-									case "DELETE":
-										s.handleDisconnectTCPRequest([1]string{
-											args[0],
-										}, elemIsEscaped, w, r)
-									case "GET":
-										s.handleGetConnectionsRequest([1]string{
-											args[0],
-										}, elemIsEscaped, w, r)
-									default:
-										s.notAllowed(w, r, "DELETE,GET")
-									}
-
-									return
-								}
-
-								elem = origElem
-							case 'p': // Prefix: "permission"
-								origElem := elem
-								if l := len("permission"); len(elem) >= l && elem[0:l] == "permission" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch r.Method {
-									case "DELETE":
-										s.handleRemovePermissionRequest([1]string{
-											args[0],
-										}, elemIsEscaped, w, r)
-									case "GET":
-										s.handleGetPermissionRequest([1]string{
-											args[0],
-										}, elemIsEscaped, w, r)
-									case "PUT":
-										s.handleAdaptPermissionRequest([1]string{
-											args[0],
-										}, elemIsEscaped, w, r)
-									default:
-										s.notAllowed(w, r, "DELETE,GET,PUT")
-									}
-
-									return
-								}
-
-								elem = origElem
-							case 's': // Prefix: "sessions"
-								origElem := elem
-								if l := len("sessions"); len(elem) >= l && elem[0:l] == "sessions" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch r.Method {
-									case "GET":
-										s.handleGetDatabaseSessionsRequest([1]string{
-											args[0],
-										}, elemIsEscaped, w, r)
-									default:
-										s.notAllowed(w, r, "GET")
-									}
-
-									return
-								}
-
-								elem = origElem
-							}
-
-							elem = origElem
-						}
-
-						elem = origElem
 					}
 
 					elem = origElem
@@ -2010,6 +1889,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 
 					if len(elem) == 0 {
+						// Leaf node.
 						switch method {
 						case "GET":
 							r.name = GetDatabasesOperation
@@ -2030,146 +1910,6 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						default:
 							return
 						}
-					}
-					switch elem[0] {
-					case '/': // Prefix: "/"
-						origElem := elem
-						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-							elem = elem[l:]
-						} else {
-							break
-						}
-
-						// Param: "table"
-						// Match until "/"
-						idx := strings.IndexByte(elem, '/')
-						if idx < 0 {
-							idx = len(elem)
-						}
-						args[0] = elem[:idx]
-						elem = elem[idx:]
-
-						if len(elem) == 0 {
-							break
-						}
-						switch elem[0] {
-						case '/': // Prefix: "/"
-							origElem := elem
-							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							if len(elem) == 0 {
-								break
-							}
-							switch elem[0] {
-							case 'c': // Prefix: "connection"
-								origElem := elem
-								if l := len("connection"); len(elem) >= l && elem[0:l] == "connection" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch method {
-									case "DELETE":
-										r.name = DisconnectTCPOperation
-										r.summary = ""
-										r.operationID = "disconnectTCP"
-										r.pathPattern = "/rest/database/{table}/connection"
-										r.args = args
-										r.count = 1
-										return r, true
-									case "GET":
-										r.name = GetConnectionsOperation
-										r.summary = ""
-										r.operationID = "getConnections"
-										r.pathPattern = "/rest/database/{table}/connection"
-										r.args = args
-										r.count = 1
-										return r, true
-									default:
-										return
-									}
-								}
-
-								elem = origElem
-							case 'p': // Prefix: "permission"
-								origElem := elem
-								if l := len("permission"); len(elem) >= l && elem[0:l] == "permission" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch method {
-									case "DELETE":
-										r.name = RemovePermissionOperation
-										r.summary = ""
-										r.operationID = "removePermission"
-										r.pathPattern = "/rest/database/{table}/permission"
-										r.args = args
-										r.count = 1
-										return r, true
-									case "GET":
-										r.name = GetPermissionOperation
-										r.summary = ""
-										r.operationID = "getPermission"
-										r.pathPattern = "/rest/database/{table}/permission"
-										r.args = args
-										r.count = 1
-										return r, true
-									case "PUT":
-										r.name = AdaptPermissionOperation
-										r.summary = ""
-										r.operationID = "adaptPermission"
-										r.pathPattern = "/rest/database/{table}/permission"
-										r.args = args
-										r.count = 1
-										return r, true
-									default:
-										return
-									}
-								}
-
-								elem = origElem
-							case 's': // Prefix: "sessions"
-								origElem := elem
-								if l := len("sessions"); len(elem) >= l && elem[0:l] == "sessions" {
-									elem = elem[l:]
-								} else {
-									break
-								}
-
-								if len(elem) == 0 {
-									// Leaf node.
-									switch method {
-									case "GET":
-										r.name = GetDatabaseSessionsOperation
-										r.summary = ""
-										r.operationID = "getDatabaseSessions"
-										r.pathPattern = "/rest/database/{table}/sessions"
-										r.args = args
-										r.count = 1
-										return r, true
-									default:
-										return
-									}
-								}
-
-								elem = origElem
-							}
-
-							elem = origElem
-						}
-
-						elem = origElem
 					}
 
 					elem = origElem

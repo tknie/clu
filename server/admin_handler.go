@@ -18,15 +18,6 @@ import (
 	"github.com/tknie/clu/api"
 )
 
-// AdaptPermission implements adaptPermission operation.
-//
-// Add RBAC role.
-//
-// PUT /admin/database/{table}/permission
-func (Handler) AdaptPermission(ctx context.Context, params api.AdaptPermissionParams) (r api.AdaptPermissionRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // AddView implements addView operation.
 //
 // Add configuration in View repositories.
@@ -45,15 +36,6 @@ func (Handler) DeleteView(ctx context.Context, params api.DeleteViewParams) (r a
 	return r, ht.ErrNotImplemented
 }
 
-// DisconnectTCP implements disconnectTCP operation.
-//
-// Disconnect connection in the database with the given dbid.
-//
-// DELETE /admin/database/{table}/connection
-func (Handler) DisconnectTCP(ctx context.Context, params api.DisconnectTCPParams) (r api.DisconnectTCPRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // GetConfig implements getConfig operation.
 //
 // Get configuration.
@@ -63,30 +45,12 @@ func (Handler) GetConfig(ctx context.Context) (r api.GetConfigRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// GetConnections implements getConnections operation.
-//
-// Retrieve the current TCP connection.
-//
-// GET /admin/database/{table}/connection
-func (Handler) GetConnections(ctx context.Context, params api.GetConnectionsParams) (r api.GetConnectionsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // GetDatabases implements getDatabases operation.
 //
 // Retrieves a list of databases known by Interface.
 //
 // GET /admin/database
 func (Handler) GetDatabases(ctx context.Context) (r api.GetDatabasesRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// GetPermission implements getPermission operation.
-//
-// List RBAC assignments permission.
-//
-// GET /admin/database/{table}/permission
-func (Handler) GetPermission(ctx context.Context, params api.GetPermissionParams) (r api.GetPermissionRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -106,15 +70,6 @@ func (Handler) GetViews(ctx context.Context) (r api.GetViewsRes, _ error) {
 //
 // POST /admin/database
 func (Handler) PostDatabase(ctx context.Context, req *api.Database) (r api.PostDatabaseRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// RemovePermission implements removePermission operation.
-//
-// Add RBAC role.
-//
-// DELETE /admin/database/{table}/permission
-func (Handler) RemovePermission(ctx context.Context, params api.RemovePermissionParams) (r api.RemovePermissionRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

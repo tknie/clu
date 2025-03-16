@@ -6,7 +6,6 @@ package api
 type OperationName = string
 
 const (
-	AdaptPermissionOperation       OperationName = "AdaptPermission"
 	AddViewOperation               OperationName = "AddView"
 	BatchParameterQueryOperation   OperationName = "BatchParameterQuery"
 	BatchQueryOperation            OperationName = "BatchQuery"
@@ -21,11 +20,8 @@ const (
 	DeleteJobResultOperation       OperationName = "DeleteJobResult"
 	DeleteRecordsSearchedOperation OperationName = "DeleteRecordsSearched"
 	DeleteViewOperation            OperationName = "DeleteView"
-	DisconnectTCPOperation         OperationName = "DisconnectTCP"
 	DownloadFileOperation          OperationName = "DownloadFile"
 	GetConfigOperation             OperationName = "GetConfig"
-	GetConnectionsOperation        OperationName = "GetConnections"
-	GetDatabaseSessionsOperation   OperationName = "GetDatabaseSessions"
 	GetDatabasesOperation          OperationName = "GetDatabases"
 	GetFieldsOperation             OperationName = "GetFields"
 	GetImageOperation              OperationName = "GetImage"
@@ -39,7 +35,6 @@ const (
 	GetMapMetadataOperation        OperationName = "GetMapMetadata"
 	GetMapRecordsFieldsOperation   OperationName = "GetMapRecordsFields"
 	GetMapsOperation               OperationName = "GetMaps"
-	GetPermissionOperation         OperationName = "GetPermission"
 	GetUserInfoOperation           OperationName = "GetUserInfo"
 	GetVersionOperation            OperationName = "GetVersion"
 	GetVideoOperation              OperationName = "GetVideo"
@@ -53,7 +48,6 @@ const (
 	PostDatabaseOperation          OperationName = "PostDatabase"
 	PostJobOperation               OperationName = "PostJob"
 	PushLoginSessionOperation      OperationName = "PushLoginSession"
-	RemovePermissionOperation      OperationName = "RemovePermission"
 	RemoveSessionCompatOperation   OperationName = "RemoveSessionCompat"
 	SearchModellingOperation       OperationName = "SearchModelling"
 	SearchRecordsFieldsOperation   OperationName = "SearchRecordsFields"

@@ -27,17 +27,19 @@ import (
 
 var entryMap = sync.Map{}
 
-// RestExtend Adabas method to send to plugin
+// RestExtend Extend method to send to plugin
 type RestExtend interface {
-	EntryPoint() string
-	CallGet(path string, req *http.Request) (r api.CallExtendRes, _ error)
-	CallPut(path string, req *http.Request) (r api.TriggerExtendRes, _ error)
-	CallPost(path string, req *http.Request) (r api.CallPostExtendRes, _ error)
+	EntryPoint() []string
+	CallExtendGet(path string, req *http.Request) (r api.CallExtendRes, _ error)
+	CallExtendPut(path string, req *http.Request) (r api.TriggerExtendRes, _ error)
+	CallExtendPost(path string, req *http.Request) (r api.CallPostExtendRes, _ error)
 }
 
 // RegisterExtend register the extend handler
 func RegisterExtend(extend RestExtend) {
-	entryMap.Store(extend.EntryPoint(), extend)
+	for _, e := range extend.EntryPoint() {
+		entryMap.Store(e, extend)
+	}
 }
 
 // CallExtend implements callExtend operation.
@@ -55,7 +57,7 @@ func (Handler) CallExtend(ctx context.Context, params api.CallExtendParams) (r a
 	parts := strings.Split(e, "/")
 
 	if entryPoint, ok := entryMap.Load(parts[0]); ok {
-		return entryPoint.(RestExtend).CallGet(e, session.CurrentRequest)
+		return entryPoint.(RestExtend).CallExtendGet(e, session.CurrentRequest)
 	}
 	return r, ht.ErrNotImplemented
 }
@@ -75,7 +77,7 @@ func (Handler) CallPostExtend(ctx context.Context, req *api.CallPostExtendReq, p
 	parts := strings.Split(e, "/")
 
 	if entryPoint, ok := entryMap.Load(parts[0]); ok {
-		return entryPoint.(RestExtend).CallPost(e, session.CurrentRequest)
+		return entryPoint.(RestExtend).CallExtendPost(e, session.CurrentRequest)
 	}
 	return r, ht.ErrNotImplemented
 }
@@ -95,7 +97,7 @@ func (Handler) TriggerExtend(ctx context.Context, params api.TriggerExtendParams
 	parts := strings.Split(e, "/")
 
 	if entryPoint, ok := entryMap.Load(parts[0]); ok {
-		return entryPoint.(RestExtend).CallPut(e, session.CurrentRequest)
+		return entryPoint.(RestExtend).CallExtendPut(e, session.CurrentRequest)
 	}
 	return r, ht.ErrNotImplemented
 }

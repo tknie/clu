@@ -8,12 +8,6 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// AdaptPermission implements adaptPermission operation.
-	//
-	// Add RBAC role.
-	//
-	// PUT /rest/database/{table}/permission
-	AdaptPermission(ctx context.Context, params AdaptPermissionParams) (AdaptPermissionRes, error)
 	// AddView implements addView operation.
 	//
 	// Add table view in View repositories.
@@ -98,12 +92,6 @@ type Handler interface {
 	//
 	// DELETE /config/views
 	DeleteView(ctx context.Context, params DeleteViewParams) (DeleteViewRes, error)
-	// DisconnectTCP implements disconnectTCP operation.
-	//
-	// Disconnect connection in the database with the given dbid.
-	//
-	// DELETE /rest/database/{table}/connection
-	DisconnectTCP(ctx context.Context, params DisconnectTCPParams) (DisconnectTCPRes, error)
 	// DownloadFile implements downloadFile operation.
 	//
 	// Download a file out of file location.
@@ -116,18 +104,6 @@ type Handler interface {
 	//
 	// GET /config
 	GetConfig(ctx context.Context) (GetConfigRes, error)
-	// GetConnections implements getConnections operation.
-	//
-	// Retrieve the current TCP connection.
-	//
-	// GET /rest/database/{table}/connection
-	GetConnections(ctx context.Context, params GetConnectionsParams) (GetConnectionsRes, error)
-	// GetDatabaseSessions implements getDatabaseSessions operation.
-	//
-	// Retrieve a list of user queue entries.
-	//
-	// GET /rest/database/{table}/sessions
-	GetDatabaseSessions(ctx context.Context, params GetDatabaseSessionsParams) (GetDatabaseSessionsRes, error)
 	// GetDatabases implements getDatabases operation.
 	//
 	// Retrieves a list of databases known by server.
@@ -206,12 +182,6 @@ type Handler interface {
 	//
 	// GET /rest/view
 	GetMaps(ctx context.Context) (GetMapsRes, error)
-	// GetPermission implements getPermission operation.
-	//
-	// List RBAC assignments permission.
-	//
-	// GET /rest/database/{table}/permission
-	GetPermission(ctx context.Context, params GetPermissionParams) (GetPermissionRes, error)
 	// GetUserInfo implements getUserInfo operation.
 	//
 	// Get the token user information.
@@ -291,12 +261,6 @@ type Handler interface {
 	//
 	// POST /login
 	PushLoginSession(ctx context.Context) (PushLoginSessionRes, error)
-	// RemovePermission implements removePermission operation.
-	//
-	// Add RBAC role.
-	//
-	// DELETE /rest/database/{table}/permission
-	RemovePermission(ctx context.Context, params RemovePermissionParams) (RemovePermissionRes, error)
 	// RemoveSessionCompat implements removeSessionCompat operation.
 	//
 	// Invalidate given token session.

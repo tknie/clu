@@ -15,72 +15,6 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-// AdaptPermissionParams is parameters of adaptPermission operation.
-type AdaptPermissionParams struct {
-	// SQL table.
-	Table string
-}
-
-func unpackAdaptPermissionParams(packed middleware.Parameters) (params AdaptPermissionParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "table",
-			In:   "path",
-		}
-		params.Table = packed[key].(string)
-	}
-	return params
-}
-
-func decodeAdaptPermissionParams(args [1]string, argsEscaped bool, r *http.Request) (params AdaptPermissionParams, _ error) {
-	// Decode path: table.
-	if err := func() error {
-		param := args[0]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "table",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Table = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "table",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	return params, nil
-}
-
 // AddViewParams is parameters of addView operation.
 type AddViewParams struct {
 	// Database URL.
@@ -186,10 +120,12 @@ func decodeAddViewParams(args [0]string, argsEscaped bool, r *http.Request) (par
 
 // BatchParameterQueryParams is parameters of batchParameterQuery operation.
 type BatchParameterQueryParams struct {
-	// Table.
+	// Batch name.
 	Table string
 	// SQL statement.
 	Query string
+	// Check for validator additional information needed to be given to validator plugin.
+	Validate OptString
 }
 
 func unpackBatchParameterQueryParams(packed middleware.Parameters) (params BatchParameterQueryParams) {
@@ -207,10 +143,20 @@ func unpackBatchParameterQueryParams(packed middleware.Parameters) (params Batch
 		}
 		params.Query = packed[key].(string)
 	}
+	{
+		key := middleware.ParameterKey{
+			Name: "validate",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Validate = v.(OptString)
+		}
+	}
 	return params
 }
 
 func decodeBatchParameterQueryParams(args [2]string, argsEscaped bool, r *http.Request) (params BatchParameterQueryParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
 	// Decode path: table.
 	if err := func() error {
 		param := args[0]
@@ -301,13 +247,56 @@ func decodeBatchParameterQueryParams(args [2]string, argsEscaped bool, r *http.R
 			Err:  err,
 		}
 	}
+	// Decode query: validate.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "validate",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotValidateVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotValidateVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Validate.SetTo(paramsDotValidateVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "validate",
+			In:   "query",
+			Err:  err,
+		}
+	}
 	return params, nil
 }
 
 // BatchQueryParams is parameters of batchQuery operation.
 type BatchQueryParams struct {
-	// Table.
+	// Batch name.
 	Table string
+	// Check for validator additional information needed to be given to validator plugin.
+	Validate OptString
 }
 
 func unpackBatchQueryParams(packed middleware.Parameters) (params BatchQueryParams) {
@@ -318,87 +307,19 @@ func unpackBatchQueryParams(packed middleware.Parameters) (params BatchQueryPara
 		}
 		params.Table = packed[key].(string)
 	}
+	{
+		key := middleware.ParameterKey{
+			Name: "validate",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Validate = v.(OptString)
+		}
+	}
 	return params
 }
 
 func decodeBatchQueryParams(args [1]string, argsEscaped bool, r *http.Request) (params BatchQueryParams, _ error) {
-	// Decode path: table.
-	if err := func() error {
-		param := args[0]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "table",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Table = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "table",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	return params, nil
-}
-
-// BatchSelectParams is parameters of batchSelect operation.
-type BatchSelectParams struct {
-	// Batch name.
-	Table string
-	// Query parameter.
-	Param []string
-}
-
-func unpackBatchSelectParams(packed middleware.Parameters) (params BatchSelectParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "table",
-			In:   "path",
-		}
-		params.Table = packed[key].(string)
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "param",
-			In:   "query",
-		}
-		if v, ok := packed[key]; ok {
-			params.Param = v.([]string)
-		}
-	}
-	return params
-}
-
-func decodeBatchSelectParams(args [1]string, argsEscaped bool, r *http.Request) (params BatchSelectParams, _ error) {
 	q := uri.NewQueryDecoder(r.URL.Query())
 	// Decode path: table.
 	if err := func() error {
@@ -445,6 +366,91 @@ func decodeBatchSelectParams(args [1]string, argsEscaped bool, r *http.Request) 
 			Err:  err,
 		}
 	}
+	// Decode query: validate.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "validate",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotValidateVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotValidateVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Validate.SetTo(paramsDotValidateVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "validate",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// BatchSelectParams is parameters of batchSelect operation.
+type BatchSelectParams struct {
+	// Query parameter.
+	Param []string
+	// Batch name.
+	Table string
+	// Check for validator additional information needed to be given to validator plugin.
+	Validate OptString
+}
+
+func unpackBatchSelectParams(packed middleware.Parameters) (params BatchSelectParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "param",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Param = v.([]string)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "table",
+			In:   "path",
+		}
+		params.Table = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "validate",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Validate = v.(OptString)
+		}
+	}
+	return params
+}
+
+func decodeBatchSelectParams(args [1]string, argsEscaped bool, r *http.Request) (params BatchSelectParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
 	// Decode query: param.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
@@ -484,6 +490,92 @@ func decodeBatchSelectParams(args [1]string, argsEscaped bool, r *http.Request) 
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "param",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode path: table.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "table",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Table = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "table",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode query: validate.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "validate",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotValidateVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotValidateVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Validate.SetTo(paramsDotValidateVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "validate",
 			In:   "query",
 			Err:  err,
 		}
@@ -1248,10 +1340,6 @@ func decodeDeleteJobResultParams(args [2]string, argsEscaped bool, r *http.Reque
 
 // DeleteRecordsSearchedParams is parameters of deleteRecordsSearched operation.
 type DeleteRecordsSearchedParams struct {
-	// SQL table.
-	Table string
-	// Search.
-	Search string
 	// Start offset where the read will start from.
 	Start OptFloat64
 	// Maximal number of records retrieved.
@@ -1270,23 +1358,13 @@ type DeleteRecordsSearchedParams struct {
 	Orderby OptString
 	// Use XML notation namespace.
 	Xmlnotation OptBool
+	// SQL table.
+	Table string
+	// Specific SQL query string.
+	Search string
 }
 
 func unpackDeleteRecordsSearchedParams(packed middleware.Parameters) (params DeleteRecordsSearchedParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "table",
-			In:   "path",
-		}
-		params.Table = packed[key].(string)
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "search",
-			In:   "path",
-		}
-		params.Search = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "start",
@@ -1368,101 +1446,25 @@ func unpackDeleteRecordsSearchedParams(packed middleware.Parameters) (params Del
 			params.Xmlnotation = v.(OptBool)
 		}
 	}
+	{
+		key := middleware.ParameterKey{
+			Name: "table",
+			In:   "path",
+		}
+		params.Table = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "search",
+			In:   "path",
+		}
+		params.Search = packed[key].(string)
+	}
 	return params
 }
 
 func decodeDeleteRecordsSearchedParams(args [2]string, argsEscaped bool, r *http.Request) (params DeleteRecordsSearchedParams, _ error) {
 	q := uri.NewQueryDecoder(r.URL.Query())
-	// Decode path: table.
-	if err := func() error {
-		param := args[0]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "table",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Table = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "table",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	// Decode path: search.
-	if err := func() error {
-		param := args[1]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[1])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "search",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Search = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "search",
-			In:   "path",
-			Err:  err,
-		}
-	}
 	// Set default value for query: start.
 	{
 		val := float64(0)
@@ -1867,6 +1869,96 @@ func decodeDeleteRecordsSearchedParams(args [2]string, argsEscaped bool, r *http
 			Err:  err,
 		}
 	}
+	// Decode path: table.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "table",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Table = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "table",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode path: search.
+	if err := func() error {
+		param := args[1]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[1])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "search",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Search = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "search",
+			In:   "path",
+			Err:  err,
+		}
+	}
 	return params, nil
 }
 
@@ -1973,177 +2065,6 @@ func decodeDeleteViewParams(args [0]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
-// DisconnectTCPParams is parameters of disconnectTCP operation.
-type DisconnectTCPParams struct {
-	// SQL table.
-	Table string
-	// First entry of connection ID.
-	StartID OptInt
-	// Last entry of connection ID.
-	EndID OptInt
-}
-
-func unpackDisconnectTCPParams(packed middleware.Parameters) (params DisconnectTCPParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "table",
-			In:   "path",
-		}
-		params.Table = packed[key].(string)
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "start_id",
-			In:   "query",
-		}
-		if v, ok := packed[key]; ok {
-			params.StartID = v.(OptInt)
-		}
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "end_id",
-			In:   "query",
-		}
-		if v, ok := packed[key]; ok {
-			params.EndID = v.(OptInt)
-		}
-	}
-	return params
-}
-
-func decodeDisconnectTCPParams(args [1]string, argsEscaped bool, r *http.Request) (params DisconnectTCPParams, _ error) {
-	q := uri.NewQueryDecoder(r.URL.Query())
-	// Decode path: table.
-	if err := func() error {
-		param := args[0]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "table",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Table = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "table",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	// Decode query: start_id.
-	if err := func() error {
-		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "start_id",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.HasParam(cfg); err == nil {
-			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotStartIDVal int
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
-						return err
-					}
-
-					c, err := conv.ToInt(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotStartIDVal = c
-					return nil
-				}(); err != nil {
-					return err
-				}
-				params.StartID.SetTo(paramsDotStartIDVal)
-				return nil
-			}); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "start_id",
-			In:   "query",
-			Err:  err,
-		}
-	}
-	// Decode query: end_id.
-	if err := func() error {
-		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "end_id",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.HasParam(cfg); err == nil {
-			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotEndIDVal int
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
-						return err
-					}
-
-					c, err := conv.ToInt(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotEndIDVal = c
-					return nil
-				}(); err != nil {
-					return err
-				}
-				params.EndID.SetTo(paramsDotEndIDVal)
-				return nil
-			}); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "end_id",
-			In:   "query",
-			Err:  err,
-		}
-	}
-	return params, nil
-}
-
 // DownloadFileParams is parameters of downloadFile operation.
 type DownloadFileParams struct {
 	// Identifier of the file location.
@@ -2203,138 +2124,6 @@ func decodeDownloadFileParams(args [1]string, argsEscaped bool, r *http.Request)
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "path",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	return params, nil
-}
-
-// GetConnectionsParams is parameters of getConnections operation.
-type GetConnectionsParams struct {
-	// SQL table.
-	Table string
-}
-
-func unpackGetConnectionsParams(packed middleware.Parameters) (params GetConnectionsParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "table",
-			In:   "path",
-		}
-		params.Table = packed[key].(string)
-	}
-	return params
-}
-
-func decodeGetConnectionsParams(args [1]string, argsEscaped bool, r *http.Request) (params GetConnectionsParams, _ error) {
-	// Decode path: table.
-	if err := func() error {
-		param := args[0]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "table",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Table = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "table",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	return params, nil
-}
-
-// GetDatabaseSessionsParams is parameters of getDatabaseSessions operation.
-type GetDatabaseSessionsParams struct {
-	// SQL table.
-	Table string
-}
-
-func unpackGetDatabaseSessionsParams(packed middleware.Parameters) (params GetDatabaseSessionsParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "table",
-			In:   "path",
-		}
-		params.Table = packed[key].(string)
-	}
-	return params
-}
-
-func decodeGetDatabaseSessionsParams(args [1]string, argsEscaped bool, r *http.Request) (params GetDatabaseSessionsParams, _ error) {
-	// Decode path: table.
-	if err := func() error {
-		param := args[0]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "table",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Table = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "table",
 			In:   "path",
 			Err:  err,
 		}
@@ -3206,42 +2995,21 @@ func decodeGetJobsParams(args [0]string, argsEscaped bool, r *http.Request) (par
 
 // GetLobByMapParams is parameters of getLobByMap operation.
 type GetLobByMapParams struct {
-	// SQL table.
-	Table string
-	// Specific table record.
-	Search string
-	// Specific the field to be.
-	Field string
 	// Specific the field containing the mimetype.
 	MimetypeField OptString
 	// Specific the data MIME type.
 	Mimetype OptString
 	// Search criterium.
 	Sqlsearch OptString
+	// SQL table.
+	Table string
+	// Specific table record.
+	Search string
+	// Specific the field to be.
+	Field string
 }
 
 func unpackGetLobByMapParams(packed middleware.Parameters) (params GetLobByMapParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "table",
-			In:   "path",
-		}
-		params.Table = packed[key].(string)
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "search",
-			In:   "path",
-		}
-		params.Search = packed[key].(string)
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "field",
-			In:   "path",
-		}
-		params.Field = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "mimetypeField",
@@ -3269,11 +3037,155 @@ func unpackGetLobByMapParams(packed middleware.Parameters) (params GetLobByMapPa
 			params.Sqlsearch = v.(OptString)
 		}
 	}
+	{
+		key := middleware.ParameterKey{
+			Name: "table",
+			In:   "path",
+		}
+		params.Table = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "search",
+			In:   "path",
+		}
+		params.Search = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "field",
+			In:   "path",
+		}
+		params.Field = packed[key].(string)
+	}
 	return params
 }
 
 func decodeGetLobByMapParams(args [3]string, argsEscaped bool, r *http.Request) (params GetLobByMapParams, _ error) {
 	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode query: mimetypeField.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "mimetypeField",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMimetypeFieldVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMimetypeFieldVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.MimetypeField.SetTo(paramsDotMimetypeFieldVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "mimetypeField",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: mimetype.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "mimetype",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMimetypeVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMimetypeVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Mimetype.SetTo(paramsDotMimetypeVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "mimetype",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: sqlsearch.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "sqlsearch",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotSqlsearchVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotSqlsearchVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Sqlsearch.SetTo(paramsDotSqlsearchVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "sqlsearch",
+			In:   "query",
+			Err:  err,
+		}
+	}
 	// Decode path: table.
 	if err := func() error {
 		param := args[0]
@@ -3406,129 +3318,6 @@ func decodeGetLobByMapParams(args [3]string, argsEscaped bool, r *http.Request) 
 		return params, &ogenerrors.DecodeParamError{
 			Name: "field",
 			In:   "path",
-			Err:  err,
-		}
-	}
-	// Decode query: mimetypeField.
-	if err := func() error {
-		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "mimetypeField",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.HasParam(cfg); err == nil {
-			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotMimetypeFieldVal string
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
-						return err
-					}
-
-					c, err := conv.ToString(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotMimetypeFieldVal = c
-					return nil
-				}(); err != nil {
-					return err
-				}
-				params.MimetypeField.SetTo(paramsDotMimetypeFieldVal)
-				return nil
-			}); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "mimetypeField",
-			In:   "query",
-			Err:  err,
-		}
-	}
-	// Decode query: mimetype.
-	if err := func() error {
-		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "mimetype",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.HasParam(cfg); err == nil {
-			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotMimetypeVal string
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
-						return err
-					}
-
-					c, err := conv.ToString(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotMimetypeVal = c
-					return nil
-				}(); err != nil {
-					return err
-				}
-				params.Mimetype.SetTo(paramsDotMimetypeVal)
-				return nil
-			}); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "mimetype",
-			In:   "query",
-			Err:  err,
-		}
-	}
-	// Decode query: sqlsearch.
-	if err := func() error {
-		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "sqlsearch",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.HasParam(cfg); err == nil {
-			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotSqlsearchVal string
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
-						return err
-					}
-
-					c, err := conv.ToString(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotSqlsearchVal = c
-					return nil
-				}(); err != nil {
-					return err
-				}
-				params.Sqlsearch.SetTo(paramsDotSqlsearchVal)
-				return nil
-			}); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "sqlsearch",
-			In:   "query",
 			Err:  err,
 		}
 	}
@@ -4279,140 +4068,6 @@ func decodeGetMapRecordsFieldsParams(args [3]string, argsEscaped bool, r *http.R
 	return params, nil
 }
 
-// GetPermissionParams is parameters of getPermission operation.
-type GetPermissionParams struct {
-	// SQL table.
-	Table string
-	// List type.
-	List OptGetPermissionList
-}
-
-func unpackGetPermissionParams(packed middleware.Parameters) (params GetPermissionParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "table",
-			In:   "path",
-		}
-		params.Table = packed[key].(string)
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "list",
-			In:   "query",
-		}
-		if v, ok := packed[key]; ok {
-			params.List = v.(OptGetPermissionList)
-		}
-	}
-	return params
-}
-
-func decodeGetPermissionParams(args [1]string, argsEscaped bool, r *http.Request) (params GetPermissionParams, _ error) {
-	q := uri.NewQueryDecoder(r.URL.Query())
-	// Decode path: table.
-	if err := func() error {
-		param := args[0]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "table",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Table = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "table",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	// Decode query: list.
-	if err := func() error {
-		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "list",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.HasParam(cfg); err == nil {
-			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotListVal GetPermissionList
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
-						return err
-					}
-
-					c, err := conv.ToString(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotListVal = GetPermissionList(c)
-					return nil
-				}(); err != nil {
-					return err
-				}
-				params.List.SetTo(paramsDotListVal)
-				return nil
-			}); err != nil {
-				return err
-			}
-			if err := func() error {
-				if value, ok := params.List.Get(); ok {
-					if err := func() error {
-						if err := value.Validate(); err != nil {
-							return err
-						}
-						return nil
-					}(); err != nil {
-						return err
-					}
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "list",
-			In:   "query",
-			Err:  err,
-		}
-	}
-	return params, nil
-}
-
 // GetVideoParams is parameters of getVideo operation.
 type GetVideoParams struct {
 	// SQL table.
@@ -4908,72 +4563,6 @@ func decodeInsertRecordParams(args [1]string, argsEscaped bool, r *http.Request)
 	return params, nil
 }
 
-// RemovePermissionParams is parameters of removePermission operation.
-type RemovePermissionParams struct {
-	// SQL table.
-	Table string
-}
-
-func unpackRemovePermissionParams(packed middleware.Parameters) (params RemovePermissionParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "table",
-			In:   "path",
-		}
-		params.Table = packed[key].(string)
-	}
-	return params
-}
-
-func decodeRemovePermissionParams(args [1]string, argsEscaped bool, r *http.Request) (params RemovePermissionParams, _ error) {
-	// Decode path: table.
-	if err := func() error {
-		param := args[0]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "table",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Table = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "table",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	return params, nil
-}
-
 // SearchModellingParams is parameters of searchModelling operation.
 type SearchModellingParams struct {
 	// Modelling map and paramters.
@@ -5042,10 +4631,6 @@ func decodeSearchModellingParams(args [1]string, argsEscaped bool, r *http.Reque
 
 // SearchRecordsFieldsParams is parameters of searchRecordsFields operation.
 type SearchRecordsFieldsParams struct {
-	// SQL table.
-	Table string
-	// Specific SQL query string.
-	Search string
 	// Start offset where the read will start from.
 	Start OptFloat64
 	// Maximal number of records retrieved.
@@ -5064,23 +4649,13 @@ type SearchRecordsFieldsParams struct {
 	Orderby OptString
 	// Use XML notation namespace.
 	Xmlnotation OptBool
+	// SQL table.
+	Table string
+	// Specific SQL query string.
+	Search string
 }
 
 func unpackSearchRecordsFieldsParams(packed middleware.Parameters) (params SearchRecordsFieldsParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "table",
-			In:   "path",
-		}
-		params.Table = packed[key].(string)
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "search",
-			In:   "path",
-		}
-		params.Search = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "start",
@@ -5162,101 +4737,25 @@ func unpackSearchRecordsFieldsParams(packed middleware.Parameters) (params Searc
 			params.Xmlnotation = v.(OptBool)
 		}
 	}
+	{
+		key := middleware.ParameterKey{
+			Name: "table",
+			In:   "path",
+		}
+		params.Table = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "search",
+			In:   "path",
+		}
+		params.Search = packed[key].(string)
+	}
 	return params
 }
 
 func decodeSearchRecordsFieldsParams(args [2]string, argsEscaped bool, r *http.Request) (params SearchRecordsFieldsParams, _ error) {
 	q := uri.NewQueryDecoder(r.URL.Query())
-	// Decode path: table.
-	if err := func() error {
-		param := args[0]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "table",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Table = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "table",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	// Decode path: search.
-	if err := func() error {
-		param := args[1]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[1])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "search",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.Search = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "search",
-			In:   "path",
-			Err:  err,
-		}
-	}
 	// Set default value for query: start.
 	{
 		val := float64(0)
@@ -5658,6 +5157,96 @@ func decodeSearchRecordsFieldsParams(args [2]string, argsEscaped bool, r *http.R
 		return params, &ogenerrors.DecodeParamError{
 			Name: "xmlnotation",
 			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode path: table.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "table",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Table = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "table",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	// Decode path: search.
+	if err := func() error {
+		param := args[1]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[1])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "search",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Search = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "search",
+			In:   "path",
 			Err:  err,
 		}
 	}
@@ -6093,7 +5682,7 @@ func decodeTriggerJobParams(args [1]string, argsEscaped bool, r *http.Request) (
 type UpdateLobByMapParams struct {
 	// SQL table.
 	Table string
-	// Specific table record number.
+	// Specific table record.
 	Search string
 	// Specific the field to be.
 	Field string
@@ -6267,7 +5856,7 @@ func decodeUpdateLobByMapParams(args [3]string, argsEscaped bool, r *http.Reques
 type UpdateRecordsByFieldsParams struct {
 	// SQL table.
 	Table string
-	// Fields to check where with.
+	// Specific SQL query string.
 	Search string
 }
 

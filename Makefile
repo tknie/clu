@@ -39,7 +39,8 @@ RESTEXEC           = $(BIN)/cmd/cluapi
 EXECS              = $(RESTEXEC)
 REST_SERVER        = $(CURDIR)
 SERVER_HOME        = $(CURDIR)
-PLUGINS            = $(PLUGINSBIN)/audit $(PLUGINSBIN)/storeAudit $(PLUGINSBIN)/auth $(PLUGINSBIN)/extend
+PLUGINS            = $(PLUGINSBIN)/audit $(PLUGINSBIN)/storeAudit $(PLUGINSBIN)/auth \
+					 $(PLUGINSBIN)/extend $(PLUGINSBIN)/validator
 OBJECTS            = cmd/*/*.go server/*.go *.go webserver/*.go plugins/*.go
 SWAGGER_SPEC       = $(CURDIR)/swagger/openapi-restserver.yaml	
 ENABLE_DEBUG      ?= 0

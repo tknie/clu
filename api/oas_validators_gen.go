@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/go-faster/errors"
-	"github.com/tknie/errorrepo"
 
 	"github.com/ogen-go/ogen/validate"
 )
@@ -526,17 +525,6 @@ func (s *File) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
-}
-
-func (s GetPermissionList) Validate() error {
-	switch s {
-	case "assignments":
-		return nil
-	case "userrole":
-		return nil
-	default:
-		return errorrepo.NewError("RERR00012", s)
-	}
 }
 
 func (s *JobDefinition) Validate() error {

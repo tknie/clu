@@ -625,6 +625,19 @@ paths:
             - admin
       x-codegen-request-body-name: jobConfig
   /rest/batch/{table}:
+    parameters:
+      - name: table
+        in: path
+        description: Batch name
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: validate
+        description: check for validator additional information needed to be given to validator plugin
+        schema:
+          type: string
+        required: false
     get:
       tags:
         - Queries
@@ -632,12 +645,6 @@ paths:
         Call a SQL query batch command store in batch database table with name
       operationId: batchSelect
       parameters:
-        - name: table
-          in: path
-          description: Batch name
-          required: true
-          schema:
-            type: string
         - name: param
           in: query
           description: Query parameter
@@ -686,13 +693,6 @@ paths:
       description: >-
         Call a SQL query batch command using insert or update data in body
       operationId: batchQuery
-      parameters:
-        - name: table
-          in: path
-          description: Table
-          required: true
-          schema:
-            type: string
       requestBody:
         content:
           application/json:
@@ -738,25 +738,31 @@ paths:
             - admin
       x-codegen-request-body-name: database
   /rest/batch/{table}/{query}:
+    parameters:
+      - name: table
+        in: path
+        description: Batch name
+        required: true
+        schema:
+          type: string
+      - name: query
+        in: path
+        description: SQL statement
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: validate
+        description: check for validator additional information needed to be given to validator plugin
+        schema:
+          type: string
+        required: false
     get:
       tags:
         - Queries
       description: >-
         Call a SQL query batch command posted in query
       operationId: batchParameterQuery
-      parameters:
-        - name: table
-          in: path
-          description: Table
-          required: true
-          schema:
-            type: string
-        - name: query
-          in: path
-          description: SQL statement
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           description: Successful response, retrieve the field information.
@@ -872,283 +878,8 @@ paths:
         - BearerAuth:
             - admin
       x-codegen-request-body-name: database
-  /rest/database/{table}/permission:
-    get:
-      tags:
-        - Administrator
-      description: List RBAC assignments permission
-      operationId: getPermission
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-        - name: list
-          in: query
-          description: List type
-          schema:
-            type: string
-            enum:
-              - assignments
-              - userrole
-      responses:
-        '200':
-          description: Successful response, with status of permission.
-          content: {}
-        '400':
-          description: Database error evaluating RBAC list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-    put:
-      tags:
-        - Administrator
-      description: Add RBAC role
-      operationId: adaptPermission
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response, with status of permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusResponse'
-        '400':
-          description: Database error evaluating RBAC list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-    delete:
-      tags:
-        - Administrator
-      description: Add RBAC role
-      operationId: removePermission
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response, with status of permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusResponse'
-        '400':
-          description: Database error evaluating RBAC list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-  /rest/database/{table}/connection:
-    get:
-      tags:
-        - Administrator
-      description: Retrieve the current TCP connection
-      operationId: getConnections
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response, with status of TCP.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TCP'
-        '400':
-          description: Database error evaluating TCP list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-    delete:
-      tags:
-        - Administrator
-      description: Disconnect connection in the database with the given dbid
-      operationId: disconnectTCP
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-        - name: start_id
-          in: query
-          description: First entry of connection ID
-          schema:
-            type: integer
-        - name: end_id
-          in: query
-          description: Last entry of connection ID
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Successful response, when database connections init is send
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusResponse'
-        '400':
-          description: Database not available
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
-  /rest/database/{table}/sessions:
-    get:
-      tags:
-        - Administrator
-      description: Retrieve a list of user queue entries
-      operationId: getDatabaseSessions
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response, with database user queue entries
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Sessions'
-        '400':
-          description: Database not available or offline
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Authorization error
-          content: {}
-        '403':
-          description: Role access denied
-          content: {}
-        default:
-          description: Error authorization
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-        - tokenCheck: []
-        - BearerAuth:
-            - admin
   /binary/{table}/{field}/{search}:
-    get:
-      tags:
-        - Queries
-      description: Retrieves a lob of a specific table record of an field in a Map
-      operationId: getLobByMap
-      parameters:
+    parameters:
         - name: table
           in: path
           description: SQL table
@@ -1167,6 +898,12 @@ paths:
           required: true
           schema:
             type: string
+    get:
+      tags:
+        - Queries
+      description: Retrieves a lob of a specific table record of an field in a Map
+      operationId: getLobByMap
+      parameters:
         - name: mimetypeField
           in: query
           description: Specific the field containing the mimetype
@@ -1217,25 +954,6 @@ paths:
         - Modifier
       description: Set a lob at a specific table record of an field in a Map
       operationId: updateLobByMap
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-        - name: search
-          in: path
-          description: Specific table record number
-          required: true
-          schema:
-            type: string
-        - name: field
-          in: path
-          description: Specific the field to be
-          required: true
-          schema:
-            type: string
       requestBody:
         content:
           application/octet-stream:
@@ -2050,24 +1768,25 @@ paths:
         - BearerAuth:
             - user
   /rest/view/{table}/{search}:
+    parameters:
+      - name: table
+        in: path
+        description: SQL table
+        required: true
+        schema:
+          type: string
+      - name: search
+        in: path
+        description: Specific SQL query string
+        required: true
+        schema:
+          type: string
     get:
       tags:
         - Queries
       description: Query a record with a given SQL query
       operationId: searchRecordsFields
       parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-        - name: search
-          in: path
-          description: Specific SQL query string
-          required: true
-          schema:
-            type: string
         - name: start
           in: query
           description: Start offset where the read will start from
@@ -2156,19 +1875,6 @@ paths:
         - Modifier
       description: Update a record dependent on field(s) of a specific table
       operationId: updateRecordsByFields
-      parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-        - name: search
-          in: path
-          description: fields to check where with
-          required: true
-          schema:
-            type: string
       requestBody:
         content:
           application/json:
@@ -2220,18 +1926,6 @@ paths:
       description: Delete a record with a given search
       operationId: deleteRecordsSearched
       parameters:
-        - name: table
-          in: path
-          description: SQL table
-          required: true
-          schema:
-            type: string
-        - name: search
-          in: path
-          description: search
-          required: true
-          schema:
-            type: string
         - name: start
           in: query
           description: Start offset where the read will start from

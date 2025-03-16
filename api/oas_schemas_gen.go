@@ -7,7 +7,6 @@ import (
 	"io"
 	"time"
 
-	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
 	"github.com/google/uuid"
 
@@ -43,16 +42,6 @@ func (s *APIHandler) SetName(val OptString) {
 func (s *APIHandler) SetVersion(val OptString) {
 	s.Version = val
 }
-
-// AdaptPermissionForbidden is response for AdaptPermission operation.
-type AdaptPermissionForbidden struct{}
-
-func (*AdaptPermissionForbidden) adaptPermissionRes() {}
-
-// AdaptPermissionUnauthorized is response for AdaptPermission operation.
-type AdaptPermissionUnauthorized struct{}
-
-func (*AdaptPermissionUnauthorized) adaptPermissionRes() {}
 
 // AddViewForbidden is response for AddView operation.
 type AddViewForbidden struct{}
@@ -1192,16 +1181,6 @@ func (s *DirectoryFiles) SetSystem(val OptString) {
 
 func (*DirectoryFiles) browseLocationRes() {}
 
-// DisconnectTCPForbidden is response for DisconnectTCP operation.
-type DisconnectTCPForbidden struct{}
-
-func (*DisconnectTCPForbidden) disconnectTCPRes() {}
-
-// DisconnectTCPUnauthorized is response for DisconnectTCP operation.
-type DisconnectTCPUnauthorized struct{}
-
-func (*DisconnectTCPUnauthorized) disconnectTCPRes() {}
-
 type DownloadFileBadRequest Error
 
 func (*DownloadFileBadRequest) downloadFileRes() {}
@@ -1284,17 +1263,13 @@ func (s *Error) SetError(val OptErrorError) {
 	s.Error = val
 }
 
-func (*Error) adaptPermissionRes()       {}
 func (*Error) addViewRes()               {}
 func (*Error) batchParameterQueryRes()   {}
 func (*Error) batchQueryRes()            {}
 func (*Error) batchSelectRes()           {}
 func (*Error) deleteRecordsSearchedRes() {}
 func (*Error) deleteViewRes()            {}
-func (*Error) disconnectTCPRes()         {}
 func (*Error) getConfigRes()             {}
-func (*Error) getConnectionsRes()        {}
-func (*Error) getDatabaseSessionsRes()   {}
 func (*Error) getDatabasesRes()          {}
 func (*Error) getImageRes()              {}
 func (*Error) getJobsConfigRes()         {}
@@ -1303,7 +1278,6 @@ func (*Error) getLoginSessionRes()       {}
 func (*Error) getMapMetadataRes()        {}
 func (*Error) getMapRecordsFieldsRes()   {}
 func (*Error) getMapsRes()               {}
-func (*Error) getPermissionRes()         {}
 func (*Error) getUserInfoRes()           {}
 func (*Error) getVersionRes()            {}
 func (*Error) getVideoRes()              {}
@@ -1312,7 +1286,6 @@ func (*Error) insertRecordRes()          {}
 func (*Error) loginSessionRes()          {}
 func (*Error) postDatabaseRes()          {}
 func (*Error) pushLoginSessionRes()      {}
-func (*Error) removePermissionRes()      {}
 func (*Error) searchRecordsFieldsRes()   {}
 func (*Error) setConfigRes()             {}
 func (*Error) setJobsConfigRes()         {}
@@ -1633,26 +1606,6 @@ type GetConfigUnauthorized struct{}
 
 func (*GetConfigUnauthorized) getConfigRes() {}
 
-// GetConnectionsForbidden is response for GetConnections operation.
-type GetConnectionsForbidden struct{}
-
-func (*GetConnectionsForbidden) getConnectionsRes() {}
-
-// GetConnectionsUnauthorized is response for GetConnections operation.
-type GetConnectionsUnauthorized struct{}
-
-func (*GetConnectionsUnauthorized) getConnectionsRes() {}
-
-// GetDatabaseSessionsForbidden is response for GetDatabaseSessions operation.
-type GetDatabaseSessionsForbidden struct{}
-
-func (*GetDatabaseSessionsForbidden) getDatabaseSessionsRes() {}
-
-// GetDatabaseSessionsUnauthorized is response for GetDatabaseSessions operation.
-type GetDatabaseSessionsUnauthorized struct{}
-
-func (*GetDatabaseSessionsUnauthorized) getDatabaseSessionsRes() {}
-
 // GetDatabasesForbidden is response for GetDatabases operation.
 type GetDatabasesForbidden struct{}
 
@@ -1889,62 +1842,6 @@ func (*GetMapsForbidden) getMapsRes() {}
 type GetMapsUnauthorized struct{}
 
 func (*GetMapsUnauthorized) getMapsRes() {}
-
-// GetPermissionForbidden is response for GetPermission operation.
-type GetPermissionForbidden struct{}
-
-func (*GetPermissionForbidden) getPermissionRes() {}
-
-type GetPermissionList string
-
-const (
-	GetPermissionListAssignments GetPermissionList = "assignments"
-	GetPermissionListUserrole    GetPermissionList = "userrole"
-)
-
-// AllValues returns all GetPermissionList values.
-func (GetPermissionList) AllValues() []GetPermissionList {
-	return []GetPermissionList{
-		GetPermissionListAssignments,
-		GetPermissionListUserrole,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s GetPermissionList) MarshalText() ([]byte, error) {
-	switch s {
-	case GetPermissionListAssignments:
-		return []byte(s), nil
-	case GetPermissionListUserrole:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *GetPermissionList) UnmarshalText(data []byte) error {
-	switch GetPermissionList(data) {
-	case GetPermissionListAssignments:
-		*s = GetPermissionListAssignments
-		return nil
-	case GetPermissionListUserrole:
-		*s = GetPermissionListUserrole
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-// GetPermissionOK is response for GetPermission operation.
-type GetPermissionOK struct{}
-
-func (*GetPermissionOK) getPermissionRes() {}
-
-// GetPermissionUnauthorized is response for GetPermission operation.
-type GetPermissionUnauthorized struct{}
-
-func (*GetPermissionUnauthorized) getPermissionRes() {}
 
 // GetUserInfoForbidden is response for GetUserInfo operation.
 type GetUserInfoForbidden struct{}
@@ -3648,52 +3545,6 @@ func (o OptFloat64) Or(d float64) float64 {
 	return d
 }
 
-// NewOptGetPermissionList returns new OptGetPermissionList with value set to v.
-func NewOptGetPermissionList(v GetPermissionList) OptGetPermissionList {
-	return OptGetPermissionList{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptGetPermissionList is optional GetPermissionList.
-type OptGetPermissionList struct {
-	Value GetPermissionList
-	Set   bool
-}
-
-// IsSet returns true if OptGetPermissionList was set.
-func (o OptGetPermissionList) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptGetPermissionList) Reset() {
-	var v GetPermissionList
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptGetPermissionList) SetTo(v GetPermissionList) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptGetPermissionList) Get() (v GetPermissionList, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptGetPermissionList) Or(d GetPermissionList) GetPermissionList {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptInsertMapFileRecordsReq returns new OptInsertMapFileRecordsReq with value set to v.
 func NewOptInsertMapFileRecordsReq(v InsertMapFileRecordsReq) OptInsertMapFileRecordsReq {
 	return OptInsertMapFileRecordsReq{
@@ -4706,52 +4557,6 @@ func (o OptSQLQueryBatch) Or(d SQLQueryBatch) SQLQueryBatch {
 	return d
 }
 
-// NewOptSessionsSession returns new OptSessionsSession with value set to v.
-func NewOptSessionsSession(v SessionsSession) OptSessionsSession {
-	return OptSessionsSession{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptSessionsSession is optional SessionsSession.
-type OptSessionsSession struct {
-	Value SessionsSession
-	Set   bool
-}
-
-// IsSet returns true if OptSessionsSession was set.
-func (o OptSessionsSession) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptSessionsSession) Reset() {
-	var v SessionsSession
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptSessionsSession) SetTo(v SessionsSession) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptSessionsSession) Get() (v SessionsSession, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptSessionsSession) Or(d SessionsSession) SessionsSession {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptStatusResponseStatus returns new OptStatusResponseStatus with value set to v.
 func NewOptStatusResponseStatus(v StatusResponseStatus) OptStatusResponseStatus {
 	return OptStatusResponseStatus{
@@ -5040,16 +4845,6 @@ type PushLoginSessionUnauthorized struct{}
 
 func (*PushLoginSessionUnauthorized) pushLoginSessionRes() {}
 
-// RemovePermissionForbidden is response for RemovePermission operation.
-type RemovePermissionForbidden struct{}
-
-func (*RemovePermissionForbidden) removePermissionRes() {}
-
-// RemovePermissionUnauthorized is response for RemovePermission operation.
-type RemovePermissionUnauthorized struct{}
-
-func (*RemovePermissionUnauthorized) removePermissionRes() {}
-
 type RemoveSessionCompatBadRequest Error
 
 func (*RemoveSessionCompatBadRequest) removeSessionCompatRes() {}
@@ -5266,39 +5061,6 @@ type SearchTableUnauthorized struct{}
 
 func (*SearchTableUnauthorized) searchTableRes() {}
 
-// Ref: #/components/schemas/Sessions
-type Sessions struct {
-	Session OptSessionsSession `json:"Session"`
-}
-
-// GetSession returns the value of Session.
-func (s *Sessions) GetSession() OptSessionsSession {
-	return s.Session
-}
-
-// SetSession sets the value of Session.
-func (s *Sessions) SetSession(val OptSessionsSession) {
-	s.Session = val
-}
-
-func (*Sessions) getDatabaseSessionsRes() {}
-
-type SessionsSession struct {
-	UserQueueEntry []SessionsSessionUserQueueEntryItem `json:"UserQueueEntry"`
-}
-
-// GetUserQueueEntry returns the value of UserQueueEntry.
-func (s *SessionsSession) GetUserQueueEntry() []SessionsSessionUserQueueEntryItem {
-	return s.UserQueueEntry
-}
-
-// SetUserQueueEntry sets the value of UserQueueEntry.
-func (s *SessionsSession) SetUserQueueEntry(val []SessionsSessionUserQueueEntryItem) {
-	s.UserQueueEntry = val
-}
-
-type SessionsSessionUserQueueEntryItem struct{}
-
 // SetConfigForbidden is response for SetConfig operation.
 type SetConfigForbidden struct{}
 
@@ -5382,13 +5144,10 @@ func (s *StatusResponse) SetStatus(val OptStatusResponseStatus) {
 	s.Status = val
 }
 
-func (*StatusResponse) adaptPermissionRes()    {}
 func (*StatusResponse) createDirectoryRes()    {}
 func (*StatusResponse) deleteFileLocationRes() {}
-func (*StatusResponse) disconnectTCPRes()      {}
 func (*StatusResponse) postDatabaseRes()       {}
 func (*StatusResponse) postJobRes()            {}
-func (*StatusResponse) removePermissionRes()   {}
 func (*StatusResponse) shutdownServerRes()     {}
 func (*StatusResponse) uploadFileRes()         {}
 
@@ -5543,93 +5302,6 @@ func (s *StoreResponseHeaders) SetResponse(val StoreResponse) {
 }
 
 func (*StoreResponseHeaders) insertMapFileRecordsRes() {}
-
-// Ref: #/components/schemas/TCP
-type TCP struct {
-	Entry []TCPentry `json:"Entry"`
-}
-
-// GetEntry returns the value of Entry.
-func (s *TCP) GetEntry() []TCPentry {
-	return s.Entry
-}
-
-// SetEntry sets the value of Entry.
-func (s *TCP) SetEntry(val []TCPentry) {
-	s.Entry = val
-}
-
-func (*TCP) getConnectionsRes() {}
-
-// Ref: #/components/schemas/TCPentry
-type TCPentry struct {
-	ID         OptInt    `json:"ID"`
-	RecvID     OptInt    `json:"RecvID"`
-	RemoteUser OptString `json:"RemoteUser"`
-	RemoteHost OptString `json:"RemoteHost"`
-	RemoteIP   OptString `json:"RemoteIP"`
-	RemotePort OptInt    `json:"RemotePort"`
-}
-
-// GetID returns the value of ID.
-func (s *TCPentry) GetID() OptInt {
-	return s.ID
-}
-
-// GetRecvID returns the value of RecvID.
-func (s *TCPentry) GetRecvID() OptInt {
-	return s.RecvID
-}
-
-// GetRemoteUser returns the value of RemoteUser.
-func (s *TCPentry) GetRemoteUser() OptString {
-	return s.RemoteUser
-}
-
-// GetRemoteHost returns the value of RemoteHost.
-func (s *TCPentry) GetRemoteHost() OptString {
-	return s.RemoteHost
-}
-
-// GetRemoteIP returns the value of RemoteIP.
-func (s *TCPentry) GetRemoteIP() OptString {
-	return s.RemoteIP
-}
-
-// GetRemotePort returns the value of RemotePort.
-func (s *TCPentry) GetRemotePort() OptInt {
-	return s.RemotePort
-}
-
-// SetID sets the value of ID.
-func (s *TCPentry) SetID(val OptInt) {
-	s.ID = val
-}
-
-// SetRecvID sets the value of RecvID.
-func (s *TCPentry) SetRecvID(val OptInt) {
-	s.RecvID = val
-}
-
-// SetRemoteUser sets the value of RemoteUser.
-func (s *TCPentry) SetRemoteUser(val OptString) {
-	s.RemoteUser = val
-}
-
-// SetRemoteHost sets the value of RemoteHost.
-func (s *TCPentry) SetRemoteHost(val OptString) {
-	s.RemoteHost = val
-}
-
-// SetRemoteIP sets the value of RemoteIP.
-func (s *TCPentry) SetRemoteIP(val OptString) {
-	s.RemoteIP = val
-}
-
-// SetRemotePort sets the value of RemotePort.
-func (s *TCPentry) SetRemotePort(val OptInt) {
-	s.RemotePort = val
-}
 
 type TokenCheck struct {
 	APIKey string
