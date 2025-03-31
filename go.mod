@@ -2,14 +2,14 @@ module github.com/tknie/clu
 
 go 1.23.0
 
-toolchain go1.23.6
+toolchain go1.24.1
 
 require (
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.1
-	github.com/jackc/pgx/v5 v5.7.2
+	github.com/jackc/pgx/v5 v5.7.4
 	github.com/ogen-go/ogen v1.10.1
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.10.0
