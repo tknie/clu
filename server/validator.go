@@ -36,6 +36,7 @@ func RegisterValidator(validator RestValidator) {
 	}
 }
 
+// Validate validate current HTTP session received in REST server
 func Validate(session *clu.Context, role auth.AccessRole, resource string) bool {
 	req := session.CurrentRequest
 	validated := true

@@ -1,15 +1,15 @@
 module github.com/tknie/clu
 
-go 1.23.0
+go 1.24
 
-toolchain go1.23.6
+toolchain go1.24.1
 
 require (
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.1
-	github.com/jackc/pgx/v5 v5.7.2
+	github.com/jackc/pgx/v5 v5.7.4
 	github.com/ogen-go/ogen v1.10.1
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.10.0
@@ -25,15 +25,15 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/coreos/go-oidc/v3 v3.13.0 // indirect
+	github.com/coreos/go-oidc/v3 v3.14.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-sql-driver/mysql v1.9.0 // indirect
-	github.com/godror/godror v0.47.0 // indirect
+	github.com/go-sql-driver/mysql v1.9.2 // indirect
+	github.com/godror/godror v0.48.1 // indirect
 	github.com/godror/knownpb v0.2.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -44,21 +44,21 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/tknie/adabas-go-api v1.7.12 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
-	golang.org/x/image v0.25.0 // indirect
-	golang.org/x/oauth2 v0.28.0 // indirect
-	google.golang.org/protobuf v1.36.5 // indirect
+	golang.org/x/image v0.26.0 // indirect
+	golang.org/x/oauth2 v0.29.0 // indirect
+	google.golang.org/protobuf v1.36.6 // indirect
 )
 
 require (
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
 	github.com/dlclark/regexp2 v1.11.5 // indirect
 	github.com/fatih/color v1.18.0 // indirect
-	github.com/fsnotify/fsnotify v1.8.0
+	github.com/fsnotify/fsnotify v1.9.0
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-asn1-ber/asn1-ber v1.5.7 // indirect
+	github.com/go-asn1-ber/asn1-ber v1.5.8-0.20250403174932-29230038a667 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
-	github.com/go-ldap/ldap/v3 v3.4.10 // indirect
-	github.com/go-openapi/errors v0.22.0 // indirect
+	github.com/go-ldap/ldap/v3 v3.4.11 // indirect
+	github.com/go-openapi/errors v0.22.1 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/kovidgoyal/imaging v1.6.4
 	github.com/mattn/go-colorable v0.1.14 // indirect
@@ -67,15 +67,15 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/tknie/errorrepo v0.1.0
-	github.com/tknie/flynn v0.9.1
+	github.com/tknie/flynn v0.9.7
 	github.com/tknie/pam v0.0.0-20241226202719-7fe89c1216fb // indirect
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.36.0 // indirect
-	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
-	golang.org/x/net v0.37.0
-	golang.org/x/sync v0.12.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
+	golang.org/x/crypto v0.37.0 // indirect
+	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
+	golang.org/x/net v0.39.0
+	golang.org/x/sync v0.13.0 // indirect
+	golang.org/x/sys v0.32.0 // indirect
+	golang.org/x/text v0.24.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
