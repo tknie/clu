@@ -10,7 +10,7 @@ require (
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-openapi/swag v0.23.1
 	github.com/jackc/pgx/v5 v5.7.4
-	github.com/ogen-go/ogen v1.10.1
+	github.com/ogen-go/ogen v1.12.0
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.10.0
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
