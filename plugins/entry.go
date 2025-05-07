@@ -333,13 +333,9 @@ func ReceiveAudit(p *clu.Context, r *http.Request) {
 		return
 	}
 	for _, x := range auditPlugins {
-		if p == nil {
-			debug.PrintStack()
-			log.Log.Fatal("Error clu context not defined")
-			x.Audit.ReceiveAudit("Unknown", "-", r)
-		} else {
-			x.Audit.ReceiveAudit(p.UserName(), p.UUID(), r)
-		}
+		debug.PrintStack()
+		log.Log.Fatal("Error clu context not defined")
+		x.Audit.ReceiveAudit("Unknown", "-", r)
 	}
 }
 
