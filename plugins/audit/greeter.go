@@ -73,11 +73,11 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 		if strings.HasPrefix(strings.ToLower(w.RequestURI), "/login") {
 			services.ServerMessage("Used: %v User: %s -> %s %s -> %s from %s)",
 				time.Since(x.start), user, w.Method, reqURI, uuid, server.RemoteHost(w))
-			log.Log.Debugf("Used: %v User: %s -> %s %s -> %s from %s)",
+			log.Log.Infof("Used: %v User: %s -> %s %s -> %s from %s)",
 				time.Since(x.start), user, w.Method, reqURI, uuid, server.RemoteHost(w))
 			return
 		}
-		log.Log.Debugf("Used: %v User: %s -> %s %s from %s)",
+		log.Log.Infof("Used: %v User: %s -> %s %s from %s)",
 			time.Since(x.start), user, w.Method, reqURI, server.RemoteHost(w))
 		return
 	}
