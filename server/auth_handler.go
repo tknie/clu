@@ -64,6 +64,7 @@ func GenerateJWToken(ctx context.Context) (interface{}, error) {
 			UUID:       api.NewOptUUID(uuid),
 			Name:       api.NewOptString(session.UserName()),
 			Permission: api.NewOptString(permission),
+			Picture:    api.NewOptString(session.Picture()),
 			Email:      api.NewOptString(session.EMail())})}
 	return &api.AuthorizationTokenHeaders{XToken: api.NewOptString(session.Token),
 		Response: t}, nil

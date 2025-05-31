@@ -149,6 +149,10 @@ func (sc *Context) EMail() string {
 	return sc.user.EMail
 }
 
+func (sc *Context) Picture() string {
+	return string(sc.user.Picture)
+}
+
 // LastLogin last login of user
 func (sc *Context) LastLogin() time.Time {
 	return sc.user.LastLogin
