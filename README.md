@@ -3,14 +3,14 @@
 ## Introduction
 
 This application named CluAPI is a generic database interface REST server. It can be used to query, search and modify database data.
-There is no complex infrastructure inbetween, a direct connection to the database. A mechanism of authentication and authorization exists inbetween REST query and database access. Some predefined database queries can be defined.  The **batch** queries can be defined providing extra rest parameters. That's different to standard database views.
+There is no complex infrastructure inbetween, a direct connection to the database. A mechanism of authentication and authorization exists inbetween REST query and database access. Some predefined database queries can be defined in an batch database record.  The **batch** queries can be defined providing extra rest parameters. That's different to standard database views.
 
 There should be no difference if the database is a SQL or a NoSQL database.
 
 A list of data records should be able to be inserted or updated in one REST API call.
 **May be as transaction or in an atomic matter**.
 
-Based on database layer at <https://github.com/tknie/flynn> the database should be accessed
+Based on database layer [Flynn at https://github.com/tknie/flynn](https://github.com/tknie/flynn) the database is queryed and updated.
 
 * Read, Search, Insert, Update and Delete of data records
 * Search by passing database specific queries to be flexible for complex queries
@@ -18,13 +18,13 @@ Based on database layer at <https://github.com/tknie/flynn> the database should 
   * binary data queries
   * image data queries
   * video data queries
-* Support creating batch jobs for database-specific tasks like SQL scripts
+* Support creating batch jobs for database-specific tasks like SQL scripts or a complex query
 
-For possible future details have a look at the API documentation. It can be referenced here: <https://godoc.org/github.com/tknie/flynn>
+For possible detailed information about the Flynn layer, have a look at the API documentation. It can be referenced here: <https://godoc.org/github.com/tknie/flynn>
 
 ## Release information
 
-The version 1.0.0 is released. It is a stable version used for various projects giving access to  audit data stored in the database. It is stable and no problem known.
+The version 1.0.0 is released. It is a stable version used for various projects giving access to audit data stored in the database. It is stable and no problem known.
 You can download the Docker image at <https://hub.docker.com/r/thknie/cluapi> or download it in Docker/Podman with
 
 ```sh
@@ -37,8 +37,8 @@ There are several possibilities to use authentication
 
 * Create a realm file containing user and password
 * Use system user and password to authenticate
-* Using LDAP or system password authentication
-* Using a SQL query to authenticate to SQL database
+* Using LDAP password authentication
+* Using a SQL query to authenticate using the SQL database
 
 All these configuration are used from <https://github.com/tknie/services>.
 
@@ -47,6 +47,13 @@ All these configuration are used from <https://github.com/tknie/services>.
 You can use database roles and users authorization restriction if you use database users management.
 CluAPI provides a query entry role management to obmit user specific queries for read- or write-access.
 In addition you can define authorization access to some resources like tables or views.
+
+For example in `users.yaml` you can define read or write restriction for table, views or batch scripts
+
+* all tables and views are restricted using to prefix
+* the prefix ^ restrict to batch processing tasks or complex queries
+* the prefix < allows read/download file permissions
+* the prefix > allows write/upload file permissions
 
 ## Batch store usage
 
@@ -86,6 +93,10 @@ Accept: application/json
 Authorization: Base <base64>
 PUSH http://localhost:8030/rest/view/Albums/ID,Title,published?limit=0&orderby=published:ASC
 ```
+
+## REST API information
+
+To evaluate the REST API look at [Swagger Editor with clu REST API informations.](https://editor.swagger.io/?url=https://raw.githubusercontent.com/tknie/clu/refs/heads/main/swagger/openapi-restserver.yaml)
 
 ## Download/Upload files
 
