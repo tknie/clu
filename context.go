@@ -149,6 +149,7 @@ func (sc *Context) EMail() string {
 	return sc.user.EMail
 }
 
+// Picture thumbnail picture store [optional]
 func (sc *Context) Picture() string {
 	return string(sc.user.Picture)
 }
