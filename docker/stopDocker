@@ -15,6 +15,6 @@
 
 # Environment setup
 INSTALL_DIR=/opt/cluapi
-REST_SERVER=${INSTALL_DIR}/
+SERVER_HOME=${INSTALL_DIR}/
 
 exit 0

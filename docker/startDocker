@@ -24,9 +24,9 @@ fi
 # Default initialize status
 STOP_MODE=none
 HOSTNAME=${HOSTNAME:-$(hostname)}
-REST_SERVER=${INSTALLDIR}
+SERVER_HOME=${INSTALLDIR}
 DATADIR=${DATADIR:-/data}
-export DATADIR REST_SERVER
+export DATADIR SERVER_HOME
 
 # Timeout between checking remote state or generating local state
 # Remote checks timeout is 3 times the timeout the file is generated
@@ -58,16 +58,16 @@ function init_environment {
          mkdir ${DATADIR}/tasks
       fi
       mkdir ${DATADIR}/configuration
-      cp ${REST_SERVER}/configuration/config.yaml.template ${DATADIR}/configuration/config.yaml
+      cp ${SERVER_HOME}/configuration/config.yaml.template ${DATADIR}/configuration/config.yaml
    fi
    if [ ! -d ${DATADIR}/keys ]; then
-      cp -r ${REST_SERVER}/keys ${DATADIR}
+      cp -r ${SERVER_HOME}/keys ${DATADIR}
       cd ${DATADIR}/keys
       sh ./generate_tls.sh
       
-      cd ${REST_SERVER}
+      cd ${SERVER_HOME}
    fi
-   rm -f ${REST_SERVER}/tmp/server.pid
+   rm -f ${SERVER_HOME}/tmp/server.pid
 }
 
 #
@@ -75,8 +75,8 @@ function init_environment {
 #
 function stop_administration {
    echo $(date +"%Y/%m/%d %H:%m:%S")" Stop REST administration"
-   cd ${REST_SERVER}/tmp
-   sh ${REST_SERVER}/bin/service.sh stop
+   cd ${SERVER_HOME}/tmp
+   sh ${SERVER_HOME}/bin/service.sh stop
    kill ${RUNPID}
 }
 
@@ -98,7 +98,7 @@ trap clean_up EXIT HUP INT TERM SIGHUP SIGINT SIGTERM QUIT
 offline_scripts
 
 # Background start of server
-sh ${REST_SERVER}/bin/service.sh run &
+sh ${SERVER_HOME}/bin/service.sh run &
 RUNPID=$!
 echo $(date +"%Y/%m/%d %H:%m:%S")".000 Start API service with pid ${RUNPID}"
 

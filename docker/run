@@ -3,6 +3,6 @@
 set -xv
 env
 
-REST_SERVER=${INSTALLDIR}
+SERVER_HOME=${INSTALLDIR}
 
-exec ${REST_SERVER}/bin/metaverse
+exec ${SERVER_HOME}/bin/metaverse

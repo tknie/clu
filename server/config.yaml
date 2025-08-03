@@ -5,8 +5,8 @@ rest-server:
   statisticTimer: true
 server:
   location:
-    tracelocation: ${REST_SERVER}/logs/trace.log
-    serverlocation: ${REST_SERVER}/logs/server.log
+    tracelocation: ${SERVER_HOME}/logs/trace.log
+    serverlocation: ${SERVER_HOME}/logs/server.log
     loglevel: info
     maxsize: 0
     maxbackups: 0
@@ -17,18 +17,18 @@ server:
       type: http
     - port: 8033
       type: https
-      certificate: ${REST_SERVER}/keys/certificate.pem
-      key: ${REST_SERVER}/keys/key.pem
+      certificate: ${SERVER_HOME}/keys/certificate.pem
+      key: ${SERVER_HOME}/keys/key.pem
   JWT:
     issuer: example.com
     expire: 14400
     encrypt: true
-    publicKey: ${REST_SERVER}/keys/apiKey.pem
-    privateKey: ${REST_SERVER}/keys/apiKey.prv
+    publicKey: ${SERVER_HOME}/keys/apiKey.pem
+    privateKey: ${SERVER_HOME}/keys/apiKey.prv
   login:
     authenticationServer:
       - type: file
-        passwordFile: ${REST_SERVER}/configuration/realm.properties
+        passwordFile: ${SERVER_HOME}/configuration/realm.properties
       - type: system
   content: /aaa
   plugins: plugins
@@ -54,7 +54,7 @@ database:
 #       table: xxx
 tasks:
   use_role: true
-  directory: ${REST_SERVER}/log
+  directory: ${SERVER_HOME}/log
   database:
     table: Jobs
 fileTransfer:
