@@ -26,15 +26,15 @@ require (
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/VictoriaMetrics/easyproto v0.1.4 // indirect
-	github.com/coreos/go-oidc/v3 v3.14.1 // indirect
+	github.com/coreos/go-oidc/v3 v3.15.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.1 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.2 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
-	github.com/godror/godror v0.49.0 // indirect
+	github.com/godror/godror v0.49.1 // indirect
 	github.com/godror/knownpb v0.3.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -71,7 +71,7 @@ require (
 	github.com/tknie/pam v0.0.0-20241226202719-7fe89c1216fb // indirect
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.40.0 // indirect
-	golang.org/x/exp v0.0.0-20250711185948-6ae5c78190dc // indirect
+	golang.org/x/exp v0.0.0-20250718183923-645b1fa84792 // indirect
 	golang.org/x/net v0.42.0
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
