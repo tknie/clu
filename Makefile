@@ -30,14 +30,12 @@ BINTOOLS           = $(CURDIR)/bin/tools/$(GOOS)_$(GOARCH)
 TARFILE            = cluapi-$(GOOS)_$(GOARCH).tar.gz
 IMAGE_NAME        ?= thknie/cluapi:$(VERSION)
 LOGPATH            = $(CURDIR)/logs
-CURLOGPATH         = $(CURDIR)/logs
 TESTOUTPUT         = $(CURDIR)/test
 TESTFILES          = $(CURDIR)/files
 MESSAGES           = $(CURDIR)/messages
 REFERENCES         = $(TESTFILES)/references
 RESTEXEC           = $(BIN)/cmd/cluapi
 EXECS              = $(RESTEXEC)
-REST_SERVER        = $(CURDIR)
 SERVER_HOME        = $(CURDIR)
 PLUGINS            = $(PLUGINSBIN)/audit $(PLUGINSBIN)/storeAudit $(PLUGINSBIN)/auth \
 					 $(PLUGINSBIN)/extend $(PLUGINSBIN)/validator
@@ -53,11 +51,12 @@ CGO_LDFLAGS        =
 
 export CGO_CFLAGS
 export CGO_LDFLAGS
-export LOGPATH CURDIR PLUGINSBIN REST_SERVER SERVER_HOME BIN
+export LOGPATH CURDIR PLUGINSBIN SERVER_HOME SERVER_HOME BIN
 
 include $(CURDIR)/make/common.mk
 
-generatemodels: cleanAPI $(CURDIR)/api
+.PHONY: generatemodels
+generatemodels: cleanAPI $(CURDIR)/api ## Recreate code generate by Swagger API model
 
 .PHONY: clean
 clean: cleanModules cleanVendor cleanCommon ; $(info $(M) cleaning…)	@ ## Cleanup everything
@@ -66,30 +65,32 @@ clean: cleanModules cleanVendor cleanCommon ; $(info $(M) cleaning…)	@ ## Clea
 	@rm -rf test/tests.* test/coverage.*
 	@rm -rf $(CURDIR)/cmd/cluapi-server/logs
 
-cleanVendor: ; $(info $(M) cleaning vendor…)    @ ## Cleanup vendor
+.PHONY: cleanVendor
+cleanVendor: ; $(info $(M) cleaning vendor…)    @ ## Remove vendor directory
 	@rm -rf $(CURDIR)/vendor
 
-cleanAPI: ; $(info $(M) cleaning models…)    @ ## Cleanup models
+.PHONY: cleanAPI startServer
+cleanAPI: ; $(info $(M) cleaning models…)    @ ## Clean Swagger API directory
 	@rm -rf $(CURDIR)/api
 
 $(BIN)/cluapi: prepare fmt lint lib $(EXECS)
 
-startServer: $(CERTIFICATE) $(BIN)/cmd/cluapi ; $(info $(M) starting server…)
+.PHONY: startServer
+startServer: $(CERTIFICATE) $(BIN)/cmd/cluapi ; $(info $(M) starting server…) ## Start development server
 	@rm -f $(CURDIR)/logs/*; \
 	if [ ! -d $(CURDIR)/tmp ]; then \
 	  mkdir $(CURDIR)/tmp; fi; \
 	TEMP=$(CURDIR) \
 	$(RESTEXEC) server -c $(CURDIR)/configuration/config.yaml --host= 
-#--scheme=https
-#--tls-certificate keys/certificate.pem --tls-key keys/key.pem  --port=8130 --tls-port=8131 --host=
 
-stopServer: $(BIN)/cmd/cluapi-client ; $(info $(M) stopping server…)
+.PHONY: stopServer
+stopServer: $(BIN)/cmd/cluapi-client ; $(info $(M) stopping server…) ## Stop development server
 	@echo "Stop $(VERSION) build at $(DATE)"
 	$(RESTEXEC) client -s -c $(CURDIR)/configuration/config.yaml
 
 # Dependency management
 .PHONY: generate
-$(CURDIR)/api: $(SWAGGER_SPEC) ; $(info $(M) generating code...) @ ## Generate rest go code
+$(CURDIR)/api: $(SWAGGER_SPEC) ; $(info $(M) generating code...) @ # Generate rest go code
 	$Q go generate .
 
 $(CERTIFICATE):
@@ -119,7 +120,7 @@ else
 #	rm $(PROMOTE)/$(INSTALL_DEST)/configuration/config-win.xml; rm $(PROMOTE)/$(INSTALL_DEST)/bin/*.bat
 endif
 
-promoteTest: test-build ; $(info $(M) package for tests…) @ ## package for promotion
+promoteTest: test-build ; $(info $(M) promote tests…) @ ## Promote tests
 	if [ ! -d $(CURDIR)/promote ]; then mkdir $(CURDIR)/promote; fi; \
 	if [ ! -d $(PROMOTE) ]; then mkdir $(PROMOTE); fi; \
 	if [ ! -d $(PROMOTE)/RestTests ]; then mkdir $(PROMOTE)/RestTests; fi; \
@@ -127,7 +128,7 @@ promoteTest: test-build ; $(info $(M) package for tests…) @ ## package for pro
 
 upload: prepareUpload uploadNexusInterim uploadNexusPackage; $(info $(M) uploading…) @ ## uploading packages
 
-uploadNexusInterim: ; $(info $(M) uploading…) @ ## uploading packages
+uploadNexusInterim: ; $(info $(M) uploading…) @ ## uploading packages to Nexus interim solution
 ifeq ($(shell go env GOOS),windows)
 	cd $(PROMOTE)/; ls; \
 	curl -v -u $(ARTIFACTORY_PASS) -X POST '${ARTIFACTORY}/service/rest/v1/components?repository=maven' -F maven2.groupId=com.github.tknie..$(GOOS)_$(GOARCH) -F maven2.artifactId=cluapi-go -F maven2.version=$(MAJORVERS) -F maven2.asset1=@cluapi.zip -F maven2.asset1.extension=zip
@@ -136,21 +137,21 @@ else
 	curl -v -u $(ARTIFACTORY_PASS) -X POST '${ARTIFACTORY}/service/rest/v1/components?repository=maven' -F maven2.groupId=com.github.tknie..$(GOOS)_$(GOARCH) -F maven2.artifactId=cluapi-go -F maven2.version=$(MAJORVERS) -F maven2.asset1=@../${TARFILE} -F maven2.asset1.extension=tar.gz
 endif
 
-uploadNexusPackage: ; $(info $(M) uploading to Nexus…) @ ## uploading packages
+uploadNexusPackage: ; $(info $(M) uploading to Nexus…) @ ## uploading packages to Nexus
 ifeq ($(shell go env GOOS),windows)
 	cd $(PROMOTE)/; curl -v -u $(ARTIFACTORY_PASS) -X POST '${ARTIFACTORY}/service/rest/v1/components?repository=maven' -F maven2.groupId=com.github.tknie.Installer.ProductName -F maven2.artifactId=cluapi -F maven2.version=$(GOOS)_$(GOARCH).main -F maven2.asset1=@cluapi.zip -F maven2.asset1.extension=zip
 else
 	cd $(PROMOTE)/; curl -v -u $(ARTIFACTORY_PASS) -X POST '${ARTIFACTORY}/service/rest/v1/components?repository=maven' -F maven2.groupId=com.github.tknie.Installer.ProductName -F maven2.artifactId=cluapi -F maven2.version=$(GOOS)_$(GOARCH).main -F maven2.asset1=@../${TARFILE} -F maven2.asset1.extension=tar.gz
 endif
 
-prepareUpload: ; $(info $(M) prepare uploading…) @ ## uploading packages
+prepareUpload: ; $(info $(M) prepare uploading…) @ ## prepared upload packages
 ifeq ($(shell go env GOOS),windows)
 	cd $(PROMOTE)/; rm -f cluapi.zip; zip -r cluapi.zip $(INSTALL_DEST)
 else
 	cd $(PROMOTE)/; rm -f ../${TARFILE}; tar cvfz ../${TARFILE} $(INSTALL_DEST)
 endif
 
-uploadTest: promoteTest ; $(info $(M) uploading tests…) @ ## uploading packages
+uploadTest: promoteTest ; $(info $(M) uploading tests…) @ ## uploading test packages
 ifeq ($(shell go env GOOS),windows)
 	cd $(PROMOTE)/; rm -f RestTests.zip; zip -r RestTests.zip RestTests; \
 	curl -v -u $(ARTIFACTORY_PASS) -X POST '${ARTIFACTORY}/service/rest/v1/components?repository=maven' -F maven2.groupId=com.github.tknie.$(GOOS)_$(GOARCH) -F maven2.artifactId=RestTests -F maven2.version=$(VERSION) -F maven2.asset1=@RestTests.zip -F maven2.asset1.extension=zip
@@ -159,10 +160,8 @@ else
 	curl -v -u $(ARTIFACTORY_PASS) -X POST '${ARTIFACTORY}/service/rest/v1/components?repository=maven' -F maven2.groupId=com.github.tknie.$(GOOS)_$(GOARCH) -F maven2.artifactId=RestTests -F maven2.version=$(VERSION) -F maven2.asset1=@RestTests.tar.gz -F maven2.asset1.extension=tar.gz
 endif
 
-webapp-update:
-	@echo "WebApp not delivered !!!"
-
 .PHONY: docker
-docker: ; $(info $(M) genering docker image…)
+docker: ; $(info $(M) genering docker image…) ## Build docker image 
 	cp $(PROMOTE)/../${TARFILE}  $(CURDIR)/docker/cluapi.tar.gz
 	cd docker; docker buildx build --platform $(GOOS)/$(GOARCH) -t $(IMAGE_NAME) .
+

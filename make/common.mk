@@ -42,19 +42,19 @@ lib: $(LIBS) $(CEXEC)
 
 plugins: $(PLUGINS)
 
-prepare: $(LOGPATH) $(CURLOGPATH) $(BIN) $(BINTOOLS)
+prepare: $(LOGPATH) $(BIN) $(BINTOOLS)
 	@echo "Build architecture GOARCH=${GOARCH} GOOS=$(GOOS) suffix=$(GOEXE) network=${WCPHOST} GOFLAGS=$(GO_FLAGS)"
 	@echo "GOBIN=$(GOBIN)"
 	@mkdir -p $(CURDIR)/logs
 
-$(LIBS): ; $(info $(M) building libraries…) @ ## Build program binary
+$(LIBS): ; $(info $(M) building libraries…) @ # Build program libraries
 	$Q cd $(CURDIR) && \
 	    CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" $(GO) build $(GO_FLAGS) \
 		-buildmode=c-shared \
 		-ldflags '-X $(COPACKAGE).Version=$(VERSION) -X $(COPACKAGE).BuildDate=$(DATE) -s -w' \
 		-o $(BIN)/$(GOOS)/$@.so $@.go
 
-$(EXECS): $(OBJECTS) ; $(info $(M) building executable $(@:$(BIN)/%=%)…) @ ## Build program binary
+$(EXECS): $(OBJECTS) ; $(info $(M) building executable $(@:$(BIN)/%=%)…) @ # Build program binary
 	$Q cd $(CURDIR) &&  echo "Build data: $(DATE) at $(COPACKAGE).BuildDate" && \
 	    CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" $(GO) build $(GO_FLAGS) \
 		-ldflags '-X $(COPACKAGE).Version=$(RESTVERSION) -X $(COPACKAGE).BuildVersion=$(VERSION) -X $(COPACKAGE).BuildDate=$(DATE)' \
@@ -63,7 +63,7 @@ $(EXECS): $(OBJECTS) ; $(info $(M) building executable $(@:$(BIN)/%=%)…) @ ## 
 #		upx $@$(GOEXE)
 #endif
 
-$(PLUGINS): ; $(info $(M) building plugins…) @ ## Build program binary
+$(PLUGINS): ; $(info $(M) building plugins…) @ # Build plugin binary
 	$Q cd $(CURDIR) && \
 	    CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" $(GO) build $(GO_FLAGS) \
 	    -buildmode=plugin \
@@ -71,9 +71,6 @@ $(PLUGINS): ; $(info $(M) building plugins…) @ ## Build program binary
 	    -o $@.so ./$(@:$(BIN)/%=%)
 
 $(LOGPATH):
-	@mkdir -p $@
-
-$(CURLOGPATH):
 	@mkdir -p $@
 
 $(BIN):
@@ -128,7 +125,7 @@ $(BINTOOLS)/gotestsum: REPOSITORY=gotest.tools/gotestsum
 $(TESTOUTPUT):
 	mkdir $(TESTOUTPUT)
 
-test-build: ; $(info $(M) building $(NAME:%=% )tests…) @ ## Build tests
+test-build: ; $(info $(M) building $(NAME:%=% )tests…) @ ## Build and start tests
 	$Q cd $(CURDIR) && for pkg in $(TESTPKGSDIR); do echo "Build $$pkg in $(CURDIR)"; \
 	    CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" \
 	    TESTFILES=$(TESTFILES) LOGPATH=$(LOGPATH) REFERENCES=$(REFERENCES) \
@@ -153,7 +150,7 @@ check test tests: fmt lint ; $(info $(M) running $(NAME:%=% )tests…) @ ## Run 
 
 TEST_XML_TARGETS := test-xml-bench
 .PHONY: $(TEST_XML_TARGETS) test-xml
-test-xml-bench:     ARGS=-run=__absolutelynothing__ -bench=. ## Run benchmarks
+test-xml-bench:     ARGS=-run=__absolutelynothing__ -bench=. ## Run benchmarks with xml output
 $(TEST_XML_TARGETS): NAME=$(MAKECMDGOALS:test-xml-%=%)
 $(TEST_XML_TARGETS): test-xml
 test-xml: prepare fmt lint $(TESTOUTPUT) | $(GOTESTSUM) ; $(info $(M) running $(NAME:%=% )tests…) @ ## Run tests with xUnit output
@@ -226,9 +223,9 @@ cleanCommon: cleanModules; $(info $(M) cleaning…)	@ ## Cleanup everything
 	@rm -f $(CURDIR)/rest.test $(CURDIR)/*.log $(CURDIR)/*.output
 
 .PHONY: help
-help:
-	@grep -E '^[ a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+help:#
+	@echo "Usage:"
+	@sed -n 's/:.*##/:/p' $(MAKEFILE_LIST) | column -t -s ':' | sed -e 's/^/ /' | egrep -v "sed|grep|awk"
 
 .PHONY: tidy
 tidy: ; $(info $(M) tidy up GO mods…) @ ## Run go tidy mods
@@ -254,9 +251,9 @@ vendor:
 	GOSUMDB=off CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" $(GO) mod vendor
 
 .PHONY: version
-version:
+version: ## Show current version in configuration
 	@echo $(VERSION)
 
 .PHONY: printVersion
-printVersion: version $(BIN)/cmd/rest
-	$(BIN)/cmd/rest version
+printVersion: version $(RESTEXEC)/cmd/rest
+	$(RESTEXEC) version
