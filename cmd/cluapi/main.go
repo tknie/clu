@@ -43,6 +43,12 @@ func main() {
 	flag.IntVar(&port, "s", 8081, "define HTTPS port")
 	flag.Parse()
 
+	if flag.Arg(0) == "version" {
+		services.ServerMessage("This is CLUAPI server version %s Build date %s",
+			services.BuildVersion, services.BuildDate)
+		return
+	}
+
 	if pidFile == "" {
 		pidFile = server.DefaultPIDFile()
 	}
