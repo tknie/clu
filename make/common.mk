@@ -34,7 +34,7 @@ UPX := $(shell command -v upx 2> /dev/null)
 export TIMEOUT GO CGO_CFLAGS CGO_LDFLAGS GO_FLAGS CGO_EXT_LDFLAGS TESTFILES
 
 .PHONY: all
-all: prepare fmt lint lib $(EXECS) $(NEXECS) $(PLUGINS) test-build
+all: loadExtPlugins prepare fmt lint lib $(EXECS) $(NEXECS) $(PLUGINS) test-build
 
 exec: $(EXECS) $(NEXECS)
 
@@ -257,3 +257,29 @@ version: ## Show current version in configuration
 .PHONY: printVersion
 printVersion: version $(RESTEXEC)/cmd/rest
 	$(RESTEXEC) version
+
+.PHONY: loadExtPlugins cleanExtPlugins
+loadExtPlugins: $(SUBDIRS) ## load external plugin code
+	@if [ -r $(PLUGIN_COMPILE_SET) ]; then \
+	  mkdir -p $(EXT_PLUGINS); echo $(PLUGINS); \
+	  for d in $$(cat $(PLUGIN_COMPILE_SET)); do \
+		cd extPlugins; \
+		rep=$$(echo $$d|sed -n 's/,/ /gp'|awk -F' ' '{print $$1}'); \
+		dir=$$(echo $$d|sed -n 's/,/ /gp'|awk -F' ' '{print $$2}'); \
+		linkdir=$$(echo $$d|sed -n 's/,/ /gp'|awk -F' ' '{print $$3}'); \
+		if [ ! -d $$dir ]; then \
+		   git clone $$rep $$dir|| ret=$$? ; \
+			cd $(PLUGINSSRC); ln -s $(EXT_PLUGINS)/$$dir/$$linkdir $$dir; \
+		fi; \
+	  done ; \
+	fi
+
+cleanExtPlugins: ## clean external plugin code
+	@if [ -r $(PLUGIN_COMPILE_SET) ]; then \
+	  rm -rf $(EXT_PLUGINS); \
+	  for d in $$(cat $(PLUGIN_COMPILE_SET)); do \
+		dir=$$(echo $$d|sed -n 's/,/ /gp'|awk -F' ' '{print $$2}'); \
+		cd $(PLUGINSSRC); rm -f $$dir; \
+	  done ; \
+	fi
+

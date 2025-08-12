@@ -46,3 +46,5 @@ cluapi.tar.gz
 server.pid
 
 bdocker/
+extPlugins/
+plugins/bitgarten/

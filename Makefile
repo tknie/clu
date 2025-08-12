@@ -25,6 +25,7 @@ RESTVERSION       ?= $(VERSION).$(shell date +%d%m%Y)
 #			cat $(CURDIR)/.version 2> /dev/null || echo v0)
 BIN                = $(CURDIR)/bin/$(GOOS)_$(GOARCH)
 PLUGINSBIN         = $(BIN)/plugins
+PLUGINSSRC         = $(CURDIR)/plugins
 PROMOTE            = $(CURDIR)/promote/$(GOOS)_$(GOARCH)
 BINTOOLS           = $(CURDIR)/bin/tools/$(GOOS)_$(GOARCH)
 TARFILE            = cluapi-$(GOOS)_$(GOARCH).tar.gz
@@ -37,8 +38,8 @@ REFERENCES         = $(TESTFILES)/references
 RESTEXEC           = $(BIN)/cmd/cluapi
 EXECS              = $(RESTEXEC)
 SERVER_HOME        = $(CURDIR)
-PLUGINS            = $(PLUGINSBIN)/audit $(PLUGINSBIN)/storeAudit $(PLUGINSBIN)/auth \
-					 $(PLUGINSBIN)/extend $(PLUGINSBIN)/validator
+SUBDIRS           := $(wildcard plugins/*/.)
+PLUGINS            = $(subst /.,,$(subst plugins,$(PLUGINSBIN),$(SUBDIRS)))
 OBJECTS            = cmd/*/*.go server/*.go *.go webserver/*.go plugins/*.go
 SWAGGER_SPEC       = $(CURDIR)/swagger/openapi-restserver.yaml	
 ENABLE_DEBUG      ?= 0
@@ -46,8 +47,12 @@ ARTIFACTORY       ?= http://lion.fritz.box:8081
 ARTIFACTORY_PASS  ?= admin:12345
 CERTIFICATE        = $(CURDIR)/keys/certificate.pem
 
+EXT_PLUGINS        = $(CURDIR)/extPlugins
+
 CGO_CFLAGS         =
 CGO_LDFLAGS        = 
+
+PLUGIN_COMPILE_SET = $(CURDIR)/pluginCompileSet
 
 export CGO_CFLAGS
 export CGO_LDFLAGS
@@ -165,3 +170,5 @@ docker: ; $(info $(M) genering docker image…) ## Build docker image
 	cp $(PROMOTE)/../${TARFILE}  $(CURDIR)/docker/cluapi.tar.gz
 	cd docker; docker buildx build --platform $(GOOS)/$(GOARCH) -t $(IMAGE_NAME) .
 
+$(SUBDIRS):
+	@echo "PLUGINS" $(PLUGINS)
