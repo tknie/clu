@@ -27,6 +27,7 @@ require (
 	github.com/coreos/go-oidc/v3 v3.15.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
+	github.com/eclipse/paho.mqtt.golang v1.5.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.2 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -34,13 +35,16 @@ require (
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/godror/godror v0.49.1 // indirect
 	github.com/godror/knownpb v0.3.0 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tknie/adabas-go-api v1.7.12 // indirect
+	github.com/tknie/ecoflow v0.0.0-20250812120510-1b4ea8f4206f // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	golang.org/x/image v0.30.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
