@@ -12,7 +12,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"sync"
 
@@ -41,8 +40,6 @@ func Validate(session *clu.Context, role auth.AccessRole, resource string) bool 
 	req := session.CurrentRequest
 	validated := true
 	validatorMap.Range(func(key, value any) bool {
-		f := req.FormValue(key.(string))
-		fmt.Println(key, "=", f)
 		v := value.(RestValidator)
 		validated, _ = v.CallValidator(req)
 		return validated

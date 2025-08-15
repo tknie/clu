@@ -263,7 +263,7 @@ loadExtPlugins: $(SUBDIRS) ## load external plugin code
 	@if [ -r $(PLUGIN_COMPILE_SET) ]; then \
 	  mkdir -p $(EXT_PLUGINS); echo $(PLUGINS); \
 	  for d in $$(cat $(PLUGIN_COMPILE_SET)); do \
-		cd extPlugins; \
+		cd $(EXT_PLUGINS); \
 		rep=$$(echo $$d|sed -n 's/,/ /gp'|awk -F' ' '{print $$1}'); \
 		dir=$$(echo $$d|sed -n 's/,/ /gp'|awk -F' ' '{print $$2}'); \
 		linkdir=$$(echo $$d|sed -n 's/,/ /gp'|awk -F' ' '{print $$3}'); \

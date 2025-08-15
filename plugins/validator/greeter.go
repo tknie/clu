@@ -12,10 +12,10 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/tknie/clu/plugins"
+	"github.com/tknie/log"
 )
 
 type greeting string
@@ -44,9 +44,9 @@ func (g greeting) EntryPoint() []string {
 }
 
 func (g greeting) CallValidator(req *http.Request) (_ bool, _ error) {
-	fmt.Println("Validate", req.URL.String())
+	log.Log.Debugf("Validate -> %s", req.URL.String())
 	for k, v := range req.URL.Query() {
-		fmt.Println(k, "=>", v)
+		log.Log.Debugf("%v => %v", k, v)
 		if k == "validator" {
 			return false, nil
 		}
