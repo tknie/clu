@@ -42,10 +42,12 @@ func (g greeting) Version() string {
 func (g greeting) Stop() {
 }
 
+// EntryPoint plugin entry point name
 func (g greeting) EntryPoint() []string {
 	return []string{"validator test"}
 }
 
+// CallValidator plugin entry point to call the validator
 func (g greeting) CallValidator(req *http.Request) (_ bool, _ error) {
 	log.Log.Debugf("Validate -> %s", req.URL.String())
 	for k, v := range req.URL.Query() {
