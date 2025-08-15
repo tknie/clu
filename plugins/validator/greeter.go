@@ -20,6 +20,9 @@ import (
 
 type greeting string
 
+// This plugin can be used to provide extra information for
+// validation to extra systems like ServiceNow or Jira tickets.
+
 // Types type of plugin working with
 func (g greeting) Types() []plugins.PluginTypes {
 	return []plugins.PluginTypes{plugins.ValidatorPlugin}
