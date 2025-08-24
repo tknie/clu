@@ -30,7 +30,9 @@ RUN cd $INSTALLDIR && \
     mkdir -p /data && chown -R admin:admin /data $INSTALLDIR/tmp $INSTALLDIR/logs && \
     chmod 777 /data && \
     chmod 775 $INSTALLDIR && \
-    rm $INSTALLDIR/keys/certificate.p12 $INSTALLDIR/keys/key.pem
+    rm $INSTALLDIR/keys/certificate.p12 $INSTALLDIR/keys/key.pem && \
+    ln -sf /dev/stdout /data/server.log
+#RUN ln -sf /dev/stderr /var/log/nginx/error.log
 
 USER admin
 

@@ -36,8 +36,10 @@ var pidFile = ""
 func main() {
 	var shutdown bool
 	var port int
+	var quietMode bool
 
 	flag.BoolVar(&shutdown, "S", false, "shutdown API server")
+	flag.BoolVar(&quietMode, "q", false, "start without output")
 	flag.StringVar(&pidFile, "P", "", "define PID file")
 	flag.IntVar(&port, "p", 8080, "define HTTP port")
 	flag.IntVar(&port, "s", 8081, "define HTTPS port")
@@ -47,6 +49,10 @@ func main() {
 		services.ServerMessage("This is CLUAPI server version %s Build date %s",
 			services.BuildVersion, services.BuildDate)
 		return
+	}
+
+	if quietMode {
+		services.OutputMessageMode = false
 	}
 
 	if pidFile == "" {

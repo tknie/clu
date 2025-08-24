@@ -93,7 +93,7 @@ case "$ACTION" in
         echo $(date +"%Y-%m-%d %H:%m:%S")".000 Starting CLUAPI server in Docker"
         echo $(date +"%Y-%m-%d %H:%m:%S")".000 Service config file: ${SERVER_CONFIG}"
 
-        bin/cluapi server -c ${SERVER_CONFIG} $*
+        bin/cluapi server -q -c ${SERVER_CONFIG} $*
         ;;
 
   help) usage
