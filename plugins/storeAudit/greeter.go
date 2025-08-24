@@ -350,7 +350,7 @@ func removePrefix(uri, prefix string) string {
 
 // SendAuditError audit of http trigger
 func (g greeting) SendAuditError(elapsed time.Duration, user string, uuid string, w *http.Request, err error) {
-	pluginMessage("Failed: %v User: %s Error: %v",
+	pluginMessage("Failed (storeAudit): %v User: %s Error: %v",
 		elapsed, user, err)
 	si := NewSessionInfo(err.Error(), uuid, user, w.Method)
 	si.adapt(w)

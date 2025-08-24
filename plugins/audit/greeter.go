@@ -82,15 +82,15 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 		return
 	}
 	if u, _, ok := w.BasicAuth(); ok {
-		services.ServerMessage("Failed: %v Token %s User: %s %s %s %s Host: %s",
+		services.ServerMessage("Failed (audit): %v Token %s User: %s %s %s %s Host: %s",
 			elapsed, uuid, u, w.Method, server.RemoteHost(w), reqURI, w.Host)
-		log.Log.Errorf("Failed: %v Token %s User: %s %s %s %s Host: %s",
+		log.Log.Errorf("Failed (audit): %v Token %s User: %s %s %s %s Host: %s",
 			elapsed, uuid, u, w.Method, server.RemoteHost(w), reqURI, w.Host)
 		return
 	}
-	services.ServerMessage("Failed: %v Token %s Unknown user %s %s %s Host: %s",
+	services.ServerMessage("Failed (audit): %v Token %s Unknown user %s %s %s Host: %s",
 		elapsed, uuid, w.Method, server.RemoteHost(w), reqURI, w.Host)
-	log.Log.Errorf("Failed: %v Token %s Unknown user %s %s %s Host: %s",
+	log.Log.Errorf("Failed (audit): %v Token %s Unknown user %s %s %s Host: %s",
 		elapsed, uuid, w.Method, server.RemoteHost(w), reqURI, w.Host)
 }
 
