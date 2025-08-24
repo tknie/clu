@@ -44,7 +44,7 @@ require (
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	golang.org/x/image v0.30.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
-	google.golang.org/protobuf v1.36.7 // indirect
+	google.golang.org/protobuf v1.36.8 // indirect
 )
 
 require (
@@ -69,7 +69,7 @@ require (
 	github.com/tknie/pam v0.0.0-20241226202719-7fe89c1216fb // indirect
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.41.0 // indirect
-	golang.org/x/exp v0.0.0-20250813145105-42675adae3e6 // indirect
+	golang.org/x/exp v0.0.0-20250819193227-8b4c13bb791b // indirect
 	golang.org/x/net v0.43.0
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
