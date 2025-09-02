@@ -12,9 +12,11 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"io"
 	"strings"
+	"text/template"
 
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
@@ -177,18 +179,33 @@ func (Handler) BatchParameterQuery(ctx context.Context, params api.BatchParamete
 
 func sqlInParameter(statement string, params []string) string {
 	st := statement
+	sqlParameterMap := make(map[string]string)
 	for _, p := range params {
 		log.Log.Debugf("Given parameter '%s'", p)
 		np := strings.Trim(p, "\"")
 		if np[0] == '^' {
 			pv := strings.Split(np, ":")
 			if len(np) > len(pv[0]) {
+				sqlParameterMap[pv[0][1:]] = np[len(pv[0])+1:]
 				log.Log.Debugf("Handle parameter %s : %s", pv[0], np[len(pv[0])+1:])
 				st = strings.Replace(st, "<"+pv[0][1:]+">", np[len(pv[0])+1:], -1)
 			}
 		}
 	}
+	var buffer bytes.Buffer
+	t, err := template.New("queryTemplate").Parse(st)
+	if err != nil {
+		log.Log.Errorf("Error creating SQL batch query template: %s", err)
+		return statement
+	}
+
+	err = t.Execute(&buffer, sqlParameterMap)
+	if err != nil {
+		log.Log.Errorf("Error executing SQL batch query template: %s", err)
+		return statement
+	}
 	log.Log.Debugf("SQL in : %s", statement)
 	log.Log.Debugf("SQL out: %s", st)
-	return st
+	log.Log.Debugf("SQL outTemplate: %s", buffer.String())
+	return buffer.String()
 }
