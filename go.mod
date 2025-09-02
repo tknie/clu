@@ -10,7 +10,7 @@ require (
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/ogen-go/ogen v1.14.0
 	github.com/rs/cors v1.11.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
 	github.com/tknie/log v0.1.0
 	github.com/tknie/services v0.4.0
