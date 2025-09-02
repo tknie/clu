@@ -10,13 +10,13 @@ require (
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/ogen-go/ogen v1.14.0
 	github.com/rs/cors v1.11.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
 	github.com/tknie/log v0.1.0
 	github.com/tknie/services v0.4.0
-	go.opentelemetry.io/otel v1.37.0
-	go.opentelemetry.io/otel/metric v1.37.0
-	go.opentelemetry.io/otel/trace v1.37.0
+	go.opentelemetry.io/otel v1.38.0
+	go.opentelemetry.io/otel/metric v1.38.0
+	go.opentelemetry.io/otel/trace v1.38.0
 	go.uber.org/multierr v1.11.0
 	gopkg.in/yaml.v3 v3.0.1
 )
