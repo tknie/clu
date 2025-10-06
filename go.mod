@@ -8,7 +8,7 @@ require (
 	github.com/go-openapi/runtime v0.29.0
 	github.com/go-openapi/swag v0.25.1
 	github.com/jackc/pgx/v5 v5.7.6
-	github.com/ogen-go/ogen v1.15.1
+	github.com/ogen-go/ogen v1.16.0
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.11.1
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
@@ -27,7 +27,6 @@ require (
 	github.com/coreos/go-oidc/v3 v3.15.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/eclipse/paho.mqtt.golang v1.5.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.2 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -46,16 +45,12 @@ require (
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/godror/godror v0.49.3 // indirect
 	github.com/godror/knownpb v0.3.0 // indirect
-	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
-	github.com/josharian/intern v1.0.0 // indirect
-	github.com/mailru/easyjson v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/tknie/adabas-go-api v1.7.12 // indirect
-	github.com/tknie/ecoflow v0.0.0-20250819153454-9172a907300a // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/image v0.31.0 // indirect
