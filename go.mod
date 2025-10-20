@@ -48,12 +48,13 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
+	github.com/kovidgoyal/go-parallel v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/tknie/adabas-go-api v1.7.12 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/image v0.31.0 // indirect
+	golang.org/x/image v0.32.0 // indirect
 	golang.org/x/oauth2 v0.31.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
@@ -69,7 +70,7 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.12 // indirect
 	github.com/go-openapi/errors v0.22.3 // indirect
 	github.com/google/uuid v1.6.0
-	github.com/kovidgoyal/imaging v1.6.4
+	github.com/kovidgoyal/imaging v1.7.2
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
@@ -84,7 +85,7 @@ require (
 	golang.org/x/net v0.44.0
 	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
