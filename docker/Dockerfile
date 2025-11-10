@@ -10,7 +10,7 @@
 #       http://www.apache.org/licenses/LICENSE-2.0
 #
 
-FROM alpine
+FROM alpine:latest
 
 ENV user_id 1777
 ENV group_id 1777
