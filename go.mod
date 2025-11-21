@@ -48,8 +48,8 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
-	github.com/kettek/apng v0.0.0-20250827064933-2bb5f5fcf253 // indirect
 	github.com/kovidgoyal/go-parallel v1.1.1 // indirect
+	github.com/kovidgoyal/go-shm v1.0.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/tknie/adabas-go-api v1.7.12 // indirect
@@ -71,7 +71,7 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.12 // indirect
 	github.com/go-openapi/errors v0.22.4 // indirect
 	github.com/google/uuid v1.6.0
-	github.com/kovidgoyal/imaging v1.8.8
+	github.com/kovidgoyal/imaging v1.8.15
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
