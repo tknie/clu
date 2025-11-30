@@ -55,7 +55,7 @@ require (
 	github.com/tknie/adabas-go-api v1.7.12 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/image v0.32.0 // indirect
+	golang.org/x/image v0.33.0 // indirect
 	golang.org/x/oauth2 v0.33.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
@@ -71,7 +71,7 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.12 // indirect
 	github.com/go-openapi/errors v0.22.4 // indirect
 	github.com/google/uuid v1.6.0
-	github.com/kovidgoyal/imaging v1.8.15
+	github.com/kovidgoyal/imaging v1.8.17
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
