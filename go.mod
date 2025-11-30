@@ -80,7 +80,7 @@ require (
 	github.com/tknie/errorrepo v0.1.0
 	github.com/tknie/flynn v0.9.9
 	github.com/tknie/pam v0.0.0-20241226202719-7fe89c1216fb // indirect
-	go.uber.org/zap v1.27.0
+	go.uber.org/zap v1.27.1
 	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
 	golang.org/x/net v0.47.0
