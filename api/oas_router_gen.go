@@ -50,7 +50,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		switch elem[0] {
 		case '/': // Prefix: "/"
-			origElem := elem
+
 			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
@@ -62,7 +62,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			switch elem[0] {
 			case 'b': // Prefix: "binary/"
-				origElem := elem
+
 				if l := len("binary/"); len(elem) >= l && elem[0:l] == "binary/" {
 					elem = elem[l:]
 				} else {
@@ -83,7 +83,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				switch elem[0] {
 				case '/': // Prefix: "/"
-					origElem := elem
+
 					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
@@ -104,7 +104,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -112,7 +112,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						// Param: "search"
-						// Leaf parameter
+						// Leaf parameter, slashes are prohibited
+						idx := strings.IndexByte(elem, '/')
+						if idx >= 0 {
+							break
+						}
 						args[2] = elem
 						elem = ""
 
@@ -138,15 +142,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'c': // Prefix: "config"
-				origElem := elem
+
 				if l := len("config"); len(elem) >= l && elem[0:l] == "config" {
 					elem = elem[l:]
 				} else {
@@ -169,7 +170,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				switch elem[0] {
 				case '/': // Prefix: "/"
-					origElem := elem
+
 					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
@@ -181,7 +182,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case 'j': // Prefix: "jobs"
-						origElem := elem
+
 						if l := len("jobs"); len(elem) >= l && elem[0:l] == "jobs" {
 							elem = elem[l:]
 						} else {
@@ -202,9 +203,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 
-						elem = origElem
 					case 'v': // Prefix: "views"
-						origElem := elem
+
 						if l := len("views"); len(elem) >= l && elem[0:l] == "views" {
 							elem = elem[l:]
 						} else {
@@ -227,15 +227,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'i': // Prefix: "image/"
-				origElem := elem
+
 				if l := len("image/"); len(elem) >= l && elem[0:l] == "image/" {
 					elem = elem[l:]
 				} else {
@@ -256,7 +253,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				switch elem[0] {
 				case '/': // Prefix: "/"
-					origElem := elem
+
 					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
@@ -277,7 +274,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -285,7 +282,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						// Param: "search"
-						// Leaf parameter
+						// Leaf parameter, slashes are prohibited
+						idx := strings.IndexByte(elem, '/')
+						if idx >= 0 {
+							break
+						}
 						args[2] = elem
 						elem = ""
 
@@ -305,15 +306,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'l': // Prefix: "log"
-				origElem := elem
+
 				if l := len("log"); len(elem) >= l && elem[0:l] == "log" {
 					elem = elem[l:]
 				} else {
@@ -325,7 +323,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				switch elem[0] {
 				case 'i': // Prefix: "in"
-					origElem := elem
+
 					if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
 						elem = elem[l:]
 					} else {
@@ -348,9 +346,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					elem = origElem
 				case 'o': // Prefix: "o"
-					origElem := elem
+
 					if l := len("o"); len(elem) >= l && elem[0:l] == "o" {
 						elem = elem[l:]
 					} else {
@@ -362,7 +359,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case 'f': // Prefix: "ff"
-						origElem := elem
+
 						if l := len("ff"); len(elem) >= l && elem[0:l] == "ff" {
 							elem = elem[l:]
 						} else {
@@ -381,9 +378,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 
-						elem = origElem
 					case 'u': // Prefix: "ut"
-						origElem := elem
+
 						if l := len("ut"); len(elem) >= l && elem[0:l] == "ut" {
 							elem = elem[l:]
 						} else {
@@ -402,15 +398,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'r': // Prefix: "rest/"
-				origElem := elem
+
 				if l := len("rest/"); len(elem) >= l && elem[0:l] == "rest/" {
 					elem = elem[l:]
 				} else {
@@ -422,7 +415,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				switch elem[0] {
 				case 'b': // Prefix: "batch/"
-					origElem := elem
+
 					if l := len("batch/"); len(elem) >= l && elem[0:l] == "batch/" {
 						elem = elem[l:]
 					} else {
@@ -456,7 +449,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -464,7 +457,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						// Param: "query"
-						// Leaf parameter
+						// Leaf parameter, slashes are prohibited
+						idx := strings.IndexByte(elem, '/')
+						if idx >= 0 {
+							break
+						}
 						args[1] = elem
 						elem = ""
 
@@ -483,12 +480,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				case 'd': // Prefix: "database"
-					origElem := elem
+
 					if l := len("database"); len(elem) >= l && elem[0:l] == "database" {
 						elem = elem[l:]
 					} else {
@@ -509,9 +504,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					elem = origElem
 				case 'e': // Prefix: "extend/"
-					origElem := elem
+
 					if l := len("extend/"); len(elem) >= l && elem[0:l] == "extend/" {
 						elem = elem[l:]
 					} else {
@@ -519,7 +513,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					// Param: "path"
-					// Leaf parameter
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
 					args[0] = elem
 					elem = ""
 
@@ -549,9 +547,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					elem = origElem
 				case 'f': // Prefix: "file/"
-					origElem := elem
+
 					if l := len("file/"); len(elem) >= l && elem[0:l] == "file/" {
 						elem = elem[l:]
 					} else {
@@ -582,7 +579,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -590,7 +587,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 
 							// Param: "path"
-							// Leaf parameter
+							// Leaf parameter, slashes are prohibited
+							idx := strings.IndexByte(elem, '/')
+							if idx >= 0 {
+								break
+							}
 							args[0] = elem
 							elem = ""
 
@@ -608,13 +609,16 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								return
 							}
 
-							elem = origElem
 						}
 
 						elem = origElem
 					}
 					// Param: "path"
-					// Leaf parameter
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
 					args[0] = elem
 					elem = ""
 
@@ -644,9 +648,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					elem = origElem
 				case 'm': // Prefix: "m"
-					origElem := elem
+
 					if l := len("m"); len(elem) >= l && elem[0:l] == "m" {
 						elem = elem[l:]
 					} else {
@@ -658,7 +661,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case 'a': // Prefix: "ap"
-						origElem := elem
+
 						if l := len("ap"); len(elem) >= l && elem[0:l] == "ap" {
 							elem = elem[l:]
 						} else {
@@ -677,7 +680,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -685,7 +688,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 
 							// Param: "path"
-							// Leaf parameter
+							// Leaf parameter, slashes are prohibited
+							idx := strings.IndexByte(elem, '/')
+							if idx >= 0 {
+								break
+							}
 							args[0] = elem
 							elem = ""
 
@@ -703,12 +710,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								return
 							}
 
-							elem = origElem
 						}
 
-						elem = origElem
 					case 'e': // Prefix: "etadata/view/"
-						origElem := elem
+
 						if l := len("etadata/view/"); len(elem) >= l && elem[0:l] == "etadata/view/" {
 							elem = elem[l:]
 						} else {
@@ -716,7 +721,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						// Param: "table"
-						// Leaf parameter
+						// Leaf parameter, slashes are prohibited
+						idx := strings.IndexByte(elem, '/')
+						if idx >= 0 {
+							break
+						}
 						args[0] = elem
 						elem = ""
 
@@ -734,12 +743,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				case 's': // Prefix: "shutdown/"
-					origElem := elem
+
 					if l := len("shutdown/"); len(elem) >= l && elem[0:l] == "shutdown/" {
 						elem = elem[l:]
 					} else {
@@ -747,7 +754,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					// Param: "hash"
-					// Leaf parameter
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
 					args[0] = elem
 					elem = ""
 
@@ -765,9 +776,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					elem = origElem
 				case 't': // Prefix: "tables"
-					origElem := elem
+
 					if l := len("tables"); len(elem) >= l && elem[0:l] == "tables" {
 						elem = elem[l:]
 					} else {
@@ -786,7 +796,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -807,7 +817,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -856,7 +866,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 							switch elem[0] {
 							case '/': // Prefix: "/"
-								origElem := elem
+
 								if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 									elem = elem[l:]
 								} else {
@@ -864,7 +874,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								}
 
 								// Param: "search"
-								// Leaf parameter
+								// Leaf parameter, slashes are prohibited
+								idx := strings.IndexByte(elem, '/')
+								if idx >= 0 {
+									break
+								}
 								args[2] = elem
 								elem = ""
 
@@ -884,18 +898,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 									return
 								}
 
-								elem = origElem
 							}
 
-							elem = origElem
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				case 'u': // Prefix: "user"
-					origElem := elem
+
 					if l := len("user"); len(elem) >= l && elem[0:l] == "user" {
 						elem = elem[l:]
 					} else {
@@ -914,9 +924,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					elem = origElem
 				case 'v': // Prefix: "view"
-					origElem := elem
+
 					if l := len("view"); len(elem) >= l && elem[0:l] == "view" {
 						elem = elem[l:]
 					} else {
@@ -937,7 +946,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -967,7 +976,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -1008,7 +1017,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 							switch elem[0] {
 							case '/': // Prefix: "/"
-								origElem := elem
+
 								if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 									elem = elem[l:]
 								} else {
@@ -1016,7 +1025,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								}
 
 								// Param: "search"
-								// Leaf parameter
+								// Leaf parameter, slashes are prohibited
+								idx := strings.IndexByte(elem, '/')
+								if idx >= 0 {
+									break
+								}
 								args[2] = elem
 								elem = ""
 
@@ -1036,21 +1049,16 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 									return
 								}
 
-								elem = origElem
 							}
 
-							elem = origElem
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 't': // Prefix: "tasks"
-				origElem := elem
+
 				if l := len("tasks"); len(elem) >= l && elem[0:l] == "tasks" {
 					elem = elem[l:]
 				} else {
@@ -1071,7 +1079,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				switch elem[0] {
 				case '/': // Prefix: "/"
-					origElem := elem
+
 					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
@@ -1131,7 +1139,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -1139,7 +1147,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						// Param: "jobId"
-						// Leaf parameter
+						// Leaf parameter, slashes are prohibited
+						idx := strings.IndexByte(elem, '/')
+						if idx >= 0 {
+							break
+						}
 						args[1] = elem
 						elem = ""
 
@@ -1163,15 +1175,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'v': // Prefix: "v"
-				origElem := elem
+
 				if l := len("v"); len(elem) >= l && elem[0:l] == "v" {
 					elem = elem[l:]
 				} else {
@@ -1183,7 +1192,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				switch elem[0] {
 				case 'e': // Prefix: "ersion"
-					origElem := elem
+
 					if l := len("ersion"); len(elem) >= l && elem[0:l] == "ersion" {
 						elem = elem[l:]
 					} else {
@@ -1202,9 +1211,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					elem = origElem
 				case 'i': // Prefix: "ideo/"
-					origElem := elem
+
 					if l := len("ideo/"); len(elem) >= l && elem[0:l] == "ideo/" {
 						elem = elem[l:]
 					} else {
@@ -1225,7 +1233,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -1246,7 +1254,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -1254,7 +1262,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 
 							// Param: "search"
-							// Leaf parameter
+							// Leaf parameter, slashes are prohibited
+							idx := strings.IndexByte(elem, '/')
+							if idx >= 0 {
+								break
+							}
 							args[2] = elem
 							elem = ""
 
@@ -1274,19 +1286,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								return
 							}
 
-							elem = origElem
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			}
 
-			elem = origElem
 		}
 	}
 	s.notFound(w, r)
@@ -1294,12 +1301,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Route is route object.
 type Route struct {
-	name        string
-	summary     string
-	operationID string
-	pathPattern string
-	count       int
-	args        [3]string
+	name           string
+	summary        string
+	operationID    string
+	operationGroup string
+	pathPattern    string
+	count          int
+	args           [3]string
 }
 
 // Name returns ogen operation name.
@@ -1317,6 +1325,11 @@ func (r Route) Summary() string {
 // OperationID returns OpenAPI operationId.
 func (r Route) OperationID() string {
 	return r.operationID
+}
+
+// OperationGroup returns the x-ogen-operation-group value.
+func (r Route) OperationGroup() string {
+	return r.operationGroup
 }
 
 // PathPattern returns OpenAPI path.
@@ -1368,7 +1381,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 		}
 		switch elem[0] {
 		case '/': // Prefix: "/"
-			origElem := elem
+
 			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
@@ -1380,7 +1393,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 			}
 			switch elem[0] {
 			case 'b': // Prefix: "binary/"
-				origElem := elem
+
 				if l := len("binary/"); len(elem) >= l && elem[0:l] == "binary/" {
 					elem = elem[l:]
 				} else {
@@ -1401,7 +1414,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 				switch elem[0] {
 				case '/': // Prefix: "/"
-					origElem := elem
+
 					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
@@ -1422,7 +1435,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -1430,7 +1443,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						// Param: "search"
-						// Leaf parameter
+						// Leaf parameter, slashes are prohibited
+						idx := strings.IndexByte(elem, '/')
+						if idx >= 0 {
+							break
+						}
 						args[2] = elem
 						elem = ""
 
@@ -1441,6 +1458,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = GetLobByMapOperation
 								r.summary = ""
 								r.operationID = "getLobByMap"
+								r.operationGroup = ""
 								r.pathPattern = "/binary/{table}/{field}/{search}"
 								r.args = args
 								r.count = 3
@@ -1449,6 +1467,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = UpdateLobByMapOperation
 								r.summary = ""
 								r.operationID = "updateLobByMap"
+								r.operationGroup = ""
 								r.pathPattern = "/binary/{table}/{field}/{search}"
 								r.args = args
 								r.count = 3
@@ -1458,15 +1477,12 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'c': // Prefix: "config"
-				origElem := elem
+
 				if l := len("config"); len(elem) >= l && elem[0:l] == "config" {
 					elem = elem[l:]
 				} else {
@@ -1479,6 +1495,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = GetConfigOperation
 						r.summary = ""
 						r.operationID = "getConfig"
+						r.operationGroup = ""
 						r.pathPattern = "/config"
 						r.args = args
 						r.count = 0
@@ -1487,6 +1504,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = StoreConfigOperation
 						r.summary = ""
 						r.operationID = "storeConfig"
+						r.operationGroup = ""
 						r.pathPattern = "/config"
 						r.args = args
 						r.count = 0
@@ -1495,6 +1513,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = SetConfigOperation
 						r.summary = ""
 						r.operationID = "setConfig"
+						r.operationGroup = ""
 						r.pathPattern = "/config"
 						r.args = args
 						r.count = 0
@@ -1505,7 +1524,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 				switch elem[0] {
 				case '/': // Prefix: "/"
-					origElem := elem
+
 					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
@@ -1517,7 +1536,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case 'j': // Prefix: "jobs"
-						origElem := elem
+
 						if l := len("jobs"); len(elem) >= l && elem[0:l] == "jobs" {
 							elem = elem[l:]
 						} else {
@@ -1531,6 +1550,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = GetJobsConfigOperation
 								r.summary = ""
 								r.operationID = "getJobsConfig"
+								r.operationGroup = ""
 								r.pathPattern = "/config/jobs"
 								r.args = args
 								r.count = 0
@@ -1539,6 +1559,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = SetJobsConfigOperation
 								r.summary = ""
 								r.operationID = "setJobsConfig"
+								r.operationGroup = ""
 								r.pathPattern = "/config/jobs"
 								r.args = args
 								r.count = 0
@@ -1548,9 +1569,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-						elem = origElem
 					case 'v': // Prefix: "views"
-						origElem := elem
+
 						if l := len("views"); len(elem) >= l && elem[0:l] == "views" {
 							elem = elem[l:]
 						} else {
@@ -1564,6 +1584,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = DeleteViewOperation
 								r.summary = ""
 								r.operationID = "deleteView"
+								r.operationGroup = ""
 								r.pathPattern = "/config/views"
 								r.args = args
 								r.count = 0
@@ -1572,6 +1593,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = GetViewsOperation
 								r.summary = ""
 								r.operationID = "getViews"
+								r.operationGroup = ""
 								r.pathPattern = "/config/views"
 								r.args = args
 								r.count = 0
@@ -1580,6 +1602,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = AddViewOperation
 								r.summary = ""
 								r.operationID = "addView"
+								r.operationGroup = ""
 								r.pathPattern = "/config/views"
 								r.args = args
 								r.count = 0
@@ -1589,15 +1612,12 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'i': // Prefix: "image/"
-				origElem := elem
+
 				if l := len("image/"); len(elem) >= l && elem[0:l] == "image/" {
 					elem = elem[l:]
 				} else {
@@ -1618,7 +1638,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 				switch elem[0] {
 				case '/': // Prefix: "/"
-					origElem := elem
+
 					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
@@ -1639,7 +1659,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -1647,7 +1667,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						// Param: "search"
-						// Leaf parameter
+						// Leaf parameter, slashes are prohibited
+						idx := strings.IndexByte(elem, '/')
+						if idx >= 0 {
+							break
+						}
 						args[2] = elem
 						elem = ""
 
@@ -1658,6 +1682,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = GetImageOperation
 								r.summary = ""
 								r.operationID = "getImage"
+								r.operationGroup = ""
 								r.pathPattern = "/image/{table}/{field}/{search}"
 								r.args = args
 								r.count = 3
@@ -1667,15 +1692,12 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'l': // Prefix: "log"
-				origElem := elem
+
 				if l := len("log"); len(elem) >= l && elem[0:l] == "log" {
 					elem = elem[l:]
 				} else {
@@ -1687,7 +1709,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 				switch elem[0] {
 				case 'i': // Prefix: "in"
-					origElem := elem
+
 					if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
 						elem = elem[l:]
 					} else {
@@ -1701,6 +1723,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = GetLoginSessionOperation
 							r.summary = ""
 							r.operationID = "getLoginSession"
+							r.operationGroup = ""
 							r.pathPattern = "/login"
 							r.args = args
 							r.count = 0
@@ -1709,6 +1732,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = PushLoginSessionOperation
 							r.summary = ""
 							r.operationID = "pushLoginSession"
+							r.operationGroup = ""
 							r.pathPattern = "/login"
 							r.args = args
 							r.count = 0
@@ -1717,6 +1741,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = LoginSessionOperation
 							r.summary = ""
 							r.operationID = "loginSession"
+							r.operationGroup = ""
 							r.pathPattern = "/login"
 							r.args = args
 							r.count = 0
@@ -1726,9 +1751,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 
-					elem = origElem
 				case 'o': // Prefix: "o"
-					origElem := elem
+
 					if l := len("o"); len(elem) >= l && elem[0:l] == "o" {
 						elem = elem[l:]
 					} else {
@@ -1740,7 +1764,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case 'f': // Prefix: "ff"
-						origElem := elem
+
 						if l := len("ff"); len(elem) >= l && elem[0:l] == "ff" {
 							elem = elem[l:]
 						} else {
@@ -1754,6 +1778,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = RemoveSessionCompatOperation
 								r.summary = ""
 								r.operationID = "removeSessionCompat"
+								r.operationGroup = ""
 								r.pathPattern = "/logoff"
 								r.args = args
 								r.count = 0
@@ -1763,9 +1788,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-						elem = origElem
 					case 'u': // Prefix: "ut"
-						origElem := elem
+
 						if l := len("ut"); len(elem) >= l && elem[0:l] == "ut" {
 							elem = elem[l:]
 						} else {
@@ -1779,6 +1803,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = LogoutSessionCompatOperation
 								r.summary = ""
 								r.operationID = "logoutSessionCompat"
+								r.operationGroup = ""
 								r.pathPattern = "/logout"
 								r.args = args
 								r.count = 0
@@ -1788,15 +1813,12 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'r': // Prefix: "rest/"
-				origElem := elem
+
 				if l := len("rest/"); len(elem) >= l && elem[0:l] == "rest/" {
 					elem = elem[l:]
 				} else {
@@ -1808,7 +1830,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 				switch elem[0] {
 				case 'b': // Prefix: "batch/"
-					origElem := elem
+
 					if l := len("batch/"); len(elem) >= l && elem[0:l] == "batch/" {
 						elem = elem[l:]
 					} else {
@@ -1830,6 +1852,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = BatchSelectOperation
 							r.summary = ""
 							r.operationID = "batchSelect"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/batch/{table}"
 							r.args = args
 							r.count = 1
@@ -1838,6 +1861,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = BatchQueryOperation
 							r.summary = ""
 							r.operationID = "batchQuery"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/batch/{table}"
 							r.args = args
 							r.count = 1
@@ -1848,7 +1872,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -1856,7 +1880,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						// Param: "query"
-						// Leaf parameter
+						// Leaf parameter, slashes are prohibited
+						idx := strings.IndexByte(elem, '/')
+						if idx >= 0 {
+							break
+						}
 						args[1] = elem
 						elem = ""
 
@@ -1867,6 +1895,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = BatchParameterQueryOperation
 								r.summary = ""
 								r.operationID = "batchParameterQuery"
+								r.operationGroup = ""
 								r.pathPattern = "/rest/batch/{table}/{query}"
 								r.args = args
 								r.count = 2
@@ -1876,12 +1905,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				case 'd': // Prefix: "database"
-					origElem := elem
+
 					if l := len("database"); len(elem) >= l && elem[0:l] == "database" {
 						elem = elem[l:]
 					} else {
@@ -1895,6 +1922,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = GetDatabasesOperation
 							r.summary = ""
 							r.operationID = "getDatabases"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/database"
 							r.args = args
 							r.count = 0
@@ -1903,6 +1931,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = PostDatabaseOperation
 							r.summary = ""
 							r.operationID = "postDatabase"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/database"
 							r.args = args
 							r.count = 0
@@ -1912,9 +1941,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 
-					elem = origElem
 				case 'e': // Prefix: "extend/"
-					origElem := elem
+
 					if l := len("extend/"); len(elem) >= l && elem[0:l] == "extend/" {
 						elem = elem[l:]
 					} else {
@@ -1922,7 +1950,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 
 					// Param: "path"
-					// Leaf parameter
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
 					args[0] = elem
 					elem = ""
 
@@ -1933,6 +1965,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = DeleteExtendOperation
 							r.summary = ""
 							r.operationID = "deleteExtend"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/extend/{path}"
 							r.args = args
 							r.count = 1
@@ -1941,6 +1974,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = CallExtendOperation
 							r.summary = ""
 							r.operationID = "callExtend"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/extend/{path}"
 							r.args = args
 							r.count = 1
@@ -1949,6 +1983,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = CallPostExtendOperation
 							r.summary = ""
 							r.operationID = "callPostExtend"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/extend/{path}"
 							r.args = args
 							r.count = 1
@@ -1957,6 +1992,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = TriggerExtendOperation
 							r.summary = ""
 							r.operationID = "triggerExtend"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/extend/{path}"
 							r.args = args
 							r.count = 1
@@ -1966,9 +2002,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 
-					elem = origElem
 				case 'f': // Prefix: "file/"
-					origElem := elem
+
 					if l := len("file/"); len(elem) >= l && elem[0:l] == "file/" {
 						elem = elem[l:]
 					} else {
@@ -1993,6 +2028,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = BrowseListOperation
 								r.summary = ""
 								r.operationID = "browseList"
+								r.operationGroup = ""
 								r.pathPattern = "/rest/file/browse"
 								r.args = args
 								r.count = 0
@@ -2003,7 +2039,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -2011,7 +2047,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 
 							// Param: "path"
-							// Leaf parameter
+							// Leaf parameter, slashes are prohibited
+							idx := strings.IndexByte(elem, '/')
+							if idx >= 0 {
+								break
+							}
 							args[0] = elem
 							elem = ""
 
@@ -2022,6 +2062,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = BrowseLocationOperation
 									r.summary = ""
 									r.operationID = "browseLocation"
+									r.operationGroup = ""
 									r.pathPattern = "/rest/file/browse/{path}"
 									r.args = args
 									r.count = 1
@@ -2031,13 +2072,16 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								}
 							}
 
-							elem = origElem
 						}
 
 						elem = origElem
 					}
 					// Param: "path"
-					// Leaf parameter
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
 					args[0] = elem
 					elem = ""
 
@@ -2048,6 +2092,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = DeleteFileLocationOperation
 							r.summary = ""
 							r.operationID = "deleteFileLocation"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/file/{path}"
 							r.args = args
 							r.count = 1
@@ -2056,6 +2101,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = DownloadFileOperation
 							r.summary = ""
 							r.operationID = "downloadFile"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/file/{path}"
 							r.args = args
 							r.count = 1
@@ -2064,6 +2110,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = UploadFileOperation
 							r.summary = ""
 							r.operationID = "uploadFile"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/file/{path}"
 							r.args = args
 							r.count = 1
@@ -2072,6 +2119,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = CreateDirectoryOperation
 							r.summary = ""
 							r.operationID = "createDirectory"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/file/{path}"
 							r.args = args
 							r.count = 1
@@ -2081,9 +2129,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 
-					elem = origElem
 				case 'm': // Prefix: "m"
-					origElem := elem
+
 					if l := len("m"); len(elem) >= l && elem[0:l] == "m" {
 						elem = elem[l:]
 					} else {
@@ -2095,7 +2142,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case 'a': // Prefix: "ap"
-						origElem := elem
+
 						if l := len("ap"); len(elem) >= l && elem[0:l] == "ap" {
 							elem = elem[l:]
 						} else {
@@ -2108,6 +2155,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = ListModellingOperation
 								r.summary = ""
 								r.operationID = "listModelling"
+								r.operationGroup = ""
 								r.pathPattern = "/rest/map"
 								r.args = args
 								r.count = 0
@@ -2118,7 +2166,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -2126,7 +2174,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 
 							// Param: "path"
-							// Leaf parameter
+							// Leaf parameter, slashes are prohibited
+							idx := strings.IndexByte(elem, '/')
+							if idx >= 0 {
+								break
+							}
 							args[0] = elem
 							elem = ""
 
@@ -2137,6 +2189,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = SearchModellingOperation
 									r.summary = ""
 									r.operationID = "searchModelling"
+									r.operationGroup = ""
 									r.pathPattern = "/rest/map/{path}"
 									r.args = args
 									r.count = 1
@@ -2146,12 +2199,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								}
 							}
 
-							elem = origElem
 						}
 
-						elem = origElem
 					case 'e': // Prefix: "etadata/view/"
-						origElem := elem
+
 						if l := len("etadata/view/"); len(elem) >= l && elem[0:l] == "etadata/view/" {
 							elem = elem[l:]
 						} else {
@@ -2159,7 +2210,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						// Param: "table"
-						// Leaf parameter
+						// Leaf parameter, slashes are prohibited
+						idx := strings.IndexByte(elem, '/')
+						if idx >= 0 {
+							break
+						}
 						args[0] = elem
 						elem = ""
 
@@ -2170,6 +2225,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = GetMapMetadataOperation
 								r.summary = ""
 								r.operationID = "getMapMetadata"
+								r.operationGroup = ""
 								r.pathPattern = "/rest/metadata/view/{table}"
 								r.args = args
 								r.count = 1
@@ -2179,12 +2235,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				case 's': // Prefix: "shutdown/"
-					origElem := elem
+
 					if l := len("shutdown/"); len(elem) >= l && elem[0:l] == "shutdown/" {
 						elem = elem[l:]
 					} else {
@@ -2192,7 +2246,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 
 					// Param: "hash"
-					// Leaf parameter
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
 					args[0] = elem
 					elem = ""
 
@@ -2203,6 +2261,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = ShutdownServerOperation
 							r.summary = ""
 							r.operationID = "shutdownServer"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/shutdown/{hash}"
 							r.args = args
 							r.count = 1
@@ -2212,9 +2271,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 
-					elem = origElem
 				case 't': // Prefix: "tables"
-					origElem := elem
+
 					if l := len("tables"); len(elem) >= l && elem[0:l] == "tables" {
 						elem = elem[l:]
 					} else {
@@ -2227,6 +2285,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = ListTablesOperation
 							r.summary = ""
 							r.operationID = "listTables"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/tables"
 							r.args = args
 							r.count = 0
@@ -2237,7 +2296,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -2258,7 +2317,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -2284,6 +2343,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 										r.name = GetFieldsOperation
 										r.summary = ""
 										r.operationID = "getFields"
+										r.operationGroup = ""
 										r.pathPattern = "/rest/tables/{table}/fields"
 										r.args = args
 										r.count = 1
@@ -2309,7 +2369,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 							switch elem[0] {
 							case '/': // Prefix: "/"
-								origElem := elem
+
 								if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 									elem = elem[l:]
 								} else {
@@ -2317,7 +2377,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								}
 
 								// Param: "search"
-								// Leaf parameter
+								// Leaf parameter, slashes are prohibited
+								idx := strings.IndexByte(elem, '/')
+								if idx >= 0 {
+									break
+								}
 								args[2] = elem
 								elem = ""
 
@@ -2328,6 +2392,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 										r.name = SearchTableOperation
 										r.summary = ""
 										r.operationID = "searchTable"
+										r.operationGroup = ""
 										r.pathPattern = "/rest/tables/{table}/{fields}/{search}"
 										r.args = args
 										r.count = 3
@@ -2337,18 +2402,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									}
 								}
 
-								elem = origElem
 							}
 
-							elem = origElem
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				case 'u': // Prefix: "user"
-					origElem := elem
+
 					if l := len("user"); len(elem) >= l && elem[0:l] == "user" {
 						elem = elem[l:]
 					} else {
@@ -2362,6 +2423,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = GetUserInfoOperation
 							r.summary = ""
 							r.operationID = "getUserInfo"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/user"
 							r.args = args
 							r.count = 0
@@ -2371,9 +2433,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 
-					elem = origElem
 				case 'v': // Prefix: "view"
-					origElem := elem
+
 					if l := len("view"); len(elem) >= l && elem[0:l] == "view" {
 						elem = elem[l:]
 					} else {
@@ -2386,6 +2447,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = GetMapsOperation
 							r.summary = ""
 							r.operationID = "getMaps"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/view"
 							r.args = args
 							r.count = 0
@@ -2394,6 +2456,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = InsertMapFileRecordsOperation
 							r.summary = ""
 							r.operationID = "insertMapFileRecords"
+							r.operationGroup = ""
 							r.pathPattern = "/rest/view"
 							r.args = args
 							r.count = 0
@@ -2404,7 +2467,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -2426,6 +2489,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = InsertRecordOperation
 								r.summary = ""
 								r.operationID = "insertRecord"
+								r.operationGroup = ""
 								r.pathPattern = "/rest/view/{table}"
 								r.args = args
 								r.count = 1
@@ -2436,7 +2500,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -2458,6 +2522,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = DeleteRecordsSearchedOperation
 									r.summary = ""
 									r.operationID = "deleteRecordsSearched"
+									r.operationGroup = ""
 									r.pathPattern = "/rest/view/{table}/{search}"
 									r.args = args
 									r.count = 2
@@ -2466,6 +2531,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = SearchRecordsFieldsOperation
 									r.summary = ""
 									r.operationID = "searchRecordsFields"
+									r.operationGroup = ""
 									r.pathPattern = "/rest/view/{table}/{search}"
 									r.args = args
 									r.count = 2
@@ -2474,6 +2540,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = UpdateRecordsByFieldsOperation
 									r.summary = ""
 									r.operationID = "updateRecordsByFields"
+									r.operationGroup = ""
 									r.pathPattern = "/rest/view/{table}/{search}"
 									r.args = args
 									r.count = 2
@@ -2484,7 +2551,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 							switch elem[0] {
 							case '/': // Prefix: "/"
-								origElem := elem
+
 								if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 									elem = elem[l:]
 								} else {
@@ -2492,7 +2559,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								}
 
 								// Param: "search"
-								// Leaf parameter
+								// Leaf parameter, slashes are prohibited
+								idx := strings.IndexByte(elem, '/')
+								if idx >= 0 {
+									break
+								}
 								args[2] = elem
 								elem = ""
 
@@ -2503,6 +2574,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 										r.name = GetMapRecordsFieldsOperation
 										r.summary = ""
 										r.operationID = "getMapRecordsFields"
+										r.operationGroup = ""
 										r.pathPattern = "/rest/view/{table}/{fields}/{search}"
 										r.args = args
 										r.count = 3
@@ -2512,21 +2584,16 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									}
 								}
 
-								elem = origElem
 							}
 
-							elem = origElem
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 't': // Prefix: "tasks"
-				origElem := elem
+
 				if l := len("tasks"); len(elem) >= l && elem[0:l] == "tasks" {
 					elem = elem[l:]
 				} else {
@@ -2539,6 +2606,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = GetJobsOperation
 						r.summary = ""
 						r.operationID = "getJobs"
+						r.operationGroup = ""
 						r.pathPattern = "/tasks"
 						r.args = args
 						r.count = 0
@@ -2547,6 +2615,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = PostJobOperation
 						r.summary = ""
 						r.operationID = "postJob"
+						r.operationGroup = ""
 						r.pathPattern = "/tasks"
 						r.args = args
 						r.count = 0
@@ -2557,7 +2626,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 				switch elem[0] {
 				case '/': // Prefix: "/"
-					origElem := elem
+
 					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
@@ -2583,6 +2652,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = GetJobExecutionResultOperation
 								r.summary = ""
 								r.operationID = "getJobExecutionResult"
+								r.operationGroup = ""
 								r.pathPattern = "/tasks/results"
 								r.args = args
 								r.count = 0
@@ -2609,6 +2679,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = GetJobFullInfoOperation
 							r.summary = ""
 							r.operationID = "getJobFullInfo"
+							r.operationGroup = ""
 							r.pathPattern = "/tasks/{jobName}"
 							r.args = args
 							r.count = 1
@@ -2617,6 +2688,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = TriggerJobOperation
 							r.summary = ""
 							r.operationID = "triggerJob"
+							r.operationGroup = ""
 							r.pathPattern = "/tasks/{jobName}"
 							r.args = args
 							r.count = 1
@@ -2627,7 +2699,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -2635,7 +2707,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						// Param: "jobId"
-						// Leaf parameter
+						// Leaf parameter, slashes are prohibited
+						idx := strings.IndexByte(elem, '/')
+						if idx >= 0 {
+							break
+						}
 						args[1] = elem
 						elem = ""
 
@@ -2646,6 +2722,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = DeleteJobResultOperation
 								r.summary = ""
 								r.operationID = "deleteJobResult"
+								r.operationGroup = ""
 								r.pathPattern = "/tasks/{jobName}/{jobId}"
 								r.args = args
 								r.count = 2
@@ -2654,6 +2731,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = GetJobResultOperation
 								r.summary = ""
 								r.operationID = "getJobResult"
+								r.operationGroup = ""
 								r.pathPattern = "/tasks/{jobName}/{jobId}"
 								r.args = args
 								r.count = 2
@@ -2663,15 +2741,12 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'v': // Prefix: "v"
-				origElem := elem
+
 				if l := len("v"); len(elem) >= l && elem[0:l] == "v" {
 					elem = elem[l:]
 				} else {
@@ -2683,7 +2758,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 				switch elem[0] {
 				case 'e': // Prefix: "ersion"
-					origElem := elem
+
 					if l := len("ersion"); len(elem) >= l && elem[0:l] == "ersion" {
 						elem = elem[l:]
 					} else {
@@ -2697,6 +2772,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = GetVersionOperation
 							r.summary = ""
 							r.operationID = "getVersion"
+							r.operationGroup = ""
 							r.pathPattern = "/version"
 							r.args = args
 							r.count = 0
@@ -2706,9 +2782,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 
-					elem = origElem
 				case 'i': // Prefix: "ideo/"
-					origElem := elem
+
 					if l := len("ideo/"); len(elem) >= l && elem[0:l] == "ideo/" {
 						elem = elem[l:]
 					} else {
@@ -2729,7 +2804,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -2750,7 +2825,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -2758,7 +2833,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 
 							// Param: "search"
-							// Leaf parameter
+							// Leaf parameter, slashes are prohibited
+							idx := strings.IndexByte(elem, '/')
+							if idx >= 0 {
+								break
+							}
 							args[2] = elem
 							elem = ""
 
@@ -2769,6 +2848,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = GetVideoOperation
 									r.summary = ""
 									r.operationID = "getVideo"
+									r.operationGroup = ""
 									r.pathPattern = "/video/{table}/{field}/{search}"
 									r.args = args
 									r.count = 3
@@ -2778,19 +2858,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								}
 							}
 
-							elem = origElem
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			}
 
-			elem = origElem
 		}
 	}
 	return r, false

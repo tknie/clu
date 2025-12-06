@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/go-faster/errors"
-
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 
@@ -42,6 +41,62 @@ func findAuthorization(h http.Header, prefix string) (string, bool) {
 	return "", false
 }
 
+var operationRolesBasicAuth = map[string][]string{
+	AddViewOperation:               []string{},
+	BatchParameterQueryOperation:   []string{},
+	BatchQueryOperation:            []string{},
+	BatchSelectOperation:           []string{},
+	BrowseListOperation:            []string{},
+	BrowseLocationOperation:        []string{},
+	CallExtendOperation:            []string{},
+	CallPostExtendOperation:        []string{},
+	CreateDirectoryOperation:       []string{},
+	DeleteExtendOperation:          []string{},
+	DeleteFileLocationOperation:    []string{},
+	DeleteJobResultOperation:       []string{},
+	DeleteRecordsSearchedOperation: []string{},
+	DeleteViewOperation:            []string{},
+	DownloadFileOperation:          []string{},
+	GetConfigOperation:             []string{},
+	GetDatabasesOperation:          []string{},
+	GetFieldsOperation:             []string{},
+	GetImageOperation:              []string{},
+	GetJobExecutionResultOperation: []string{},
+	GetJobFullInfoOperation:        []string{},
+	GetJobResultOperation:          []string{},
+	GetJobsOperation:               []string{},
+	GetJobsConfigOperation:         []string{},
+	GetLobByMapOperation:           []string{},
+	GetLoginSessionOperation:       []string{},
+	GetMapMetadataOperation:        []string{},
+	GetMapRecordsFieldsOperation:   []string{},
+	GetMapsOperation:               []string{},
+	GetVideoOperation:              []string{},
+	GetViewsOperation:              []string{},
+	InsertMapFileRecordsOperation:  []string{},
+	InsertRecordOperation:          []string{},
+	ListModellingOperation:         []string{},
+	ListTablesOperation:            []string{},
+	LoginSessionOperation:          []string{},
+	LogoutSessionCompatOperation:   []string{},
+	PostDatabaseOperation:          []string{},
+	PostJobOperation:               []string{},
+	PushLoginSessionOperation:      []string{},
+	RemoveSessionCompatOperation:   []string{},
+	SearchModellingOperation:       []string{},
+	SearchRecordsFieldsOperation:   []string{},
+	SearchTableOperation:           []string{},
+	SetConfigOperation:             []string{},
+	SetJobsConfigOperation:         []string{},
+	ShutdownServerOperation:        []string{},
+	StoreConfigOperation:           []string{},
+	TriggerExtendOperation:         []string{},
+	TriggerJobOperation:            []string{},
+	UpdateLobByMapOperation:        []string{},
+	UpdateRecordsByFieldsOperation: []string{},
+	UploadFileOperation:            []string{},
+}
+
 func (s *Server) securityBasicAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
 	var t BasicAuth
 	if _, ok := findAuthorization(req.Header, "Basic"); !ok {
@@ -53,6 +108,7 @@ func (s *Server) securityBasicAuth(ctx context.Context, operationName OperationN
 	}
 	t.Username = username
 	t.Password = password
+	t.Roles = operationRolesBasicAuth[operationName]
 	rctx, err := s.sec.HandleBasicAuth(ctx, operationName, t)
 	if errors.Is(err, ogenerrors.ErrSkipServerSecurity) {
 		return nil, false, nil
@@ -64,6 +120,160 @@ func (s *Server) securityBasicAuth(ctx context.Context, operationName OperationN
 
 	return rctx, true, err
 }
+
+var operationRolesBearerAuth = map[string][]string{
+	AddViewOperation: []string{
+		"admin",
+	},
+	BatchParameterQueryOperation: []string{
+		"admin",
+	},
+	BatchQueryOperation: []string{
+		"admin",
+	},
+	BatchSelectOperation: []string{
+		"admin",
+	},
+	BrowseListOperation: []string{
+		"admin",
+	},
+	BrowseLocationOperation: []string{
+		"admin",
+	},
+	CallExtendOperation: []string{
+		"admin",
+	},
+	CallPostExtendOperation: []string{
+		"admin",
+	},
+	CreateDirectoryOperation: []string{
+		"admin",
+	},
+	DeleteExtendOperation: []string{
+		"admin",
+	},
+	DeleteFileLocationOperation: []string{
+		"admin",
+	},
+	DeleteJobResultOperation: []string{
+		"admin",
+	},
+	DeleteRecordsSearchedOperation: []string{
+		"user",
+	},
+	DeleteViewOperation: []string{
+		"admin",
+	},
+	DownloadFileOperation: []string{
+		"admin",
+	},
+	GetConfigOperation: []string{
+		"admin",
+	},
+	GetDatabasesOperation: []string{
+		"admin",
+	},
+	GetFieldsOperation: []string{
+		"user",
+	},
+	GetImageOperation: []string{
+		"user",
+	},
+	GetJobExecutionResultOperation: []string{
+		"admin",
+	},
+	GetJobFullInfoOperation: []string{
+		"admin",
+	},
+	GetJobResultOperation: []string{
+		"admin",
+	},
+	GetJobsOperation: []string{
+		"admin",
+	},
+	GetJobsConfigOperation: []string{
+		"admin",
+	},
+	GetLobByMapOperation: []string{
+		"user",
+	},
+	GetMapMetadataOperation: []string{
+		"user",
+	},
+	GetMapRecordsFieldsOperation: []string{
+		"user",
+	},
+	GetMapsOperation: []string{
+		"user",
+	},
+	GetVideoOperation: []string{
+		"user",
+	},
+	GetViewsOperation: []string{
+		"admin",
+	},
+	InsertMapFileRecordsOperation: []string{
+		"user",
+	},
+	InsertRecordOperation: []string{
+		"user",
+	},
+	ListModellingOperation: []string{
+		"user",
+	},
+	ListTablesOperation: []string{
+		"user",
+	},
+	LogoutSessionCompatOperation: []string{
+		"user",
+	},
+	PostDatabaseOperation: []string{
+		"admin",
+	},
+	PostJobOperation: []string{
+		"admin",
+	},
+	RemoveSessionCompatOperation: []string{
+		"user",
+	},
+	SearchModellingOperation: []string{
+		"user",
+	},
+	SearchRecordsFieldsOperation: []string{
+		"user",
+	},
+	SearchTableOperation: []string{
+		"user",
+	},
+	SetConfigOperation: []string{
+		"admin",
+	},
+	SetJobsConfigOperation: []string{
+		"admin",
+	},
+	ShutdownServerOperation: []string{
+		"admin",
+	},
+	StoreConfigOperation: []string{
+		"admin",
+	},
+	TriggerExtendOperation: []string{
+		"admin",
+	},
+	TriggerJobOperation: []string{
+		"admin",
+	},
+	UpdateLobByMapOperation: []string{
+		"user",
+	},
+	UpdateRecordsByFieldsOperation: []string{
+		"user",
+	},
+	UploadFileOperation: []string{
+		"admin",
+	},
+}
+
 func (s *Server) securityBearerAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
 	var t BearerAuth
 	token, ok := findAuthorization(req.Header, "Bearer")
@@ -71,6 +281,7 @@ func (s *Server) securityBearerAuth(ctx context.Context, operationName Operation
 		return ctx, false, nil
 	}
 	t.Token = token
+	t.Roles = operationRolesBearerAuth[operationName]
 	rctx, err := s.sec.HandleBearerAuth(ctx, operationName, t)
 	if errors.Is(err, ogenerrors.ErrSkipServerSecurity) {
 		return nil, false, nil
@@ -82,6 +293,63 @@ func (s *Server) securityBearerAuth(ctx context.Context, operationName Operation
 
 	return rctx, true, err
 }
+
+var operationRolesTokenCheck = map[string][]string{
+	AddViewOperation:               []string{},
+	BatchParameterQueryOperation:   []string{},
+	BatchQueryOperation:            []string{},
+	BatchSelectOperation:           []string{},
+	BrowseListOperation:            []string{},
+	BrowseLocationOperation:        []string{},
+	CallExtendOperation:            []string{},
+	CallPostExtendOperation:        []string{},
+	CreateDirectoryOperation:       []string{},
+	DeleteExtendOperation:          []string{},
+	DeleteFileLocationOperation:    []string{},
+	DeleteJobResultOperation:       []string{},
+	DeleteRecordsSearchedOperation: []string{},
+	DeleteViewOperation:            []string{},
+	DownloadFileOperation:          []string{},
+	GetConfigOperation:             []string{},
+	GetDatabasesOperation:          []string{},
+	GetFieldsOperation:             []string{},
+	GetImageOperation:              []string{},
+	GetJobExecutionResultOperation: []string{},
+	GetJobFullInfoOperation:        []string{},
+	GetJobResultOperation:          []string{},
+	GetJobsOperation:               []string{},
+	GetJobsConfigOperation:         []string{},
+	GetLobByMapOperation:           []string{},
+	GetLoginSessionOperation:       []string{},
+	GetMapMetadataOperation:        []string{},
+	GetMapRecordsFieldsOperation:   []string{},
+	GetMapsOperation:               []string{},
+	GetVideoOperation:              []string{},
+	GetViewsOperation:              []string{},
+	InsertMapFileRecordsOperation:  []string{},
+	InsertRecordOperation:          []string{},
+	ListModellingOperation:         []string{},
+	ListTablesOperation:            []string{},
+	LoginSessionOperation:          []string{},
+	LogoutSessionCompatOperation:   []string{},
+	PostDatabaseOperation:          []string{},
+	PostJobOperation:               []string{},
+	PushLoginSessionOperation:      []string{},
+	RemoveSessionCompatOperation:   []string{},
+	SearchModellingOperation:       []string{},
+	SearchRecordsFieldsOperation:   []string{},
+	SearchTableOperation:           []string{},
+	SetConfigOperation:             []string{},
+	SetJobsConfigOperation:         []string{},
+	ShutdownServerOperation:        []string{},
+	StoreConfigOperation:           []string{},
+	TriggerExtendOperation:         []string{},
+	TriggerJobOperation:            []string{},
+	UpdateLobByMapOperation:        []string{},
+	UpdateRecordsByFieldsOperation: []string{},
+	UploadFileOperation:            []string{},
+}
+
 func (s *Server) securityTokenCheck(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
 	var t TokenCheck
 	const parameterName = "X-Tokencheck"
@@ -90,6 +358,7 @@ func (s *Server) securityTokenCheck(ctx context.Context, operationName Operation
 		return ctx, false, nil
 	}
 	t.APIKey = value
+	t.Roles = operationRolesTokenCheck[operationName]
 	rctx, err := s.sec.HandleTokenCheck(ctx, operationName, t)
 	if errors.Is(err, ogenerrors.ErrSkipServerSecurity) {
 		return nil, false, nil

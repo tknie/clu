@@ -9,17 +9,16 @@ import (
 	"time"
 
 	"github.com/go-faster/errors"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/metric"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
-	"go.opentelemetry.io/otel/trace"
-
 	"github.com/ogen-go/ogen/conv"
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/ogenerrors"
 	"github.com/ogen-go/ogen/otelogen"
 	"github.com/ogen-go/ogen/uri"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/metric"
+	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func trimTrailingSlashes(u *url.URL) {
@@ -425,8 +424,9 @@ func (c *Client) sendAddView(ctx context.Context, params AddViewParams) (res Add
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addView"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/config/views"),
+		semconv.URLTemplateKey.String("/config/views"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -586,8 +586,9 @@ func (c *Client) sendBatchParameterQuery(ctx context.Context, params BatchParame
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchParameterQuery"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/batch/{table}/{query}"),
+		semconv.URLTemplateKey.String("/rest/batch/{table}/{query}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -773,8 +774,9 @@ func (c *Client) sendBatchQuery(ctx context.Context, request BatchQueryReq, para
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchQuery"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/rest/batch/{table}"),
+		semconv.URLTemplateKey.String("/rest/batch/{table}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -944,8 +946,9 @@ func (c *Client) sendBatchSelect(ctx context.Context, params BatchSelectParams) 
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("batchSelect"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/batch/{table}"),
+		semconv.URLTemplateKey.String("/rest/batch/{table}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -1138,8 +1141,9 @@ func (c *Client) sendBrowseList(ctx context.Context) (res BrowseListRes, err err
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("browseList"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/file/browse"),
+		semconv.URLTemplateKey.String("/rest/file/browse"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -1267,8 +1271,9 @@ func (c *Client) sendBrowseLocation(ctx context.Context, params BrowseLocationPa
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("browseLocation"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/file/browse/{path}"),
+		semconv.URLTemplateKey.String("/rest/file/browse/{path}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -1435,8 +1440,9 @@ func (c *Client) sendCallExtend(ctx context.Context, params CallExtendParams) (r
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("callExtend"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
+		semconv.URLTemplateKey.String("/rest/extend/{path}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -1603,8 +1609,9 @@ func (c *Client) sendCallPostExtend(ctx context.Context, request *CallPostExtend
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("callPostExtend"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
+		semconv.URLTemplateKey.String("/rest/extend/{path}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -1771,8 +1778,9 @@ func (c *Client) sendCreateDirectory(ctx context.Context, params CreateDirectory
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createDirectory"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/rest/file/{path}"),
+		semconv.URLTemplateKey.String("/rest/file/{path}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -1918,8 +1926,9 @@ func (c *Client) sendDeleteExtend(ctx context.Context, params DeleteExtendParams
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteExtend"),
 		semconv.HTTPRequestMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
+		semconv.URLTemplateKey.String("/rest/extend/{path}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -2083,8 +2092,9 @@ func (c *Client) sendDeleteFileLocation(ctx context.Context, params DeleteFileLo
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteFileLocation"),
 		semconv.HTTPRequestMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/rest/file/{path}"),
+		semconv.URLTemplateKey.String("/rest/file/{path}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -2251,8 +2261,9 @@ func (c *Client) sendDeleteJobResult(ctx context.Context, params DeleteJobResult
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteJobResult"),
 		semconv.HTTPRequestMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/tasks/{jobName}/{jobId}"),
+		semconv.URLTemplateKey.String("/tasks/{jobName}/{jobId}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -2417,8 +2428,9 @@ func (c *Client) sendDeleteRecordsSearched(ctx context.Context, params DeleteRec
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteRecordsSearched"),
 		semconv.HTTPRequestMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
+		semconv.URLTemplateKey.String("/rest/view/{table}/{search}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -2740,8 +2752,9 @@ func (c *Client) sendDeleteView(ctx context.Context, params DeleteViewParams) (r
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteView"),
 		semconv.HTTPRequestMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/config/views"),
+		semconv.URLTemplateKey.String("/config/views"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -2901,8 +2914,9 @@ func (c *Client) sendDownloadFile(ctx context.Context, params DownloadFileParams
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("downloadFile"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/file/{path}"),
+		semconv.URLTemplateKey.String("/rest/file/{path}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -3048,8 +3062,9 @@ func (c *Client) sendGetConfig(ctx context.Context) (res GetConfigRes, err error
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getConfig"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/config"),
+		semconv.URLTemplateKey.String("/config"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -3177,8 +3192,9 @@ func (c *Client) sendGetDatabases(ctx context.Context) (res GetDatabasesRes, err
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getDatabases"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/database"),
+		semconv.URLTemplateKey.String("/rest/database"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -3306,8 +3322,9 @@ func (c *Client) sendGetFields(ctx context.Context, params GetFieldsParams) (res
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getFields"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/tables/{table}/fields"),
+		semconv.URLTemplateKey.String("/rest/tables/{table}/fields"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -3454,8 +3471,9 @@ func (c *Client) sendGetImage(ctx context.Context, params GetImageParams) (res G
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getImage"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/image/{table}/{field}/{search}"),
+		semconv.URLTemplateKey.String("/image/{table}/{field}/{search}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -3708,8 +3726,9 @@ func (c *Client) sendGetJobExecutionResult(ctx context.Context, params GetJobExe
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobExecutionResult"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/tasks/results"),
+		semconv.URLTemplateKey.String("/tasks/results"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -3875,8 +3894,9 @@ func (c *Client) sendGetJobFullInfo(ctx context.Context, params GetJobFullInfoPa
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobFullInfo"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/tasks/{jobName}"),
+		semconv.URLTemplateKey.String("/tasks/{jobName}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -4022,8 +4042,9 @@ func (c *Client) sendGetJobResult(ctx context.Context, params GetJobResultParams
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobResult"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/tasks/{jobName}/{jobId}"),
+		semconv.URLTemplateKey.String("/tasks/{jobName}/{jobId}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -4188,8 +4209,9 @@ func (c *Client) sendGetJobs(ctx context.Context, params GetJobsParams) (res Get
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobs"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/tasks"),
+		semconv.URLTemplateKey.String("/tasks"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -4355,8 +4377,9 @@ func (c *Client) sendGetJobsConfig(ctx context.Context) (res GetJobsConfigRes, e
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getJobsConfig"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/config/jobs"),
+		semconv.URLTemplateKey.String("/config/jobs"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -4484,8 +4507,9 @@ func (c *Client) sendGetLobByMap(ctx context.Context, params GetLobByMapParams) 
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLobByMap"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
+		semconv.URLTemplateKey.String("/binary/{table}/{field}/{search}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -4724,8 +4748,9 @@ func (c *Client) sendGetLoginSession(ctx context.Context) (res GetLoginSessionRe
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLoginSession"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/login"),
+		semconv.URLTemplateKey.String("/login"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -4841,8 +4866,9 @@ func (c *Client) sendGetMapMetadata(ctx context.Context, params GetMapMetadataPa
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMapMetadata"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/metadata/view/{table}"),
+		semconv.URLTemplateKey.String("/rest/metadata/view/{table}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -4988,8 +5014,9 @@ func (c *Client) sendGetMapRecordsFields(ctx context.Context, params GetMapRecor
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMapRecordsFields"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/view/{table}/{fields}/{search}"),
+		semconv.URLTemplateKey.String("/rest/view/{table}/{fields}/{search}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -5330,8 +5357,9 @@ func (c *Client) sendGetMaps(ctx context.Context) (res GetMapsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getMaps"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/view"),
+		semconv.URLTemplateKey.String("/rest/view"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -5459,8 +5487,9 @@ func (c *Client) sendGetUserInfo(ctx context.Context) (res GetUserInfoRes, err e
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getUserInfo"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/user"),
+		semconv.URLTemplateKey.String("/rest/user"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -5531,8 +5560,9 @@ func (c *Client) sendGetVersion(ctx context.Context) (res GetVersionRes, err err
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getVersion"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/version"),
+		semconv.URLTemplateKey.String("/version"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -5603,8 +5633,9 @@ func (c *Client) sendGetVideo(ctx context.Context, params GetVideoParams) (res G
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getVideo"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/video/{table}/{field}/{search}"),
+		semconv.URLTemplateKey.String("/video/{table}/{field}/{search}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -5857,8 +5888,9 @@ func (c *Client) sendGetViews(ctx context.Context) (res GetViewsRes, err error) 
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getViews"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/config/views"),
+		semconv.URLTemplateKey.String("/config/views"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -5986,8 +6018,9 @@ func (c *Client) sendInsertMapFileRecords(ctx context.Context, request OptInsert
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("insertMapFileRecords"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/rest/view"),
+		semconv.URLTemplateKey.String("/rest/view"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -6118,8 +6151,9 @@ func (c *Client) sendInsertRecord(ctx context.Context, request OptInsertRecordRe
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("insertRecord"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/rest/view/{table}"),
+		semconv.URLTemplateKey.String("/rest/view/{table}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -6289,8 +6323,9 @@ func (c *Client) sendListModelling(ctx context.Context) (res ListModellingRes, e
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listModelling"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/map"),
+		semconv.URLTemplateKey.String("/rest/map"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -6418,8 +6453,9 @@ func (c *Client) sendListTables(ctx context.Context) (res ListTablesRes, err err
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listTables"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/tables"),
+		semconv.URLTemplateKey.String("/rest/tables"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -6547,8 +6583,9 @@ func (c *Client) sendLoginSession(ctx context.Context) (res LoginSessionRes, err
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("loginSession"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/login"),
+		semconv.URLTemplateKey.String("/login"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -6664,8 +6701,9 @@ func (c *Client) sendLogoutSessionCompat(ctx context.Context) (res LogoutSession
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("logoutSessionCompat"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/logout"),
+		semconv.URLTemplateKey.String("/logout"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -6794,8 +6832,9 @@ func (c *Client) sendPostDatabase(ctx context.Context, request *Database) (res P
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postDatabase"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/rest/database"),
+		semconv.URLTemplateKey.String("/rest/database"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -6926,8 +6965,9 @@ func (c *Client) sendPostJob(ctx context.Context, request PostJobReq) (res PostJ
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("postJob"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/tasks"),
+		semconv.URLTemplateKey.String("/tasks"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -7058,8 +7098,9 @@ func (c *Client) sendPushLoginSession(ctx context.Context) (res PushLoginSession
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("pushLoginSession"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/login"),
+		semconv.URLTemplateKey.String("/login"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -7175,8 +7216,9 @@ func (c *Client) sendRemoveSessionCompat(ctx context.Context) (res RemoveSession
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("removeSessionCompat"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/logoff"),
+		semconv.URLTemplateKey.String("/logoff"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -7304,8 +7346,9 @@ func (c *Client) sendSearchModelling(ctx context.Context, params SearchModelling
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchModelling"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/map/{path}"),
+		semconv.URLTemplateKey.String("/rest/map/{path}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -7451,8 +7494,9 @@ func (c *Client) sendSearchRecordsFields(ctx context.Context, params SearchRecor
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchRecordsFields"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
+		semconv.URLTemplateKey.String("/rest/view/{table}/{search}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -7774,8 +7818,9 @@ func (c *Client) sendSearchTable(ctx context.Context, params SearchTableParams) 
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("searchTable"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/rest/tables/{table}/{fields}/{search}"),
+		semconv.URLTemplateKey.String("/rest/tables/{table}/{fields}/{search}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -7980,8 +8025,9 @@ func (c *Client) sendSetConfig(ctx context.Context, request SetConfigReq) (res S
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("setConfig"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/config"),
+		semconv.URLTemplateKey.String("/config"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -8112,8 +8158,9 @@ func (c *Client) sendSetJobsConfig(ctx context.Context, request OptJobStore) (re
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("setJobsConfig"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/config/jobs"),
+		semconv.URLTemplateKey.String("/config/jobs"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -8244,8 +8291,9 @@ func (c *Client) sendShutdownServer(ctx context.Context, params ShutdownServerPa
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("shutdownServer"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/rest/shutdown/{hash}"),
+		semconv.URLTemplateKey.String("/rest/shutdown/{hash}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -8391,8 +8439,9 @@ func (c *Client) sendStoreConfig(ctx context.Context) (res StoreConfigRes, err e
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("storeConfig"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/config"),
+		semconv.URLTemplateKey.String("/config"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -8520,8 +8569,9 @@ func (c *Client) sendTriggerExtend(ctx context.Context, params TriggerExtendPara
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("triggerExtend"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
+		semconv.URLTemplateKey.String("/rest/extend/{path}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -8667,8 +8717,9 @@ func (c *Client) sendTriggerJob(ctx context.Context, params TriggerJobParams) (r
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("triggerJob"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/tasks/{jobName}"),
+		semconv.URLTemplateKey.String("/tasks/{jobName}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -8814,8 +8865,9 @@ func (c *Client) sendUpdateLobByMap(ctx context.Context, request UpdateLobByMapR
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateLobByMap"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
+		semconv.URLTemplateKey.String("/binary/{table}/{field}/{search}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -9002,8 +9054,9 @@ func (c *Client) sendUpdateRecordsByFields(ctx context.Context, request OptUpdat
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateRecordsByFields"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
+		semconv.URLTemplateKey.String("/rest/view/{table}/{search}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()
@@ -9171,8 +9224,9 @@ func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileReq, par
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("uploadFile"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/rest/file/{path}"),
+		semconv.URLTemplateKey.String("/rest/file/{path}"),
 	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
 	// Run stopwatch.
 	startTime := time.Now()

@@ -7,7 +7,6 @@ import (
 	"net/url"
 
 	"github.com/go-faster/errors"
-
 	"github.com/ogen-go/ogen/conv"
 	"github.com/ogen-go/ogen/middleware"
 	"github.com/ogen-go/ogen/ogenerrors"
@@ -69,7 +68,7 @@ func decodeAddViewParams(args [0]string, argsEscaped bool, r *http.Request) (par
 				return err
 			}
 		} else {
-			return validate.ErrFieldRequired
+			return err
 		}
 		return nil
 	}(); err != nil {
@@ -105,7 +104,7 @@ func decodeAddViewParams(args [0]string, argsEscaped bool, r *http.Request) (par
 				return err
 			}
 		} else {
-			return validate.ErrFieldRequired
+			return err
 		}
 		return nil
 	}(); err != nil {
@@ -125,7 +124,7 @@ type BatchParameterQueryParams struct {
 	// SQL statement.
 	Query string
 	// Check for validator additional information needed to be given to validator plugin.
-	Validate OptString
+	Validate OptString `json:",omitempty,omitzero"`
 }
 
 func unpackBatchParameterQueryParams(packed middleware.Parameters) (params BatchParameterQueryParams) {
@@ -296,7 +295,7 @@ type BatchQueryParams struct {
 	// Batch name.
 	Table string
 	// Check for validator additional information needed to be given to validator plugin.
-	Validate OptString
+	Validate OptString `json:",omitempty,omitzero"`
 }
 
 func unpackBatchQueryParams(packed middleware.Parameters) (params BatchQueryParams) {
@@ -413,11 +412,11 @@ func decodeBatchQueryParams(args [1]string, argsEscaped bool, r *http.Request) (
 // BatchSelectParams is parameters of batchSelect operation.
 type BatchSelectParams struct {
 	// Query parameter.
-	Param []string
+	Param []string `json:",omitempty"`
 	// Batch name.
 	Table string
 	// Check for validator additional information needed to be given to validator plugin.
-	Validate OptString
+	Validate OptString `json:",omitempty,omitzero"`
 }
 
 func unpackBatchSelectParams(packed middleware.Parameters) (params BatchSelectParams) {
@@ -588,7 +587,7 @@ type BrowseLocationParams struct {
 	// Identifier of the file location.
 	Path string
 	// Filter the result set.
-	Filter OptString
+	Filter OptString `json:",omitempty,omitzero"`
 }
 
 func unpackBrowseLocationParams(packed middleware.Parameters) (params BrowseLocationParams) {
@@ -908,7 +907,7 @@ func decodeCallPostExtendParams(args [1]string, argsEscaped bool, r *http.Reques
 				return err
 			}
 		} else {
-			return validate.ErrFieldRequired
+			return err
 		}
 		return nil
 	}(); err != nil {
@@ -1086,7 +1085,7 @@ func decodeDeleteExtendParams(args [1]string, argsEscaped bool, r *http.Request)
 				return err
 			}
 		} else {
-			return validate.ErrFieldRequired
+			return err
 		}
 		return nil
 	}(); err != nil {
@@ -1104,7 +1103,7 @@ type DeleteFileLocationParams struct {
 	// Identifier of the file location.
 	Path string
 	// Identifier of the file location.
-	File OptString
+	File OptString `json:",omitempty,omitzero"`
 }
 
 func unpackDeleteFileLocationParams(packed middleware.Parameters) (params DeleteFileLocationParams) {
@@ -1341,23 +1340,23 @@ func decodeDeleteJobResultParams(args [2]string, argsEscaped bool, r *http.Reque
 // DeleteRecordsSearchedParams is parameters of deleteRecordsSearched operation.
 type DeleteRecordsSearchedParams struct {
 	// Start offset where the read will start from.
-	Start OptFloat64
+	Start OptFloat64 `json:",omitempty,omitzero"`
 	// Maximal number of records retrieved.
-	Limit OptString
+	Limit OptString `json:",omitempty,omitzero"`
 	// Sort criterium.
-	SortedBy OptString
+	SortedBy OptString `json:",omitempty,omitzero"`
 	// Search criterium.
-	Sqlsearch OptString
+	Sqlsearch OptString `json:",omitempty,omitzero"`
 	// Return result in compact structure.
-	Compact OptBool
+	Compact OptBool `json:",omitempty,omitzero"`
 	// Remove database group tree entries in result records.
-	Flatten OptBool
+	Flatten OptBool `json:",omitempty,omitzero"`
 	// Read a descriptor read with the given field entry.
-	Descriptor OptBool
+	Descriptor OptBool `json:",omitempty,omitzero"`
 	// Order by criterias.
-	Orderby OptString
+	Orderby OptString `json:",omitempty,omitzero"`
 	// Use XML notation namespace.
-	Xmlnotation OptBool
+	Xmlnotation OptBool `json:",omitempty,omitzero"`
 	// SQL table.
 	Table string
 	// Specific SQL query string.
@@ -2016,7 +2015,7 @@ func decodeDeleteViewParams(args [0]string, argsEscaped bool, r *http.Request) (
 				return err
 			}
 		} else {
-			return validate.ErrFieldRequired
+			return err
 		}
 		return nil
 	}(); err != nil {
@@ -2052,7 +2051,7 @@ func decodeDeleteViewParams(args [0]string, argsEscaped bool, r *http.Request) (
 				return err
 			}
 		} else {
-			return validate.ErrFieldRequired
+			return err
 		}
 		return nil
 	}(); err != nil {
@@ -2202,17 +2201,17 @@ type GetImageParams struct {
 	// SQL table.
 	Table string
 	// Remote node reference.
-	Reference OptString
+	Reference OptString `json:",omitempty,omitzero"`
 	// Specific search.
 	Search string
 	// Specific the data MIME type.
-	Mimetype OptString
+	Mimetype OptString `json:",omitempty,omitzero"`
 	// Specific the field containing the mimetype.
 	MimetypeField string
 	// Specific the field to be.
 	Field string
 	// Search criterium.
-	Sqlsearch OptString
+	Sqlsearch OptString `json:",omitempty,omitzero"`
 }
 
 func unpackGetImageParams(packed middleware.Parameters) (params GetImageParams) {
@@ -2474,7 +2473,7 @@ func decodeGetImageParams(args [3]string, argsEscaped bool, r *http.Request) (pa
 				return err
 			}
 		} else {
-			return validate.ErrFieldRequired
+			return err
 		}
 		return nil
 	}(); err != nil {
@@ -2576,9 +2575,9 @@ func decodeGetImageParams(args [3]string, argsEscaped bool, r *http.Request) (pa
 // GetJobExecutionResultParams is parameters of getJobExecutionResult operation.
 type GetJobExecutionResultParams struct {
 	// Start time from.
-	From OptString
+	From OptString `json:",omitempty,omitzero"`
 	// End time to.
-	To OptString
+	To OptString `json:",omitempty,omitzero"`
 }
 
 func unpackGetJobExecutionResultParams(packed middleware.Parameters) (params GetJobExecutionResultParams) {
@@ -2879,9 +2878,9 @@ func decodeGetJobResultParams(args [2]string, argsEscaped bool, r *http.Request)
 // GetJobsParams is parameters of getJobs operation.
 type GetJobsParams struct {
 	// Timestamp of first job entry.
-	StartTime OptString
+	StartTime OptString `json:",omitempty,omitzero"`
 	// Timestamp of last job entry.
-	EndTime OptString
+	EndTime OptString `json:",omitempty,omitzero"`
 }
 
 func unpackGetJobsParams(packed middleware.Parameters) (params GetJobsParams) {
@@ -2996,11 +2995,11 @@ func decodeGetJobsParams(args [0]string, argsEscaped bool, r *http.Request) (par
 // GetLobByMapParams is parameters of getLobByMap operation.
 type GetLobByMapParams struct {
 	// Specific the field containing the mimetype.
-	MimetypeField OptString
+	MimetypeField OptString `json:",omitempty,omitzero"`
 	// Specific the data MIME type.
-	Mimetype OptString
+	Mimetype OptString `json:",omitempty,omitzero"`
 	// Search criterium.
-	Sqlsearch OptString
+	Sqlsearch OptString `json:",omitempty,omitzero"`
 	// SQL table.
 	Table string
 	// Specific table record.
@@ -3399,23 +3398,23 @@ type GetMapRecordsFieldsParams struct {
 	// Specific a comma separated list of fields to be part of the result record.
 	Fields string
 	// Start offset where the read will start from.
-	Start OptFloat64
+	Start OptFloat64 `json:",omitempty,omitzero"`
 	// Maximal number of records retrieved.
-	Limit OptString
+	Limit OptString `json:",omitempty,omitzero"`
 	// Sort criterium.
-	SortedBy OptString
+	SortedBy OptString `json:",omitempty,omitzero"`
 	// Search criterium.
-	Sqlsearch OptString
+	Sqlsearch OptString `json:",omitempty,omitzero"`
 	// Return result in compact structure.
-	Compact OptBool
+	Compact OptBool `json:",omitempty,omitzero"`
 	// Remove database group tree entries in result records.
-	Flatten OptBool
+	Flatten OptBool `json:",omitempty,omitzero"`
 	// Read a descriptor read with the given field entry.
-	Descriptor OptBool
+	Descriptor OptBool `json:",omitempty,omitzero"`
 	// Order by criterias.
-	Orderby OptString
+	Orderby OptString `json:",omitempty,omitzero"`
 	// Use XML notation namespace.
-	Xmlnotation OptBool
+	Xmlnotation OptBool `json:",omitempty,omitzero"`
 }
 
 func unpackGetMapRecordsFieldsParams(packed middleware.Parameters) (params GetMapRecordsFieldsParams) {
@@ -4075,15 +4074,15 @@ type GetVideoParams struct {
 	// Specific table record number.
 	Search string
 	// Remote node reference.
-	Reference OptString
+	Reference OptString `json:",omitempty,omitzero"`
 	// Specific the field to be streamed.
 	Field string
 	// Specific the field containing the mimetype.
 	MimetypeField string
 	// MIMEType the result should be of (preferred for some image formats only).
-	Mimetype OptString
+	Mimetype OptString `json:",omitempty,omitzero"`
 	// Search criterium.
-	Sqlsearch OptString
+	Sqlsearch OptString `json:",omitempty,omitzero"`
 }
 
 func unpackGetVideoParams(packed middleware.Parameters) (params GetVideoParams) {
@@ -4349,7 +4348,7 @@ func decodeGetVideoParams(args [3]string, argsEscaped bool, r *http.Request) (pa
 				return err
 			}
 		} else {
-			return validate.ErrFieldRequired
+			return err
 		}
 		return nil
 	}(); err != nil {
@@ -4449,7 +4448,7 @@ type InsertRecordParams struct {
 	// SQL table.
 	Table string
 	// Return field result.
-	Returning OptString
+	Returning OptString `json:",omitempty,omitzero"`
 }
 
 func unpackInsertRecordParams(packed middleware.Parameters) (params InsertRecordParams) {
@@ -4632,23 +4631,23 @@ func decodeSearchModellingParams(args [1]string, argsEscaped bool, r *http.Reque
 // SearchRecordsFieldsParams is parameters of searchRecordsFields operation.
 type SearchRecordsFieldsParams struct {
 	// Start offset where the read will start from.
-	Start OptFloat64
+	Start OptFloat64 `json:",omitempty,omitzero"`
 	// Maximal number of records retrieved.
-	Limit OptString
+	Limit OptString `json:",omitempty,omitzero"`
 	// Sort criterium.
-	SortedBy OptString
+	SortedBy OptString `json:",omitempty,omitzero"`
 	// Search criterium.
-	Sqlsearch OptString
+	Sqlsearch OptString `json:",omitempty,omitzero"`
 	// Return result in compact structure.
-	Compact OptBool
+	Compact OptBool `json:",omitempty,omitzero"`
 	// Remove database group tree entries in result records.
-	Flatten OptBool
+	Flatten OptBool `json:",omitempty,omitzero"`
 	// Read a descriptor read with the given field entry.
-	Descriptor OptBool
+	Descriptor OptBool `json:",omitempty,omitzero"`
 	// Order by criterias.
-	Orderby OptString
+	Orderby OptString `json:",omitempty,omitzero"`
 	// Use XML notation namespace.
-	Xmlnotation OptBool
+	Xmlnotation OptBool `json:",omitempty,omitzero"`
 	// SQL table.
 	Table string
 	// Specific SQL query string.
@@ -5262,7 +5261,7 @@ type SearchTableParams struct {
 	// Search criterium.
 	Search string
 	// Order by criterias.
-	Orderby OptString
+	Orderby OptString `json:",omitempty,omitzero"`
 }
 
 func unpackSearchTableParams(packed middleware.Parameters) (params SearchTableParams) {
@@ -5977,7 +5976,7 @@ type UploadFileParams struct {
 	// Identifier of the file location.
 	Path string
 	// Identifier of the file location.
-	File OptString
+	File OptString `json:",omitempty,omitzero"`
 }
 
 func unpackUploadFileParams(packed middleware.Parameters) (params UploadFileParams) {

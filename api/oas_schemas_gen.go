@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-faster/jx"
 	"github.com/google/uuid"
-
 	ht "github.com/ogen-go/ogen/http"
 )
 
@@ -128,6 +127,7 @@ func (*AuthorizationTokenHeaders) pushLoginSessionRes() {}
 type BasicAuth struct {
 	Username string
 	Password string
+	Roles    []string
 }
 
 // GetUsername returns the value of Username.
@@ -140,6 +140,11 @@ func (s *BasicAuth) GetPassword() string {
 	return s.Password
 }
 
+// GetRoles returns the value of Roles.
+func (s *BasicAuth) GetRoles() []string {
+	return s.Roles
+}
+
 // SetUsername sets the value of Username.
 func (s *BasicAuth) SetUsername(val string) {
 	s.Username = val
@@ -148,6 +153,11 @@ func (s *BasicAuth) SetUsername(val string) {
 // SetPassword sets the value of Password.
 func (s *BasicAuth) SetPassword(val string) {
 	s.Password = val
+}
+
+// SetRoles sets the value of Roles.
+func (s *BasicAuth) SetRoles(val []string) {
+	s.Roles = val
 }
 
 // BatchParameterQueryForbidden is response for BatchParameterQuery operation.
@@ -202,6 +212,7 @@ func (*BatchSelectUnauthorized) batchSelectRes() {}
 
 type BearerAuth struct {
 	Token string
+	Roles []string
 }
 
 // GetToken returns the value of Token.
@@ -209,9 +220,19 @@ func (s *BearerAuth) GetToken() string {
 	return s.Token
 }
 
+// GetRoles returns the value of Roles.
+func (s *BearerAuth) GetRoles() []string {
+	return s.Roles
+}
+
 // SetToken sets the value of Token.
 func (s *BearerAuth) SetToken(val string) {
 	s.Token = val
+}
+
+// SetRoles sets the value of Roles.
+func (s *BearerAuth) SetRoles(val []string) {
+	s.Roles = val
 }
 
 type BrowseListBadRequest Error
@@ -5305,6 +5326,7 @@ func (*StoreResponseHeaders) insertMapFileRecordsRes() {}
 
 type TokenCheck struct {
 	APIKey string
+	Roles  []string
 }
 
 // GetAPIKey returns the value of APIKey.
@@ -5312,9 +5334,19 @@ func (s *TokenCheck) GetAPIKey() string {
 	return s.APIKey
 }
 
+// GetRoles returns the value of Roles.
+func (s *TokenCheck) GetRoles() []string {
+	return s.Roles
+}
+
 // SetAPIKey sets the value of APIKey.
 func (s *TokenCheck) SetAPIKey(val string) {
 	s.APIKey = val
+}
+
+// SetRoles sets the value of Roles.
+func (s *TokenCheck) SetRoles(val []string) {
+	s.Roles = val
 }
 
 type TriggerExtendBadRequest Error
