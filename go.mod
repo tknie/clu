@@ -14,16 +14,16 @@ require (
 	github.com/tknie/goheif v0.0.0-20241029104240-29478ba33138
 	github.com/tknie/log v0.1.0
 	github.com/tknie/services v0.4.0
-	go.opentelemetry.io/otel v1.38.0
-	go.opentelemetry.io/otel/metric v1.38.0
-	go.opentelemetry.io/otel/trace v1.38.0
-	go.uber.org/multierr v1.11.0
+	go.opentelemetry.io/otel v1.39.0
+	go.opentelemetry.io/otel/metric v1.39.0
+	go.opentelemetry.io/otel/trace v1.39.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/VictoriaMetrics/easyproto v1.0.0 // indirect
+	github.com/VictoriaMetrics/easyproto v1.1.3 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.17.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
@@ -44,7 +44,7 @@ require (
 	github.com/go-openapi/swag/typeutils v0.25.4 // indirect
 	github.com/go-openapi/swag/yamlutils v0.25.4 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
-	github.com/godror/godror v0.49.5 // indirect
+	github.com/godror/godror v0.49.6 // indirect
 	github.com/godror/knownpb v0.3.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -58,10 +58,11 @@ require (
 	github.com/tknie/adabas-go-api v1.7.12 // indirect
 	github.com/tknie/ecoflow v0.0.0-20251110183001-7166fda54b11 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/image v0.33.0 // indirect
-	golang.org/x/oauth2 v0.33.0 // indirect
-	google.golang.org/protobuf v1.36.10 // indirect
+	golang.org/x/image v0.34.0 // indirect
+	golang.org/x/oauth2 v0.34.0 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 )
 
 require (
@@ -73,7 +74,7 @@ require (
 	github.com/go-asn1-ber/asn1-ber v1.5.8-0.20250403174932-29230038a667 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.12 // indirect
-	github.com/go-openapi/errors v0.22.4 // indirect
+	github.com/go-openapi/errors v0.22.5 // indirect
 	github.com/google/uuid v1.6.0
 	github.com/kovidgoyal/imaging v1.8.17
 	github.com/mattn/go-colorable v0.1.14 // indirect
@@ -85,12 +86,12 @@ require (
 	github.com/tknie/flynn v0.9.9
 	github.com/tknie/pam v0.0.0-20241226202719-7fe89c1216fb // indirect
 	go.uber.org/zap v1.27.1
-	golang.org/x/crypto v0.45.0 // indirect
-	golang.org/x/exp v0.0.0-20251125195548-87e1e737ad39 // indirect
-	golang.org/x/net v0.47.0
-	golang.org/x/sync v0.18.0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/text v0.31.0 // indirect
+	golang.org/x/crypto v0.46.0 // indirect
+	golang.org/x/exp v0.0.0-20251209150349-8475f28825e9 // indirect
+	golang.org/x/net v0.48.0
+	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/text v0.32.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

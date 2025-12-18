@@ -48,14 +48,14 @@ prepare: $(LOGPATH) $(BIN) $(BINTOOLS)
 	@mkdir -p $(CURDIR)/logs
 
 $(LIBS): ; $(info $(M) building libraries…) @ # Build program libraries
-	$Q cd $(CURDIR) && \
+	$Q cd $(CURDIR) && echo "Building version $(VERSION) && \
 	    CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" $(GO) build $(GO_FLAGS) \
 		-buildmode=c-shared \
 		-ldflags '-X $(COPACKAGE).Version=$(VERSION) -X $(COPACKAGE).BuildDate=$(DATE) -s -w' \
 		-o $(BIN)/$(GOOS)/$@.so $@.go
 
 $(EXECS): $(OBJECTS) ; $(info $(M) building executable $(@:$(BIN)/%=%)…) @ # Build program binary
-	$Q cd $(CURDIR) &&  echo "Build data: $(DATE) at $(COPACKAGE).BuildDate" && \
+	$Q cd $(CURDIR) &&  echo "Build date: $(DATE) version: $(VERSION) at $(COPACKAGE).BuildDate" && \
 	    CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" $(GO) build $(GO_FLAGS) \
 		-ldflags '-X $(COPACKAGE).Version=$(RESTVERSION) -X $(COPACKAGE).BuildVersion=$(VERSION) -X $(COPACKAGE).BuildDate=$(DATE)' \
 		-o $@$(GOEXE) ./$(@:$(BIN)/%=%)
