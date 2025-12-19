@@ -69,6 +69,7 @@ func loadTableOfDatabases() {
 				services.ServerMessage("Found table on different databases: [%s]", s)
 			} else {
 				if (&dm).RegisterDatabase(s, id) {
+					log.Log.Infof("Register database %s", dm.Table)
 					newDatabases = append(newDatabases, s)
 				}
 			}

@@ -54,6 +54,9 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 	limit := "ALL"
 	if params.Limit.Set {
 		limit = params.Limit.Value
+		if params.Limit.Value == "-1" {
+			limit = "ALL"
+		}
 	}
 	q := &common.Query{TableName: params.Table,
 		Fields:     extractFieldList(params.Search),
