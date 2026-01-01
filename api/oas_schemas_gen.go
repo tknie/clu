@@ -1650,6 +1650,48 @@ type GetFieldsNotFound Error
 
 func (*GetFieldsNotFound) getFieldsRes() {}
 
+type GetFieldsOKTextCsv struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s GetFieldsOKTextCsv) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+// GetFieldsOKTextCsvHeaders wraps GetFieldsOKTextCsv with response headers.
+type GetFieldsOKTextCsvHeaders struct {
+	XToken   OptString
+	Response GetFieldsOKTextCsv
+}
+
+// GetXToken returns the value of XToken.
+func (s *GetFieldsOKTextCsvHeaders) GetXToken() OptString {
+	return s.XToken
+}
+
+// GetResponse returns the value of Response.
+func (s *GetFieldsOKTextCsvHeaders) GetResponse() GetFieldsOKTextCsv {
+	return s.Response
+}
+
+// SetXToken sets the value of XToken.
+func (s *GetFieldsOKTextCsvHeaders) SetXToken(val OptString) {
+	s.XToken = val
+}
+
+// SetResponse sets the value of Response.
+func (s *GetFieldsOKTextCsvHeaders) SetResponse(val GetFieldsOKTextCsv) {
+	s.Response = val
+}
+
+func (*GetFieldsOKTextCsvHeaders) getFieldsRes() {}
+
 // GetFieldsUnauthorized is response for GetFields operation.
 type GetFieldsUnauthorized struct{}
 
@@ -1848,6 +1890,48 @@ func (*GetMapMetadataUnauthorized) getMapMetadataRes() {}
 type GetMapRecordsFieldsForbidden struct{}
 
 func (*GetMapRecordsFieldsForbidden) getMapRecordsFieldsRes() {}
+
+type GetMapRecordsFieldsOKTextCsv struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s GetMapRecordsFieldsOKTextCsv) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+// GetMapRecordsFieldsOKTextCsvHeaders wraps GetMapRecordsFieldsOKTextCsv with response headers.
+type GetMapRecordsFieldsOKTextCsvHeaders struct {
+	XToken   OptString
+	Response GetMapRecordsFieldsOKTextCsv
+}
+
+// GetXToken returns the value of XToken.
+func (s *GetMapRecordsFieldsOKTextCsvHeaders) GetXToken() OptString {
+	return s.XToken
+}
+
+// GetResponse returns the value of Response.
+func (s *GetMapRecordsFieldsOKTextCsvHeaders) GetResponse() GetMapRecordsFieldsOKTextCsv {
+	return s.Response
+}
+
+// SetXToken sets the value of XToken.
+func (s *GetMapRecordsFieldsOKTextCsvHeaders) SetXToken(val OptString) {
+	s.XToken = val
+}
+
+// SetResponse sets the value of Response.
+func (s *GetMapRecordsFieldsOKTextCsvHeaders) SetResponse(val GetMapRecordsFieldsOKTextCsv) {
+	s.Response = val
+}
+
+func (*GetMapRecordsFieldsOKTextCsvHeaders) getMapRecordsFieldsRes() {}
 
 // GetMapRecordsFieldsUnauthorized is response for GetMapRecordsFields operation.
 type GetMapRecordsFieldsUnauthorized struct{}
@@ -2591,6 +2675,22 @@ type ListModellingNotFound Error
 
 func (*ListModellingNotFound) listModellingRes() {}
 
+type ListModellingOKTextCsv struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s ListModellingOKTextCsv) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*ListModellingOKTextCsv) listModellingRes() {}
+
 // ListModellingUnauthorized is response for ListModelling operation.
 type ListModellingUnauthorized struct{}
 
@@ -2608,6 +2708,22 @@ func (*ListTablesForbidden) listTablesRes() {}
 type ListTablesNotFound Error
 
 func (*ListTablesNotFound) listTablesRes() {}
+
+type ListTablesOKTextCsv struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s ListTablesOKTextCsv) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*ListTablesOKTextCsv) listTablesRes() {}
 
 // ListTablesUnauthorized is response for ListTables operation.
 type ListTablesUnauthorized struct{}
@@ -5049,6 +5165,22 @@ type SearchModellingNotFound Error
 
 func (*SearchModellingNotFound) searchModellingRes() {}
 
+type SearchModellingOKTextCsv struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s SearchModellingOKTextCsv) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*SearchModellingOKTextCsv) searchModellingRes() {}
+
 // SearchModellingUnauthorized is response for SearchModelling operation.
 type SearchModellingUnauthorized struct{}
 
@@ -5058,6 +5190,48 @@ func (*SearchModellingUnauthorized) searchModellingRes() {}
 type SearchRecordsFieldsForbidden struct{}
 
 func (*SearchRecordsFieldsForbidden) searchRecordsFieldsRes() {}
+
+type SearchRecordsFieldsOKTextCsv struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s SearchRecordsFieldsOKTextCsv) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+// SearchRecordsFieldsOKTextCsvHeaders wraps SearchRecordsFieldsOKTextCsv with response headers.
+type SearchRecordsFieldsOKTextCsvHeaders struct {
+	XToken   OptString
+	Response SearchRecordsFieldsOKTextCsv
+}
+
+// GetXToken returns the value of XToken.
+func (s *SearchRecordsFieldsOKTextCsvHeaders) GetXToken() OptString {
+	return s.XToken
+}
+
+// GetResponse returns the value of Response.
+func (s *SearchRecordsFieldsOKTextCsvHeaders) GetResponse() SearchRecordsFieldsOKTextCsv {
+	return s.Response
+}
+
+// SetXToken sets the value of XToken.
+func (s *SearchRecordsFieldsOKTextCsvHeaders) SetXToken(val OptString) {
+	s.XToken = val
+}
+
+// SetResponse sets the value of Response.
+func (s *SearchRecordsFieldsOKTextCsvHeaders) SetResponse(val SearchRecordsFieldsOKTextCsv) {
+	s.Response = val
+}
+
+func (*SearchRecordsFieldsOKTextCsvHeaders) searchRecordsFieldsRes() {}
 
 // SearchRecordsFieldsUnauthorized is response for SearchRecordsFields operation.
 type SearchRecordsFieldsUnauthorized struct{}
@@ -5076,6 +5250,22 @@ func (*SearchTableForbidden) searchTableRes() {}
 type SearchTableNotFound Error
 
 func (*SearchTableNotFound) searchTableRes() {}
+
+type SearchTableOKTextCsv struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s SearchTableOKTextCsv) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
+}
+
+func (*SearchTableOKTextCsv) searchTableRes() {}
 
 // SearchTableUnauthorized is response for SearchTable operation.
 type SearchTableUnauthorized struct{}

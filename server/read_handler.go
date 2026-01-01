@@ -13,15 +13,24 @@ package server
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"strings"
+	"time"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/tknie/clu"
 	"github.com/tknie/clu/api"
+	"github.com/tknie/errorrepo"
 	"github.com/tknie/flynn/common"
 	"github.com/tknie/log"
 	"github.com/tknie/services/auth"
 )
+
+const TimeFormat = "2006-01-02 15:04:05"
+
+var CsvDelimiter = ","
 
 // Handler server handler to ogen API
 type Handler struct {
@@ -45,7 +54,6 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 		log.Log.Errorf("Error search table %s:%v", params.Table, err)
 		return nil, err // NewAPIError(err), nil
 	}
-	defer CloseTable(d)
 
 	descriptor := false
 	if params.Descriptor.Value {
@@ -64,6 +72,19 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 		Limit:      limit,
 		Descriptor: descriptor,
 		Order:      checkOrderBy(params.Orderby)}
+	req := session.CurrentRequest
+	accept := req.Header.Get("Accept")
+	if accept == "text/csv" {
+		piper, pipew := io.Pipe()
+		hs := api.SearchRecordsFieldsOKTextCsv{Data: piper}
+		s := &api.SearchRecordsFieldsOKTextCsvHeaders{Response: hs}
+		go parallelQuery(d, q, piper, pipew)
+
+		if err != nil {
+			return nil, err
+		}
+		return s, nil
+	}
 	data, fields, err := query(d, q)
 	if err != nil {
 		log.Log.Errorf("Error during query on %s:%v", params.Table, err)
@@ -77,6 +98,47 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	log.Log.Debugf("DONE SQL search fields %s - %v", params.Table, params.Search)
 	return respH, nil
+
+}
+
+func parallelQuery(d common.RegDbID, q *common.Query, piper *io.PipeReader, pipew *io.PipeWriter) {
+	defer CloseTable(d)
+
+	_, err := d.Query(q, func(search *common.Query, result *common.Result) error {
+		if result == nil {
+			return errorrepo.NewError("REST00011")
+		}
+		if result.Counter == 1 {
+			x := strings.Join(result.Fields, CsvDelimiter)
+			pipew.Write([]byte(x + "\n"))
+		}
+		str := ""
+		for i, x := range result.Rows {
+			if i > 0 {
+				str += CsvDelimiter
+			}
+			switch t := x.(type) {
+			case pgtype.Numeric:
+				f, err := t.Float64Value()
+				if err == nil {
+					str += fmt.Sprintf("%v", f.Float64)
+				}
+			case time.Time:
+				str += t.Format(TimeFormat)
+			case nil:
+			default:
+				log.Log.Debugf("Default CSV %T\n", t)
+				str += fmt.Sprintf("%v", t)
+			}
+		}
+		pipew.Write([]byte(str + "\n"))
+		return nil
+	})
+	if err != nil {
+		pipew.Write([]byte(fmt.Sprintf("Error: %v", err)))
+	}
+	//	piper.Close()
+	pipew.Close()
 }
 
 // GetMapRecordsFields implements getMapRecordsFields operation.
@@ -111,6 +173,19 @@ func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecords
 		Descriptor: descriptor,
 		Limit:      limit,
 		Order:      checkOrderBy(params.Orderby)}
+	req := session.CurrentRequest
+	accept := req.Header.Get("Accept")
+	if accept == "text/csv" {
+		piper, pipew := io.Pipe()
+		hs := api.GetMapRecordsFieldsOKTextCsv{Data: piper}
+		s := &api.GetMapRecordsFieldsOKTextCsvHeaders{Response: hs}
+		go parallelQuery(d, q, piper, pipew)
+
+		if err != nil {
+			return nil, err
+		}
+		return s, nil
+	}
 	data, fields, err := query(d, q)
 	if err != nil {
 		log.Log.Errorf("Error during query on %s:%v", params.Table, err)

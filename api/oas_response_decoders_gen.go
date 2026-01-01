@@ -2666,6 +2666,55 @@ func decodeGetFieldsResponse(resp *http.Response) (res GetFieldsRes, _ error) {
 				}
 			}
 			return &wrapper, nil
+		case ct == "text/csv":
+			reader := resp.Body
+			b, err := io.ReadAll(reader)
+			if err != nil {
+				return res, err
+			}
+
+			response := GetFieldsOKTextCsv{Data: bytes.NewReader(b)}
+			var wrapper GetFieldsOKTextCsvHeaders
+			wrapper.Response = response
+			h := uri.NewHeaderDecoder(resp.Header)
+			// Parse "X-Token" header.
+			{
+				cfg := uri.HeaderParameterDecodingConfig{
+					Name:    "X-Token",
+					Explode: false,
+				}
+				if err := func() error {
+					if err := h.HasParam(cfg); err == nil {
+						if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
+							var wrapperDotXTokenVal string
+							if err := func() error {
+								val, err := d.DecodeValue()
+								if err != nil {
+									return err
+								}
+
+								c, err := conv.ToString(val)
+								if err != nil {
+									return err
+								}
+
+								wrapperDotXTokenVal = c
+								return nil
+							}(); err != nil {
+								return err
+							}
+							wrapper.XToken.SetTo(wrapperDotXTokenVal)
+							return nil
+						}); err != nil {
+							return err
+						}
+					}
+					return nil
+				}(); err != nil {
+					return res, errors.Wrap(err, "parse X-Token header")
+				}
+			}
+			return &wrapper, nil
 		default:
 			return res, validate.InvalidContentType(ct)
 		}
@@ -4230,6 +4279,55 @@ func decodeGetMapRecordsFieldsResponse(resp *http.Response) (res GetMapRecordsFi
 				}
 			}
 			return &wrapper, nil
+		case ct == "text/csv":
+			reader := resp.Body
+			b, err := io.ReadAll(reader)
+			if err != nil {
+				return res, err
+			}
+
+			response := GetMapRecordsFieldsOKTextCsv{Data: bytes.NewReader(b)}
+			var wrapper GetMapRecordsFieldsOKTextCsvHeaders
+			wrapper.Response = response
+			h := uri.NewHeaderDecoder(resp.Header)
+			// Parse "X-Token" header.
+			{
+				cfg := uri.HeaderParameterDecodingConfig{
+					Name:    "X-Token",
+					Explode: false,
+				}
+				if err := func() error {
+					if err := h.HasParam(cfg); err == nil {
+						if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
+							var wrapperDotXTokenVal string
+							if err := func() error {
+								val, err := d.DecodeValue()
+								if err != nil {
+									return err
+								}
+
+								c, err := conv.ToString(val)
+								if err != nil {
+									return err
+								}
+
+								wrapperDotXTokenVal = c
+								return nil
+							}(); err != nil {
+								return err
+							}
+							wrapper.XToken.SetTo(wrapperDotXTokenVal)
+							return nil
+						}); err != nil {
+							return err
+						}
+					}
+					return nil
+				}(); err != nil {
+					return res, errors.Wrap(err, "parse X-Token header")
+				}
+			}
+			return &wrapper, nil
 		default:
 			return res, validate.InvalidContentType(ct)
 		}
@@ -5408,6 +5506,15 @@ func decodeListModellingResponse(resp *http.Response) (res ListModellingRes, _ e
 				return res, err
 			}
 			return &response, nil
+		case ct == "text/csv":
+			reader := resp.Body
+			b, err := io.ReadAll(reader)
+			if err != nil {
+				return res, err
+			}
+
+			response := ListModellingOKTextCsv{Data: bytes.NewReader(b)}
+			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
 		}
@@ -5566,6 +5673,15 @@ func decodeListTablesResponse(resp *http.Response) (res ListTablesRes, _ error) 
 				}
 				return res, err
 			}
+			return &response, nil
+		case ct == "text/csv":
+			reader := resp.Body
+			b, err := io.ReadAll(reader)
+			if err != nil {
+				return res, err
+			}
+
+			response := ListTablesOKTextCsv{Data: bytes.NewReader(b)}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
@@ -6615,6 +6731,15 @@ func decodeSearchModellingResponse(resp *http.Response) (res SearchModellingRes,
 				return res, err
 			}
 			return &response, nil
+		case ct == "text/csv":
+			reader := resp.Body
+			b, err := io.ReadAll(reader)
+			if err != nil {
+				return res, err
+			}
+
+			response := SearchModellingOKTextCsv{Data: bytes.NewReader(b)}
+			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
 		}
@@ -6814,6 +6939,55 @@ func decodeSearchRecordsFieldsResponse(resp *http.Response) (res SearchRecordsFi
 				}
 			}
 			return &wrapper, nil
+		case ct == "text/csv":
+			reader := resp.Body
+			b, err := io.ReadAll(reader)
+			if err != nil {
+				return res, err
+			}
+
+			response := SearchRecordsFieldsOKTextCsv{Data: bytes.NewReader(b)}
+			var wrapper SearchRecordsFieldsOKTextCsvHeaders
+			wrapper.Response = response
+			h := uri.NewHeaderDecoder(resp.Header)
+			// Parse "X-Token" header.
+			{
+				cfg := uri.HeaderParameterDecodingConfig{
+					Name:    "X-Token",
+					Explode: false,
+				}
+				if err := func() error {
+					if err := h.HasParam(cfg); err == nil {
+						if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
+							var wrapperDotXTokenVal string
+							if err := func() error {
+								val, err := d.DecodeValue()
+								if err != nil {
+									return err
+								}
+
+								c, err := conv.ToString(val)
+								if err != nil {
+									return err
+								}
+
+								wrapperDotXTokenVal = c
+								return nil
+							}(); err != nil {
+								return err
+							}
+							wrapper.XToken.SetTo(wrapperDotXTokenVal)
+							return nil
+						}); err != nil {
+							return err
+						}
+					}
+					return nil
+				}(); err != nil {
+					return res, errors.Wrap(err, "parse X-Token header")
+				}
+			}
+			return &wrapper, nil
 		default:
 			return res, validate.InvalidContentType(ct)
 		}
@@ -6937,6 +7111,15 @@ func decodeSearchTableResponse(resp *http.Response) (res SearchTableRes, _ error
 				}
 				return res, err
 			}
+			return &response, nil
+		case ct == "text/csv":
+			reader := resp.Body
+			b, err := io.ReadAll(reader)
+			if err != nil {
+				return res, err
+			}
+
+			response := SearchTableOKTextCsv{Data: bytes.NewReader(b)}
 			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)

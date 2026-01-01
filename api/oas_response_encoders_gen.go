@@ -1040,6 +1040,40 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 
 		return nil
 
+	case *GetFieldsOKTextCsvHeaders:
+		w.Header().Set("Content-Type", "text/csv")
+		// Encoding response headers.
+		{
+			h := uri.NewHeaderEncoder(w.Header())
+			// Encode "X-Token" header.
+			{
+				cfg := uri.HeaderParameterEncodingConfig{
+					Name:    "X-Token",
+					Explode: false,
+				}
+				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+					if val, ok := response.XToken.Get(); ok {
+						return e.EncodeValue(conv.StringToString(val))
+					}
+					return nil
+				}); err != nil {
+					return errors.Wrap(err, "encode X-Token header")
+				}
+			}
+		}
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		writer := w
+		if closer, ok := response.Response.Data.(io.Closer); ok {
+			defer closer.Close()
+		}
+		if _, err := io.Copy(writer, response.Response); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
 	case *GetFieldsBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
@@ -1630,6 +1664,40 @@ func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.R
 
 		return nil
 
+	case *GetMapRecordsFieldsOKTextCsvHeaders:
+		w.Header().Set("Content-Type", "text/csv")
+		// Encoding response headers.
+		{
+			h := uri.NewHeaderEncoder(w.Header())
+			// Encode "X-Token" header.
+			{
+				cfg := uri.HeaderParameterEncodingConfig{
+					Name:    "X-Token",
+					Explode: false,
+				}
+				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+					if val, ok := response.XToken.Get(); ok {
+						return e.EncodeValue(conv.StringToString(val))
+					}
+					return nil
+				}); err != nil {
+					return errors.Wrap(err, "encode X-Token header")
+				}
+			}
+		}
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		writer := w
+		if closer, ok := response.Response.Data.(io.Closer); ok {
+			defer closer.Close()
+		}
+		if _, err := io.Copy(writer, response.Response); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
 	case *GetMapRecordsFieldsUnauthorized:
 		w.WriteHeader(401)
 		span.SetStatus(codes.Error, http.StatusText(401))
@@ -2083,6 +2151,21 @@ func encodeListModellingResponse(response ListModellingRes, w http.ResponseWrite
 
 		return nil
 
+	case *ListModellingOKTextCsv:
+		w.Header().Set("Content-Type", "text/csv")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		writer := w
+		if closer, ok := response.Data.(io.Closer); ok {
+			defer closer.Close()
+		}
+		if _, err := io.Copy(writer, response); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
 	case *ListModellingBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
@@ -2136,6 +2219,21 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *ListTablesOKTextCsv:
+		w.Header().Set("Content-Type", "text/csv")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		writer := w
+		if closer, ok := response.Data.(io.Closer); ok {
+			defer closer.Close()
+		}
+		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
 
@@ -2508,6 +2606,21 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 
 		return nil
 
+	case *SearchModellingOKTextCsv:
+		w.Header().Set("Content-Type", "text/csv")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		writer := w
+		if closer, ok := response.Data.(io.Closer); ok {
+			defer closer.Close()
+		}
+		if _, err := io.Copy(writer, response); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
 	case *SearchModellingBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
@@ -2585,6 +2698,40 @@ func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.R
 
 		return nil
 
+	case *SearchRecordsFieldsOKTextCsvHeaders:
+		w.Header().Set("Content-Type", "text/csv")
+		// Encoding response headers.
+		{
+			h := uri.NewHeaderEncoder(w.Header())
+			// Encode "X-Token" header.
+			{
+				cfg := uri.HeaderParameterEncodingConfig{
+					Name:    "X-Token",
+					Explode: false,
+				}
+				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+					if val, ok := response.XToken.Get(); ok {
+						return e.EncodeValue(conv.StringToString(val))
+					}
+					return nil
+				}); err != nil {
+					return errors.Wrap(err, "encode X-Token header")
+				}
+			}
+		}
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		writer := w
+		if closer, ok := response.Response.Data.(io.Closer); ok {
+			defer closer.Close()
+		}
+		if _, err := io.Copy(writer, response.Response); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
 	case *SearchRecordsFieldsUnauthorized:
 		w.WriteHeader(401)
 		span.SetStatus(codes.Error, http.StatusText(401))
@@ -2625,6 +2772,21 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 		e := new(jx.Encoder)
 		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *SearchTableOKTextCsv:
+		w.Header().Set("Content-Type", "text/csv")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		writer := w
+		if closer, ok := response.Data.(io.Closer); ok {
+			defer closer.Close()
+		}
+		if _, err := io.Copy(writer, response); err != nil {
 			return errors.Wrap(err, "write")
 		}
 

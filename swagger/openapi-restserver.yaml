@@ -1744,6 +1744,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response'
+            text/csv: {}
         '401':
           description: Authorization error
           content: {}
@@ -1847,6 +1848,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response'
+            text/csv: {}
         '401':
           description: Authorization error
           content: {}
@@ -2022,6 +2024,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Maps'
+            text/csv: {}
         '400':
           description: Wrong paramters
           content:
@@ -2071,6 +2074,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response'
+            text/csv: {}
         '400':
           description: Wrong paramters
           content:
@@ -2171,6 +2175,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Fields'
+            text/csv: {}
         '400':
           description: Wrong paramters
           content:
@@ -2213,6 +2218,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Maps'
+            text/csv: {}
         '400':
           description: Wrong paramters
           content:
@@ -2279,6 +2285,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response'
+            text/csv: {}
         '400':
           description: Wrong paramters
           content:
