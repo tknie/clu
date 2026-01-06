@@ -36,7 +36,7 @@ func query(d common.RegDbID, query *common.Query) ([]api.ResponseRecordsItem, []
 		if fields == nil {
 			fields = result.Fields
 		}
-		log.Log.Debugf("Rows: %d", len(result.Rows))
+		log.Log.Debugf("Result Rows received: %d", len(result.Rows))
 		d := generateItem(result.Fields, result.Rows)
 		data = append(data, d)
 		return nil
@@ -53,9 +53,11 @@ func generateItem(fields []string, rows []any) api.ResponseRecordsItem {
 	d := make(api.ResponseRecordsItem)
 	for i, r := range rows {
 		s := strings.ToLower(fields[i])
-		log.Log.Debugf("%d. row is of type %T", i, r)
+		log.Log.Debugf("%s: %d. row is of type %T", fields[i], i, r)
 		convertTypeToRaw(d, s, r)
+		log.Log.Debugf("%s: value %v", fields[i], d)
 	}
+	log.Log.Debugf("Generated item: %v", d)
 	return d
 }
 
@@ -81,15 +83,9 @@ func convertTypeToRaw(d api.ResponseRecordsItem, s string, r interface{}) {
 			e.Int64(v.Int64)
 			d[s] = jx.Raw([]byte(e.String()))
 		} else {
-			v, err := t.Float64Value()
-			if err == nil {
-				var e jx.Encoder
-				e.Float64(v.Float64)
-				d[s] = jx.Raw([]byte(e.String()))
-			} else {
-				log.Log.Debugf("No Numeric value %s", t)
-				d[s] = jx.Raw([]byte("\"error no numeric\""))
-			}
+			log.Log.Debugf("Use float, int receive error: %v", err)
+			log.Log.Debugf("-> %s", t.Int.String())
+			d[s] = jx.Raw([]byte("\"" + t.Int.String() + "\""))
 		}
 	default:
 		if r != nil {

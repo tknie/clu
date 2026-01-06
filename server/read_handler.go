@@ -28,6 +28,7 @@ import (
 	"github.com/tknie/services/auth"
 )
 
+// TimeFormat time format for date time representation
 const TimeFormat = "2006-01-02 15:04:05"
 
 var CsvDelimiter = ","
@@ -97,6 +98,7 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 	resp := api.Response{Records: data, FieldNames: fields}
 	respH := &api.ResponseHeaders{Response: resp, XToken: api.NewOptString(session.Token)}
 	log.Log.Debugf("DONE SQL search fields %s - %v", params.Table, params.Search)
+	log.Log.Debugf("DONE SQL result %#v", respH)
 	return respH, nil
 
 }
