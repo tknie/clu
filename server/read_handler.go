@@ -31,7 +31,7 @@ import (
 // TimeFormat time format for date time representation
 const TimeFormat = "2006-01-02 15:04:05"
 
-var CsvDelimiter = ","
+var csvDelimiter = ","
 
 // Handler server handler to ogen API
 type Handler struct {
@@ -111,13 +111,13 @@ func parallelQuery(d common.RegDbID, q *common.Query, piper *io.PipeReader, pipe
 			return errorrepo.NewError("REST00011")
 		}
 		if result.Counter == 1 {
-			x := strings.Join(result.Fields, CsvDelimiter)
+			x := strings.Join(result.Fields, csvDelimiter)
 			pipew.Write([]byte(x + "\n"))
 		}
 		str := ""
 		for i, x := range result.Rows {
 			if i > 0 {
-				str += CsvDelimiter
+				str += csvDelimiter
 			}
 			switch t := x.(type) {
 			case pgtype.Numeric:
