@@ -84,8 +84,23 @@ func convertTypeToRaw(d api.ResponseRecordsItem, s string, r interface{}) {
 			d[s] = jx.Raw([]byte(e.String()))
 		} else {
 			log.Log.Debugf("Use float, int receive error: %v", err)
-			log.Log.Debugf("-> %s", t.Int.String())
-			d[s] = jx.Raw([]byte("\"" + t.Int.String() + "\""))
+			v, err := t.Float64Value()
+			if err == nil {
+				log.Log.Debugf("%f -> %d", v.Float64, 9007199254740991)
+				if (v.Float64 > 9007199254740991) || (v.Float64 < -float64(9007199254740991)) {
+					log.Log.Debugf("Use range float ... string")
+					log.Log.Debugf("-> %s", t.Int.String())
+					d[s] = jx.Raw([]byte("\"" + t.Int.String() + "\""))
+				} else {
+					log.Log.Debugf("Use float ... native")
+					var e jx.Encoder
+					e.Float64(v.Float64)
+					d[s] = jx.Raw([]byte(e.String()))
+				}
+			} else {
+				log.Log.Debugf("No Numeric value %s", t)
+				d[s] = jx.Raw([]byte("\"error no numeric\""))
+			}
 		}
 	default:
 		if r != nil {
