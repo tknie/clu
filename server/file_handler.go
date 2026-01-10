@@ -228,12 +228,14 @@ func returnFileInfo(f *os.File) (r api.BrowseLocationRes, _ error) {
 	fl := api.File{}
 	fi, err := f.Stat()
 	if err != nil {
+		log.Log.Debugf("File '%s' not found: %v", f.Name(), err)
 		return nil, err
 	}
 	fl.Name = api.NewOptString(f.Name())
 	fl.Type = api.NewOptString("File")
 	fl.Modified = api.NewOptDateTime(fi.ModTime())
 	fl.Size = api.NewOptInt64(fi.Size())
+	log.Log.Debugf("File '%s' returned", f.Name())
 	ok := &api.BrowseLocationOK{Type: api.FileBrowseLocationOK,
 		File: fl}
 	return ok, nil
@@ -241,9 +243,10 @@ func returnFileInfo(f *os.File) (r api.BrowseLocationRes, _ error) {
 }
 
 // returnDirectoryInfo generate directory information list
-func returnDirectoryInfo(d *clu.Directory, path, pattern string, f *os.File) (api.BrowseLocationRes, error) {
-	files, err := f.ReadDir(0)
+func returnDirectoryInfo(d *clu.Directory, path, pattern string, file *os.File) (api.BrowseLocationRes, error) {
+	files, err := file.ReadDir(0)
 	if err != nil {
+		log.Log.Debugf("Directory '%s' not found: %v", file.Name(), err)
 		err := errorrepo.NewError("REST00115", d.Name, err)
 		return &api.BrowseLocationNotFound{Error: api.NewOptErrorError(api.ErrorError{Message: api.NewOptString(err.Error())})}, nil
 	}
@@ -252,6 +255,7 @@ func returnDirectoryInfo(d *clu.Directory, path, pattern string, f *os.File) (ap
 		Files:  make([]api.File, 0),
 		System: api.NewOptString(runtime.GOOS)}
 
+	log.Log.Debugf("Directory '%s' found:", file.Name())
 	for _, f := range files {
 		b := true
 		if pattern != "" {
@@ -270,12 +274,15 @@ func returnDirectoryInfo(d *clu.Directory, path, pattern string, f *os.File) (ap
 				return nil, err
 			}
 
+			log.Log.Debugf("Directory '%s' add:", f.Name())
 			content := api.File{Name: api.NewOptString(f.Name()), Type: api.NewOptString(fileType),
 				Modified: api.NewOptDateTime(fi.ModTime()), Size: api.NewOptInt64(fi.Size())}
 			fl.Files = append(fl.Files, content)
 		}
 	}
-	return fl, nil
+	ok := &api.BrowseLocationOK{Type: api.DirectoryFilesBrowseLocationOK,
+		DirectoryFiles: *fl}
+	return ok, nil
 }
 
 // UploadFile implements uploadFile operation.
