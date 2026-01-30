@@ -228,14 +228,14 @@ func returnFileInfo(f *os.File) (r api.BrowseLocationRes, _ error) {
 	fl := api.File{}
 	fi, err := f.Stat()
 	if err != nil {
-		log.Log.Debugf("File '%s' not found: %v", f.Name(), err)
+		log.Log.Debugf("FileInfo '%s' not found: %v", f.Name(), err)
 		return nil, err
 	}
 	fl.Name = api.NewOptString(f.Name())
 	fl.Type = api.NewOptString("File")
 	fl.Modified = api.NewOptDateTime(fi.ModTime())
 	fl.Size = api.NewOptInt64(fi.Size())
-	log.Log.Debugf("File '%s' returned", f.Name())
+	log.Log.Debugf("FileInfo '%s' returned", f.Name())
 	ok := &api.BrowseLocationOK{Type: api.FileBrowseLocationOK,
 		File: fl}
 	return ok, nil
