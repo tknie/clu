@@ -143,7 +143,7 @@ func RemoteHost(r *http.Request) string {
 	if remoteHost == "" {
 		remoteHost = r.RemoteAddr
 	}
-	log.Log.Debugf("Got forward host %s", remoteHost)
+	log.Log.Infof("Got forward host %s got header: %#v", remoteHost, r.Header)
 	ip6l := strings.LastIndex(remoteHost, "]")
 	pa := strings.LastIndex(remoteHost, ":")
 	if pa > -1 && pa > ip6l {
