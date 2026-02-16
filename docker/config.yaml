@@ -8,9 +8,9 @@ server:
     tracelocation: ${DATADIR}/logs/trace.log
     serverlocation: ${DATADIR}/logs/server.log
     loglevel: info
-    maxsize: 0
-    maxbackups: 0
-    maxage: 0
+    maxsize: 100
+    maxbackups: 4
+    maxage: 24
     compress: true
   service:
     - port: 8030

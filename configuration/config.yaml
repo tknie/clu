@@ -4,6 +4,14 @@ rest-server:
   configWatcher: true
   statisticTimer: true
 server:
+  location:
+    tracelocation: ${CURDIR}/logs/trace.log
+    serverlocation: ${CURDIR}/logs/server.log
+    loglevel: info
+    maxsize: 100
+    maxbackups: 4
+    maxage: 24
+    compress: true
   service:
     - port: 8030
       type: http
@@ -18,11 +26,11 @@ server:
     publicKey: ${CURDIR}/keys/key.pub
     privateKey: ${CURDIR}/keys/key.pem
   login:
-    administrators: ${CURDIR}/configuration/administrator.xml
-    users: ${CURDIR}/configuration/users.xml
+    administrators: ${CURDIR}/configuration/administrator.yaml
+    users: ${CURDIR}/configuration/users.yaml
     authenticationServer:
-      - type: file
-        passwordFile: ${CURDIR}/configuration/realm.properties
+#     - type: file
+#       passwordFile: ${CURDIR}/configuration/realm.properties
       - module: SELECT 1
         type: SQL
         driver: pgx
@@ -31,14 +39,6 @@ server:
 # prefix: /app2
   content: ${CURDIR}/static/
   plugins: ${BIN}/plugins
-  location:
-    tracelocation: ${CURDIR}/logs/trace.log
-    serverlocation: ${CURDIR}/logs/server.log
-    loglevel: info
-    maxsize: 0
-    maxbackups: 0
-    maxage: 0
-    compress: true
   shutdown:
     passcode: {}
     # Password to shutdown, will be send encrypted
@@ -57,9 +57,19 @@ database:
     databases:
       - driver: postgres
         name: photodb
-        user: ${POSTGRES_USER}
-        password: ${POSTGRES_PASS}
-        database: ${POSTGRES_URL}
+        target: postgres://${POSTGRES_USER}:${POSTGRES_PASS}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
+        global_authentication: false
+        tables: 
+         - y*
+         - v*
+         - hom*
+         - car*
+         - ex*
+         - pic*
+         - album*
+         - audit*
+         - batch*
+         - stat*
   sessionInfo:
     deleteUUID: false
     database:
@@ -93,6 +103,6 @@ fileTransfer:
     directory:
       - name: download
         location: ${HOME}/Downloads
-      - name: abc
-        location: ${CURDIR}
+      - name: tmp
+        location: ${CURDIR}/tmp
 metrics: []
