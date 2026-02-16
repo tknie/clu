@@ -541,7 +541,7 @@ func DumpStat() {
 	if counter > 0 {
 		log.Log.Infof(tableStat)
 	} else {
-		log.Log.Infof("No database access registered")
+		log.Log.Debugf("No database access registered")
 	}
 
 }
