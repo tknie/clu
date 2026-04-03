@@ -24,8 +24,13 @@ type greeting string
 // validation to extra systems like ServiceNow or Jira tickets.
 
 // Types type of plugin working with
-func (g greeting) Types() []plugins.PluginTypes {
-	return []plugins.PluginTypes{plugins.ValidatorPlugin}
+func (g greeting) Info() *plugins.PluginInfo {
+	return &plugins.PluginInfo{
+		Name:         "Demo Validator plugin",
+		Version:      "1.0",
+		Types:        []plugins.PluginTypes{plugins.ValidatorPlugin},
+		AbortOnError: false,
+	}
 }
 
 // Name name of the plugin

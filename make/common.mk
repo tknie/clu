@@ -63,7 +63,7 @@ $(EXECS): $(OBJECTS) ; $(info $(M) building executable $(@:$(BIN)/%=%)…) @ # B
 #		upx $@$(GOEXE)
 #endif
 
-$(PLUGINS): ; $(info $(M) building plugins…) @ # Build plugin binary
+$(PLUGINS): ; $(info $(M) building plugins $(@:$(BIN)/%=%)…) @ # Build plugin binary
 	$Q cd $(CURDIR) && \
 	    CGO_CFLAGS="$(CGO_CFLAGS)" CGO_LDFLAGS="$(CGO_LDFLAGS) $(CGO_EXT_LDFLAGS)" $(GO) build $(GO_FLAGS) \
 	    -buildmode=plugin \

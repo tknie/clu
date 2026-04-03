@@ -83,9 +83,14 @@ func initAuthCallback() {
 
 type greeting string
 
-// Types type of plugin working with
-func (g greeting) Types() []plugins.PluginTypes {
-	return []plugins.PluginTypes{plugins.AuthPlugin}
+// Info info and type of plugin working with
+func (g greeting) Info() *plugins.PluginInfo {
+	return &plugins.PluginInfo{
+		Name:         "Auth Test Access",
+		Version:      "1.0",
+		Types:        []plugins.PluginTypes{plugins.AuthPlugin},
+		AbortOnError: false,
+	}
 }
 
 // Name name of the plugin

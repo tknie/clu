@@ -33,9 +33,14 @@ type session struct {
 
 var sessionMap sync.Map
 
-// Types type of plugin working with
-func (g greeting) Types() []plugins.PluginTypes {
-	return []plugins.PluginTypes{plugins.AuditPlugin}
+// Info info and type of plugin working with
+func (g greeting) Info() *plugins.PluginInfo {
+	return &plugins.PluginInfo{
+		Name:         "Audit Access",
+		Version:      "1.2",
+		Types:        []plugins.PluginTypes{plugins.AuditPlugin},
+		AbortOnError: false,
+	}
 }
 
 // Name name of the plugin
@@ -54,18 +59,20 @@ func (g greeting) Stop() {
 
 // LoginAudit login audit info incoming request
 func (g greeting) LoginAudit(method string, status string,
-	session *auth.SessionInfo, user *auth.UserInfo) {
+	session *auth.SessionInfo, user *auth.UserInfo) error {
+	return nil
 }
 
 // ReceiveAudit receive audit info incoming request
-func (g greeting) ReceiveAudit(user string, uuid string, r *http.Request) {
+func (g greeting) ReceiveAudit(user string, uuid string, r *http.Request) error {
 	sessionMap.Store(fmt.Sprintf("%p", r), &session{start: time.Now()})
 	log.Log.Debugf("Incoming Token %s User: %s Method: %s %s %s Host: %s",
 		uuid, user, r.Method, r.RequestURI, r.RemoteAddr, r.Host)
+	return nil
 }
 
 // SendAudit audit of http trigger
-func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *http.Request) {
+func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *http.Request) error {
 	reqURI := strings.ReplaceAll(w.RequestURI, "%", "%%")
 	if e, ok := sessionMap.Load(fmt.Sprintf("%p", w)); ok {
 		x := e.(*session)
@@ -75,23 +82,24 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 				time.Since(x.start), user, w.Method, reqURI, uuid, server.RemoteHost(w))
 			log.Log.Infof("Used: %v User: %s -> %s %s -> %s from %s)",
 				time.Since(x.start), user, w.Method, reqURI, uuid, server.RemoteHost(w))
-			return
+			return nil
 		}
 		log.Log.Infof("Used: %v User: %s -> %s %s from %s)",
 			time.Since(x.start), user, w.Method, reqURI, server.RemoteHost(w))
-		return
+		return nil
 	}
 	if u, _, ok := w.BasicAuth(); ok {
 		services.ServerMessage("Failed (audit): %v Token %s User: %s %s %s %s Host: %s",
 			elapsed, uuid, u, w.Method, server.RemoteHost(w), reqURI, w.Host)
 		log.Log.Errorf("Failed (audit): %v Token %s User: %s %s %s %s Host: %s",
 			elapsed, uuid, u, w.Method, server.RemoteHost(w), reqURI, w.Host)
-		return
+		return nil
 	}
 	services.ServerMessage("Failed (audit): %v Token %s Unknown user %s %s %s Host: %s",
 		elapsed, uuid, w.Method, server.RemoteHost(w), reqURI, w.Host)
 	log.Log.Errorf("Failed (audit): %v Token %s Unknown user %s %s %s Host: %s",
 		elapsed, uuid, w.Method, server.RemoteHost(w), reqURI, w.Host)
+	return nil
 }
 
 // SendAuditError audit of http trigger

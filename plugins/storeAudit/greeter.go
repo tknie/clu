@@ -176,7 +176,8 @@ func startStoreThread() {
 				auditStoreID, err := flynn.Handler(dbRef, password)
 				if err != nil {
 					pluginMessage("Register error log: %v", err)
-					return
+					lock.Unlock()
+					continue
 				}
 				log.Log.Debugf("STORE_AUDIT: Store channel (%v)", disableStore)
 				x := strings.Index(si.RemoteHost, ",")
@@ -229,7 +230,6 @@ func startStoreThread() {
 		// log.Log.Debugf("STORE_AUDIT: Check disable (%v)", disableStore)
 		if disableStore {
 			log.Log.Debugf("STORE_AUDIT: store disabled, exiting ...")
-			return
 		}
 		// log.Log.Debugf("STORE_AUDIT: loop (%v)", disableStore)
 	}
@@ -237,8 +237,13 @@ func startStoreThread() {
 }
 
 // Types type of plugin working with
-func (g greeting) Types() []plugins.PluginTypes {
-	return []plugins.PluginTypes{plugins.AuditPlugin}
+func (g greeting) Info() *plugins.PluginInfo {
+	return &plugins.PluginInfo{
+		Name:         "Store Audit",
+		Version:      "1.2",
+		Types:        []plugins.PluginTypes{plugins.AuditPlugin},
+		AbortOnError: false,
+	}
 }
 
 // Name name of the plugin
@@ -266,9 +271,9 @@ func key(uuid string, r *http.Request) string {
 }
 
 // LoginAudit login audit info incoming request
-func (g greeting) LoginAudit(method string, status string, session *auth.SessionInfo, user *auth.UserInfo) {
+func (g greeting) LoginAudit(method string, status string, session *auth.SessionInfo, user *auth.UserInfo) error {
 	if disableStore {
-		return
+		return nil
 	}
 	log.Log.Debugf("STORE_AUDIT: login audit %s -> %s", user, status)
 	log.Log.Debugf("STORE_AUDIT: login session %#v", session)
@@ -277,24 +282,26 @@ func (g greeting) LoginAudit(method string, status string, session *auth.Session
 
 		log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v/%s)", disableStore, si.User)
 		storeChan <- si
-		return
+		return nil
 	}
 	si := NewSessionInfo(status, session.UUID, user.User, method)
 
 	log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v/%s)", disableStore, si.User)
 	storeChan <- si
+	return nil
 }
 
 // ReceiveAudit receive audit info incoming request
-func (g greeting) ReceiveAudit(user string, uuid string, r *http.Request) {
+func (g greeting) ReceiveAudit(user string, uuid string, r *http.Request) error {
 	log.Log.Debugf("STORE_AUDIT: Receive audit to map for user %s", user)
 	sessionMap.Store(key(uuid, r), &session{user: user, uuid: uuid, start: time.Now()})
+	return nil
 }
 
 // SendAudit audit of http trigger
-func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *http.Request) {
+func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *http.Request) error {
 	if disableStore {
-		return
+		return nil
 	}
 	log.Log.Debugf("STORE_AUDIT: send audit %s/%s", user, uuid)
 	si := NewSessionInfo(triggerSessionInfo, uuid, user, w.Method)
@@ -311,6 +318,7 @@ func (g greeting) SendAudit(elapsed time.Duration, user string, uuid string, w *
 	}
 	log.Log.Debugf("STORE_AUDIT: Send audit to store channel (%v/%s)", disableStore, si.User)
 	storeChan <- si
+	return nil
 }
 
 func (si *SessionInfo) extractURI(w *http.Request) {

@@ -51,13 +51,21 @@ const (
 	ValidatorPlugin
 )
 
+// PluginInfo metdata of the plugin
+type PluginInfo struct {
+	Name         string
+	Version      string
+	Types        []PluginTypes
+	AbortOnError bool
+}
+
 const suffix = ".so"
 
 // Loader plugin Loader module to load plugin features
 type Loader interface {
 	Name() string
 	Version() string
-	Types() []PluginTypes
+	Info() *PluginInfo
 	Stop()
 }
 
@@ -77,9 +85,9 @@ type AuthLoader struct {
 
 // Audit auditing method to send to plugin
 type Audit interface {
-	LoginAudit(string, string, *auth.SessionInfo, *auth.UserInfo)
-	ReceiveAudit(string, string, *http.Request)
-	SendAudit(time.Duration, string, string, *http.Request)
+	LoginAudit(string, string, *auth.SessionInfo, *auth.UserInfo) error
+	ReceiveAudit(string, string, *http.Request) error
+	SendAudit(time.Duration, string, string, *http.Request) error
 	SendAuditError(time.Duration, string, string, *http.Request, error)
 }
 
@@ -215,8 +223,8 @@ func InitPlugins() {
 
 // load loading the plugin
 func load(loader Loader, info os.FileInfo, plug *plugin.Plugin) {
-	pt := loader.Types()
-	for _, t := range pt {
+	pi := loader.Info()
+	for _, t := range pi.Types {
 		switch t {
 		case NoPlugin:
 		case AuditPlugin:
