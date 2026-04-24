@@ -7,7 +7,7 @@ require (
 	github.com/go-faster/jx v1.2.0
 	github.com/go-openapi/runtime v0.29.4
 	github.com/go-openapi/swag v0.26.0
-	github.com/jackc/pgx/v5 v5.9.1
+	github.com/jackc/pgx/v5 v5.9.2
 	github.com/ogen-go/ogen v1.20.3
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.11.1
@@ -62,8 +62,8 @@ require (
 )
 
 require (
-	github.com/Azure/go-ntlmssp v0.1.0 // indirect
-	github.com/dlclark/regexp2 v1.11.5 // indirect
+	github.com/Azure/go-ntlmssp v0.1.1 // indirect
+	github.com/dlclark/regexp2 v1.12.0 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/ghodss/yaml v1.0.0 // indirect
