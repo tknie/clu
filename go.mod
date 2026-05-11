@@ -42,7 +42,7 @@ require (
 	github.com/go-openapi/swag/stringutils v0.26.0 // indirect
 	github.com/go-openapi/swag/typeutils v0.26.0 // indirect
 	github.com/go-openapi/swag/yamlutils v0.26.0 // indirect
-	github.com/go-sql-driver/mysql v1.9.3 // indirect
+	github.com/go-sql-driver/mysql v1.10.0 // indirect
 	github.com/godror/godror v0.50.0 // indirect
 	github.com/godror/knownpb v0.3.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -79,15 +79,15 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/tknie/errorrepo v0.1.0
-	github.com/tknie/flynn v0.10.0
+	github.com/tknie/flynn v0.10.1
 	github.com/tknie/pam v0.0.0-20241226202719-7fe89c1216fb // indirect
-	go.uber.org/zap v1.27.1
+	go.uber.org/zap v1.28.0
 	golang.org/x/crypto v0.50.0 // indirect
-	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f // indirect
+	golang.org/x/exp v0.0.0-20260508232706-74f9aab9d74a // indirect
 	golang.org/x/net v0.53.0
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.43.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
