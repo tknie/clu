@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.2.0
-	github.com/go-openapi/runtime v0.30.0
+	github.com/go-openapi/runtime v0.31.0
 	github.com/go-openapi/swag v0.26.0
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/ogen-go/ogen v1.20.3
