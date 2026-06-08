@@ -7,7 +7,7 @@ require (
 	github.com/go-faster/jx v1.2.0
 	github.com/go-openapi/runtime v0.32.1
 	github.com/go-openapi/swag v0.26.0
-	github.com/jackc/pgx/v5 v5.9.2
+	github.com/jackc/pgx/v5 v5.10.0
 	github.com/ogen-go/ogen v1.20.3
 	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.11.1
