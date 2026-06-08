@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.2.0
-	github.com/go-openapi/runtime v0.32.1
+	github.com/go-openapi/runtime v0.32.3
 	github.com/go-openapi/swag v0.26.0
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/ogen-go/ogen v1.20.3
@@ -14,9 +14,9 @@ require (
 	github.com/tknie/goheif v0.0.0-20260407202049-b377b8a49533
 	github.com/tknie/log v0.4.0
 	github.com/tknie/services v0.6.0
-	go.opentelemetry.io/otel v1.43.0
-	go.opentelemetry.io/otel/metric v1.43.0
-	go.opentelemetry.io/otel/trace v1.43.0
+	go.opentelemetry.io/otel v1.44.0
+	go.opentelemetry.io/otel/metric v1.44.0
+	go.opentelemetry.io/otel/trace v1.44.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
