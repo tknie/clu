@@ -72,7 +72,7 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.13 // indirect
 	github.com/go-openapi/errors v0.22.8 // indirect
 	github.com/google/uuid v1.6.0
-	github.com/kovidgoyal/imaging v1.8.21
+	github.com/kovidgoyal/imaging v1.8.22
 	github.com/mattn/go-colorable v0.1.15 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
