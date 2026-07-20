@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.2.0
-	github.com/go-openapi/runtime v0.32.4
+	github.com/go-openapi/runtime v0.32.5
 	github.com/go-openapi/swag v0.27.0
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/ogen-go/ogen v1.22.0
@@ -85,7 +85,7 @@ require (
 	golang.org/x/crypto v0.53.0 // indirect
 	golang.org/x/exp v0.0.0-20260611194520-c48552f49976 // indirect
 	golang.org/x/net v0.56.0
-	golang.org/x/sync v0.21.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
