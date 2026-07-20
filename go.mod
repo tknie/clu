@@ -56,7 +56,7 @@ require (
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/image v0.43.0 // indirect
+	golang.org/x/image v0.44.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )
@@ -72,7 +72,7 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.13 // indirect
 	github.com/go-openapi/errors v0.22.8 // indirect
 	github.com/google/uuid v1.6.0
-	github.com/kovidgoyal/imaging v1.8.22
+	github.com/kovidgoyal/imaging v1.8.23
 	github.com/mattn/go-colorable v0.1.15 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
@@ -85,9 +85,9 @@ require (
 	golang.org/x/crypto v0.53.0 // indirect
 	golang.org/x/exp v0.0.0-20260611194520-c48552f49976 // indirect
 	golang.org/x/net v0.56.0
-	golang.org/x/sync v0.21.0 // indirect
-	golang.org/x/sys v0.46.0 // indirect
-	golang.org/x/text v0.38.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
