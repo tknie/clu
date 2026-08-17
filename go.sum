@@ -128,8 +128,8 @@ github.com/mattn/go-isatty v0.0.24 h1:tGZZoVgT/KiqK1c8ocVLeDS8BSWMRd47J3Lbz7vsRe
 github.com/mattn/go-isatty v0.0.24/go.mod h1:nMCL3Zebbrt45jsMDgnfIwz6ydEQApk5oEI3HqDio6A=
 github.com/mitchellh/go-ps v1.0.0 h1:i6ampVEEF4wQFF+bkYfwYgY+F/uYJDktmvLPf7qIgjc=
 github.com/mitchellh/go-ps v1.0.0/go.mod h1:J4lOc8z8yJs6vUwklHw2XEIiT4z4C40KtWVN3nvg8Pg=
-github.com/ogen-go/ogen v1.23.0 h1:QaWeKm2KZ2zy7NkqqO1Vdl5idNqlG+svxdgwVAX+zbo=
-github.com/ogen-go/ogen v1.23.0/go.mod h1:bwwvC3AmCV+LrL5lazyQwwof90402mdcSyI0FOzzpfM=
+github.com/ogen-go/ogen v1.24.0 h1:NehBG/8s0JeM6jYHPJeFJntBG3cE/xQgZd1q8BchPNM=
+github.com/ogen-go/ogen v1.24.0/go.mod h1:hcg4aTzLcu/MS1SGGahUriPBEOZB3c82RGIC6dYcdFU=
 github.com/oklog/ulid/v2 v2.1.1 h1:suPZ4ARWLOJLegGFiZZ1dFAkqzhMjL3J1TzI+5wHz8s=
 github.com/oklog/ulid/v2 v2.1.1/go.mod h1:rcEKHmBBKfef9DhnvX7y1HZBYxjXb0cP5ExxNsTT1QQ=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
