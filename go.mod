@@ -10,7 +10,7 @@ require (
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/ogen-go/ogen v1.23.0
 	github.com/rs/cors v1.11.1
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.1
 	github.com/tknie/goheif v0.0.0-20260407202049-b377b8a49533
 	github.com/tknie/log v0.4.0
 	github.com/tknie/services v0.6.0
@@ -25,7 +25,6 @@ require (
 	github.com/VictoriaMetrics/easyproto v1.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/coreos/go-oidc/v3 v3.20.0 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logfmt/logfmt v0.6.1 // indirect
@@ -51,7 +50,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/kovidgoyal/go-parallel v1.1.1 // indirect
 	github.com/kovidgoyal/go-shm v1.0.0 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/tknie/adabas-go-api v1.7.12 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
