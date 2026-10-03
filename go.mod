@@ -14,9 +14,9 @@ require (
 	github.com/tknie/goheif v0.0.0-20260407202049-b377b8a49533
 	github.com/tknie/log v0.4.0
 	github.com/tknie/services v0.6.0
-	go.opentelemetry.io/otel v1.46.0
-	go.opentelemetry.io/otel/metric v1.46.0
-	go.opentelemetry.io/otel/trace v1.46.0
+	go.opentelemetry.io/otel v1.47.0
+	go.opentelemetry.io/otel/metric v1.47.0
+	go.opentelemetry.io/otel/trace v1.47.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -53,6 +53,7 @@ require (
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/tknie/adabas-go-api v1.7.12 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
+	go.opentelemetry.io/otel/log v1.47.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/image v0.46.0 // indirect
