@@ -366,8 +366,8 @@ func (UnimplementedHandler) LogoutSessionCompat(ctx context.Context) (r LogoutSe
 
 // PostDatabase implements postDatabase operation.
 //
-// Create a new database, the input need to be JSON. A structure level parameter indicate version to
-// be used.
+// Create a new database, the input need to be JSON. A structure level parameter indicate version to be
+// used.
 //
 // POST /rest/database
 func (UnimplementedHandler) PostDatabase(ctx context.Context, req *Database) (r PostDatabaseRes, _ error) {

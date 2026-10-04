@@ -19,14 +19,12 @@ func encodeAddViewResponse(response AddViewRes, w http.ResponseWriter, span trac
 	switch response := response.(type) {
 	case *AddViewOK:
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -38,13 +36,11 @@ func encodeAddViewResponse(response AddViewRes, w http.ResponseWriter, span trac
 
 	case *AddViewUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *AddViewForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -57,6 +53,7 @@ func encodeBatchParameterQueryResponse(response BatchParameterQueryRes, w http.R
 	switch response := response.(type) {
 	case *ResponseHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -77,7 +74,6 @@ func encodeBatchParameterQueryResponse(response BatchParameterQueryRes, w http.R
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -89,20 +85,17 @@ func encodeBatchParameterQueryResponse(response BatchParameterQueryRes, w http.R
 
 	case *BatchParameterQueryUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *BatchParameterQueryForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -121,6 +114,7 @@ func encodeBatchQueryResponse(response BatchQueryRes, w http.ResponseWriter, spa
 	switch response := response.(type) {
 	case *ResponseHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -141,7 +135,6 @@ func encodeBatchQueryResponse(response BatchQueryRes, w http.ResponseWriter, spa
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -153,20 +146,17 @@ func encodeBatchQueryResponse(response BatchQueryRes, w http.ResponseWriter, spa
 
 	case *BatchQueryUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *BatchQueryForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -185,6 +175,7 @@ func encodeBatchSelectResponse(response BatchSelectRes, w http.ResponseWriter, s
 	switch response := response.(type) {
 	case *ResponseHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -205,7 +196,6 @@ func encodeBatchSelectResponse(response BatchSelectRes, w http.ResponseWriter, s
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -217,20 +207,17 @@ func encodeBatchSelectResponse(response BatchSelectRes, w http.ResponseWriter, s
 
 	case *BatchSelectUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *BatchSelectForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -250,7 +237,6 @@ func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, spa
 	case *Directories:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -263,7 +249,6 @@ func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, spa
 	case *BrowseListBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -275,20 +260,17 @@ func encodeBrowseListResponse(response BrowseListRes, w http.ResponseWriter, spa
 
 	case *BrowseListUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *BrowseListForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *BrowseListNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -308,7 +290,6 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 	case *BrowseLocationOK:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -321,7 +302,6 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 	case *BrowseLocationBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -333,20 +313,17 @@ func encodeBrowseLocationResponse(response BrowseLocationRes, w http.ResponseWri
 
 	case *BrowseLocationUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *BrowseLocationForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *BrowseLocationNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -366,7 +343,6 @@ func encodeCallExtendResponse(response CallExtendRes, w http.ResponseWriter, spa
 	case *ResponseRaw:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -379,7 +355,6 @@ func encodeCallExtendResponse(response CallExtendRes, w http.ResponseWriter, spa
 	case *CallExtendOKApplicationOctetStream:
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -394,7 +369,6 @@ func encodeCallExtendResponse(response CallExtendRes, w http.ResponseWriter, spa
 	case *CallExtendBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -406,20 +380,17 @@ func encodeCallExtendResponse(response CallExtendRes, w http.ResponseWriter, spa
 
 	case *CallExtendUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *CallExtendForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *CallExtendNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -439,7 +410,6 @@ func encodeCallPostExtendResponse(response CallPostExtendRes, w http.ResponseWri
 	case *ResponseRaw:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -452,7 +422,6 @@ func encodeCallPostExtendResponse(response CallPostExtendRes, w http.ResponseWri
 	case *CallPostExtendOKApplicationOctetStream:
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -467,7 +436,6 @@ func encodeCallPostExtendResponse(response CallPostExtendRes, w http.ResponseWri
 	case *CallPostExtendBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -479,20 +447,17 @@ func encodeCallPostExtendResponse(response CallPostExtendRes, w http.ResponseWri
 
 	case *CallPostExtendUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *CallPostExtendForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *CallPostExtendNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -512,7 +477,6 @@ func encodeCreateDirectoryResponse(response CreateDirectoryRes, w http.ResponseW
 	case *StatusResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -525,7 +489,6 @@ func encodeCreateDirectoryResponse(response CreateDirectoryRes, w http.ResponseW
 	case *CreateDirectoryBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -537,20 +500,17 @@ func encodeCreateDirectoryResponse(response CreateDirectoryRes, w http.ResponseW
 
 	case *CreateDirectoryUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *CreateDirectoryForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *CreateDirectoryNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -570,7 +530,6 @@ func encodeDeleteExtendResponse(response DeleteExtendRes, w http.ResponseWriter,
 	case *ResponseRaw:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -583,7 +542,6 @@ func encodeDeleteExtendResponse(response DeleteExtendRes, w http.ResponseWriter,
 	case *DeleteExtendOKApplicationOctetStream:
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -598,7 +556,6 @@ func encodeDeleteExtendResponse(response DeleteExtendRes, w http.ResponseWriter,
 	case *DeleteExtendBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -610,20 +567,17 @@ func encodeDeleteExtendResponse(response DeleteExtendRes, w http.ResponseWriter,
 
 	case *DeleteExtendUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *DeleteExtendForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *DeleteExtendNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -643,7 +597,6 @@ func encodeDeleteFileLocationResponse(response DeleteFileLocationRes, w http.Res
 	case *StatusResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -656,7 +609,6 @@ func encodeDeleteFileLocationResponse(response DeleteFileLocationRes, w http.Res
 	case *DeleteFileLocationBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -668,20 +620,17 @@ func encodeDeleteFileLocationResponse(response DeleteFileLocationRes, w http.Res
 
 	case *DeleteFileLocationUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *DeleteFileLocationForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *DeleteFileLocationNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -701,7 +650,6 @@ func encodeDeleteJobResultResponse(response DeleteJobResultRes, w http.ResponseW
 	case *JobStatusResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -714,7 +662,6 @@ func encodeDeleteJobResultResponse(response DeleteJobResultRes, w http.ResponseW
 	case *DeleteJobResultBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -726,20 +673,17 @@ func encodeDeleteJobResultResponse(response DeleteJobResultRes, w http.ResponseW
 
 	case *DeleteJobResultUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *DeleteJobResultForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *DeleteJobResultNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -758,6 +702,7 @@ func encodeDeleteRecordsSearchedResponse(response DeleteRecordsSearchedRes, w ht
 	switch response := response.(type) {
 	case *ResponseHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -778,7 +723,6 @@ func encodeDeleteRecordsSearchedResponse(response DeleteRecordsSearchedRes, w ht
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -790,20 +734,17 @@ func encodeDeleteRecordsSearchedResponse(response DeleteRecordsSearchedRes, w ht
 
 	case *DeleteRecordsSearchedUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *DeleteRecordsSearchedForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -822,14 +763,12 @@ func encodeDeleteViewResponse(response DeleteViewRes, w http.ResponseWriter, spa
 	switch response := response.(type) {
 	case *DeleteViewOK:
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -841,13 +780,11 @@ func encodeDeleteViewResponse(response DeleteViewRes, w http.ResponseWriter, spa
 
 	case *DeleteViewUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *DeleteViewForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -861,7 +798,6 @@ func encodeDownloadFileResponse(response DownloadFileRes, w http.ResponseWriter,
 	case *DownloadFileOK:
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -876,7 +812,6 @@ func encodeDownloadFileResponse(response DownloadFileRes, w http.ResponseWriter,
 	case *DownloadFileBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -888,20 +823,17 @@ func encodeDownloadFileResponse(response DownloadFileRes, w http.ResponseWriter,
 
 	case *DownloadFileUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *DownloadFileForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *DownloadFileNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -921,7 +853,6 @@ func encodeGetConfigResponse(response GetConfigRes, w http.ResponseWriter, span 
 	case *Config:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -934,7 +865,6 @@ func encodeGetConfigResponse(response GetConfigRes, w http.ResponseWriter, span 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -946,13 +876,11 @@ func encodeGetConfigResponse(response GetConfigRes, w http.ResponseWriter, span 
 
 	case *GetConfigUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetConfigForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -966,7 +894,6 @@ func encodeGetDatabasesResponse(response GetDatabasesRes, w http.ResponseWriter,
 	case *Databases:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -979,7 +906,6 @@ func encodeGetDatabasesResponse(response GetDatabasesRes, w http.ResponseWriter,
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -991,13 +917,11 @@ func encodeGetDatabasesResponse(response GetDatabasesRes, w http.ResponseWriter,
 
 	case *GetDatabasesUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetDatabasesForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -1010,6 +934,7 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 	switch response := response.(type) {
 	case *FieldsHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1030,7 +955,6 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -1042,6 +966,7 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 
 	case *GetFieldsOKTextCsvHeaders:
 		w.Header().Set("Content-Type", "text/csv")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1062,7 +987,6 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Response.Data.(io.Closer); ok {
@@ -1077,7 +1001,6 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 	case *GetFieldsBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1089,20 +1012,17 @@ func encodeGetFieldsResponse(response GetFieldsRes, w http.ResponseWriter, span 
 
 	case *GetFieldsUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetFieldsForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *GetFieldsNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1137,7 +1057,6 @@ func encodeGetImageResponse(response GetImageRes, w http.ResponseWriter, span tr
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Response.Data.(io.Closer); ok {
@@ -1150,6 +1069,7 @@ func encodeGetImageResponse(response GetImageRes, w http.ResponseWriter, span tr
 		return nil
 
 	case *GetImageUnauthorized:
+		w.Header().Set("Access-Control-Expose-Headers", "Www_authenticate")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1170,20 +1090,17 @@ func encodeGetImageResponse(response GetImageRes, w http.ResponseWriter, span tr
 			}
 		}
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetImageForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1203,7 +1120,6 @@ func encodeGetJobExecutionResultResponse(response GetJobExecutionResultRes, w ht
 	case *JobResult:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1216,7 +1132,6 @@ func encodeGetJobExecutionResultResponse(response GetJobExecutionResultRes, w ht
 	case *GetJobExecutionResultBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1228,20 +1143,17 @@ func encodeGetJobExecutionResultResponse(response GetJobExecutionResultRes, w ht
 
 	case *GetJobExecutionResultUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetJobExecutionResultForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *GetJobExecutionResultNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1261,7 +1173,6 @@ func encodeGetJobFullInfoResponse(response GetJobFullInfoRes, w http.ResponseWri
 	case *JobFull:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1274,7 +1185,6 @@ func encodeGetJobFullInfoResponse(response GetJobFullInfoRes, w http.ResponseWri
 	case *GetJobFullInfoBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1286,20 +1196,17 @@ func encodeGetJobFullInfoResponse(response GetJobFullInfoRes, w http.ResponseWri
 
 	case *GetJobFullInfoUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetJobFullInfoForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *GetJobFullInfoNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1319,7 +1226,6 @@ func encodeGetJobResultResponse(response GetJobResultRes, w http.ResponseWriter,
 	case *JobResult:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1332,7 +1238,6 @@ func encodeGetJobResultResponse(response GetJobResultRes, w http.ResponseWriter,
 	case *GetJobResultBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1344,20 +1249,17 @@ func encodeGetJobResultResponse(response GetJobResultRes, w http.ResponseWriter,
 
 	case *GetJobResultUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetJobResultForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *GetJobResultNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1377,7 +1279,6 @@ func encodeGetJobsResponse(response GetJobsRes, w http.ResponseWriter, span trac
 	case *JobsList:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1389,19 +1290,16 @@ func encodeGetJobsResponse(response GetJobsRes, w http.ResponseWriter, span trac
 
 	case *GetJobsUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetJobsForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *GetJobsNotFound:
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		return nil
 
@@ -1415,7 +1313,6 @@ func encodeGetJobsConfigResponse(response GetJobsConfigRes, w http.ResponseWrite
 	case *JobStore:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1428,7 +1325,6 @@ func encodeGetJobsConfigResponse(response GetJobsConfigRes, w http.ResponseWrite
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1440,13 +1336,11 @@ func encodeGetJobsConfigResponse(response GetJobsConfigRes, w http.ResponseWrite
 
 	case *GetJobsConfigUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetJobsConfigForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -1460,7 +1354,6 @@ func encodeGetLobByMapResponse(response GetLobByMapRes, w http.ResponseWriter, s
 	case *GetLobByMapOK:
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -1474,20 +1367,17 @@ func encodeGetLobByMapResponse(response GetLobByMapRes, w http.ResponseWriter, s
 
 	case *GetLobByMapUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetLobByMapForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1506,6 +1396,7 @@ func encodeGetLoginSessionResponse(response GetLoginSessionRes, w http.ResponseW
 	switch response := response.(type) {
 	case *AuthorizationTokenHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1526,7 +1417,6 @@ func encodeGetLoginSessionResponse(response GetLoginSessionRes, w http.ResponseW
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -1538,20 +1428,17 @@ func encodeGetLoginSessionResponse(response GetLoginSessionRes, w http.ResponseW
 
 	case *GetLoginSessionUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetLoginSessionForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1570,6 +1457,7 @@ func encodeGetMapMetadataResponse(response GetMapMetadataRes, w http.ResponseWri
 	switch response := response.(type) {
 	case *MappingHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1590,7 +1478,6 @@ func encodeGetMapMetadataResponse(response GetMapMetadataRes, w http.ResponseWri
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -1602,20 +1489,17 @@ func encodeGetMapMetadataResponse(response GetMapMetadataRes, w http.ResponseWri
 
 	case *GetMapMetadataUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetMapMetadataForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1634,6 +1518,7 @@ func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.R
 	switch response := response.(type) {
 	case *ResponseHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1654,7 +1539,6 @@ func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.R
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -1666,6 +1550,7 @@ func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.R
 
 	case *GetMapRecordsFieldsOKTextCsvHeaders:
 		w.Header().Set("Content-Type", "text/csv")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1686,7 +1571,6 @@ func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.R
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Response.Data.(io.Closer); ok {
@@ -1700,20 +1584,17 @@ func encodeGetMapRecordsFieldsResponse(response GetMapRecordsFieldsRes, w http.R
 
 	case *GetMapRecordsFieldsUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetMapRecordsFieldsForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1733,7 +1614,6 @@ func encodeGetMapsResponse(response GetMapsRes, w http.ResponseWriter, span trac
 	case *Maps:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1745,20 +1625,17 @@ func encodeGetMapsResponse(response GetMapsRes, w http.ResponseWriter, span trac
 
 	case *GetMapsUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetMapsForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1778,7 +1655,6 @@ func encodeGetUserInfoResponse(response GetUserInfoRes, w http.ResponseWriter, s
 	case *User:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1791,7 +1667,6 @@ func encodeGetUserInfoResponse(response GetUserInfoRes, w http.ResponseWriter, s
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1803,13 +1678,11 @@ func encodeGetUserInfoResponse(response GetUserInfoRes, w http.ResponseWriter, s
 
 	case *GetUserInfoUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetUserInfoForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -1823,7 +1696,6 @@ func encodeGetVersionResponse(response GetVersionRes, w http.ResponseWriter, spa
 	case *Versions:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1836,7 +1708,6 @@ func encodeGetVersionResponse(response GetVersionRes, w http.ResponseWriter, spa
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1871,7 +1742,6 @@ func encodeGetVideoResponse(response GetVideoRes, w http.ResponseWriter, span tr
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Response.Data.(io.Closer); ok {
@@ -1884,6 +1754,7 @@ func encodeGetVideoResponse(response GetVideoRes, w http.ResponseWriter, span tr
 		return nil
 
 	case *GetVideoUnauthorized:
+		w.Header().Set("Access-Control-Expose-Headers", "Www_authenticate")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1904,20 +1775,17 @@ func encodeGetVideoResponse(response GetVideoRes, w http.ResponseWriter, span tr
 			}
 		}
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetVideoForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1935,6 +1803,7 @@ func encodeGetVideoResponse(response GetVideoRes, w http.ResponseWriter, span tr
 func encodeGetViewsResponse(response GetViewsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *GetViewsOK:
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -1955,14 +1824,12 @@ func encodeGetViewsResponse(response GetViewsRes, w http.ResponseWriter, span tr
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -1974,13 +1841,11 @@ func encodeGetViewsResponse(response GetViewsRes, w http.ResponseWriter, span tr
 
 	case *GetViewsUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *GetViewsForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -1993,6 +1858,7 @@ func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http
 	switch response := response.(type) {
 	case *StoreResponseHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2013,7 +1879,6 @@ func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -2026,7 +1891,6 @@ func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http
 	case *InsertMapFileRecordsBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2038,20 +1902,17 @@ func encodeInsertMapFileRecordsResponse(response InsertMapFileRecordsRes, w http
 
 	case *InsertMapFileRecordsUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *InsertMapFileRecordsForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *InsertMapFileRecordsNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2070,6 +1931,7 @@ func encodeInsertRecordResponse(response InsertRecordRes, w http.ResponseWriter,
 	switch response := response.(type) {
 	case *ResponseHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2090,7 +1952,6 @@ func encodeInsertRecordResponse(response InsertRecordRes, w http.ResponseWriter,
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -2102,26 +1963,22 @@ func encodeInsertRecordResponse(response InsertRecordRes, w http.ResponseWriter,
 
 	case *InsertRecordBadRequest:
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		return nil
 
 	case *InsertRecordUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *InsertRecordForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2141,7 +1998,6 @@ func encodeListModellingResponse(response ListModellingRes, w http.ResponseWrite
 	case *Maps:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2154,7 +2010,6 @@ func encodeListModellingResponse(response ListModellingRes, w http.ResponseWrite
 	case *ListModellingOKTextCsv:
 		w.Header().Set("Content-Type", "text/csv")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -2169,7 +2024,6 @@ func encodeListModellingResponse(response ListModellingRes, w http.ResponseWrite
 	case *ListModellingBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2181,20 +2035,17 @@ func encodeListModellingResponse(response ListModellingRes, w http.ResponseWrite
 
 	case *ListModellingUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *ListModellingForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *ListModellingNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2214,7 +2065,6 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 	case *Maps:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2227,7 +2077,6 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 	case *ListTablesOKTextCsv:
 		w.Header().Set("Content-Type", "text/csv")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -2242,7 +2091,6 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 	case *ListTablesBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2254,20 +2102,17 @@ func encodeListTablesResponse(response ListTablesRes, w http.ResponseWriter, spa
 
 	case *ListTablesUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *ListTablesForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *ListTablesNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2286,6 +2131,7 @@ func encodeLoginSessionResponse(response LoginSessionRes, w http.ResponseWriter,
 	switch response := response.(type) {
 	case *AuthorizationTokenHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2306,7 +2152,6 @@ func encodeLoginSessionResponse(response LoginSessionRes, w http.ResponseWriter,
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -2318,20 +2163,17 @@ func encodeLoginSessionResponse(response LoginSessionRes, w http.ResponseWriter,
 
 	case *LoginSessionUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *LoginSessionForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2350,14 +2192,12 @@ func encodeLogoutSessionCompatResponse(response LogoutSessionCompatRes, w http.R
 	switch response := response.(type) {
 	case *LogoutSessionCompatOK:
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		return nil
 
 	case *LogoutSessionCompatBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2370,7 +2210,6 @@ func encodeLogoutSessionCompatResponse(response LogoutSessionCompatRes, w http.R
 	case *LogoutSessionCompatNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2390,7 +2229,6 @@ func encodePostDatabaseResponse(response PostDatabaseRes, w http.ResponseWriter,
 	case *StatusResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2403,7 +2241,6 @@ func encodePostDatabaseResponse(response PostDatabaseRes, w http.ResponseWriter,
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2415,13 +2252,11 @@ func encodePostDatabaseResponse(response PostDatabaseRes, w http.ResponseWriter,
 
 	case *PostDatabaseUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *PostDatabaseForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -2435,7 +2270,6 @@ func encodePostJobResponse(response PostJobRes, w http.ResponseWriter, span trac
 	case *StatusResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2448,7 +2282,6 @@ func encodePostJobResponse(response PostJobRes, w http.ResponseWriter, span trac
 	case *PostJobBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2460,20 +2293,17 @@ func encodePostJobResponse(response PostJobRes, w http.ResponseWriter, span trac
 
 	case *PostJobUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *PostJobForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *PostJobNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2492,6 +2322,7 @@ func encodePushLoginSessionResponse(response PushLoginSessionRes, w http.Respons
 	switch response := response.(type) {
 	case *AuthorizationTokenHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2512,7 +2343,6 @@ func encodePushLoginSessionResponse(response PushLoginSessionRes, w http.Respons
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -2524,20 +2354,17 @@ func encodePushLoginSessionResponse(response PushLoginSessionRes, w http.Respons
 
 	case *PushLoginSessionUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *PushLoginSessionForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2556,14 +2383,12 @@ func encodeRemoveSessionCompatResponse(response RemoveSessionCompatRes, w http.R
 	switch response := response.(type) {
 	case *RemoveSessionCompatOK:
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		return nil
 
 	case *RemoveSessionCompatBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2576,7 +2401,6 @@ func encodeRemoveSessionCompatResponse(response RemoveSessionCompatRes, w http.R
 	case *RemoveSessionCompatNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2596,7 +2420,6 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 	case *Response:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2609,7 +2432,6 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 	case *SearchModellingOKTextCsv:
 		w.Header().Set("Content-Type", "text/csv")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -2624,7 +2446,6 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 	case *SearchModellingBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2636,20 +2457,17 @@ func encodeSearchModellingResponse(response SearchModellingRes, w http.ResponseW
 
 	case *SearchModellingUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *SearchModellingForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *SearchModellingNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2668,6 +2486,7 @@ func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.R
 	switch response := response.(type) {
 	case *ResponseHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2688,7 +2507,6 @@ func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.R
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -2700,6 +2518,7 @@ func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.R
 
 	case *SearchRecordsFieldsOKTextCsvHeaders:
 		w.Header().Set("Content-Type", "text/csv")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2720,7 +2539,6 @@ func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.R
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Response.Data.(io.Closer); ok {
@@ -2734,20 +2552,17 @@ func encodeSearchRecordsFieldsResponse(response SearchRecordsFieldsRes, w http.R
 
 	case *SearchRecordsFieldsUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *SearchRecordsFieldsForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2767,7 +2582,6 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 	case *Response:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2780,7 +2594,6 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 	case *SearchTableOKTextCsv:
 		w.Header().Set("Content-Type", "text/csv")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -2795,7 +2608,6 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 	case *SearchTableBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2807,20 +2619,17 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 
 	case *SearchTableUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *SearchTableForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *SearchTableNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2838,6 +2647,7 @@ func encodeSearchTableResponse(response SearchTableRes, w http.ResponseWriter, s
 func encodeSetConfigResponse(response SetConfigRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *SetConfigOK:
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2858,14 +2668,12 @@ func encodeSetConfigResponse(response SetConfigRes, w http.ResponseWriter, span 
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2877,13 +2685,11 @@ func encodeSetConfigResponse(response SetConfigRes, w http.ResponseWriter, span 
 
 	case *SetConfigUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *SetConfigForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -2896,14 +2702,12 @@ func encodeSetJobsConfigResponse(response SetJobsConfigRes, w http.ResponseWrite
 	switch response := response.(type) {
 	case *SetJobsConfigOK:
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2915,13 +2719,11 @@ func encodeSetJobsConfigResponse(response SetJobsConfigRes, w http.ResponseWrite
 
 	case *SetJobsConfigUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *SetJobsConfigForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -2935,7 +2737,6 @@ func encodeShutdownServerResponse(response ShutdownServerRes, w http.ResponseWri
 	case *StatusResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2947,20 +2748,17 @@ func encodeShutdownServerResponse(response ShutdownServerRes, w http.ResponseWri
 
 	case *ShutdownServerUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *ShutdownServerForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -2978,6 +2776,7 @@ func encodeShutdownServerResponse(response ShutdownServerRes, w http.ResponseWri
 func encodeStoreConfigResponse(response StoreConfigRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *StoreConfigOK:
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -2998,14 +2797,12 @@ func encodeStoreConfigResponse(response StoreConfigRes, w http.ResponseWriter, s
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3017,13 +2814,11 @@ func encodeStoreConfigResponse(response StoreConfigRes, w http.ResponseWriter, s
 
 	case *StoreConfigUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *StoreConfigForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
@@ -3037,7 +2832,6 @@ func encodeTriggerExtendResponse(response TriggerExtendRes, w http.ResponseWrite
 	case *ResponseRaw:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3050,7 +2844,6 @@ func encodeTriggerExtendResponse(response TriggerExtendRes, w http.ResponseWrite
 	case *TriggerExtendOKApplicationOctetStream:
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -3065,7 +2858,6 @@ func encodeTriggerExtendResponse(response TriggerExtendRes, w http.ResponseWrite
 	case *TriggerExtendBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3077,20 +2869,17 @@ func encodeTriggerExtendResponse(response TriggerExtendRes, w http.ResponseWrite
 
 	case *TriggerExtendUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *TriggerExtendForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *TriggerExtendNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3110,7 +2899,6 @@ func encodeTriggerJobResponse(response TriggerJobRes, w http.ResponseWriter, spa
 	case *Response:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3123,7 +2911,6 @@ func encodeTriggerJobResponse(response TriggerJobRes, w http.ResponseWriter, spa
 	case *TriggerJobBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3135,20 +2922,17 @@ func encodeTriggerJobResponse(response TriggerJobRes, w http.ResponseWriter, spa
 
 	case *TriggerJobUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *TriggerJobForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *TriggerJobNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3168,7 +2952,6 @@ func encodeUpdateLobByMapResponse(response UpdateLobByMapRes, w http.ResponseWri
 	case *StoreResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3180,20 +2963,17 @@ func encodeUpdateLobByMapResponse(response UpdateLobByMapRes, w http.ResponseWri
 
 	case *UpdateLobByMapUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *UpdateLobByMapForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3212,6 +2992,7 @@ func encodeUpdateRecordsByFieldsResponse(response UpdateRecordsByFieldsRes, w ht
 	switch response := response.(type) {
 	case *ResponseHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Token")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -3232,7 +3013,6 @@ func encodeUpdateRecordsByFieldsResponse(response UpdateRecordsByFieldsRes, w ht
 			}
 		}
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Response.Encode(e)
@@ -3244,20 +3024,17 @@ func encodeUpdateRecordsByFieldsResponse(response UpdateRecordsByFieldsRes, w ht
 
 	case *UpdateRecordsByFieldsUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *UpdateRecordsByFieldsForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *Error:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3277,7 +3054,6 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 	case *StatusResponse:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3290,7 +3066,6 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 	case *UploadFileOKTextPlain:
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
 
 		writer := w
 		if closer, ok := response.Data.(io.Closer); ok {
@@ -3305,7 +3080,6 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 	case *UploadFileBadRequest:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3317,20 +3091,17 @@ func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, spa
 
 	case *UploadFileUnauthorized:
 		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 
 	case *UploadFileForbidden:
 		w.WriteHeader(403)
-		span.SetStatus(codes.Error, http.StatusText(403))
 
 		return nil
 
 	case *UploadFileNotFound:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := new(jx.Encoder)
 		response.Encode(e)
@@ -3353,10 +3124,8 @@ func encodeErrorResponse(response *ErrorStatusCode, w http.ResponseWriter, span 
 		code = http.StatusOK
 	}
 	w.WriteHeader(code)
-	if st := http.StatusText(code); code >= http.StatusBadRequest {
-		span.SetStatus(codes.Error, st)
-	} else {
-		span.SetStatus(codes.Ok, st)
+	if code >= http.StatusInternalServerError {
+		span.SetStatus(codes.Error, http.StatusText(code))
 	}
 
 	e := new(jx.Encoder)

@@ -460,6 +460,7 @@ func decodeBatchSelectParams(args [1]string, argsEscaped bool, r *http.Request) 
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				params.Param = nil
 				return d.DecodeArray(func(d uri.Decoder) error {
 					var paramsDotParamVal string
 					if err := func() error {

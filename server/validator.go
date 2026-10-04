@@ -17,6 +17,7 @@ import (
 
 	"github.com/tknie/clu"
 	"github.com/tknie/log"
+	"github.com/tknie/services"
 	"github.com/tknie/services/auth"
 )
 
@@ -38,6 +39,10 @@ func RegisterValidator(validator RestValidator) {
 // Validate validate current HTTP session received in REST server
 func Validate(session *clu.Context, role auth.AccessRole, resource string) bool {
 	req := session.CurrentRequest
+	if req == nil {
+		services.ServerMessage("Validate -> request is nil")
+		return false
+	}
 	validated := true
 	validatorMap.Range(func(key, value any) bool {
 		v := value.(RestValidator)

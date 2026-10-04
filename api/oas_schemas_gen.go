@@ -268,7 +268,8 @@ func (*BrowseLocationNotFound) browseLocationRes() {}
 
 // BrowseLocationOK represents sum type.
 type BrowseLocationOK struct {
-	Type           BrowseLocationOKType // switch on this field
+	// Type selects the active sum variant, switch on this field.
+	Type           BrowseLocationOKType
 	DirectoryFiles DirectoryFiles
 	File           File
 }

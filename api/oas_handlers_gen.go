@@ -15,7 +15,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/metric"
-	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.39.0"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -46,6 +46,8 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/config/views"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), AddViewOperation,
@@ -69,7 +71,7 @@ func (s *Server) handleAddViewRequest(args [0]string, argsEscaped bool, w http.R
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -286,6 +288,8 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/batch/{table}/{query}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), BatchParameterQueryOperation,
@@ -309,7 +313,7 @@ func (s *Server) handleBatchParameterQueryRequest(args [2]string, argsEscaped bo
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -530,6 +534,8 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/batch/{table}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), BatchQueryOperation,
@@ -553,7 +559,7 @@ func (s *Server) handleBatchQueryRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -785,6 +791,8 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/batch/{table}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), BatchSelectOperation,
@@ -808,7 +816,7 @@ func (s *Server) handleBatchSelectRequest(args [1]string, argsEscaped bool, w ht
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -1029,6 +1037,8 @@ func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w htt
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/file/browse"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), BrowseListOperation,
@@ -1052,7 +1062,7 @@ func (s *Server) handleBrowseListRequest(args [0]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -1250,6 +1260,8 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/file/browse/{path}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), BrowseLocationOperation,
@@ -1273,7 +1285,7 @@ func (s *Server) handleBrowseLocationRequest(args [1]string, argsEscaped bool, w
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -1490,6 +1502,8 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), CallExtendOperation,
@@ -1513,7 +1527,7 @@ func (s *Server) handleCallExtendRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -1730,6 +1744,8 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), CallPostExtendOperation,
@@ -1753,7 +1769,7 @@ func (s *Server) handleCallPostExtendRequest(args [1]string, argsEscaped bool, w
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -1985,6 +2001,8 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), CreateDirectoryOperation,
@@ -2008,7 +2026,7 @@ func (s *Server) handleCreateDirectoryRequest(args [1]string, argsEscaped bool, 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -2221,6 +2239,8 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), DeleteExtendOperation,
@@ -2244,7 +2264,7 @@ func (s *Server) handleDeleteExtendRequest(args [1]string, argsEscaped bool, w h
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -2461,6 +2481,8 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), DeleteFileLocationOperation,
@@ -2484,7 +2506,7 @@ func (s *Server) handleDeleteFileLocationRequest(args [1]string, argsEscaped boo
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -2701,6 +2723,8 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/tasks/{jobName}/{jobId}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), DeleteJobResultOperation,
@@ -2724,7 +2748,7 @@ func (s *Server) handleDeleteJobResultRequest(args [2]string, argsEscaped bool, 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -2941,6 +2965,8 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), DeleteRecordsSearchedOperation,
@@ -2964,7 +2990,7 @@ func (s *Server) handleDeleteRecordsSearchedRequest(args [2]string, argsEscaped 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -3217,6 +3243,8 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 		semconv.HTTPRequestMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/config/views"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), DeleteViewOperation,
@@ -3240,7 +3268,7 @@ func (s *Server) handleDeleteViewRequest(args [0]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -3457,6 +3485,8 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), DownloadFileOperation,
@@ -3480,7 +3510,7 @@ func (s *Server) handleDownloadFileRequest(args [1]string, argsEscaped bool, w h
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -3693,6 +3723,8 @@ func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/config"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetConfigOperation,
@@ -3716,7 +3748,7 @@ func (s *Server) handleGetConfigRequest(args [0]string, argsEscaped bool, w http
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -3914,6 +3946,8 @@ func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w h
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/database"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetDatabasesOperation,
@@ -3937,7 +3971,7 @@ func (s *Server) handleGetDatabasesRequest(args [0]string, argsEscaped bool, w h
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -4135,6 +4169,8 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tables/{table}/fields"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetFieldsOperation,
@@ -4158,7 +4194,7 @@ func (s *Server) handleGetFieldsRequest(args [1]string, argsEscaped bool, w http
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -4371,6 +4407,8 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/image/{table}/{field}/{search}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetImageOperation,
@@ -4394,7 +4432,7 @@ func (s *Server) handleGetImageRequest(args [3]string, argsEscaped bool, w http.
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -4631,6 +4669,8 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/tasks/results"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetJobExecutionResultOperation,
@@ -4654,7 +4694,7 @@ func (s *Server) handleGetJobExecutionResultRequest(args [0]string, argsEscaped 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -4871,6 +4911,8 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/tasks/{jobName}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetJobFullInfoOperation,
@@ -4894,7 +4936,7 @@ func (s *Server) handleGetJobFullInfoRequest(args [1]string, argsEscaped bool, w
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -5107,6 +5149,8 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/tasks/{jobName}/{jobId}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetJobResultOperation,
@@ -5130,7 +5174,7 @@ func (s *Server) handleGetJobResultRequest(args [2]string, argsEscaped bool, w h
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -5347,6 +5391,8 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/tasks"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetJobsOperation,
@@ -5370,7 +5416,7 @@ func (s *Server) handleGetJobsRequest(args [0]string, argsEscaped bool, w http.R
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -5587,6 +5633,8 @@ func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/config/jobs"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetJobsConfigOperation,
@@ -5610,7 +5658,7 @@ func (s *Server) handleGetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -5808,6 +5856,8 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetLobByMapOperation,
@@ -5831,7 +5881,7 @@ func (s *Server) handleGetLobByMapRequest(args [3]string, argsEscaped bool, w ht
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -6064,6 +6114,8 @@ func (s *Server) handleGetLoginSessionRequest(args [0]string, argsEscaped bool, 
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/login"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetLoginSessionOperation,
@@ -6087,7 +6139,7 @@ func (s *Server) handleGetLoginSessionRequest(args [0]string, argsEscaped bool, 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -6266,6 +6318,8 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/metadata/view/{table}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetMapMetadataOperation,
@@ -6289,7 +6343,7 @@ func (s *Server) handleGetMapMetadataRequest(args [1]string, argsEscaped bool, w
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -6502,6 +6556,8 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{fields}/{search}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetMapRecordsFieldsOperation,
@@ -6525,7 +6581,7 @@ func (s *Server) handleGetMapRecordsFieldsRequest(args [3]string, argsEscaped bo
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -6782,6 +6838,8 @@ func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.R
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/view"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetMapsOperation,
@@ -6805,7 +6863,7 @@ func (s *Server) handleGetMapsRequest(args [0]string, argsEscaped bool, w http.R
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -7003,6 +7061,8 @@ func (s *Server) handleGetUserInfoRequest(args [0]string, argsEscaped bool, w ht
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/user"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetUserInfoOperation,
@@ -7026,7 +7086,7 @@ func (s *Server) handleGetUserInfoRequest(args [0]string, argsEscaped bool, w ht
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -7136,6 +7196,8 @@ func (s *Server) handleGetVersionRequest(args [0]string, argsEscaped bool, w htt
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/version"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetVersionOperation,
@@ -7159,7 +7221,7 @@ func (s *Server) handleGetVersionRequest(args [0]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -7269,6 +7331,8 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/video/{table}/{field}/{search}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetVideoOperation,
@@ -7292,7 +7356,7 @@ func (s *Server) handleGetVideoRequest(args [3]string, argsEscaped bool, w http.
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -7529,6 +7593,8 @@ func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/config/views"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), GetViewsOperation,
@@ -7552,7 +7618,7 @@ func (s *Server) handleGetViewsRequest(args [0]string, argsEscaped bool, w http.
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -7750,6 +7816,8 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/view"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), InsertMapFileRecordsOperation,
@@ -7773,7 +7841,7 @@ func (s *Server) handleInsertMapFileRecordsRequest(args [0]string, argsEscaped b
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -7986,6 +8054,8 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), InsertRecordOperation,
@@ -8009,7 +8079,7 @@ func (s *Server) handleInsertRecordRequest(args [1]string, argsEscaped bool, w h
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -8241,6 +8311,8 @@ func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w 
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/map"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), ListModellingOperation,
@@ -8264,7 +8336,7 @@ func (s *Server) handleListModellingRequest(args [0]string, argsEscaped bool, w 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -8462,6 +8534,8 @@ func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w htt
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tables"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), ListTablesOperation,
@@ -8485,7 +8559,7 @@ func (s *Server) handleListTablesRequest(args [0]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -8683,6 +8757,8 @@ func (s *Server) handleLoginSessionRequest(args [0]string, argsEscaped bool, w h
 		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/login"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), LoginSessionOperation,
@@ -8706,7 +8782,7 @@ func (s *Server) handleLoginSessionRequest(args [0]string, argsEscaped bool, w h
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -8885,6 +8961,8 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/logout"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), LogoutSessionCompatOperation,
@@ -8908,7 +8986,7 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -9095,8 +9173,8 @@ func (s *Server) handleLogoutSessionCompatRequest(args [0]string, argsEscaped bo
 
 // handlePostDatabaseRequest handles postDatabase operation.
 //
-// Create a new database, the input need to be JSON. A structure level parameter indicate version to
-// be used.
+// Create a new database, the input need to be JSON. A structure level parameter indicate version to be
+// used.
 //
 // POST /rest/database
 func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -9107,6 +9185,8 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/database"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), PostDatabaseOperation,
@@ -9130,7 +9210,7 @@ func (s *Server) handlePostDatabaseRequest(args [0]string, argsEscaped bool, w h
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -9343,6 +9423,8 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/tasks"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), PostJobOperation,
@@ -9366,7 +9448,7 @@ func (s *Server) handlePostJobRequest(args [0]string, argsEscaped bool, w http.R
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -9579,6 +9661,8 @@ func (s *Server) handlePushLoginSessionRequest(args [0]string, argsEscaped bool,
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/login"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), PushLoginSessionOperation,
@@ -9602,7 +9686,7 @@ func (s *Server) handlePushLoginSessionRequest(args [0]string, argsEscaped bool,
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -9781,6 +9865,8 @@ func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bo
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/logoff"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), RemoveSessionCompatOperation,
@@ -9804,7 +9890,7 @@ func (s *Server) handleRemoveSessionCompatRequest(args [0]string, argsEscaped bo
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -10002,6 +10088,8 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/map/{path}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), SearchModellingOperation,
@@ -10025,7 +10113,7 @@ func (s *Server) handleSearchModellingRequest(args [1]string, argsEscaped bool, 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -10238,6 +10326,8 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), SearchRecordsFieldsOperation,
@@ -10261,7 +10351,7 @@ func (s *Server) handleSearchRecordsFieldsRequest(args [2]string, argsEscaped bo
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -10514,6 +10604,8 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/rest/tables/{table}/{fields}/{search}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), SearchTableOperation,
@@ -10537,7 +10629,7 @@ func (s *Server) handleSearchTableRequest(args [3]string, argsEscaped bool, w ht
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -10762,6 +10854,8 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/config"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), SetConfigOperation,
@@ -10785,7 +10879,7 @@ func (s *Server) handleSetConfigRequest(args [0]string, argsEscaped bool, w http
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -10998,6 +11092,8 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/config/jobs"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), SetJobsConfigOperation,
@@ -11021,7 +11117,7 @@ func (s *Server) handleSetJobsConfigRequest(args [0]string, argsEscaped bool, w 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -11234,6 +11330,8 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/shutdown/{hash}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), ShutdownServerOperation,
@@ -11257,7 +11355,7 @@ func (s *Server) handleShutdownServerRequest(args [1]string, argsEscaped bool, w
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -11470,6 +11568,8 @@ func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w ht
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/config"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), StoreConfigOperation,
@@ -11493,7 +11593,7 @@ func (s *Server) handleStoreConfigRequest(args [0]string, argsEscaped bool, w ht
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -11691,6 +11791,8 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/extend/{path}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), TriggerExtendOperation,
@@ -11714,7 +11816,7 @@ func (s *Server) handleTriggerExtendRequest(args [1]string, argsEscaped bool, w 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -11927,6 +12029,8 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/tasks/{jobName}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), TriggerJobOperation,
@@ -11950,7 +12054,7 @@ func (s *Server) handleTriggerJobRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -12163,6 +12267,8 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/binary/{table}/{field}/{search}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), UpdateLobByMapOperation,
@@ -12186,7 +12292,7 @@ func (s *Server) handleUpdateLobByMapRequest(args [3]string, argsEscaped bool, w
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -12422,6 +12528,8 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 		semconv.HTTPRequestMethodKey.String("PUT"),
 		semconv.HTTPRouteKey.String("/rest/view/{table}/{search}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), UpdateRecordsByFieldsOperation,
@@ -12445,7 +12553,7 @@ func (s *Server) handleUpdateRecordsByFieldsRequest(args [2]string, argsEscaped 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -12677,6 +12785,8 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/rest/file/{path}"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), UploadFileOperation,
@@ -12700,7 +12810,7 @@ func (s *Server) handleUploadFileRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 

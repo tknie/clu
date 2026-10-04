@@ -41,6 +41,7 @@ func findAuthorization(h http.Header, prefix string) (string, bool) {
 	return "", false
 }
 
+// operationRolesBasicAuth is a private map storing roles per operation.
 var operationRolesBasicAuth = map[string][]string{
 	AddViewOperation:               []string{},
 	BatchParameterQueryOperation:   []string{},
@@ -97,30 +98,28 @@ var operationRolesBasicAuth = map[string][]string{
 	UploadFileOperation:            []string{},
 }
 
-func (s *Server) securityBasicAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
-	var t BasicAuth
-	if _, ok := findAuthorization(req.Header, "Basic"); !ok {
-		return ctx, false, nil
-	}
-	username, password, ok := req.BasicAuth()
+// GetRolesForBasicAuth returns the required roles for the given operation.
+//
+// This is useful for authorization scenarios where you need to know which roles
+// are required for an operation.
+//
+// Example:
+//
+//	requiredRoles := GetRolesForBasicAuth(AddPetOperation)
+//
+// Returns nil if the operation has no role requirements or if the operation is unknown.
+func GetRolesForBasicAuth(operation string) []string {
+	roles, ok := operationRolesBasicAuth[operation]
 	if !ok {
-		return nil, false, errors.New("invalid basic auth")
+		return nil
 	}
-	t.Username = username
-	t.Password = password
-	t.Roles = operationRolesBasicAuth[operationName]
-	rctx, err := s.sec.HandleBasicAuth(ctx, operationName, t)
-	if errors.Is(err, ogenerrors.ErrSkipServerSecurity) {
-		return nil, false, nil
-	} else if err != nil {
-		return nil, false, err
-	}
-	// CLU TKN addition
-	s.sec.Request(rctx, req)
-
-	return rctx, true, err
+	// Return a copy to prevent external modification
+	result := make([]string, len(roles))
+	copy(result, roles)
+	return result
 }
 
+// operationRolesBearerAuth is a private map storing roles per operation.
 var operationRolesBearerAuth = map[string][]string{
 	AddViewOperation: []string{
 		"admin",
@@ -274,26 +273,28 @@ var operationRolesBearerAuth = map[string][]string{
 	},
 }
 
-func (s *Server) securityBearerAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
-	var t BearerAuth
-	token, ok := findAuthorization(req.Header, "Bearer")
+// GetRolesForBearerAuth returns the required roles for the given operation.
+//
+// This is useful for authorization scenarios where you need to know which roles
+// are required for an operation.
+//
+// Example:
+//
+//	requiredRoles := GetRolesForBearerAuth(AddPetOperation)
+//
+// Returns nil if the operation has no role requirements or if the operation is unknown.
+func GetRolesForBearerAuth(operation string) []string {
+	roles, ok := operationRolesBearerAuth[operation]
 	if !ok {
-		return ctx, false, nil
+		return nil
 	}
-	t.Token = token
-	t.Roles = operationRolesBearerAuth[operationName]
-	rctx, err := s.sec.HandleBearerAuth(ctx, operationName, t)
-	if errors.Is(err, ogenerrors.ErrSkipServerSecurity) {
-		return nil, false, nil
-	} else if err != nil {
-		return nil, false, err
-	}
-	// CLU TKN addition
-	s.sec.Request(rctx, req)
-
-	return rctx, true, err
+	// Return a copy to prevent external modification
+	result := make([]string, len(roles))
+	copy(result, roles)
+	return result
 }
 
+// operationRolesTokenCheck is a private map storing roles per operation.
 var operationRolesTokenCheck = map[string][]string{
 	AddViewOperation:               []string{},
 	BatchParameterQueryOperation:   []string{},
@@ -348,6 +349,71 @@ var operationRolesTokenCheck = map[string][]string{
 	UpdateLobByMapOperation:        []string{},
 	UpdateRecordsByFieldsOperation: []string{},
 	UploadFileOperation:            []string{},
+}
+
+// GetRolesForTokenCheck returns the required roles for the given operation.
+//
+// This is useful for authorization scenarios where you need to know which roles
+// are required for an operation.
+//
+// Example:
+//
+//	requiredRoles := GetRolesForTokenCheck(AddPetOperation)
+//
+// Returns nil if the operation has no role requirements or if the operation is unknown.
+func GetRolesForTokenCheck(operation string) []string {
+	roles, ok := operationRolesTokenCheck[operation]
+	if !ok {
+		return nil
+	}
+	// Return a copy to prevent external modification
+	result := make([]string, len(roles))
+	copy(result, roles)
+	return result
+}
+
+func (s *Server) securityBasicAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
+	var t BasicAuth
+	if _, ok := findAuthorization(req.Header, "Basic"); !ok {
+		return ctx, false, nil
+	}
+	username, password, ok := req.BasicAuth()
+	if !ok {
+		return nil, false, errors.New("invalid basic auth")
+	}
+	t.Username = username
+	t.Password = password
+	t.Roles = operationRolesBasicAuth[operationName]
+	rctx, err := s.sec.HandleBasicAuth(ctx, operationName, t)
+	if errors.Is(err, ogenerrors.ErrSkipServerSecurity) {
+		return nil, false, nil
+	} else if err != nil {
+		return nil, false, err
+	}
+	// CLU TKN addition
+	s.sec.Request(rctx, req)
+
+	return rctx, true, err
+}
+
+func (s *Server) securityBearerAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
+	var t BearerAuth
+	token, ok := findAuthorization(req.Header, "Bearer")
+	if !ok {
+		return ctx, false, nil
+	}
+	t.Token = token
+	t.Roles = operationRolesBearerAuth[operationName]
+	rctx, err := s.sec.HandleBearerAuth(ctx, operationName, t)
+	if errors.Is(err, ogenerrors.ErrSkipServerSecurity) {
+		return nil, false, nil
+	} else if err != nil {
+		return nil, false, err
+	}
+	// CLU TKN addition
+	s.sec.Request(rctx, req)
+
+	return rctx, true, err
 }
 
 func (s *Server) securityTokenCheck(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {

@@ -16,6 +16,7 @@ import (
 
 	"github.com/tknie/clu/plugins"
 	"github.com/tknie/log"
+	"github.com/tknie/services"
 )
 
 type greeting string
@@ -54,6 +55,10 @@ func (g greeting) EntryPoint() []string {
 
 // CallValidator plugin entry point to call the validator
 func (g greeting) CallValidator(req *http.Request) (_ bool, _ error) {
+	if req == nil {
+		services.ServerMessage("CallValidator: Validate -> request is nil")
+		return false, nil
+	}
 	log.Log.Debugf("Validate -> %s", req.URL.String())
 	for k, v := range req.URL.Query() {
 		log.Log.Debugf("%v => %v", k, v)
