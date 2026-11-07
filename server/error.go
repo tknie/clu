@@ -44,12 +44,15 @@ func (Handler) NewError(ctx context.Context, err error) (r *api.ErrorStatusCode)
 	}
 	switch e := err.(type) {
 	case *ogenerrors.SecurityError:
+		log.Log.Errorf("Security error: %v", e.Err)
 		r.StatusCode = http.StatusForbidden
 		r.Response = *NewAPIError("SECERR", err)
 		return r
 	case *api.ErrorStatusCode:
+		log.Log.Errorf("Error status code  %v", e.Response)
 		return e
 	case *errorrepo.Error:
+		log.Log.Errorf("repo error type %T", e)
 		r.Response = *NewAPIError(e.ID(), e)
 	default:
 		log.Log.Errorf("Unknown error type %T", e)
