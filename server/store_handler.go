@@ -137,7 +137,11 @@ func parseJx(v jx.Raw) (any, error) {
 	case jx.Array:
 		values := make([]any, 0)
 		d.Arr(func(d *jx.Decoder) error {
-			o, err := parseJx(v)
+			r, err := d.Raw()
+			if err != nil {
+				return err
+			}
+			o, err := parseJx(r)
 			if err != nil {
 				log.Log.Debugf("Error JSON parser of array: %v", err)
 				return errorrepo.NewError("RERR00015", "<Array>", err)

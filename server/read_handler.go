@@ -81,9 +81,6 @@ func (Handler) SearchRecordsFields(ctx context.Context, params api.SearchRecords
 		s := &api.SearchRecordsFieldsOKTextCsvHeaders{Response: hs}
 		go parallelQuery(d, q, piper, pipew)
 
-		if err != nil {
-			return nil, err
-		}
 		return s, nil
 	}
 	data, fields, err := query(d, q)
@@ -137,7 +134,7 @@ func parallelQuery(d common.RegDbID, q *common.Query, piper *io.PipeReader, pipe
 		return nil
 	})
 	if err != nil {
-		pipew.Write([]byte(fmt.Sprintf("Error: %v", err)))
+		pipew.Write(fmt.Appendf(nil, "Error: %v", err))
 	}
 	//	piper.Close()
 	pipew.Close()
@@ -183,9 +180,6 @@ func (Handler) GetMapRecordsFields(ctx context.Context, params api.GetMapRecords
 		s := &api.GetMapRecordsFieldsOKTextCsvHeaders{Response: hs}
 		go parallelQuery(d, q, piper, pipew)
 
-		if err != nil {
-			return nil, err
-		}
 		return s, nil
 	}
 	data, fields, err := query(d, q)

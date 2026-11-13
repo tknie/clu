@@ -119,6 +119,7 @@ func (st *StoreJWTHandler) UUIDInfo(uuid string) (*auth.SessionInfo, error) {
 	}
 	si := result.Data.(*auth.SessionInfo)
 	log.Log.Debugf("Found session %v", si.UUID)
+	sessionInfoMap.Store(uuid, si)
 	return si, nil
 }
 
