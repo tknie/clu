@@ -26,7 +26,7 @@ jobs:
 #            arch: arm64
         go-version: [ '1.23.x' ]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Install libpam dev
       run: |
@@ -34,7 +34,7 @@ jobs:
           sudo apt-get install -y libpam0g-dev libde265-dev
           
     - name: Set up Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v7
       with:
         go-version: ${{ matrix.go-version }}
 
