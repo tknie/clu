@@ -26,7 +26,7 @@ jobs:
 #            arch: arm64
         go-version: [ '1.23.x' ]
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@v6
 
     - name: Install libpam dev
       run: |
